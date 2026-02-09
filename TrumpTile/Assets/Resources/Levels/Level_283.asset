@@ -1,0 +1,850 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f55b110187722484ea47ac0ed3d64bcb, type: 3}
+  m_Name: Level_283
+  m_EditorClassIdentifier: 
+  levelNumber: 283
+  levelName: Level 283
+  difficulty: 4
+  boardWidth: 8
+  boardHeight: 9
+  maxLayers: 5
+  slotCount: 7
+  matchCount: 3
+  timeLimit: 0
+  targetScore: 4150
+  tilePlacements:
+  - gridX: 0
+    gridY: 0
+    layer: 0
+    tileTypeId: Diamond_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 0
+    layer: 0
+    tileTypeId: Spade_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 1
+    layer: 0
+    tileTypeId: Club_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 1
+    layer: 0
+    tileTypeId: Spade_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 4
+    layer: 0
+    tileTypeId: Diamond_Ten
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 4
+    layer: 0
+    tileTypeId: Spade_Three
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 5
+    layer: 0
+    tileTypeId: Club_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 5
+    layer: 0
+    tileTypeId: Spade_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 6
+    layer: 0
+    tileTypeId: Spade_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 6
+    layer: 0
+    tileTypeId: Heart_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 7
+    layer: 0
+    tileTypeId: Club_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 7
+    layer: 0
+    tileTypeId: Club_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 8
+    layer: 0
+    tileTypeId: Club_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 8
+    layer: 0
+    tileTypeId: Diamond_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 0
+    layer: 0
+    tileTypeId: Heart_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 0
+    layer: 0
+    tileTypeId: Club_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 1
+    layer: 0
+    tileTypeId: Heart_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 1
+    layer: 0
+    tileTypeId: Spade_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 4
+    layer: 0
+    tileTypeId: Diamond_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 4
+    layer: 0
+    tileTypeId: Heart_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 5
+    layer: 0
+    tileTypeId: Club_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 5
+    layer: 0
+    tileTypeId: Club_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 6
+    layer: 0
+    tileTypeId: Heart_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 6
+    layer: 0
+    tileTypeId: Spade_Ace
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 7
+    layer: 0
+    tileTypeId: Diamond_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 7
+    layer: 0
+    tileTypeId: Spade_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 8
+    layer: 0
+    tileTypeId: Spade_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 8
+    layer: 0
+    tileTypeId: Spade_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 0
+    layer: 0
+    tileTypeId: Diamond_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 0
+    layer: 0
+    tileTypeId: Diamond_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 1
+    layer: 0
+    tileTypeId: Spade_Ace
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 1
+    layer: 0
+    tileTypeId: Diamond_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 2
+    layer: 0
+    tileTypeId: Club_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 2
+    layer: 0
+    tileTypeId: Club_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 4
+    layer: 0
+    tileTypeId: Spade_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 4
+    layer: 0
+    tileTypeId: Diamond_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 5
+    layer: 0
+    tileTypeId: Club_Ten
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 5
+    layer: 0
+    tileTypeId: Heart_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 6
+    layer: 0
+    tileTypeId: Diamond_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 6
+    layer: 0
+    tileTypeId: Spade_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 8
+    layer: 0
+    tileTypeId: Club_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 8
+    layer: 0
+    tileTypeId: Spade_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 0
+    layer: 0
+    tileTypeId: Spade_Ace
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 0
+    layer: 0
+    tileTypeId: Club_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 2
+    layer: 0
+    tileTypeId: Spade_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 2
+    layer: 0
+    tileTypeId: Diamond_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 3
+    layer: 0
+    tileTypeId: Club_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 3
+    layer: 0
+    tileTypeId: Club_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 4
+    layer: 0
+    tileTypeId: Heart_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 4
+    layer: 0
+    tileTypeId: Club_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 7
+    layer: 0
+    tileTypeId: Diamond_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 7
+    layer: 0
+    tileTypeId: Heart_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 1
+    layer: 1
+    tileTypeId: Club_Ten
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 1
+    layer: 1
+    tileTypeId: Heart_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 3
+    layer: 1
+    tileTypeId: Club_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 3
+    layer: 1
+    tileTypeId: Spade_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 7
+    layer: 1
+    tileTypeId: Diamond_Ten
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 7
+    layer: 1
+    tileTypeId: Heart_Three
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 4
+    layer: 1
+    tileTypeId: Spade_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 4
+    layer: 1
+    tileTypeId: Diamond_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 3
+    layer: 1
+    tileTypeId: Heart_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 3
+    layer: 1
+    tileTypeId: Spade_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 7
+    layer: 1
+    tileTypeId: Spade_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 7
+    layer: 1
+    tileTypeId: Heart_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 3
+    layer: 3
+    tileTypeId: Diamond_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 3
+    layer: 3
+    tileTypeId: Spade_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 5
+    layer: 3
+    tileTypeId: Diamond_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 5
+    layer: 3
+    tileTypeId: Diamond_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 7
+    layer: 1
+    tileTypeId: Spade_Three
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 3
+    layer: 0
+    tileTypeId: Diamond_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 7
+    layer: 1
+    tileTypeId: Club_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 1
+    layer: 0
+    tileTypeId: Heart_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 3
+    layer: 1
+    tileTypeId: Diamond_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 6
+    layer: 0
+    tileTypeId: Spade_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 3
+    layer: 0
+    tileTypeId: Club_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 5
+    layer: 1
+    tileTypeId: Diamond_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 8
+    layer: 0
+    tileTypeId: Spade_Three
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 6
+    layer: 0
+    tileTypeId: Spade_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 8
+    layer: 0
+    tileTypeId: Spade_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 8
+    layer: 1
+    tileTypeId: Spade_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 8
+    layer: 1
+    tileTypeId: Club_Ace
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 6
+    layer: 1
+    tileTypeId: Club_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 2
+    layer: 1
+    tileTypeId: Heart_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 2
+    layer: 1
+    tileTypeId: Spade_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 2
+    layer: 0
+    tileTypeId: Heart_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 5
+    layer: 0
+    tileTypeId: Spade_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 1
+    layer: 1
+    tileTypeId: Heart_Three
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 7
+    layer: 0
+    tileTypeId: Club_Ace
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 3
+    layer: 1
+    tileTypeId: Heart_Three
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 2
+    layer: 1
+    tileTypeId: Club_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 8
+    layer: 1
+    tileTypeId: Diamond_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 2
+    gridY: 7
+    layer: 0
+    tileTypeId: Diamond_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 5
+    layer: 1
+    tileTypeId: Diamond_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 4
+    layer: 1
+    tileTypeId: Spade_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 4
+    layer: 3
+    tileTypeId: Club_Ace
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 3
+    layer: 1
+    tileTypeId: Club_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 3
+    layer: 0
+    tileTypeId: Spade_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 1
+    layer: 0
+    tileTypeId: Diamond_Eight
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 6
+    layer: 1
+    tileTypeId: Spade_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 4
+    layer: 1
+    tileTypeId: Diamond_Ten
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 2
+    layer: 1
+    tileTypeId: Heart_Four
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 6
+    gridY: 4
+    layer: 1
+    tileTypeId: Diamond_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 4
+    layer: 1
+    tileTypeId: Club_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 1
+    layer: 1
+    tileTypeId: Diamond_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 7
+    layer: 1
+    tileTypeId: Spade_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 2
+    layer: 3
+    tileTypeId: Club_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 1
+    layer: 3
+    tileTypeId: Diamond_Nine
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 1
+    gridY: 2
+    layer: 1
+    tileTypeId: Heart_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 5
+    layer: 0
+    tileTypeId: Heart_Queen
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 2
+    layer: 0
+    tileTypeId: Heart_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 0
+    layer: 1
+    tileTypeId: Heart_Six
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 7
+    gridY: 3
+    layer: 0
+    tileTypeId: Heart_King
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 4
+    gridY: 6
+    layer: 1
+    tileTypeId: Club_Jack
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 3
+    gridY: 5
+    layer: 1
+    tileTypeId: Heart_Seven
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 5
+    gridY: 3
+    layer: 3
+    tileTypeId: Club_Ten
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 6
+    layer: 1
+    tileTypeId: Diamond_Five
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  - gridX: 0
+    gridY: 2
+    layer: 1
+    tileTypeId: Diamond_Two
+    isLocked: 0
+    isFrozen: 0
+    frozenCount: 0
+  availableTileTypes: []
+  initialShuffleCount: 1
+  initialUndoCount: 1
+  initialHintCount: 1
+  specialTiles: []
+  obstacles: []
