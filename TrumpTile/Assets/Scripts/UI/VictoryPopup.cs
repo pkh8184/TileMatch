@@ -4,12 +4,13 @@ using TMPro;
 using System.Collections;
 using TrumpTile.Audio;
 using DG.Tweening;
+using TrumpTile.Core;
 
-namespace TrumpTile.Core
+namespace TrumpTile.UI
 {
 	/// <summary>
 	/// 승리 화면 팝업
-	/// 
+	///
 	/// [주의사항]
 	/// - Inspector에서 Next Button, Main Button 연결 필수
 	/// - 버튼의 OnClick 이벤트는 코드에서 연결 (Inspector에서 연결하지 말 것)
@@ -28,18 +29,18 @@ namespace TrumpTile.Core
 		[SerializeField] private GameObject[] starObjects;
 
 		[Header("Animation")]
-		[SerializeField] private float showDelay = 0.3f;
-		[SerializeField] private float animationDuration = 0.4f;
+		[SerializeField] private float showDelay = 0.3F;
+		[SerializeField] private float animationDuration = 0.4F;
 		[SerializeField] private Ease showEase = Ease.OutBack;
 
 		[Header("Audio")]
 		[SerializeField] private AudioClip victorySound;
 		[SerializeField] private AudioClip buttonSound;
 
-		private CanvasGroup canvasGroup;
-		private RectTransform panelRect;
-		private bool hasNextLevel = true;
-		private bool isButtonClicked = false;
+		private CanvasGroup mCanvasGroup;
+		private RectTransform mPanelRect;
+		private bool mHasNextLevel = true;
+		private bool mIsButtonClicked = false;
 
 		private void Awake()
 		{
@@ -52,13 +53,13 @@ namespace TrumpTile.Core
 			}
 
 			// CanvasGroup 설정
-			canvasGroup = popupPanel.GetComponent<CanvasGroup>();
-			if (canvasGroup == null)
+			mCanvasGroup = popupPanel.GetComponent<CanvasGroup>();
+			if (mCanvasGroup == null)
 			{
-				canvasGroup = popupPanel.AddComponent<CanvasGroup>();
+				mCanvasGroup = popupPanel.AddComponent<CanvasGroup>();
 			}
 
-			panelRect = popupPanel.GetComponent<RectTransform>();
+			mPanelRect = popupPanel.GetComponent<RectTransform>();
 
 			SetupButtonListeners();
 
@@ -101,8 +102,8 @@ namespace TrumpTile.Core
 		{
 			Debug.Log($"[VictoryPopup] Show - Level: {level}, Score: {score}, Stars: {stars}, HasNext: {hasNext}");
 
-			hasNextLevel = hasNext;
-			isButtonClicked = false;
+			mHasNextLevel = hasNext;
+			mIsButtonClicked = false;
 
 			// 게임 오브젝트 활성화
 			gameObject.SetActive(true);
@@ -111,7 +112,7 @@ namespace TrumpTile.Core
 			if (nextButton != null)
 			{
 				nextButton.interactable = true;
-				nextButton.gameObject.SetActive(hasNextLevel);
+				nextButton.gameObject.SetActive(mHasNextLevel);
 			}
 			if (mainButton != null)
 			{
@@ -137,7 +138,7 @@ namespace TrumpTile.Core
 			// NEXT 버튼 표시 여부
 			if (nextButton != null)
 			{
-				nextButton.gameObject.SetActive(hasNextLevel);
+				nextButton.gameObject.SetActive(mHasNextLevel);
 			}
 
 			yield return new WaitForSeconds(showDelay);
@@ -181,13 +182,13 @@ namespace TrumpTile.Core
 			}
 
 			// 애니메이션
-			if (canvasGroup != null && panelRect != null)
+			if (mCanvasGroup != null && mPanelRect != null)
 			{
-				canvasGroup.alpha = 0f;
-				panelRect.localScale = Vector3.one * 0.5f;
+				mCanvasGroup.alpha = 0F;
+				mPanelRect.localScale = Vector3.one * 0.5F;
 
-				canvasGroup.DOFade(1f, animationDuration);
-				panelRect.DOScale(1f, animationDuration).SetEase(showEase);
+				mCanvasGroup.DOFade(1F, animationDuration);
+				mPanelRect.DOScale(1F, animationDuration).SetEase(showEase);
 			}
 			else
 			{
@@ -195,9 +196,9 @@ namespace TrumpTile.Core
 				{
 					popupPanel.transform.localScale = Vector3.one;
 				}
-				if (canvasGroup != null)
+				if (mCanvasGroup != null)
 				{
-					canvasGroup.alpha = 1f;
+					mCanvasGroup.alpha = 1F;
 				}
 			}
 		}
@@ -223,12 +224,12 @@ namespace TrumpTile.Core
 		{
 			Debug.Log("[VictoryPopup] === NEXT BUTTON CLICKED ===");
 
-			if (isButtonClicked)
+			if (mIsButtonClicked)
 			{
 				Debug.Log("[VictoryPopup] Button already clicked, ignoring");
 				return;
 			}
-			isButtonClicked = true;
+			mIsButtonClicked = true;
 
 			PlayButtonSound();
 
@@ -258,12 +259,12 @@ namespace TrumpTile.Core
 		{
 			Debug.Log("[VictoryPopup] === MAIN BUTTON CLICKED ===");
 
-			if (isButtonClicked)
+			if (mIsButtonClicked)
 			{
 				Debug.Log("[VictoryPopup] Button already clicked, ignoring");
 				return;
 			}
-			isButtonClicked = true;
+			mIsButtonClicked = true;
 
 			PlayButtonSound();
 

@@ -12,22 +12,22 @@ namespace TrumpTile.Data
         public static UserDataManager Instance { get; private set; }
 
         [Header("재화")]
-        [SerializeField] private int gold = 99999;
-        [SerializeField] private int gem = 0;
+        [SerializeField] private int mGold = 99999;
+        [SerializeField] private int mGem = 0;
 
         [Header("스테이지")]
-        [SerializeField] private int currentStage = 1;      // 현재 진행 중인 스테이지
-        [SerializeField] private int maxClearedStage = 0;   // 클리어한 최대 스테이지
-        [SerializeField] private int selectedStage = 1;     // 선택한 스테이지 (게임 시작 시)
+        [SerializeField] private int mCurrentStage = 1;      // 현재 진행 중인 스테이지
+        [SerializeField] private int mMaxClearedStage = 0;   // 클리어한 최대 스테이지
+        [SerializeField] private int mSelectedStage = 1;     // 선택한 스테이지 (게임 시작 시)
 
         [Header("아이템 보유량")]
-        [SerializeField] private int strikeCount = 3;
-        [SerializeField] private int blackHoleCount = 3;
-        [SerializeField] private int boomCount = 3;
+        [SerializeField] private int mStrikeCount = 3;
+        [SerializeField] private int mBlackHoleCount = 3;
+        [SerializeField] private int mBoomCount = 3;
 
         [Header("프로필")]
-        [SerializeField] private string playerName = "Player";
-        [SerializeField] private int profileIconId = 0;
+        [SerializeField] private string mPlayerName = "Player";
+        [SerializeField] private int mProfileIconId = 0;
 
         // 이벤트
         public event Action<int> OnGoldChanged;
@@ -35,18 +35,18 @@ namespace TrumpTile.Data
         public event Action<int> OnStageChanged;
 
         // 프로퍼티
-        public int Gold => gold;
-        public int Gem => gem;
-        public int CurrentStage => currentStage;
-        public int MaxClearedStage => maxClearedStage;
-        public int SelectedStage => selectedStage;
-        public string PlayerName => playerName;
-        public int ProfileIconId => profileIconId;
+        public int Gold => mGold;
+        public int Gem => mGem;
+        public int CurrentStage => mCurrentStage;
+        public int MaxClearedStage => mMaxClearedStage;
+        public int SelectedStage => mSelectedStage;
+        public string PlayerName => mPlayerName;
+        public int ProfileIconId => mProfileIconId;
 
         // 아이템 프로퍼티
-        public int StrikeCount => strikeCount;
-        public int BlackHoleCount => blackHoleCount;
-        public int BoomCount => boomCount;
+        public int StrikeCount => mStrikeCount;
+        public int BlackHoleCount => mBlackHoleCount;
+        public int BoomCount => mBoomCount;
 
         private const string SAVE_KEY = "UserData";
 
@@ -71,8 +71,8 @@ namespace TrumpTile.Data
         /// </summary>
         public void AddGold(int amount)
         {
-            gold += amount;
-            OnGoldChanged?.Invoke(gold);
+            mGold += amount;
+            OnGoldChanged?.Invoke(mGold);
             SaveData();
         }
 
@@ -81,10 +81,10 @@ namespace TrumpTile.Data
         /// </summary>
         public bool UseGold(int amount)
         {
-            if (gold < amount) return false;
+            if (mGold < amount) return false;
 
-            gold -= amount;
-            OnGoldChanged?.Invoke(gold);
+            mGold -= amount;
+            OnGoldChanged?.Invoke(mGold);
             SaveData();
             return true;
         }
@@ -94,7 +94,7 @@ namespace TrumpTile.Data
         /// </summary>
         public bool HasEnoughGold(int amount)
         {
-            return gold >= amount;
+            return mGold >= amount;
         }
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace TrumpTile.Data
         /// </summary>
         public void AddGem(int amount)
         {
-            gem += amount;
-            OnGemChanged?.Invoke(gem);
+            mGem += amount;
+            OnGemChanged?.Invoke(mGem);
             SaveData();
         }
 
@@ -112,10 +112,10 @@ namespace TrumpTile.Data
         /// </summary>
         public bool UseGem(int amount)
         {
-            if (gem < amount) return false;
+            if (mGem < amount) return false;
 
-            gem -= amount;
-            OnGemChanged?.Invoke(gem);
+            mGem -= amount;
+            OnGemChanged?.Invoke(mGem);
             SaveData();
             return true;
         }
@@ -129,11 +129,11 @@ namespace TrumpTile.Data
         /// </summary>
         public void ClearStage(int stageLevel, int stars)
         {
-            if (stageLevel > maxClearedStage)
+            if (stageLevel > mMaxClearedStage)
             {
-                maxClearedStage = stageLevel;
-                currentStage = stageLevel + 1;
-                OnStageChanged?.Invoke(currentStage);
+                mMaxClearedStage = stageLevel;
+                mCurrentStage = stageLevel + 1;
+                OnStageChanged?.Invoke(mCurrentStage);
             }
 
             // 스테이지별 별 저장 (나중에 구현)
@@ -146,7 +146,7 @@ namespace TrumpTile.Data
         /// </summary>
         public void SetSelectedStage(int stageLevel)
         {
-            selectedStage = stageLevel;
+            mSelectedStage = stageLevel;
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace TrumpTile.Data
         /// </summary>
         public bool IsStageCleared(int stageLevel)
         {
-            return stageLevel <= maxClearedStage;
+            return stageLevel <= mMaxClearedStage;
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace TrumpTile.Data
         /// </summary>
         public bool CanPlayStage(int stageLevel)
         {
-            return stageLevel <= maxClearedStage + 1;
+            return stageLevel <= mMaxClearedStage + 1;
         }
 
         /// <summary>
@@ -192,18 +192,18 @@ namespace TrumpTile.Data
         /// <summary>
         /// 아이템 추가
         /// </summary>
-        public void AddItem(ItemType itemType, int amount)
+        public void AddItem(EItemType itemType, int amount)
         {
             switch (itemType)
             {
-                case ItemType.Strike:
-                    strikeCount += amount;
+                case EItemType.Strike:
+                    mStrikeCount += amount;
                     break;
-                case ItemType.BlackHole:
-                    blackHoleCount += amount;
+                case EItemType.BlackHole:
+                    mBlackHoleCount += amount;
                     break;
-                case ItemType.Boom:
-                    boomCount += amount;
+                case EItemType.Boom:
+                    mBoomCount += amount;
                     break;
             }
             SaveData();
@@ -212,21 +212,21 @@ namespace TrumpTile.Data
         /// <summary>
         /// 아이템 사용
         /// </summary>
-        public bool UseItem(ItemType itemType)
+        public bool UseItem(EItemType itemType)
         {
             switch (itemType)
             {
-                case ItemType.Strike:
-                    if (strikeCount <= 0) return false;
-                    strikeCount--;
+                case EItemType.Strike:
+                    if (mStrikeCount <= 0) return false;
+                    mStrikeCount--;
                     break;
-                case ItemType.BlackHole:
-                    if (blackHoleCount <= 0) return false;
-                    blackHoleCount--;
+                case EItemType.BlackHole:
+                    if (mBlackHoleCount <= 0) return false;
+                    mBlackHoleCount--;
                     break;
-                case ItemType.Boom:
-                    if (boomCount <= 0) return false;
-                    boomCount--;
+                case EItemType.Boom:
+                    if (mBoomCount <= 0) return false;
+                    mBoomCount--;
                     break;
                 default:
                     return false;
@@ -238,13 +238,13 @@ namespace TrumpTile.Data
         /// <summary>
         /// 아이템 개수 가져오기
         /// </summary>
-        public int GetItemCount(ItemType itemType)
+        public int GetItemCount(EItemType itemType)
         {
             switch (itemType)
             {
-                case ItemType.Strike: return strikeCount;
-                case ItemType.BlackHole: return blackHoleCount;
-                case ItemType.Boom: return boomCount;
+                case EItemType.Strike: return mStrikeCount;
+                case EItemType.BlackHole: return mBlackHoleCount;
+                case EItemType.Boom: return mBoomCount;
                 default: return 0;
             }
         }
@@ -258,7 +258,7 @@ namespace TrumpTile.Data
         /// </summary>
         public void SetPlayerName(string name)
         {
-            playerName = name;
+            mPlayerName = name;
             SaveData();
         }
 
@@ -267,7 +267,7 @@ namespace TrumpTile.Data
         /// </summary>
         public void SetProfileIcon(int iconId)
         {
-            profileIconId = iconId;
+            mProfileIconId = iconId;
             SaveData();
         }
 
@@ -282,15 +282,15 @@ namespace TrumpTile.Data
         {
             UserSaveData saveData = new UserSaveData
             {
-                gold = this.gold,
-                gem = this.gem,
-                currentStage = this.currentStage,
-                maxClearedStage = this.maxClearedStage,
-                strikeCount = this.strikeCount,
-                blackHoleCount = this.blackHoleCount,
-                boomCount = this.boomCount,
-                playerName = this.playerName,
-                profileIconId = this.profileIconId
+                gold = this.mGold,
+                gem = this.mGem,
+                currentStage = this.mCurrentStage,
+                maxClearedStage = this.mMaxClearedStage,
+                strikeCount = this.mStrikeCount,
+                blackHoleCount = this.mBlackHoleCount,
+                boomCount = this.mBoomCount,
+                playerName = this.mPlayerName,
+                profileIconId = this.mProfileIconId
             };
 
             string json = JsonUtility.ToJson(saveData);
@@ -310,15 +310,15 @@ namespace TrumpTile.Data
                 string json = PlayerPrefs.GetString(SAVE_KEY);
                 UserSaveData saveData = JsonUtility.FromJson<UserSaveData>(json);
 
-                gold = saveData.gold;
-                gem = saveData.gem;
-                currentStage = saveData.currentStage;
-                maxClearedStage = saveData.maxClearedStage;
-                strikeCount = saveData.strikeCount;
-                blackHoleCount = saveData.blackHoleCount;
-                boomCount = saveData.boomCount;
-                playerName = saveData.playerName;
-                profileIconId = saveData.profileIconId;
+                mGold = saveData.gold;
+                mGem = saveData.gem;
+                mCurrentStage = saveData.currentStage;
+                mMaxClearedStage = saveData.maxClearedStage;
+                mStrikeCount = saveData.strikeCount;
+                mBlackHoleCount = saveData.blackHoleCount;
+                mBoomCount = saveData.boomCount;
+                mPlayerName = saveData.playerName;
+                mProfileIconId = saveData.profileIconId;
 
                 Debug.Log("[UserDataManager] Data loaded");
             }
@@ -333,15 +333,15 @@ namespace TrumpTile.Data
         /// </summary>
         public void ResetData()
         {
-            gold = 99999;
-            gem = 0;
-            currentStage = 1;
-            maxClearedStage = 0;
-            strikeCount = 3;
-            blackHoleCount = 3;
-            boomCount = 3;
-            playerName = "Player";
-            profileIconId = 0;
+            mGold = 99999;
+            mGem = 0;
+            mCurrentStage = 1;
+            mMaxClearedStage = 0;
+            mStrikeCount = 3;
+            mBlackHoleCount = 3;
+            mBoomCount = 3;
+            mPlayerName = "Player";
+            mProfileIconId = 0;
 
             PlayerPrefs.DeleteKey(SAVE_KEY);
             PlayerPrefs.Save();

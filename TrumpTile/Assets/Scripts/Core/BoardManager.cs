@@ -9,7 +9,7 @@ namespace TileMatch
 {
 	/// <summary>
 	/// 보드 관리자 (수정됨)
-	/// 
+	///
 	/// [추가된 기능]
 	/// - GetLastPlacedTilePosition(): 마지막으로 배치된 타일 위치 반환
 	/// </summary>
@@ -20,57 +20,57 @@ namespace TileMatch
 		#region Settings
 
 		[Header("Grid Settings")]
-		[SerializeField] private float cellSize = 1f;
-		[SerializeField] private float overlapThreshold = 0.8f;
+		[SerializeField] private float mCellSize = 1F;
+		[SerializeField] private float mOverlapThreshold = 0.8F;
 
 		[Header("Layer Position Offsets")]
 		[Tooltip("각 레이어별 X, Y 오프셋 설정 (Index = Layer)")]
 		[SerializeField]
-		private Vector2[] layerOffsets = new Vector2[]
+		private Vector2[] mLayerOffsets = new Vector2[]
 		{
-			new Vector2(0f, 0f),      // Layer 0 (맨 아래)
-			new Vector2(0.06f, 0.06f), // Layer 1
-			new Vector2(0.12f, 0.12f), // Layer 2
-			new Vector2(0.18f, 0.18f), // Layer 3
-			new Vector2(0.24f, 0.24f)  // Layer 4 (맨 위)
+			new Vector2(0F, 0F),      // Layer 0 (맨 아래)
+			new Vector2(0.06F, 0.06F), // Layer 1
+			new Vector2(0.12F, 0.12F), // Layer 2
+			new Vector2(0.18F, 0.18F), // Layer 3
+			new Vector2(0.24F, 0.24F)  // Layer 4 (맨 위)
 		};
 
 		[Header("References")]
-		[SerializeField] private TileController tilePrefab;
-		[SerializeField] private List<TileData> allTileTypes;
-		[SerializeField] private string tileDataFolderPath = "TileData";
-		[SerializeField] private bool autoLoadTileData = true;
+		[SerializeField] private TileController mTilePrefab;
+		[SerializeField] private List<TileData> mAllTileTypes;
+		[SerializeField] private string mTileDataFolderPath = "TileData";
+		[SerializeField] private bool mAutoLoadTileData = true;
 
 		[Header("Debug")]
-		[SerializeField] private bool enableDebugLog = false;
+		[SerializeField] private bool mEnableDebugLog = false;
 
 		#endregion
 
 		#region Private Fields
 
-		private List<TileController> allTiles = new List<TileController>();
-		private Dictionary<Vector3Int, TileController> tileGridMap = new Dictionary<Vector3Int, TileController>();
+		private List<TileController> mAllTiles = new List<TileController>();
+		private Dictionary<Vector3Int, TileController> mTileGridMap = new Dictionary<Vector3Int, TileController>();
 
-		private int gridWidth;
-		private int gridHeight;
-		private int maxLayers;
+		private int mGridWidth;
+		private int mGridHeight;
+		private int mMaxLayers;
 
-		private bool isShuffling = false;
-		private bool isLevelLoaded = false;
+		private bool mIsShuffling = false;
+		private bool mIsLevelLoaded = false;
 
 		// 마지막으로 배치된 타일 위치 저장
-		private Vector3 lastPlacedTilePosition = Vector3.zero;
+		private Vector3 mLastPlacedTilePosition = Vector3.zero;
 
 		#endregion
 
 		#region Properties
 
-		public int GridWidth => gridWidth;
-		public int GridHeight => gridHeight;
-		public int MaxLayers => maxLayers;
-		public int TotalTileCount => allTiles.Count(t => t != null && !t.IsInSlot);
-		public bool IsShuffling => isShuffling;
-		public bool IsLevelLoaded => isLevelLoaded;
+		public int GridWidth => mGridWidth;
+		public int GridHeight => mGridHeight;
+		public int MaxLayers => mMaxLayers;
+		public int TotalTileCount => mAllTiles.Count(t => t != null && !t.IsInSlot);
+		public bool IsShuffling => mIsShuffling;
+		public bool IsLevelLoaded => mIsLevelLoaded;
 
 		#endregion
 
@@ -85,7 +85,7 @@ namespace TileMatch
 			}
 			Instance = this;
 
-			if (autoLoadTileData)
+			if (mAutoLoadTileData)
 			{
 				LoadAllTileData();
 			}
@@ -105,19 +105,19 @@ namespace TileMatch
 
 		private void LoadAllTileData()
 		{
-			var loadedTiles = Resources.LoadAll<TileData>(tileDataFolderPath);
+			TileData[] loadedTiles = Resources.LoadAll<TileData>(mTileDataFolderPath);
 
 			if (loadedTiles != null && loadedTiles.Length > 0)
 			{
-				allTileTypes = new List<TileData>(loadedTiles);
-				Log($"Loaded {allTileTypes.Count} TileData");
+				mAllTileTypes = new List<TileData>(loadedTiles);
+				Log($"Loaded {mAllTileTypes.Count} TileData");
 			}
 			else
 			{
 				loadedTiles = Resources.LoadAll<TileData>("Data/TileData");
 				if (loadedTiles != null && loadedTiles.Length > 0)
 				{
-					allTileTypes = new List<TileData>(loadedTiles);
+					mAllTileTypes = new List<TileData>(loadedTiles);
 				}
 				else
 				{
@@ -138,16 +138,16 @@ namespace TileMatch
 
 			ClearBoard();
 
-			gridWidth = levelData.boardWidth;
-			gridHeight = levelData.boardHeight;
-			maxLayers = levelData.maxLayers;
+			mGridWidth = levelData.boardWidth;
+			mGridHeight = levelData.boardHeight;
+			mMaxLayers = levelData.maxLayers;
 
-			SortingManager.SetMaxGridY(gridHeight);
+			SortingManager.SetMaxGridY(mGridHeight);
 
-			var tileDataMap = CreateTileDataMap();
+			Dictionary<string, TileData> tileDataMap = CreateTileDataMap();
 
 			int createdCount = 0;
-			foreach (var placement in levelData.tilePlacements)
+			foreach (TilePlacement placement in levelData.tilePlacements)
 			{
 				if (!tileDataMap.TryGetValue(placement.tileTypeId, out TileData data))
 				{
@@ -161,16 +161,16 @@ namespace TileMatch
 
 			UpdateAllBlockedStates();
 
-			isLevelLoaded = true;
-			Log($"Level loaded: {createdCount} tiles, Grid: {gridWidth}x{gridHeight}, Layers: {maxLayers}");
+			mIsLevelLoaded = true;
+			Log($"Level loaded: {createdCount} tiles, Grid: {mGridWidth}x{mGridHeight}, Layers: {mMaxLayers}");
 		}
 
 		private Dictionary<string, TileData> CreateTileDataMap()
 		{
-			var map = new Dictionary<string, TileData>();
-			if (allTileTypes == null) return map;
+			Dictionary<string, TileData> map = new Dictionary<string, TileData>();
+			if (mAllTileTypes == null) return map;
 
-			foreach (var data in allTileTypes)
+			foreach (TileData data in mAllTileTypes)
 			{
 				if (data != null && !string.IsNullOrEmpty(data.tileTypeId))
 				{
@@ -185,22 +185,22 @@ namespace TileMatch
 
 		private TileController CreateTile(TileData data, int x, int y, int layer)
 		{
-			if (tilePrefab == null)
+			if (mTilePrefab == null)
 			{
 				Debug.LogError("[BoardManager] Tile prefab is null!");
 				return null;
 			}
 
 			Vector3 position = GridToWorldPosition(x, y, layer);
-			TileController tile = Instantiate(tilePrefab, position, Quaternion.identity, transform);
+			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
 
 			// Initialize에서 Sorting Order도 설정됨
 			tile.Initialize(data, x, y, layer);
 
-			allTiles.Add(tile);
+			mAllTiles.Add(tile);
 
 			Vector3Int gridPos = new Vector3Int(x, y, layer);
-			tileGridMap[gridPos] = tile;
+			mTileGridMap[gridPos] = tile;
 
 			return tile;
 		}
@@ -219,9 +219,9 @@ namespace TileMatch
 			int tileLayer = tile.LayerIndex;
 			Vector3 tilePos = tile.transform.position;
 
-			float checkRadius = cellSize * overlapThreshold;
+			float checkRadius = mCellSize * mOverlapThreshold;
 
-			foreach (var other in allTiles)
+			foreach (TileController other in mAllTiles)
 			{
 				if (other == null || other == tile || other.IsInSlot) continue;
 				if (other.LayerIndex <= tileLayer) continue;
@@ -242,12 +242,12 @@ namespace TileMatch
 
 		public void UpdateAllBlockedStates()
 		{
-			foreach (var tile in allTiles)
+			foreach (TileController tile in mAllTiles)
 			{
 				if (tile != null && !tile.IsInSlot)
 				{
-					bool blocked = IsTileBlocked(tile);
-					tile.SetSelectable(!blocked);
+					bool bBlocked = IsTileBlocked(tile);
+					tile.SetSelectable(!bBlocked);
 				}
 			}
 		}
@@ -261,7 +261,7 @@ namespace TileMatch
 			if (tile == null) return;
 
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
-			tileGridMap.Remove(gridPos);
+			mTileGridMap.Remove(gridPos);
 
 			UpdateAllBlockedStates();
 
@@ -272,10 +272,10 @@ namespace TileMatch
 		{
 			if (tile == null) return;
 
-			allTiles.Remove(tile);
+			mAllTiles.Remove(tile);
 
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
-			tileGridMap.Remove(gridPos);
+			mTileGridMap.Remove(gridPos);
 
 			UpdateAllBlockedStates();
 		}
@@ -290,7 +290,7 @@ namespace TileMatch
 
 			Vector3Int origGridPos = new Vector3Int(origX, origY, origLayer);
 
-			if (!tileGridMap.ContainsKey(origGridPos))
+			if (!mTileGridMap.ContainsKey(origGridPos))
 			{
 				PlaceTileAt(tile, origX, origY, origLayer);
 				return;
@@ -303,9 +303,9 @@ namespace TileMatch
 		{
 			if (tile == null) return false;
 
-			for (int layer = maxLayers - 1; layer >= 0; layer--)
+			for (int layer = mMaxLayers - 1; layer >= 0; layer--)
 			{
-				var emptyPos = FindEmptyPositionOnLayer(layer);
+				Vector2Int? emptyPos = FindEmptyPositionOnLayer(layer);
 				if (emptyPos.HasValue)
 				{
 					PlaceTileAt(tile, emptyPos.Value.x, emptyPos.Value.y, layer);
@@ -314,7 +314,7 @@ namespace TileMatch
 				}
 			}
 
-			int newX = gridWidth;
+			int newX = mGridWidth;
 			PlaceTileAt(tile, newX, 0, 0);
 			Log($"Tile placed at extended position: ({newX}, 0, L0)");
 			return true;
@@ -324,7 +324,7 @@ namespace TileMatch
 		{
 			HashSet<Vector2Int> occupiedPositions = new HashSet<Vector2Int>();
 
-			foreach (var tile in allTiles)
+			foreach (TileController tile in mAllTiles)
 			{
 				if (tile == null || tile.IsInSlot) continue;
 
@@ -340,10 +340,10 @@ namespace TileMatch
 				}
 			}
 
-			int centerX = gridWidth / 2;
-			int centerY = gridHeight / 2;
+			int centerX = mGridWidth / 2;
+			int centerY = mGridHeight / 2;
 
-			for (int radius = 0; radius <= Mathf.Max(gridWidth, gridHeight); radius++)
+			for (int radius = 0; radius <= Mathf.Max(mGridWidth, mGridHeight); radius++)
 			{
 				for (int dx = -radius; dx <= radius; dx++)
 				{
@@ -354,13 +354,13 @@ namespace TileMatch
 						int x = centerX + dx;
 						int y = centerY + dy;
 
-						if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight) continue;
+						if (x < 0 || x >= mGridWidth || y < 0 || y >= mGridHeight) continue;
 
 						Vector2Int pos = new Vector2Int(x, y);
 						if (!occupiedPositions.Contains(pos))
 						{
 							Vector3Int gridPos = new Vector3Int(x, y, layer);
-							if (!tileGridMap.ContainsKey(gridPos))
+							if (!mTileGridMap.ContainsKey(gridPos))
 							{
 								return pos;
 							}
@@ -378,16 +378,16 @@ namespace TileMatch
 
 			tile.ReturnToBoard(position, x, y, layer);
 
-			if (!allTiles.Contains(tile))
+			if (!mAllTiles.Contains(tile))
 			{
-				allTiles.Add(tile);
+				mAllTiles.Add(tile);
 			}
 
 			Vector3Int gridPos = new Vector3Int(x, y, layer);
-			tileGridMap[gridPos] = tile;
+			mTileGridMap[gridPos] = tile;
 
 			// 마지막 배치 위치 저장
-			lastPlacedTilePosition = position;
+			mLastPlacedTilePosition = position;
 
 			UpdateAllBlockedStates();
 		}
@@ -402,7 +402,7 @@ namespace TileMatch
 		/// </summary>
 		public Vector3 GetLastPlacedTilePosition()
 		{
-			return lastPlacedTilePosition;
+			return mLastPlacedTilePosition;
 		}
 
 		#endregion
@@ -411,10 +411,10 @@ namespace TileMatch
 
 		public IEnumerator ShuffleBoardAnimated()
 		{
-			if (isShuffling) yield break;
-			isShuffling = true;
+			if (mIsShuffling) yield break;
+			mIsShuffling = true;
 
-			var boardTiles = allTiles
+			List<TileController> boardTiles = mAllTiles
 				.Where(t => t != null && !t.IsInSlot)
 				.ToList();
 
@@ -422,16 +422,16 @@ namespace TileMatch
 
 			if (boardTiles.Count <= 1)
 			{
-				isShuffling = false;
+				mIsShuffling = false;
 				yield break;
 			}
 
-			foreach (var tile in boardTiles)
+			foreach (TileController tile in boardTiles)
 			{
 				tile.SetSelectable(false);
 			}
 
-			var dataList = boardTiles
+			List<TileData> dataList = boardTiles
 				.Where(t => t.Data != null)
 				.Select(t => t.Data)
 				.ToList();
@@ -448,21 +448,21 @@ namespace TileMatch
 
 			UpdateAllBlockedStates();
 
-			isShuffling = false;
+			mIsShuffling = false;
 		}
 
 		private IEnumerator ShuffleAnimation(List<TileController> tiles)
 		{
 			float duration = GameRules.SHUFFLE_DURATION;
-			float elapsed = 0f;
+			float elapsed = 0F;
 
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
 				float t = elapsed / duration;
-				float angle = Mathf.Lerp(0f, 360f, t);
+				float angle = Mathf.Lerp(0F, 360F, t);
 
-				foreach (var tile in tiles)
+				foreach (TileController tile in tiles)
 				{
 					if (tile != null)
 					{
@@ -489,21 +489,21 @@ namespace TileMatch
 
 			for (int i = 0; i < setCount; i++)
 			{
-				var selectableTiles = allTiles
+				List<TileController> selectableTiles = mAllTiles
 					.Where(t => t != null && !t.IsInSlot && !IsTileBlocked(t) && t.Data != null)
 					.ToList();
 
-				var groups = selectableTiles
+				List<IGrouping<string, TileController>> groups = selectableTiles
 					.GroupBy(t => t.Data.TileID)
 					.Where(g => g.Count() >= matchCount)
 					.ToList();
 
 				if (groups.Count == 0) break;
 
-				var randomGroup = groups[Random.Range(0, groups.Count)];
-				var tilesToRemove = randomGroup.Take(matchCount).ToList();
+				IGrouping<string, TileController> randomGroup = groups[Random.Range(0, groups.Count)];
+				List<TileController> tilesToRemove = randomGroup.Take(matchCount).ToList();
 
-				foreach (var tile in tilesToRemove)
+				foreach (TileController tile in tilesToRemove)
 				{
 					RemoveTile(tile);
 					tile.Remove();
@@ -523,8 +523,8 @@ namespace TileMatch
 		public Vector3 GridToWorldPosition(int x, int y, int layer)
 		{
 			Vector3 boardOrigin = transform.position - new Vector3(
-				(gridWidth - 1) * cellSize / 2f,
-				(gridHeight - 1) * cellSize / 2f,
+				(mGridWidth - 1) * mCellSize / 2F,
+				(mGridHeight - 1) * mCellSize / 2F,
 				0
 			);
 
@@ -532,9 +532,9 @@ namespace TileMatch
 			Vector2 offset = GetLayerOffset(layer);
 
 			return boardOrigin + new Vector3(
-				x * cellSize + offset.x,
-				y * cellSize + offset.y,
-				-layer * 0.1f
+				x * mCellSize + offset.x,
+				y * mCellSize + offset.y,
+				-layer * 0.1F
 			);
 		}
 
@@ -543,20 +543,20 @@ namespace TileMatch
 		/// </summary>
 		private Vector2 GetLayerOffset(int layer)
 		{
-			if (layerOffsets == null || layerOffsets.Length == 0)
+			if (mLayerOffsets == null || mLayerOffsets.Length == 0)
 			{
 				// 기본값: 레이어당 0.06씩 증가
-				return new Vector2(layer * 0.06f, layer * 0.06f);
+				return new Vector2(layer * 0.06F, layer * 0.06F);
 			}
 
 			// 배열 범위 내면 해당 값, 아니면 마지막 값 사용
-			int index = Mathf.Clamp(layer, 0, layerOffsets.Length - 1);
-			return layerOffsets[index];
+			int index = Mathf.Clamp(layer, 0, mLayerOffsets.Length - 1);
+			return mLayerOffsets[index];
 		}
 
 		private void ClearBoard()
 		{
-			foreach (var tile in allTiles)
+			foreach (TileController tile in mAllTiles)
 			{
 				if (tile != null)
 				{
@@ -564,11 +564,11 @@ namespace TileMatch
 				}
 			}
 
-			allTiles.Clear();
-			tileGridMap.Clear();
-			isLevelLoaded = false;
-			isShuffling = false;
-			lastPlacedTilePosition = Vector3.zero;
+			mAllTiles.Clear();
+			mTileGridMap.Clear();
+			mIsLevelLoaded = false;
+			mIsShuffling = false;
+			mLastPlacedTilePosition = Vector3.zero;
 		}
 
 		private void ShuffleList<T>(List<T> list)
@@ -584,7 +584,7 @@ namespace TileMatch
 
 		private void Log(string message)
 		{
-			if (enableDebugLog)
+			if (mEnableDebugLog)
 			{
 				Debug.Log($"[BoardManager] {message}");
 			}
@@ -596,23 +596,23 @@ namespace TileMatch
 
 		public bool HasRemainingTiles()
 		{
-			return allTiles.Any(t => t != null && !t.IsInSlot);
+			return mAllTiles.Any(t => t != null && !t.IsInSlot);
 		}
 
 		public List<TileController> GetAllTiles()
 		{
-			return allTiles;
+			return mAllTiles;
 		}
 
 		public List<TileController> GetBoardTiles()
 		{
-			return allTiles.Where(t => t != null && !t.IsInSlot).ToList();
+			return mAllTiles.Where(t => t != null && !t.IsInSlot).ToList();
 		}
 
 		public void SetSize(int width, int height)
 		{
-			gridWidth = width;
-			gridHeight = height;
+			mGridWidth = width;
+			mGridHeight = height;
 		}
 
 		#endregion

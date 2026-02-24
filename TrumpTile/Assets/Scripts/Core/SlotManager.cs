@@ -11,7 +11,7 @@ namespace TrumpTile.Core
 {
 	/// <summary>
 	/// 슬롯 관리자 (수정됨)
-	/// 
+	///
 	/// [추가된 기능]
 	/// - GetLastTilePosition(): 마지막 타일 위치 반환
 	/// - RemoveOneTileToBoard(out Vector3): 착지 위치 반환
@@ -21,12 +21,12 @@ namespace TrumpTile.Core
 		public static SlotManager Instance { get; private set; }
 
 		[Header("Slot Settings")]
-		[SerializeField] private int maxSlots = 7;
-		[SerializeField] private Transform[] slotPositions;
+		[SerializeField] private int mMaxSlots = 7;
+		[SerializeField] private Transform[] mSlotPositions;
 
 		[Header("Animation")]
-		[SerializeField] private float tileMoveDuration = 0.15f;
-		[SerializeField] private float tileMergeTime = 0.15f;
+		[SerializeField] private float mTileMoveDuration = 0.15F;
+		[SerializeField] private float mTileMergeTime = 0.15F;
 
 		// 이벤트
 		public event Action<int> OnMatch;
@@ -36,14 +36,14 @@ namespace TrumpTile.Core
 		public event Action OnLevelClear;
 
 		// 타일 리스트
-		private List<TileController> slotTiles = new List<TileController>();
+		private List<TileController> mSlotTiles = new List<TileController>();
 
 		// 처리 중 락
-		private bool isProcessingMatch = false;
-		private bool isGameEnded = false;
+		private bool mIsProcessingMatch = false;
+		private bool mIsGameEnded = false;
 
 		// Undo 스택
-		private Stack<UndoData> undoStack = new Stack<UndoData>();
+		private Stack<UndoData> mUndoStack = new Stack<UndoData>();
 
 		private struct UndoData
 		{
@@ -55,10 +55,10 @@ namespace TrumpTile.Core
 		}
 
 		// Properties
-		public int CurrentTileCount => slotTiles.Count;
-		public int MaxSlots => maxSlots;
-		public bool IsProcessing => isProcessingMatch;
-		public bool IsGameEnded => isGameEnded;
+		public int CurrentTileCount => mSlotTiles.Count;
+		public int MaxSlots => mMaxSlots;
+		public bool IsProcessing => mIsProcessingMatch;
+		public bool IsGameEnded => mIsGameEnded;
 
 		private void Awake()
 		{
@@ -74,26 +74,26 @@ namespace TrumpTile.Core
 		{
 			StopAllCoroutines();
 
-			foreach (var tile in slotTiles)
+			foreach (TileController tile in mSlotTiles)
 			{
 				if (tile != null) Destroy(tile.gameObject);
 			}
 
-			slotTiles.Clear();
-			undoStack.Clear();
-			isProcessingMatch = false;
-			isGameEnded = false;
+			mSlotTiles.Clear();
+			mUndoStack.Clear();
+			mIsProcessingMatch = false;
+			mIsGameEnded = false;
 		}
 
 		public void ClearSlots() => ResetSlots();
 
-		public void SetSlotCount(int count) => maxSlots = count;
+		public void SetSlotCount(int count) => mMaxSlots = count;
 
 		public void ResumeGame()
 		{
 			StopAllCoroutines();
-			isGameEnded = false;
-			isProcessingMatch = false;
+			mIsGameEnded = false;
+			mIsProcessingMatch = false;
 		}
 
 		/// <summary>
@@ -101,9 +101,9 @@ namespace TrumpTile.Core
 		/// </summary>
 		public Vector3 GetLastTilePosition()
 		{
-			if (slotTiles.Count == 0) return transform.position;
+			if (mSlotTiles.Count == 0) return transform.position;
 
-			var lastTile = slotTiles[slotTiles.Count - 1];
+			TileController lastTile = mSlotTiles[mSlotTiles.Count - 1];
 			if (lastTile != null)
 			{
 				return lastTile.transform.position;
@@ -118,16 +118,16 @@ namespace TrumpTile.Core
 		public bool AddTile(TileController tile)
 		{
 			if (tile == null) return false;
-			if (isGameEnded) return false;
+			if (mIsGameEnded) return false;
 
-			if (slotTiles.Count >= maxSlots)
+			if (mSlotTiles.Count >= mMaxSlots)
 			{
-				Debug.Log($"[SlotManager] Slot full! Count: {slotTiles.Count}");
+				Debug.Log($"[SlotManager] Slot full! Count: {mSlotTiles.Count}");
 				OnSlotFull?.Invoke();
 				return false;
 			}
 
-			undoStack.Push(new UndoData
+			mUndoStack.Push(new UndoData
 			{
 				tile = tile,
 				originalPosition = tile.transform.position,
@@ -137,9 +137,9 @@ namespace TrumpTile.Core
 			});
 
 			int insertIndex = FindInsertIndex(tile);
-			slotTiles.Insert(insertIndex, tile);
+			mSlotTiles.Insert(insertIndex, tile);
 
-			Debug.Log($"[SlotManager] Tile added: {tile.Data?.TileID}, Index: {insertIndex}, Total: {slotTiles.Count}");
+			Debug.Log($"[SlotManager] Tile added: {tile.Data?.TileID}, Index: {insertIndex}, Total: {mSlotTiles.Count}");
 
 			StartCoroutine(ProcessTileAddition(tile, insertIndex));
 
@@ -162,19 +162,19 @@ namespace TrumpTile.Core
 		{
 			landPosition = Vector3.zero;
 
-			if (slotTiles.Count == 0) return false;
-			if (isProcessingMatch) return false;
+			if (mSlotTiles.Count == 0) return false;
+			if (mIsProcessingMatch) return false;
 
-			var tile = slotTiles[slotTiles.Count - 1];
+			TileController tile = mSlotTiles[mSlotTiles.Count - 1];
 			if (tile == null) return false;
 
-			slotTiles.Remove(tile);
+			mSlotTiles.Remove(tile);
 
-			bool placed = BoardManager.Instance?.PlaceTileOnEmptySpot(tile) ?? false;
+			bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile) ?? false;
 
-			if (!placed)
+			if (!bPlaced)
 			{
-				slotTiles.Add(tile);
+				mSlotTiles.Add(tile);
 				Debug.LogWarning("[SlotManager] Failed to place tile on board");
 				return false;
 			}
@@ -196,17 +196,17 @@ namespace TrumpTile.Core
 		{
 			AudioManager.Instance?.PlayTileSelect();
 
-			if (slotPositions != null && insertIndex < slotPositions.Length && slotPositions[insertIndex] != null)
+			if (mSlotPositions != null && insertIndex < mSlotPositions.Length && mSlotPositions[insertIndex] != null)
 			{
-				newTile.MoveToSlot(slotPositions[insertIndex].position, insertIndex);
+				newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex);
 			}
 
 			RearrangeSlots();
 
-			yield return new WaitForSeconds(tileMoveDuration);
+			yield return new WaitForSeconds(mTileMoveDuration);
 
 			// 매칭 체크 (다른 매칭 처리 중이 아닐 때만)
-			if (!isProcessingMatch && !isGameEnded)
+			if (!mIsProcessingMatch && !mIsGameEnded)
 			{
 				StartCoroutine(CheckAndProcessAllMatches());
 			}
@@ -214,39 +214,39 @@ namespace TrumpTile.Core
 
 		private int FindInsertIndex(TileController newTile)
 		{
-			if (newTile?.Data == null) return slotTiles.Count;
+			if (newTile?.Data == null) return mSlotTiles.Count;
 
 			string tileID = newTile.Data.TileID;
 
-			for (int i = slotTiles.Count - 1; i >= 0; i--)
+			for (int i = mSlotTiles.Count - 1; i >= 0; i--)
 			{
-				var existing = slotTiles[i];
+				TileController existing = mSlotTiles[i];
 				if (existing != null && existing != newTile && existing.Data?.TileID == tileID)
 				{
 					return i + 1;
 				}
 			}
 
-			return slotTiles.Count;
+			return mSlotTiles.Count;
 		}
 
 		private void RearrangeSlots()
 		{
-			if (slotPositions == null) return;
+			if (mSlotPositions == null) return;
 
-			for (int i = 0; i < slotTiles.Count && i < slotPositions.Length; i++)
+			for (int i = 0; i < mSlotTiles.Count && i < mSlotPositions.Length; i++)
 			{
-				var tile = slotTiles[i];
-				if (tile == null || slotPositions[i] == null) continue;
+				TileController tile = mSlotTiles[i];
+				if (tile == null || mSlotPositions[i] == null) continue;
 
-				Vector3 targetPos = slotPositions[i].position;
+				Vector3 targetPos = mSlotPositions[i].position;
 
-				if (Vector3.Distance(tile.transform.position, targetPos) > 0.01f)
+				if (Vector3.Distance(tile.transform.position, targetPos) > 0.01F)
 				{
 					tile.AdjustSlotPosition(targetPos, i);
 				}
 
-				var sr = tile.GetComponentInChildren<SpriteRenderer>();
+				SpriteRenderer sr = tile.GetComponentInChildren<SpriteRenderer>();
 				if (sr != null)
 				{
 					sr.sortingOrder = SortingManager.GetSlotTileSortingOrder(i);
@@ -261,27 +261,27 @@ namespace TrumpTile.Core
 		private IEnumerator CheckAndProcessAllMatches()
 		{
 			// 이미 매치 처리 중이면 스킵
-			if (isProcessingMatch)
+			if (mIsProcessingMatch)
 			{
 				Debug.Log("[SlotManager] Already processing match - skipped");
 				yield break;
 			}
 
-			isProcessingMatch = true;
+			mIsProcessingMatch = true;
 
 			// 약간의 딜레이로 중복 호출 방지
-			yield return new WaitForSeconds(0.05f);
+			yield return new WaitForSeconds(0.05F);
 
 			while (true)
 			{
-				if (isGameEnded) break;
+				if (mIsGameEnded) break;
 
-				var tileIDs = slotTiles.Where(t => t?.Data != null).Select(t => t.Data.TileID).ToList();
+				List<string> tileIDs = mSlotTiles.Where(t => t?.Data != null).Select(t => t.Data.TileID).ToList();
 				Debug.Log($"[SlotManager] Checking matches. Tiles({tileIDs.Count}): {string.Join(", ", tileIDs)}");
 
 				int matchCount = GameManager.Instance?.MatchCount ?? 3;
 
-				var matchGroup = FindMatchGroup(matchCount);
+				List<TileController> matchGroup = FindMatchGroup(matchCount);
 
 				if (matchGroup == null || matchGroup.Count < matchCount)
 				{
@@ -295,19 +295,19 @@ namespace TrumpTile.Core
 
 				RearrangeSlots();
 
-				yield return new WaitForSeconds(0.05f);
+				yield return new WaitForSeconds(0.05F);
 			}
 
-			isProcessingMatch = false;
+			mIsProcessingMatch = false;
 
 			CheckGameState();
 		}
 
 		private List<TileController> FindMatchGroup(int matchCount)
 		{
-			var validTiles = slotTiles.Where(t => t != null && t.Data != null).ToList();
+			List<TileController> validTiles = mSlotTiles.Where(t => t != null && t.Data != null).ToList();
 
-			var groups = validTiles
+			List<IGrouping<string, TileController>> groups = validTiles
 				.GroupBy(t => t.Data.TileID)
 				.Where(g => g.Count() >= matchCount)
 				.ToList();
@@ -324,7 +324,7 @@ namespace TrumpTile.Core
 			Vector3 center = Vector3.zero;
 			int suitIndex = 0;
 
-			foreach (var tile in matched)
+			foreach (TileController tile in matched)
 			{
 				if (tile != null)
 				{
@@ -334,14 +334,14 @@ namespace TrumpTile.Core
 			}
 			center /= matched.Count;
 
-			var startPositions = matched.Select(t => t?.transform.position ?? Vector3.zero).ToList();
-			var startScales = matched.Select(t => t?.transform.localScale ?? Vector3.one).ToList();
+			List<Vector3> startPositions = matched.Select(t => t?.transform.position ?? Vector3.zero).ToList();
+			List<Vector3> startScales = matched.Select(t => t?.transform.localScale ?? Vector3.one).ToList();
 
-			float elapsed = 0f;
-			while (elapsed < tileMergeTime)
+			float elapsed = 0F;
+			while (elapsed < mTileMergeTime)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / tileMergeTime;
+				float t = elapsed / mTileMergeTime;
 				float easeT = t * t;
 
 				for (int i = 0; i < matched.Count; i++)
@@ -349,7 +349,7 @@ namespace TrumpTile.Core
 					if (matched[i] != null)
 					{
 						matched[i].transform.position = Vector3.Lerp(startPositions[i], center, easeT);
-						matched[i].transform.localScale = Vector3.Lerp(startScales[i], Vector3.one * 0.3f, easeT);
+						matched[i].transform.localScale = Vector3.Lerp(startScales[i], Vector3.one * 0.3F, easeT);
 					}
 				}
 				yield return null;
@@ -358,11 +358,11 @@ namespace TrumpTile.Core
 			EffectManager.Instance?.PlayMatchEffect(center, suitIndex, 1);
 			AudioManager.Instance?.PlayMatchSound(1);
 
-			foreach (var tile in matched)
+			foreach (TileController tile in matched)
 			{
 				if (tile != null)
 				{
-					slotTiles.Remove(tile);
+					mSlotTiles.Remove(tile);
 					Destroy(tile.gameObject);
 				}
 			}
@@ -377,32 +377,32 @@ namespace TrumpTile.Core
 
 		private void CheckGameState()
 		{
-			if (isGameEnded) return;
+			if (mIsGameEnded) return;
 
-			bool boardEmpty = BoardManager.Instance == null || !BoardManager.Instance.HasRemainingTiles();
-			bool slotEmpty = slotTiles.Count == 0;
+			bool bBoardEmpty = BoardManager.Instance == null || !BoardManager.Instance.HasRemainingTiles();
+			bool bSlotEmpty = mSlotTiles.Count == 0;
 
-			if (boardEmpty && slotEmpty)
+			if (bBoardEmpty && bSlotEmpty)
 			{
 				Debug.Log("[SlotManager] Level Clear!");
-				isGameEnded = true;
+				mIsGameEnded = true;
 				OnLevelClear?.Invoke();
 				return;
 			}
 
-			if (slotTiles.Count >= maxSlots)
+			if (mSlotTiles.Count >= mMaxSlots)
 			{
 				int matchCount = GameManager.Instance?.MatchCount ?? 3;
 
-				bool hasMatch = slotTiles
+				bool bHasMatch = mSlotTiles
 					.Where(t => t?.Data != null)
 					.GroupBy(t => t.Data.TileID)
 					.Any(g => g.Count() >= matchCount);
 
-				if (!hasMatch)
+				if (!bHasMatch)
 				{
 					Debug.Log("[SlotManager] Game Over!");
-					isGameEnded = true;
+					mIsGameEnded = true;
 					OnGameOver?.Invoke();
 				}
 			}
@@ -414,14 +414,14 @@ namespace TrumpTile.Core
 
 		public bool Undo()
 		{
-			if (isGameEnded || isProcessingMatch || undoStack.Count == 0)
+			if (mIsGameEnded || mIsProcessingMatch || mUndoStack.Count == 0)
 				return false;
 
-			var data = undoStack.Pop();
-			if (data.tile == null || !slotTiles.Contains(data.tile))
+			UndoData data = mUndoStack.Pop();
+			if (data.tile == null || !mSlotTiles.Contains(data.tile))
 				return false;
 
-			slotTiles.Remove(data.tile);
+			mSlotTiles.Remove(data.tile);
 
 			BoardManager.Instance?.ReturnTileToBoard(data.tile, data.originalGridX, data.originalGridY, data.originalLayer);
 
@@ -440,7 +440,7 @@ namespace TrumpTile.Core
 
 			for (int i = 0; i < setCount; i++)
 			{
-				var groups = slotTiles
+				List<IGrouping<string, TileController>> groups = mSlotTiles
 					.Where(t => t?.Data != null)
 					.GroupBy(t => t.Data.TileID)
 					.Where(g => g.Count() >= matchCount)
@@ -448,18 +448,18 @@ namespace TrumpTile.Core
 
 				if (groups.Count == 0) break;
 
-				var group = groups[UnityEngine.Random.Range(0, groups.Count)];
-				var toRemove = group.Take(matchCount).ToList();
+				IGrouping<string, TileController> group = groups[UnityEngine.Random.Range(0, groups.Count)];
+				List<TileController> toRemove = group.Take(matchCount).ToList();
 
 				Vector3 center = Vector3.zero;
-				foreach (var t in toRemove) center += t.transform.position;
+				foreach (TileController t in toRemove) center += t.transform.position;
 				center /= toRemove.Count;
 
 				EffectManager.Instance?.PlayMatchEffect(center, 0, 1);
 
-				foreach (var t in toRemove)
+				foreach (TileController t in toRemove)
 				{
-					slotTiles.Remove(t);
+					mSlotTiles.Remove(t);
 					Destroy(t.gameObject);
 				}
 
@@ -483,7 +483,7 @@ namespace TrumpTile.Core
 		/// </summary>
 		public List<TileController> GetAllSlotTiles()
 		{
-			return slotTiles.Where(t => t != null).ToList();
+			return mSlotTiles.Where(t => t != null).ToList();
 		}
 
 		/// <summary>
@@ -493,7 +493,7 @@ namespace TrumpTile.Core
 		{
 			if (tile == null) return;
 
-			slotTiles.Remove(tile);
+			mSlotTiles.Remove(tile);
 			RearrangeSlots();
 
 			Debug.Log($"[SlotManager] Tile removed directly: {tile.Data?.TileID}");
@@ -501,15 +501,15 @@ namespace TrumpTile.Core
 
 		public List<TileController> GetMatchableTiles()
 		{
-			var result = new List<TileController>();
+			List<TileController> result = new List<TileController>();
 			int matchCount = GameManager.Instance?.MatchCount ?? 3;
 
-			var groups = slotTiles
+			IEnumerable<IGrouping<string, TileController>> groups = mSlotTiles
 				.Where(t => t?.Data != null)
 				.GroupBy(t => t.Data.TileID)
 				.Where(g => g.Count() >= matchCount - 1);
 
-			foreach (var g in groups)
+			foreach (IGrouping<string, TileController> g in groups)
 				result.AddRange(g);
 
 			return result;
@@ -517,12 +517,12 @@ namespace TrumpTile.Core
 
 		public int GetTileCount(string tileID)
 		{
-			return slotTiles.Count(t => t?.Data?.TileID == tileID);
+			return mSlotTiles.Count(t => t?.Data?.TileID == tileID);
 		}
 
 		public List<string> GetSlotTileIDs()
 		{
-			return slotTiles
+			return mSlotTiles
 				.Where(t => t?.Data != null)
 				.Select(t => t.Data.TileID)
 				.ToList();

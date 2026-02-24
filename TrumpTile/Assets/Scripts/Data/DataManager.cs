@@ -10,12 +10,12 @@ namespace TrumpTile.Data
         public static DataManager Instance { get; private set; }
 
         [Header("Data Tables")]
-        [SerializeField] private StageTable stageTable;
-        [SerializeField] private ItemTable itemTable;
+        [SerializeField] private StageTable mStageTable;
+        [SerializeField] private ItemTable mItemTable;
 
         // 테이블 접근자
-        public StageTable StageTable => stageTable;
-        public ItemTable ItemTable => itemTable;
+        public StageTable StageTable => mStageTable;
+        public ItemTable ItemTable => mItemTable;
 
         private void Awake()
         {
@@ -37,21 +37,21 @@ namespace TrumpTile.Data
         private void LoadTables()
         {
             // Inspector에서 할당되지 않은 경우 Resources에서 로드
-            if (stageTable == null)
+            if (mStageTable == null)
             {
-                stageTable = Resources.Load<StageTable>("Data/StageTable");
-                if (stageTable == null)
+                mStageTable = Resources.Load<StageTable>("Data/StageTable");
+                if (mStageTable == null)
                     Debug.LogWarning("[DataManager] StageTable not found!");
             }
 
-            if (itemTable == null)
+            if (mItemTable == null)
             {
-                itemTable = Resources.Load<ItemTable>("Data/ItemTable");
-                if (itemTable == null)
+                mItemTable = Resources.Load<ItemTable>("Data/ItemTable");
+                if (mItemTable == null)
                     Debug.LogWarning("[DataManager] ItemTable not found!");
             }
 
-            Debug.Log($"[DataManager] Tables loaded - Stages: {stageTable?.TotalStageCount ?? 0}");
+            Debug.Log($"[DataManager] Tables loaded - Stages: {mStageTable?.TotalStageCount ?? 0}");
         }
 
         #region Stage Data Access
@@ -61,7 +61,7 @@ namespace TrumpTile.Data
         /// </summary>
         public StageData GetStage(int stageId)
         {
-            return stageTable?.GetStageById(stageId);
+            return mStageTable?.GetStageById(stageId);
         }
 
         /// <summary>
@@ -69,13 +69,13 @@ namespace TrumpTile.Data
         /// </summary>
         public StageData GetStageByLevel(int level)
         {
-            return stageTable?.GetStageByLevel(level);
+            return mStageTable?.GetStageByLevel(level);
         }
 
         /// <summary>
         /// 총 스테이지 수
         /// </summary>
-        public int TotalStages => stageTable?.TotalStageCount ?? 0;
+        public int TotalStages => mStageTable?.TotalStageCount ?? 0;
 
         #endregion
 
@@ -86,15 +86,15 @@ namespace TrumpTile.Data
         /// </summary>
         public ItemData GetItem(int itemId)
         {
-            return itemTable?.GetItemById(itemId);
+            return mItemTable?.GetItemById(itemId);
         }
 
         /// <summary>
         /// 아이템 타입으로 데이터 가져오기
         /// </summary>
-        public ItemData GetItemByType(ItemType type)
+        public ItemData GetItemByType(EItemType type)
         {
-            return itemTable?.GetItemByType(type);
+            return mItemTable?.GetItemByType(type);
         }
 
         #endregion

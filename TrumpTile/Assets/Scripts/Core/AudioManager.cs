@@ -12,55 +12,55 @@ namespace TrumpTile.Audio
         public static AudioManager Instance { get; private set; }
 
         [Header("Audio Sources")]
-        [SerializeField] private AudioSource bgmSource;
-        [SerializeField] private AudioSource sfxSource;
-        [SerializeField] private int sfxPoolSize = 10;
+        [SerializeField] private AudioSource mBgmSource;
+        [SerializeField] private AudioSource mSfxSource;
+        [SerializeField] private int mSfxPoolSize = 10;
 
         [Header("BGM")]
-        [SerializeField] private AudioClip mainMenuBGM;
-        [SerializeField] private AudioClip gamePlayBGM;
-        [SerializeField] private float bgmVolume = 0.5f;
-        [SerializeField] private float bgmFadeDuration = 1f;
+        [SerializeField] private AudioClip mMainMenuBGM;
+        [SerializeField] private AudioClip mGamePlayBGM;
+        [SerializeField] private float mBgmVolume = 0.5F;
+        [SerializeField] private float mBgmFadeDuration = 1F;
 
         [Header("SFX - Tile")]
-        [SerializeField] private AudioClip tileSelectSound;
-        [SerializeField] private AudioClip tileMoveSound;
-        [SerializeField] private AudioClip tileMatchSound;
-        [SerializeField] private AudioClip[] comboSounds; // 콤보별 다른 사운드
+        [SerializeField] private AudioClip mTileSelectSound;
+        [SerializeField] private AudioClip mTileMoveSound;
+        [SerializeField] private AudioClip mTileMatchSound;
+        [SerializeField] private AudioClip[] mComboSounds; // 콤보별 다른 사운드
 
         [Header("SFX - UI")]
-        [SerializeField] private AudioClip buttonClickSound;
-        [SerializeField] private AudioClip popupOpenSound;
-        [SerializeField] private AudioClip popupCloseSound;
+        [SerializeField] private AudioClip mButtonClickSound;
+        [SerializeField] private AudioClip mPopupOpenSound;
+        [SerializeField] private AudioClip mPopupCloseSound;
 
         [Header("SFX - Game")]
-        [SerializeField] private AudioClip gameClearSound;
-        [SerializeField] private AudioClip gameOverSound;
-        [SerializeField] private AudioClip starSound;
-        [SerializeField] private AudioClip itemUseSound;
-        [SerializeField] private AudioClip shuffleSound;
-        [SerializeField] private AudioClip undoSound;
-        [SerializeField] private AudioClip hintSound;
+        [SerializeField] private AudioClip mGameClearSound;
+        [SerializeField] private AudioClip mGameOverSound;
+        [SerializeField] private AudioClip mStarSound;
+        [SerializeField] private AudioClip mItemUseSound;
+        [SerializeField] private AudioClip mShuffleSound;
+        [SerializeField] private AudioClip mUndoSound;
+        [SerializeField] private AudioClip mHintSound;
 
         [Header("SFX - Special")]
-        [SerializeField] private AudioClip warningSound; // 슬롯 거의 찼을 때
-        [SerializeField] private AudioClip errorSound;   // 잘못된 동작
+        [SerializeField] private AudioClip mWarningSound; // 슬롯 거의 찼을 때
+        [SerializeField] private AudioClip mErrorSound;   // 잘못된 동작
 
         [Header("Volume Settings")]
-        [SerializeField] private float sfxVolume = 1f;
-        [SerializeField] private float pitchVariation = 0.1f;
+        [SerializeField] private float mSfxVolume = 1F;
+        [SerializeField] private float mPitchVariation = 0.1F;
 
         // SFX 풀
-        private List<AudioSource> sfxPool = new List<AudioSource>();
-        private int currentSfxIndex = 0;
+        private List<AudioSource> mSfxPool = new List<AudioSource>();
+        private int mCurrentSfxIndex = 0;
 
         // 볼륨 설정 키
         private const string BGM_VOLUME_KEY = "BGMVolume";
         private const string SFX_VOLUME_KEY = "SFXVolume";
         private const string MUTE_KEY = "AudioMuted";
 
-        private bool isMuted;
-        private Coroutine bgmFadeCoroutine;
+        private bool mIsMuted;
+        private Coroutine mBgmFadeCoroutine;
 
         private void Awake()
         {
@@ -79,19 +79,19 @@ namespace TrumpTile.Audio
         private void InitializeAudio()
         {
             // BGM Source 설정
-            if (bgmSource == null)
+            if (mBgmSource == null)
             {
-                bgmSource = gameObject.AddComponent<AudioSource>();
+                mBgmSource = gameObject.AddComponent<AudioSource>();
             }
-            bgmSource.loop = true;
-            bgmSource.playOnAwake = false;
+            mBgmSource.loop = true;
+            mBgmSource.playOnAwake = false;
 
             // SFX Source 풀 생성
-            for (int i = 0; i < sfxPoolSize; i++)
+            for (int i = 0; i < mSfxPoolSize; i++)
             {
-                var source = gameObject.AddComponent<AudioSource>();
+                AudioSource source = gameObject.AddComponent<AudioSource>();
                 source.playOnAwake = false;
-                sfxPool.Add(source);
+                mSfxPool.Add(source);
             }
 
             // 저장된 볼륨 로드
@@ -105,12 +105,12 @@ namespace TrumpTile.Audio
         /// </summary>
         public void SetBGMVolume(float volume)
         {
-            bgmVolume = Mathf.Clamp01(volume);
-            if (bgmSource != null && !isMuted)
+            mBgmVolume = Mathf.Clamp01(volume);
+            if (mBgmSource != null && !mIsMuted)
             {
-                bgmSource.volume = bgmVolume;
+                mBgmSource.volume = mBgmVolume;
             }
-            PlayerPrefs.SetFloat(BGM_VOLUME_KEY, bgmVolume);
+            PlayerPrefs.SetFloat(BGM_VOLUME_KEY, mBgmVolume);
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace TrumpTile.Audio
         /// </summary>
         public void SetSFXVolume(float volume)
         {
-            sfxVolume = Mathf.Clamp01(volume);
-            PlayerPrefs.SetFloat(SFX_VOLUME_KEY, sfxVolume);
+            mSfxVolume = Mathf.Clamp01(volume);
+            PlayerPrefs.SetFloat(SFX_VOLUME_KEY, mSfxVolume);
         }
 
         /// <summary>
@@ -127,28 +127,28 @@ namespace TrumpTile.Audio
         /// </summary>
         public void ToggleMute()
         {
-            isMuted = !isMuted;
-            PlayerPrefs.SetInt(MUTE_KEY, isMuted ? 1 : 0);
+            mIsMuted = !mIsMuted;
+            PlayerPrefs.SetInt(MUTE_KEY, mIsMuted ? 1 : 0);
 
-            if (bgmSource != null)
+            if (mBgmSource != null)
             {
-                bgmSource.volume = isMuted ? 0f : bgmVolume;
+                mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
             }
         }
 
-        public bool IsMuted => isMuted;
-        public float BGMVolume => bgmVolume;
-        public float SFXVolume => sfxVolume;
+        public bool IsMuted => mIsMuted;
+        public float BGMVolume => mBgmVolume;
+        public float SFXVolume => mSfxVolume;
 
         private void LoadVolumeSettings()
         {
-            bgmVolume = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 0.5f);
-            sfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1f);
-            isMuted = PlayerPrefs.GetInt(MUTE_KEY, 0) == 1;
+            mBgmVolume = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 0.5F);
+            mSfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1F);
+            mIsMuted = PlayerPrefs.GetInt(MUTE_KEY, 0) == 1;
 
-            if (bgmSource != null)
+            if (mBgmSource != null)
             {
-                bgmSource.volume = isMuted ? 0f : bgmVolume;
+                mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
             }
         }
 
@@ -161,7 +161,7 @@ namespace TrumpTile.Audio
         /// </summary>
         public void PlayMainMenuBGM()
         {
-            PlayBGM(mainMenuBGM);
+            PlayBGM(mMainMenuBGM);
         }
 
         /// <summary>
@@ -169,97 +169,97 @@ namespace TrumpTile.Audio
         /// </summary>
         public void PlayGameBGM()
         {
-            PlayBGM(gamePlayBGM);
+            PlayBGM(mGamePlayBGM);
         }
 
         /// <summary>
         /// BGM 재생 (페이드 인)
         /// </summary>
-        public void PlayBGM(AudioClip clip, bool fade = true)
+        public void PlayBGM(AudioClip clip, bool bFade = true)
         {
-            if (clip == null || bgmSource == null) return;
+            if (clip == null || mBgmSource == null) return;
 
-            if (bgmSource.clip == clip && bgmSource.isPlaying) return;
+            if (mBgmSource.clip == clip && mBgmSource.isPlaying) return;
 
-            if (fade && bgmSource.isPlaying)
+            if (bFade && mBgmSource.isPlaying)
             {
-                if (bgmFadeCoroutine != null)
-                    StopCoroutine(bgmFadeCoroutine);
-                bgmFadeCoroutine = StartCoroutine(CrossFadeBGM(clip));
+                if (mBgmFadeCoroutine != null)
+                    StopCoroutine(mBgmFadeCoroutine);
+                mBgmFadeCoroutine = StartCoroutine(CrossFadeBGM(clip));
             }
             else
             {
-                bgmSource.clip = clip;
-                bgmSource.volume = isMuted ? 0f : bgmVolume;
-                bgmSource.Play();
+                mBgmSource.clip = clip;
+                mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
+                mBgmSource.Play();
             }
         }
 
         private IEnumerator CrossFadeBGM(AudioClip newClip)
         {
             // 페이드 아웃
-            float elapsed = 0f;
-            float startVolume = bgmSource.volume;
+            float elapsed = 0F;
+            float startVolume = mBgmSource.volume;
 
-            while (elapsed < bgmFadeDuration / 2f)
+            while (elapsed < mBgmFadeDuration / 2F)
             {
                 elapsed += Time.deltaTime;
-                bgmSource.volume = Mathf.Lerp(startVolume, 0f, elapsed / (bgmFadeDuration / 2f));
+                mBgmSource.volume = Mathf.Lerp(startVolume, 0F, elapsed / (mBgmFadeDuration / 2F));
                 yield return null;
             }
 
             // 클립 변경
-            bgmSource.Stop();
-            bgmSource.clip = newClip;
-            bgmSource.Play();
+            mBgmSource.Stop();
+            mBgmSource.clip = newClip;
+            mBgmSource.Play();
 
             // 페이드 인
-            elapsed = 0f;
-            float targetVolume = isMuted ? 0f : bgmVolume;
+            elapsed = 0F;
+            float targetVolume = mIsMuted ? 0F : mBgmVolume;
 
-            while (elapsed < bgmFadeDuration / 2f)
+            while (elapsed < mBgmFadeDuration / 2F)
             {
                 elapsed += Time.deltaTime;
-                bgmSource.volume = Mathf.Lerp(0f, targetVolume, elapsed / (bgmFadeDuration / 2f));
+                mBgmSource.volume = Mathf.Lerp(0F, targetVolume, elapsed / (mBgmFadeDuration / 2F));
                 yield return null;
             }
 
-            bgmSource.volume = targetVolume;
+            mBgmSource.volume = targetVolume;
         }
 
         /// <summary>
         /// BGM 정지
         /// </summary>
-        public void StopBGM(bool fade = true)
+        public void StopBGM(bool bFade = true)
         {
-            if (bgmSource == null) return;
+            if (mBgmSource == null) return;
 
-            if (fade)
+            if (bFade)
             {
-                if (bgmFadeCoroutine != null)
-                    StopCoroutine(bgmFadeCoroutine);
-                bgmFadeCoroutine = StartCoroutine(FadeOutBGM());
+                if (mBgmFadeCoroutine != null)
+                    StopCoroutine(mBgmFadeCoroutine);
+                mBgmFadeCoroutine = StartCoroutine(FadeOutBGM());
             }
             else
             {
-                bgmSource.Stop();
+                mBgmSource.Stop();
             }
         }
 
         private IEnumerator FadeOutBGM()
         {
-            float elapsed = 0f;
-            float startVolume = bgmSource.volume;
+            float elapsed = 0F;
+            float startVolume = mBgmSource.volume;
 
-            while (elapsed < bgmFadeDuration)
+            while (elapsed < mBgmFadeDuration)
             {
                 elapsed += Time.deltaTime;
-                bgmSource.volume = Mathf.Lerp(startVolume, 0f, elapsed / bgmFadeDuration);
+                mBgmSource.volume = Mathf.Lerp(startVolume, 0F, elapsed / mBgmFadeDuration);
                 yield return null;
             }
 
-            bgmSource.Stop();
-            bgmSource.volume = isMuted ? 0f : bgmVolume;
+            mBgmSource.Stop();
+            mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
         }
 
         /// <summary>
@@ -267,8 +267,8 @@ namespace TrumpTile.Audio
         /// </summary>
         public void PauseBGM()
         {
-            if (bgmSource != null)
-                bgmSource.Pause();
+            if (mBgmSource != null)
+                mBgmSource.Pause();
         }
 
         /// <summary>
@@ -276,8 +276,8 @@ namespace TrumpTile.Audio
         /// </summary>
         public void ResumeBGM()
         {
-            if (bgmSource != null)
-                bgmSource.UnPause();
+            if (mBgmSource != null)
+                mBgmSource.UnPause();
         }
 
         #endregion
@@ -287,21 +287,21 @@ namespace TrumpTile.Audio
         /// <summary>
         /// 효과음 재생
         /// </summary>
-        public void PlaySFX(AudioClip clip, float volumeMultiplier = 1f, bool randomPitch = false)
+        public void PlaySFX(AudioClip clip, float volumeMultiplier = 1F, bool bRandomPitch = false)
         {
-            if (clip == null || isMuted) return;
+            if (clip == null || mIsMuted) return;
 
-            var source = GetAvailableSFXSource();
+            AudioSource source = GetAvailableSFXSource();
             source.clip = clip;
-            source.volume = sfxVolume * volumeMultiplier;
+            source.volume = mSfxVolume * volumeMultiplier;
 
-            if (randomPitch)
+            if (bRandomPitch)
             {
-                source.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
+                source.pitch = 1F + Random.Range(-mPitchVariation, mPitchVariation);
             }
             else
             {
-                source.pitch = 1f;
+                source.pitch = 1F;
             }
 
             source.Play();
@@ -309,48 +309,48 @@ namespace TrumpTile.Audio
 
         private AudioSource GetAvailableSFXSource()
         {
-            var source = sfxPool[currentSfxIndex];
-            currentSfxIndex = (currentSfxIndex + 1) % sfxPool.Count;
+            AudioSource source = mSfxPool[mCurrentSfxIndex];
+            mCurrentSfxIndex = (mCurrentSfxIndex + 1) % mSfxPool.Count;
             return source;
         }
 
         // 타일 사운드
-        public void PlayTileSelect() => PlaySFX(tileSelectSound, 1f, true);
-        public void PlayTileMove() => PlaySFX(tileMoveSound, 0.8f, true);
+        public void PlayTileSelect() => PlaySFX(mTileSelectSound, 1F, true);
+        public void PlayTileMove() => PlaySFX(mTileMoveSound, 0.8F, true);
 
         /// <summary>
         /// 매칭 사운드 (콤보에 따라 다른 사운드)
         /// </summary>
         public void PlayMatchSound(int comboCount = 1)
         {
-            if (comboSounds != null && comboSounds.Length > 0)
+            if (mComboSounds != null && mComboSounds.Length > 0)
             {
-                int index = Mathf.Clamp(comboCount - 1, 0, comboSounds.Length - 1);
-                PlaySFX(comboSounds[index], 1f, false);
+                int index = Mathf.Clamp(comboCount - 1, 0, mComboSounds.Length - 1);
+                PlaySFX(mComboSounds[index], 1F, false);
             }
             else
             {
-                PlaySFX(tileMatchSound, 1f, false);
+                PlaySFX(mTileMatchSound, 1F, false);
             }
         }
 
         // UI 사운드
-        public void PlayButtonClick() => PlaySFX(buttonClickSound);
-        public void PlayPopupOpen() => PlaySFX(popupOpenSound);
-        public void PlayPopupClose() => PlaySFX(popupCloseSound);
+        public void PlayButtonClick() => PlaySFX(mButtonClickSound);
+        public void PlayPopupOpen() => PlaySFX(mPopupOpenSound);
+        public void PlayPopupClose() => PlaySFX(mPopupCloseSound);
 
         // 게임 사운드
-        public void PlayGameClear() => PlaySFX(gameClearSound);
-        public void PlayGameOver() => PlaySFX(gameOverSound);
-        public void PlayStar() => PlaySFX(starSound, 1f, true);
-        public void PlayItemUse() => PlaySFX(itemUseSound);
-        public void PlayShuffle() => PlaySFX(shuffleSound);
-        public void PlayUndo() => PlaySFX(undoSound);
-        public void PlayHint() => PlaySFX(hintSound);
+        public void PlayGameClear() => PlaySFX(mGameClearSound);
+        public void PlayGameOver() => PlaySFX(mGameOverSound);
+        public void PlayStar() => PlaySFX(mStarSound, 1F, true);
+        public void PlayItemUse() => PlaySFX(mItemUseSound);
+        public void PlayShuffle() => PlaySFX(mShuffleSound);
+        public void PlayUndo() => PlaySFX(mUndoSound);
+        public void PlayHint() => PlaySFX(mHintSound);
 
         // 특수 사운드
-        public void PlayWarning() => PlaySFX(warningSound);
-        public void PlayError() => PlaySFX(errorSound);
+        public void PlayWarning() => PlaySFX(mWarningSound);
+        public void PlayError() => PlaySFX(mErrorSound);
 
         #endregion
 
@@ -361,14 +361,14 @@ namespace TrumpTile.Audio
         /// </summary>
         public void PlaySequentialSound(AudioClip baseClip, int index, int total)
         {
-            if (baseClip == null || isMuted) return;
+            if (baseClip == null || mIsMuted) return;
 
-            var source = GetAvailableSFXSource();
+            AudioSource source = GetAvailableSFXSource();
             source.clip = baseClip;
-            source.volume = sfxVolume;
+            source.volume = mSfxVolume;
 
             // 음계 조절 (도레미파솔라시)
-            float[] pitches = { 1f, 1.122f, 1.26f, 1.335f, 1.498f, 1.682f, 1.888f };
+            float[] pitches = { 1F, 1.122F, 1.26F, 1.335F, 1.498F, 1.682F, 1.888F };
             int pitchIndex = index % pitches.Length;
             source.pitch = pitches[pitchIndex];
 
@@ -380,10 +380,10 @@ namespace TrumpTile.Audio
         /// </summary>
         public void StopAllSounds()
         {
-            if (bgmSource != null)
-                bgmSource.Stop();
+            if (mBgmSource != null)
+                mBgmSource.Stop();
 
-            foreach (var source in sfxPool)
+            foreach (AudioSource source in mSfxPool)
             {
                 if (source != null)
                     source.Stop();

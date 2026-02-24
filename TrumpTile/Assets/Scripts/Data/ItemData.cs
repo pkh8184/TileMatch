@@ -6,7 +6,7 @@ namespace TrumpTile.Data
     /// <summary>
     /// 아이템 타입
     /// </summary>
-    public enum ItemType
+    public enum EItemType
     {
         None = 0,
         Strike = 1,         // 타일 섞기
@@ -19,7 +19,7 @@ namespace TrumpTile.Data
     /// <summary>
     /// 아이템 등급
     /// </summary>
-    public enum ItemGrade
+    public enum EItemGrade
     {
         Common = 0,     // 일반
         Rare = 1,       // 희귀
@@ -35,23 +35,23 @@ namespace TrumpTile.Data
     {
         [Header("기본 정보")]
         public int itemId;               // 아이템 고유 ID
-        public ItemType itemType;        // 아이템 타입
+        public EItemType itemType;       // 아이템 타입
         public string itemName;          // 아이템 이름
         public string description;       // 아이템 설명
-        
+
         [Header("가치")]
-        public ItemGrade grade;          // 아이템 등급
+        public EItemGrade grade;         // 아이템 등급
         public int value;                // 가치 (정렬, 비교용)
-        
+
         [Header("가격")]
         public int coinPrice;            // 코인 가격
         public int gemPrice;             // 보석 가격
-        
+
         [Header("리소스")]
         public string iconSrc;           // 아이콘 경로
         public string effectSrc;         // 이펙트 경로
         public string soundSrc;          // 사운드 경로
-        
+
         [Header("제한")]
         public int maxStack;             // 최대 보유 개수 (0이면 무제한)
         public bool isConsumable;        // 소모성 여부
@@ -72,8 +72,8 @@ namespace TrumpTile.Data
         public ItemData GetItemById(int itemId)
         {
             if (items == null) return null;
-            
-            foreach (var item in items)
+
+            foreach (ItemData item in items)
             {
                 if (item.itemId == itemId)
                     return item;
@@ -84,11 +84,11 @@ namespace TrumpTile.Data
         /// <summary>
         /// 아이템 타입으로 데이터 찾기
         /// </summary>
-        public ItemData GetItemByType(ItemType type)
+        public ItemData GetItemByType(EItemType type)
         {
             if (items == null) return null;
-            
-            foreach (var item in items)
+
+            foreach (ItemData item in items)
             {
                 if (item.itemType == type)
                     return item;
@@ -102,7 +102,7 @@ namespace TrumpTile.Data
         public ItemData[] GetPurchasableItems()
         {
             if (items == null) return new ItemData[0];
-            
+
             return System.Array.FindAll(items, item => item.isPurchasable);
         }
     }

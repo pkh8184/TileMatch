@@ -14,14 +14,14 @@ namespace TrumpTile.UI
 		public static TransitionManager Instance { get; private set; }
 
 		[Header("Transition UI")]
-		[SerializeField] private CanvasGroup transitionCanvasGroup;
-		[SerializeField] private Image fadeImage;
+		[SerializeField] private CanvasGroup mTransitionCanvasGroup;
+		[SerializeField] private Image mFadeImage;
 
 		[Header("Settings")]
-		[SerializeField] private float fadeDuration = 0.5f;
-		[SerializeField] private Color fadeColor = Color.white;
+		[SerializeField] private float mFadeDuration = 0.5F;
+		[SerializeField] private Color mFadeColor = Color.white;
 
-		private bool isTransitioning = false;
+		private bool mIsTransitioning = false;
 
 		private void Awake()
 		{
@@ -40,7 +40,7 @@ namespace TrumpTile.UI
 		private void Start()
 		{
 			// 시작 시 투명하게 설정
-			SetAlpha(0f);
+			SetAlpha(0F);
 			Debug.Log("[TransitionManager] Initialized - Alpha set to 0");
 		}
 
@@ -49,16 +49,16 @@ namespace TrumpTile.UI
 		/// </summary>
 		private void SetAlpha(float alpha)
 		{
-			if (fadeImage != null)
+			if (mFadeImage != null)
 			{
-				Color c = fadeColor;
+				Color c = mFadeColor;
 				c.a = alpha;
-				fadeImage.color = c;
+				mFadeImage.color = c;
 			}
 
-			if (transitionCanvasGroup != null)
+			if (mTransitionCanvasGroup != null)
 			{
-				transitionCanvasGroup.blocksRaycasts = alpha > 0.5f;
+				mTransitionCanvasGroup.blocksRaycasts = alpha > 0.5F;
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace TrumpTile.UI
 		/// </summary>
 		public void LoadScene(string sceneName)
 		{
-			if (isTransitioning)
+			if (mIsTransitioning)
 			{
 				Debug.Log("[TransitionManager] Already transitioning, ignored");
 				return;
@@ -79,7 +79,7 @@ namespace TrumpTile.UI
 
 		private IEnumerator LoadSceneWithFade(string sceneName)
 		{
-			isTransitioning = true;
+			mIsTransitioning = true;
 			Debug.Log("[TransitionManager] Fade Out started");
 
 			// 1. Fade Out (투명 → 불투명)
@@ -91,7 +91,7 @@ namespace TrumpTile.UI
 			AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
 			asyncLoad.allowSceneActivation = false;
 
-			while (asyncLoad.progress < 0.9f)
+			while (asyncLoad.progress < 0.9F)
 			{
 				yield return null;
 			}
@@ -101,14 +101,14 @@ namespace TrumpTile.UI
 			Debug.Log("[TransitionManager] Scene loaded");
 
 			// 씬 초기화 대기
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.1F);
 
 			// 3. Fade In (불투명 → 투명)
 			Debug.Log("[TransitionManager] Fade In started");
 			yield return StartCoroutine(FadeIn());
 			Debug.Log("[TransitionManager] Fade In completed");
 
-			isTransitioning = false;
+			mIsTransitioning = false;
 		}
 
 		/// <summary>
@@ -116,18 +116,18 @@ namespace TrumpTile.UI
 		/// </summary>
 		private IEnumerator FadeOut()
 		{
-			float elapsed = 0f;
+			float elapsed = 0F;
 
-			while (elapsed < fadeDuration)
+			while (elapsed < mFadeDuration)
 			{
 				elapsed += Time.unscaledDeltaTime;
-				float t = elapsed / fadeDuration;
-				float alpha = Mathf.Lerp(0f, 1f, EaseInOutQuad(t));
+				float t = elapsed / mFadeDuration;
+				float alpha = Mathf.Lerp(0F, 1F, EaseInOutQuad(t));
 				SetAlpha(alpha);
 				yield return null;
 			}
 
-			SetAlpha(1f);
+			SetAlpha(1F);
 		}
 
 		/// <summary>
@@ -135,25 +135,25 @@ namespace TrumpTile.UI
 		/// </summary>
 		private IEnumerator FadeIn()
 		{
-			float elapsed = 0f;
+			float elapsed = 0F;
 
-			while (elapsed < fadeDuration)
+			while (elapsed < mFadeDuration)
 			{
 				elapsed += Time.unscaledDeltaTime;
-				float t = elapsed / fadeDuration;
-				float alpha = Mathf.Lerp(1f, 0f, EaseInOutQuad(t));
+				float t = elapsed / mFadeDuration;
+				float alpha = Mathf.Lerp(1F, 0F, EaseInOutQuad(t));
 				SetAlpha(alpha);
 				yield return null;
 			}
 
-			SetAlpha(0f);
+			SetAlpha(0F);
 		}
 
 		private float EaseInOutQuad(float t)
 		{
-			return t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
+			return t < 0.5F ? 2F * t * t : 1F - Mathf.Pow(-2F * t + 2F, 2F) / 2F;
 		}
 
-		public bool IsTransitioning => isTransitioning;
+		public bool IsTransitioning => mIsTransitioning;
 	}
 }

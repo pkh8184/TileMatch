@@ -11,265 +11,265 @@ namespace TileMatch.LevelEditor
     /// </summary>
     public class LevelPreviewWindow : EditorWindow
     {
-        private LevelData levelData;
-        private Vector2 rotationAngle = new Vector2(30f, -45f);
-        private float zoom = 5f;
-        private Vector3 pivotPoint = Vector3.zero;
-        
-        private bool isDragging = false;
-        private Vector2 lastMousePos;
-        
-        private PreviewRenderUtility previewRenderUtility;
-        private Material tileMaterial;
-        private Mesh tileMesh;
-        
+        private LevelData mLevelData;
+        private Vector2 mRotationAngle = new Vector2(30F, -45F);
+        private float mZoom = 5F;
+        private Vector3 mPivotPoint = Vector3.zero;
+
+        private bool mIsDragging = false;
+        private Vector2 mLastMousePos;
+
+        private PreviewRenderUtility mPreviewRenderUtility;
+        private Material mTileMaterial;
+        private Mesh mTileMesh;
+
         // 색상 설정
         private static readonly Color[] LayerColors = new Color[]
         {
-            new Color(0.3f, 0.6f, 1f),
-            new Color(0.3f, 0.9f, 0.5f),
-            new Color(1f, 0.9f, 0.3f),
-            new Color(1f, 0.5f, 0.5f),
-            new Color(0.9f, 0.5f, 1f),
+            new Color(0.3F, 0.6F, 1F),
+            new Color(0.3F, 0.9F, 0.5F),
+            new Color(1F, 0.9F, 0.3F),
+            new Color(1F, 0.5F, 0.5F),
+            new Color(0.9F, 0.5F, 1F),
         };
-        
+
         [MenuItem("Tools/Tile Match/Level Preview")]
         public static void OpenWindow()
         {
-            var window = GetWindow<LevelPreviewWindow>();
+            LevelPreviewWindow window = GetWindow<LevelPreviewWindow>();
             window.titleContent = new GUIContent("Level Preview", EditorGUIUtility.IconContent("d_ViewToolOrbit").image);
             window.minSize = new Vector2(400, 400);
             window.Show();
         }
-        
+
         public static void OpenWithLevel(LevelData level)
         {
-            var window = GetWindow<LevelPreviewWindow>();
-            window.levelData = level;
+            LevelPreviewWindow window = GetWindow<LevelPreviewWindow>();
+            window.mLevelData = level;
             window.titleContent = new GUIContent("Level Preview");
             window.Show();
             window.Repaint();
         }
-        
+
         private void OnEnable()
         {
-            previewRenderUtility = new PreviewRenderUtility();
-            previewRenderUtility.camera.fieldOfView = 30f;
-            previewRenderUtility.camera.nearClipPlane = 0.1f;
-            previewRenderUtility.camera.farClipPlane = 100f;
-            previewRenderUtility.camera.clearFlags = CameraClearFlags.SolidColor;
-            previewRenderUtility.camera.backgroundColor = new Color(0.15f, 0.15f, 0.18f);
-            
-            tileMesh = CreateTileMesh();
-            tileMaterial = new Material(Shader.Find("Standard"));
+            mPreviewRenderUtility = new PreviewRenderUtility();
+            mPreviewRenderUtility.camera.fieldOfView = 30F;
+            mPreviewRenderUtility.camera.nearClipPlane = 0.1F;
+            mPreviewRenderUtility.camera.farClipPlane = 100F;
+            mPreviewRenderUtility.camera.clearFlags = CameraClearFlags.SolidColor;
+            mPreviewRenderUtility.camera.backgroundColor = new Color(0.15F, 0.15F, 0.18F);
+
+            mTileMesh = CreateTileMesh();
+            mTileMaterial = new Material(Shader.Find("Standard"));
         }
-        
+
         private void OnDisable()
         {
-            if (previewRenderUtility != null)
+            if (mPreviewRenderUtility != null)
             {
-                previewRenderUtility.Cleanup();
-                previewRenderUtility = null;
+                mPreviewRenderUtility.Cleanup();
+                mPreviewRenderUtility = null;
             }
-            
-            if (tileMesh != null)
-                DestroyImmediate(tileMesh);
-            
-            if (tileMaterial != null)
-                DestroyImmediate(tileMaterial);
+
+            if (mTileMesh != null)
+                DestroyImmediate(mTileMesh);
+
+            if (mTileMaterial != null)
+                DestroyImmediate(mTileMaterial);
         }
-        
+
         private void OnGUI()
         {
             DrawToolbar();
-            
-            Rect previewRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, 
+
+            Rect previewRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none,
                 GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
-            
-            if (levelData != null)
+
+            if (mLevelData != null)
             {
                 Draw3DPreview(previewRect);
                 HandleInput(previewRect);
             }
             else
             {
-                EditorGUI.DrawRect(previewRect, new Color(0.15f, 0.15f, 0.18f));
-                GUI.Label(previewRect, "Drag a Level asset here or select from the editor", 
+                EditorGUI.DrawRect(previewRect, new Color(0.15F, 0.15F, 0.18F));
+                GUI.Label(previewRect, "Drag a Level asset here or select from the editor",
                     new GUIStyle(EditorStyles.centeredGreyMiniLabel) { alignment = TextAnchor.MiddleCenter });
             }
-            
+
             HandleDragAndDrop(previewRect);
             DrawInfo();
         }
-        
+
         private void DrawToolbar()
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             {
                 EditorGUI.BeginChangeCheck();
-                levelData = (LevelData)EditorGUILayout.ObjectField(levelData, typeof(LevelData), false, GUILayout.Width(200));
+                mLevelData = (LevelData)EditorGUILayout.ObjectField(mLevelData, typeof(LevelData), false, GUILayout.Width(200));
                 if (EditorGUI.EndChangeCheck())
                 {
                     ResetView();
                 }
-                
+
                 GUILayout.Space(20);
-                
+
                 if (GUILayout.Button("Reset View", EditorStyles.toolbarButton, GUILayout.Width(80)))
                 {
                     ResetView();
                 }
-                
+
                 GUILayout.FlexibleSpace();
-                
-                GUILayout.Label($"Zoom: {zoom:F1}", EditorStyles.toolbarButton, GUILayout.Width(70));
+
+                GUILayout.Label($"Zoom: {mZoom:F1}", EditorStyles.toolbarButton, GUILayout.Width(70));
             }
             EditorGUILayout.EndHorizontal();
         }
-        
+
         private void Draw3DPreview(Rect rect)
         {
-            if (previewRenderUtility == null || levelData == null)
+            if (mPreviewRenderUtility == null || mLevelData == null)
                 return;
-            
-            previewRenderUtility.BeginPreview(rect, GUIStyle.none);
-            
-            Quaternion rotation = Quaternion.Euler(rotationAngle.x, rotationAngle.y, 0);
-            Vector3 cameraPos = rotation * new Vector3(0, 0, -zoom) + pivotPoint;
-            previewRenderUtility.camera.transform.position = cameraPos;
-            previewRenderUtility.camera.transform.LookAt(pivotPoint);
-            
-            previewRenderUtility.lights[0].transform.rotation = Quaternion.Euler(50, -30, 0);
-            previewRenderUtility.lights[0].intensity = 1f;
-            
+
+            mPreviewRenderUtility.BeginPreview(rect, GUIStyle.none);
+
+            Quaternion rotation = Quaternion.Euler(mRotationAngle.x, mRotationAngle.y, 0);
+            Vector3 cameraPos = rotation * new Vector3(0, 0, -mZoom) + mPivotPoint;
+            mPreviewRenderUtility.camera.transform.position = cameraPos;
+            mPreviewRenderUtility.camera.transform.LookAt(mPivotPoint);
+
+            mPreviewRenderUtility.lights[0].transform.rotation = Quaternion.Euler(50, -30, 0);
+            mPreviewRenderUtility.lights[0].intensity = 1F;
+
             DrawGridFloor();
             DrawTiles();
-            
-            previewRenderUtility.camera.Render();
-            
-            Texture resultRender = previewRenderUtility.EndPreview();
+
+            mPreviewRenderUtility.camera.Render();
+
+            Texture resultRender = mPreviewRenderUtility.EndPreview();
             GUI.DrawTexture(rect, resultRender, ScaleMode.StretchToFill, false);
         }
-        
+
         private void DrawGridFloor()
         {
-            float width = levelData.boardWidth;
-            float height = levelData.boardHeight;
-            float offsetX = -width / 2f;
-            float offsetZ = -height / 2f;
-            
-            Handles.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);
-            
-            for (int x = 0; x <= levelData.boardWidth; x++)
+            float width = mLevelData.boardWidth;
+            float height = mLevelData.boardHeight;
+            float offsetX = -width / 2F;
+            float offsetZ = -height / 2F;
+
+            Handles.color = new Color(0.4F, 0.4F, 0.4F, 0.5F);
+
+            for (int x = 0; x <= mLevelData.boardWidth; x++)
             {
                 Vector3 start = new Vector3(offsetX + x, 0, offsetZ);
                 Vector3 end = new Vector3(offsetX + x, 0, offsetZ + height);
                 Handles.DrawLine(start, end);
             }
-            
-            for (int z = 0; z <= levelData.boardHeight; z++)
+
+            for (int z = 0; z <= mLevelData.boardHeight; z++)
             {
                 Vector3 start = new Vector3(offsetX, 0, offsetZ + z);
                 Vector3 end = new Vector3(offsetX + width, 0, offsetZ + z);
                 Handles.DrawLine(start, end);
             }
         }
-        
+
         private void DrawTiles()
         {
-            if (levelData.tilePlacements == null)
+            if (mLevelData.tilePlacements == null)
                 return;
-            
-            float offsetX = -levelData.boardWidth / 2f + 0.5f;
-            float offsetZ = -levelData.boardHeight / 2f + 0.5f;
-            float layerHeight = 0.3f;
-            
-            foreach (var tile in levelData.tilePlacements)
+
+            float offsetX = -mLevelData.boardWidth / 2F + 0.5F;
+            float offsetZ = -mLevelData.boardHeight / 2F + 0.5F;
+            float layerHeight = 0.3F;
+
+            foreach (TilePlacement tile in mLevelData.tilePlacements)
             {
                 Vector3 position = new Vector3(
                     offsetX + tile.gridX,
-                    tile.layer * layerHeight + 0.15f,
+                    tile.layer * layerHeight + 0.15F,
                     offsetZ + tile.gridY
                 );
-                
+
                 Color tileColor = LayerColors[Mathf.Min(tile.layer, LayerColors.Length - 1)];
-                
+
                 if (tile.isFrozen)
-                    tileColor = Color.Lerp(tileColor, Color.cyan, 0.5f);
+                    tileColor = Color.Lerp(tileColor, Color.cyan, 0.5F);
                 if (tile.isLocked)
-                    tileColor = Color.Lerp(tileColor, Color.gray, 0.5f);
-                
-                tileMaterial.color = tileColor;
-                
-                Matrix4x4 matrix = Matrix4x4.TRS(position, Quaternion.identity, new Vector3(0.9f, 0.2f, 0.9f));
-                Graphics.DrawMesh(tileMesh, matrix, tileMaterial, 0, previewRenderUtility.camera);
+                    tileColor = Color.Lerp(tileColor, Color.gray, 0.5F);
+
+                mTileMaterial.color = tileColor;
+
+                Matrix4x4 matrix = Matrix4x4.TRS(position, Quaternion.identity, new Vector3(0.9F, 0.2F, 0.9F));
+                Graphics.DrawMesh(mTileMesh, matrix, mTileMaterial, 0, mPreviewRenderUtility.camera);
             }
         }
-        
+
         private void HandleInput(Rect rect)
         {
             Event e = Event.current;
-            
+
             if (!rect.Contains(e.mousePosition))
                 return;
-            
+
             switch (e.type)
             {
                 case EventType.MouseDown:
                     if (e.button == 0 || e.button == 1)
                     {
-                        isDragging = true;
-                        lastMousePos = e.mousePosition;
+                        mIsDragging = true;
+                        mLastMousePos = e.mousePosition;
                         e.Use();
                     }
                     break;
-                    
+
                 case EventType.MouseDrag:
-                    if (isDragging)
+                    if (mIsDragging)
                     {
-                        Vector2 delta = e.mousePosition - lastMousePos;
-                        
+                        Vector2 delta = e.mousePosition - mLastMousePos;
+
                         if (e.button == 0)
                         {
-                            rotationAngle.y += delta.x * 0.5f;
-                            rotationAngle.x += delta.y * 0.5f;
-                            rotationAngle.x = Mathf.Clamp(rotationAngle.x, -89f, 89f);
+                            mRotationAngle.y += delta.x * 0.5F;
+                            mRotationAngle.x += delta.y * 0.5F;
+                            mRotationAngle.x = Mathf.Clamp(mRotationAngle.x, -89F, 89F);
                         }
                         else if (e.button == 1)
                         {
-                            Quaternion rotation = Quaternion.Euler(rotationAngle.x, rotationAngle.y, 0);
+                            Quaternion rotation = Quaternion.Euler(mRotationAngle.x, mRotationAngle.y, 0);
                             Vector3 right = rotation * Vector3.right;
                             Vector3 up = rotation * Vector3.up;
-                            pivotPoint -= (right * delta.x + up * delta.y) * 0.01f * zoom;
+                            mPivotPoint -= (right * delta.x + up * delta.y) * 0.01F * mZoom;
                         }
-                        
-                        lastMousePos = e.mousePosition;
+
+                        mLastMousePos = e.mousePosition;
                         Repaint();
                         e.Use();
                     }
                     break;
-                    
+
                 case EventType.MouseUp:
-                    isDragging = false;
+                    mIsDragging = false;
                     e.Use();
                     break;
-                    
+
                 case EventType.ScrollWheel:
-                    zoom += e.delta.y * 0.3f;
-                    zoom = Mathf.Clamp(zoom, 2f, 20f);
+                    mZoom += e.delta.y * 0.3F;
+                    mZoom = Mathf.Clamp(mZoom, 2F, 20F);
                     Repaint();
                     e.Use();
                     break;
             }
         }
-        
+
         private void HandleDragAndDrop(Rect rect)
         {
             Event e = Event.current;
-            
+
             if (!rect.Contains(e.mousePosition))
                 return;
-            
+
             switch (e.type)
             {
                 case EventType.DragUpdated:
@@ -278,82 +278,82 @@ namespace TileMatch.LevelEditor
                         DragAndDrop.objectReferences[0] is LevelData)
                     {
                         DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-                        
+
                         if (e.type == EventType.DragPerform)
                         {
                             DragAndDrop.AcceptDrag();
-                            levelData = DragAndDrop.objectReferences[0] as LevelData;
+                            mLevelData = DragAndDrop.objectReferences[0] as LevelData;
                             ResetView();
                         }
-                        
+
                         e.Use();
                     }
                     break;
             }
         }
-        
+
         private void DrawInfo()
         {
-            if (levelData == null) return;
-            
+            if (mLevelData == null) return;
+
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             {
-                GUILayout.Label($"Level: {levelData.levelName}", EditorStyles.miniLabel);
-                GUILayout.Label($"Size: {levelData.boardWidth}x{levelData.boardHeight}", EditorStyles.miniLabel);
-                GUILayout.Label($"Layers: {levelData.maxLayers}", EditorStyles.miniLabel);
-                GUILayout.Label($"Tiles: {levelData.tilePlacements?.Count ?? 0}", EditorStyles.miniLabel);
+                GUILayout.Label($"Level: {mLevelData.levelName}", EditorStyles.miniLabel);
+                GUILayout.Label($"Size: {mLevelData.boardWidth}x{mLevelData.boardHeight}", EditorStyles.miniLabel);
+                GUILayout.Label($"Layers: {mLevelData.maxLayers}", EditorStyles.miniLabel);
+                GUILayout.Label($"Tiles: {mLevelData.tilePlacements?.Count ?? 0}", EditorStyles.miniLabel);
                 GUILayout.FlexibleSpace();
                 GUILayout.Label("LMB: Rotate | RMB: Pan | Scroll: Zoom", EditorStyles.miniLabel);
             }
             EditorGUILayout.EndHorizontal();
         }
-        
+
         private void ResetView()
         {
-            rotationAngle = new Vector2(30f, -45f);
-            zoom = 5f;
-            pivotPoint = Vector3.zero;
+            mRotationAngle = new Vector2(30F, -45F);
+            mZoom = 5F;
+            mPivotPoint = Vector3.zero;
             Repaint();
         }
-        
+
         private Mesh CreateTileMesh()
         {
             Mesh mesh = new Mesh();
-            
+
             Vector3[] vertices = new Vector3[]
             {
                 // Front
-                new Vector3(-0.5f, -0.5f, 0.5f),
-                new Vector3(0.5f, -0.5f, 0.5f),
-                new Vector3(0.5f, 0.5f, 0.5f),
-                new Vector3(-0.5f, 0.5f, 0.5f),
+                new Vector3(-0.5F, -0.5F, 0.5F),
+                new Vector3(0.5F, -0.5F, 0.5F),
+                new Vector3(0.5F, 0.5F, 0.5F),
+                new Vector3(-0.5F, 0.5F, 0.5F),
                 // Back
-                new Vector3(0.5f, -0.5f, -0.5f),
-                new Vector3(-0.5f, -0.5f, -0.5f),
-                new Vector3(-0.5f, 0.5f, -0.5f),
-                new Vector3(0.5f, 0.5f, -0.5f),
+                new Vector3(0.5F, -0.5F, -0.5F),
+                new Vector3(-0.5F, -0.5F, -0.5F),
+                new Vector3(-0.5F, 0.5F, -0.5F),
+                new Vector3(0.5F, 0.5F, -0.5F),
                 // Top
-                new Vector3(-0.5f, 0.5f, 0.5f),
-                new Vector3(0.5f, 0.5f, 0.5f),
-                new Vector3(0.5f, 0.5f, -0.5f),
-                new Vector3(-0.5f, 0.5f, -0.5f),
+                new Vector3(-0.5F, 0.5F, 0.5F),
+                new Vector3(0.5F, 0.5F, 0.5F),
+                new Vector3(0.5F, 0.5F, -0.5F),
+                new Vector3(-0.5F, 0.5F, -0.5F),
                 // Bottom
-                new Vector3(-0.5f, -0.5f, -0.5f),
-                new Vector3(0.5f, -0.5f, -0.5f),
-                new Vector3(0.5f, -0.5f, 0.5f),
-                new Vector3(-0.5f, -0.5f, 0.5f),
+                new Vector3(-0.5F, -0.5F, -0.5F),
+                new Vector3(0.5F, -0.5F, -0.5F),
+                new Vector3(0.5F, -0.5F, 0.5F),
+                new Vector3(-0.5F, -0.5F, 0.5F),
                 // Left
-                new Vector3(-0.5f, -0.5f, -0.5f),
-                new Vector3(-0.5f, -0.5f, 0.5f),
-                new Vector3(-0.5f, 0.5f, 0.5f),
-                new Vector3(-0.5f, 0.5f, -0.5f),
+                new Vector3(-0.5F, -0.5F, -0.5F),
+                new Vector3(-0.5F, -0.5F, 0.5F),
+                new Vector3(-0.5F, 0.5F, 0.5F),
+                new Vector3(-0.5F, 0.5F, -0.5F),
                 // Right
-                new Vector3(0.5f, -0.5f, 0.5f),
-                new Vector3(0.5f, -0.5f, -0.5f),
-                new Vector3(0.5f, 0.5f, -0.5f),
-                new Vector3(0.5f, 0.5f, 0.5f),
+                new Vector3(0.5F, -0.5F, 0.5F),
+                new Vector3(0.5F, -0.5F, -0.5F),
+                new Vector3(0.5F, 0.5F, -0.5F),
+                new Vector3(0.5F, 0.5F, 0.5F),
             };
-            
+
             int[] triangles = new int[]
             {
                 0, 2, 1, 0, 3, 2,
@@ -363,11 +363,11 @@ namespace TileMatch.LevelEditor
                 16, 18, 17, 16, 19, 18,
                 20, 22, 21, 20, 23, 22,
             };
-            
+
             mesh.vertices = vertices;
             mesh.triangles = triangles;
             mesh.RecalculateNormals();
-            
+
             return mesh;
         }
     }

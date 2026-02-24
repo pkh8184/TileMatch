@@ -7,8 +7,8 @@ using TileMatch;
 namespace TrumpTile.Core
 {
 	/// <summary>
-	/// 개별 타일 제어 (수정됨)
-	/// 
+	/// 개별 타일 제어
+	///
 	/// [변경사항]
 	/// 1. Sorting Order 로직 수정 - 레이어 기반으로 통일
 	/// 2. 레이어 높을수록 앞에 표시 (Layer 4 = 500, Layer 0 = 420)
@@ -20,79 +20,69 @@ namespace TrumpTile.Core
 		#region Serialized Fields
 
 		[Header("Tile Data")]
-		[SerializeField] private TileData tileData;
+		[SerializeField] private TileData mTileData;
 
 		[Header("Visual")]
-		[SerializeField] private SpriteRenderer spriteRenderer;
-		[SerializeField] private SpriteRenderer highlightRenderer;
-		[SerializeField] private GameObject blockedOverlay;
-		[SerializeField] private GameObject frozenOverlay;
-		[SerializeField] private GameObject lockedOverlay;
+		[SerializeField] private SpriteRenderer mSpriteRenderer;
+		[SerializeField] private SpriteRenderer mHighlightRenderer;
+		[SerializeField] private GameObject mBlockedOverlay;
+		[SerializeField] private GameObject mFrozenOverlay;
+		[SerializeField] private GameObject mLockedOverlay;
 
 		[Header("Animation Settings")]
-		[SerializeField] private float moveSpeed = 20f;
-		[SerializeField] private float shakeDuration = 0.15f;
-		[SerializeField] private float shakeIntensity = 0.05f;
-		[SerializeField] private float flyArcHeight = 0.3f;
-		[SerializeField] private float flyRotation = 360f;
+		[SerializeField] private float mMoveSpeed = 20F;
+		[SerializeField] private float mShakeDuration = 0.15F;
+		[SerializeField] private float mShakeIntensity = 0.05F;
+		[SerializeField] private float mFlyArcHeight = 0.3F;
+		[SerializeField] private float mFlyRotation = 360F;
 
 		[Header("Debug Info")]
-		[SerializeField] private int gridX;
-		[SerializeField] private int gridY;
-		[SerializeField] private int layerIndex;
-		[SerializeField] private int currentSortingOrder;
-		[SerializeField] private bool isSelectable = true;
-		[SerializeField] private bool isInSlot;
-		[SerializeField] private int slotIndex = -1;
-		[SerializeField] private bool isFrozen;
-		[SerializeField] private int frozenCount;
-		[SerializeField] private bool isLocked;
-		[SerializeField] private bool isAnimating;
+		[SerializeField] private int mGridX;
+		[SerializeField] private int mGridY;
+		[SerializeField] private int mLayerIndex;
+		[SerializeField] private int mCurrentSortingOrder;
+		[SerializeField] private bool mIsSelectable = true;
+		[SerializeField] private bool mIsInSlot;
+		[SerializeField] private int mSlotIndex = -1;
+		[SerializeField] private bool mIsFrozen;
+		[SerializeField] private int mFrozenCount;
+		[SerializeField] private bool mIsLocked;
+		[SerializeField] private bool mIsAnimating;
 
 		#endregion
 
 		#region Sorting Constants
 
-		// 레이어별 Sorting Order
-		// Layer 0 (맨 아래) = 420
-		// Layer 1 = 440
-		// Layer 2 = 460
-		// Layer 3 = 480
-		// Layer 4 (맨 위) = 500
 		private const int BASE_SORTING_ORDER = 420;
 		private const int SORTING_STEP = 20;
-
-		// 슬롯 타일 Sorting Order
 		private const int SLOT_BASE_SORTING = 1000;
 		private const int SLOT_SORTING_STEP = 10;
-
-		// 이동 중 Sorting Order (가장 앞)
 		private const int MOVING_SORTING_ORDER = 1099;
 
 		#endregion
 
 		#region Private Fields
 
-		private Coroutine currentAnimation;
-		private BoxCollider2D boxCollider;
-		private Vector3 originalScale = Vector3.one;
+		private Coroutine mCurrentAnimation;
+		private BoxCollider2D mBoxCollider;
+		private Vector3 mOriginalScale = Vector3.one;
 
 		#endregion
 
 		#region Properties
 
-		public TileData Data => tileData;
-		public string TileTypeId => tileData != null ? tileData.tileTypeId : "";
-		public int GridX => gridX;
-		public int GridY => gridY;
-		public int LayerIndex => layerIndex;
-		public int Layer => layerIndex;
-		public bool IsSelectable => isSelectable && !isLocked && !isAnimating && !isInSlot;
-		public bool IsInSlot => isInSlot;
-		public int SlotIndex => slotIndex;
-		public bool IsFrozen => isFrozen;
-		public bool IsLocked => isLocked;
-		public bool IsAnimating => isAnimating;
+		public TileData Data => mTileData;
+		public string TileTypeId => mTileData != null ? mTileData.tileTypeId : "";
+		public int GridX => mGridX;
+		public int GridY => mGridY;
+		public int LayerIndex => mLayerIndex;
+		public int Layer => mLayerIndex;
+		public bool IsSelectable => mIsSelectable && !mIsLocked && !mIsAnimating && !mIsInSlot;
+		public bool IsInSlot => mIsInSlot;
+		public int SlotIndex => mSlotIndex;
+		public bool IsFrozen => mIsFrozen;
+		public bool IsLocked => mIsLocked;
+		public bool IsAnimating => mIsAnimating;
 
 		#endregion
 
@@ -106,12 +96,11 @@ namespace TrumpTile.Core
 
 		private void Awake()
 		{
-			if (spriteRenderer == null)
-				spriteRenderer = GetComponent<SpriteRenderer>();
+			if (mSpriteRenderer == null)
+				mSpriteRenderer = GetComponent<SpriteRenderer>();
 
-			boxCollider = GetComponent<BoxCollider2D>();
-
-			originalScale = transform.localScale;
+			mBoxCollider = GetComponent<BoxCollider2D>();
+			mOriginalScale = transform.localScale;
 		}
 
 		private void OnDestroy()
@@ -131,34 +120,31 @@ namespace TrumpTile.Core
 
 		public void Initialize(TileData data, int x, int y, int layer)
 		{
-			tileData = data;
-			gridX = x;
-			gridY = y;
-			layerIndex = layer;
+			mTileData = data;
+			mGridX = x;
+			mGridY = y;
+			mLayerIndex = layer;
 
-			isSelectable = true;
-			isInSlot = false;
-			slotIndex = -1;
-			isFrozen = false;
-			frozenCount = 0;
-			isLocked = false;
-			isAnimating = false;
+			mIsSelectable = true;
+			mIsInSlot = false;
+			mSlotIndex = -1;
+			mIsFrozen = false;
+			mFrozenCount = 0;
+			mIsLocked = false;
+			mIsAnimating = false;
 
 			SetupVisual();
-
-			// Sorting Order 설정 - 레이어 기반
 			UpdateSortingOrder();
-
 			SetOverlaysActive(false);
 			EnableCollider(true);
 		}
 
 		private void SetupVisual()
 		{
-			if (spriteRenderer != null && tileData != null)
+			if (mSpriteRenderer != null && mTileData != null)
 			{
-				spriteRenderer.sprite = tileData.sprite;
-				spriteRenderer.color = Color.white;
+				mSpriteRenderer.sprite = mTileData.sprite;
+				mSpriteRenderer.color = Color.white;
 			}
 
 			transform.rotation = Quaternion.identity;
@@ -166,63 +152,49 @@ namespace TrumpTile.Core
 
 		private void SetOverlaysActive(bool active)
 		{
-			if (blockedOverlay != null) blockedOverlay.SetActive(active);
-			if (frozenOverlay != null) frozenOverlay.SetActive(false);
-			if (lockedOverlay != null) lockedOverlay.SetActive(false);
+			if (mBlockedOverlay != null) mBlockedOverlay.SetActive(active);
+			if (mFrozenOverlay != null) mFrozenOverlay.SetActive(false);
+			if (mLockedOverlay != null) mLockedOverlay.SetActive(false);
 		}
 
 		#endregion
 
 		#region Sorting
 
-		/// <summary>
-		/// Sorting Order 업데이트
-		/// 레이어 기반: Layer 0 = 420, Layer 1 = 440, ..., Layer 4 = 500
-		/// </summary>
 		public void UpdateSortingOrder()
 		{
-			if (spriteRenderer == null) return;
+			if (mSpriteRenderer == null) return;
 
-			if (isInSlot)
+			if (mIsInSlot)
 			{
-				// 슬롯 타일: 1000 + (slotIndex * 10)
-				currentSortingOrder = SLOT_BASE_SORTING + (slotIndex * SLOT_SORTING_STEP);
+				mCurrentSortingOrder = SLOT_BASE_SORTING + (mSlotIndex * SLOT_SORTING_STEP);
 			}
 			else
 			{
-				// 보드 타일: 420 + (layer * 20)
-				// 레이어가 높을수록 Sorting Order가 높음 (앞에 표시)
-				currentSortingOrder = BASE_SORTING_ORDER + (layerIndex * SORTING_STEP);
+				mCurrentSortingOrder = BASE_SORTING_ORDER + (mLayerIndex * SORTING_STEP);
 			}
 
-			spriteRenderer.sortingOrder = currentSortingOrder;
+			mSpriteRenderer.sortingOrder = mCurrentSortingOrder;
 
-			// 자식 렌더러도 함께 설정 (blockedOverlay 등)
-			var childRenderers = GetComponentsInChildren<SpriteRenderer>();
-			foreach (var sr in childRenderers)
+			SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
+			foreach (SpriteRenderer sr in childRenderers)
 			{
-				if (sr != spriteRenderer)
+				if (sr != mSpriteRenderer)
 				{
-					sr.sortingOrder = currentSortingOrder + 1;
+					sr.sortingOrder = mCurrentSortingOrder + 1;
 				}
 			}
 		}
 
-		/// <summary>
-		/// 슬롯 이동 중 Sorting Order (가장 앞)
-		/// </summary>
 		private void SetMovingToSlotSorting()
 		{
-			if (spriteRenderer != null)
+			if (mSpriteRenderer != null)
 			{
-				currentSortingOrder = MOVING_SORTING_ORDER;
-				spriteRenderer.sortingOrder = currentSortingOrder;
+				mCurrentSortingOrder = MOVING_SORTING_ORDER;
+				mSpriteRenderer.sortingOrder = mCurrentSortingOrder;
 			}
 		}
 
-		/// <summary>
-		/// 레이어 기반 Sorting Order 계산
-		/// </summary>
 		public static int GetLayerSortingOrder(int layer)
 		{
 			return BASE_SORTING_ORDER + (layer * SORTING_STEP);
@@ -234,9 +206,9 @@ namespace TrumpTile.Core
 
 		private void OnMouseDown()
 		{
-			if (isAnimating) return;
+			if (mIsAnimating) return;
 
-			if (isInSlot)
+			if (mIsInSlot)
 			{
 				PlayShakeAnimation();
 				return;
@@ -244,13 +216,13 @@ namespace TrumpTile.Core
 
 			if (!IsSelectable) return;
 
-			if (isFrozen && frozenCount > 0)
+			if (mIsFrozen && mFrozenCount > 0)
 			{
 				BreakIce();
 				return;
 			}
 
-			if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.GameState.Playing)
+			if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.Playing)
 				return;
 
 			if (BoardManager.Instance != null && BoardManager.Instance.IsTileBlocked(this))
@@ -267,7 +239,7 @@ namespace TrumpTile.Core
 
 		private void OnMouseEnter()
 		{
-			if (isInSlot || !IsSelectable) return;
+			if (mIsInSlot || !IsSelectable) return;
 			SetHighlight(true);
 		}
 
@@ -278,11 +250,11 @@ namespace TrumpTile.Core
 
 		private void BreakIce()
 		{
-			frozenCount--;
-			if (frozenCount <= 0)
+			mFrozenCount--;
+			if (mFrozenCount <= 0)
 			{
-				isFrozen = false;
-				if (frozenOverlay != null) frozenOverlay.SetActive(false);
+				mIsFrozen = false;
+				if (mFrozenOverlay != null) mFrozenOverlay.SetActive(false);
 			}
 			AudioManager.Instance?.PlayTileSelect();
 		}
@@ -293,44 +265,44 @@ namespace TrumpTile.Core
 
 		public void SetHighlight(bool active)
 		{
-			if (highlightRenderer != null)
+			if (mHighlightRenderer != null)
 			{
-				highlightRenderer.enabled = active;
+				mHighlightRenderer.enabled = active;
 			}
 		}
 
 		public void SetSelectable(bool selectable)
 		{
-			isSelectable = selectable;
+			mIsSelectable = selectable;
 
-			if (blockedOverlay != null)
+			if (mBlockedOverlay != null)
 			{
-				blockedOverlay.SetActive(!selectable && !isInSlot);
+				mBlockedOverlay.SetActive(!selectable && !mIsInSlot);
 			}
 		}
 
 		public void SetFrozen(bool frozen, int count = 1)
 		{
-			isFrozen = frozen;
-			frozenCount = count;
+			mIsFrozen = frozen;
+			mFrozenCount = count;
 
-			if (frozenOverlay != null)
-				frozenOverlay.SetActive(frozen);
+			if (mFrozenOverlay != null)
+				mFrozenOverlay.SetActive(frozen);
 		}
 
 		public void SetLocked(bool locked)
 		{
-			isLocked = locked;
+			mIsLocked = locked;
 
-			if (lockedOverlay != null)
-				lockedOverlay.SetActive(locked);
+			if (mLockedOverlay != null)
+				mLockedOverlay.SetActive(locked);
 		}
 
 		public void EnableCollider(bool enable)
 		{
-			if (boxCollider != null)
+			if (mBoxCollider != null)
 			{
-				boxCollider.enabled = enable;
+				mBoxCollider.enabled = enable;
 			}
 		}
 
@@ -340,22 +312,19 @@ namespace TrumpTile.Core
 
 		public void SetTileData(TileData data)
 		{
-			tileData = data;
+			mTileData = data;
 
-			if (spriteRenderer != null && tileData != null)
+			if (mSpriteRenderer != null && mTileData != null)
 			{
-				spriteRenderer.sprite = tileData.sprite;
+				mSpriteRenderer.sprite = mTileData.sprite;
 			}
 		}
 
-		/// <summary>
-		/// 레이어 정보 업데이트 (Strike 아이템 등에서 사용)
-		/// </summary>
 		public void UpdateLayerInfo(int x, int y, int layer)
 		{
-			gridX = x;
-			gridY = y;
-			layerIndex = layer;
+			mGridX = x;
+			mGridY = y;
+			mLayerIndex = layer;
 			UpdateSortingOrder();
 		}
 
@@ -365,29 +334,29 @@ namespace TrumpTile.Core
 
 		public void MoveToSlot(Vector3 slotPosition, int index, Action onComplete = null)
 		{
-			bool wasInSlot = isInSlot;
+			bool bWasInSlot = mIsInSlot;
 
-			isInSlot = true;
-			slotIndex = index;
+			mIsInSlot = true;
+			mSlotIndex = index;
 
-			if (blockedOverlay != null) blockedOverlay.SetActive(false);
+			if (mBlockedOverlay != null) mBlockedOverlay.SetActive(false);
 
 			SetMovingToSlotSorting();
-
 			AudioManager.Instance?.PlayTileMove();
-
 			StopCurrentAnimation();
 
-			if (wasInSlot)
+			if (bWasInSlot)
 			{
-				currentAnimation = StartCoroutine(MoveToPositionCoroutine(slotPosition, () => {
+				mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(slotPosition, () =>
+				{
 					UpdateSortingOrder();
 					onComplete?.Invoke();
 				}));
 			}
 			else
 			{
-				currentAnimation = StartCoroutine(FlyToSlotCoroutine(slotPosition, () => {
+				mCurrentAnimation = StartCoroutine(FlyToSlotCoroutine(slotPosition, () =>
+				{
 					UpdateSortingOrder();
 					onComplete?.Invoke();
 				}));
@@ -396,16 +365,16 @@ namespace TrumpTile.Core
 
 		public void MoveToSlot(Vector3 slotPosition)
 		{
-			MoveToSlot(slotPosition, slotIndex, null);
+			MoveToSlot(slotPosition, mSlotIndex, null);
 		}
 
 		public void AdjustSlotPosition(Vector3 newPosition, int newIndex)
 		{
-			slotIndex = newIndex;
+			mSlotIndex = newIndex;
 			UpdateSortingOrder();
 
 			StopCurrentAnimation();
-			currentAnimation = StartCoroutine(MoveToPositionCoroutine(newPosition, null));
+			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(newPosition, null));
 		}
 
 		#endregion
@@ -414,22 +383,22 @@ namespace TrumpTile.Core
 
 		public void ReturnToBoard(Vector3 boardPosition)
 		{
-			isInSlot = false;
-			slotIndex = -1;
+			mIsInSlot = false;
+			mSlotIndex = -1;
 
-			if (blockedOverlay != null) blockedOverlay.SetActive(false);
+			if (mBlockedOverlay != null) mBlockedOverlay.SetActive(false);
 
 			UpdateSortingOrder();
 
 			StopCurrentAnimation();
-			currentAnimation = StartCoroutine(MoveToPositionCoroutine(boardPosition, null));
+			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(boardPosition, null));
 		}
 
 		public void ReturnToBoard(Vector3 boardPosition, int x, int y, int layer)
 		{
-			gridX = x;
-			gridY = y;
-			layerIndex = layer;
+			mGridX = x;
+			mGridY = y;
+			mLayerIndex = layer;
 
 			ReturnToBoard(boardPosition);
 		}
@@ -440,22 +409,21 @@ namespace TrumpTile.Core
 
 		private IEnumerator FlyToSlotCoroutine(Vector3 targetPosition, Action onComplete)
 		{
-			isAnimating = true;
+			mIsAnimating = true;
 
 			Vector3 startPos = transform.position;
 			float distance = Vector3.Distance(startPos, targetPosition);
-			float duration = Mathf.Clamp(distance / moveSpeed, 0.1f, 0.25f);
+			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.1F, 0.25F);
 
-			float rotationAmount = UnityEngine.Random.Range(0, 2) == 0 ? flyRotation : -flyRotation;
-			float arcHeight = distance * flyArcHeight;
+			float rotationAmount = UnityEngine.Random.Range(0, 2) == 0 ? mFlyRotation : -mFlyRotation;
+			float arcHeight = distance * mFlyArcHeight;
 
-			float elapsed = 0f;
+			float elapsed = 0F;
 
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
 				float t = elapsed / duration;
-
 				float easedT = t * t;
 
 				Vector3 currentPos = Vector3.Lerp(startPos, targetPosition, easedT);
@@ -463,40 +431,40 @@ namespace TrumpTile.Core
 				currentPos.y += arc;
 				transform.position = currentPos;
 
-				float currentRotation = Mathf.Lerp(0f, rotationAmount, easedT);
-				transform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
+				float currentRotation = Mathf.Lerp(0F, rotationAmount, easedT);
+				transform.rotation = Quaternion.Euler(0F, 0F, currentRotation);
 
 				yield return null;
 			}
 
 			transform.position = targetPosition;
 			transform.rotation = Quaternion.identity;
-			isAnimating = false;
+			mIsAnimating = false;
 
 			onComplete?.Invoke();
 		}
 
 		private IEnumerator MoveToPositionCoroutine(Vector3 targetPosition, Action onComplete)
 		{
-			isAnimating = true;
+			mIsAnimating = true;
 			transform.rotation = Quaternion.identity;
 
 			Vector3 startPos = transform.position;
 			float distance = Vector3.Distance(startPos, targetPosition);
-			float duration = Mathf.Clamp(distance / moveSpeed, 0.03f, 0.15f);
+			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.03F, 0.15F);
 
-			float elapsed = 0f;
+			float elapsed = 0F;
 
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
-				float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
+				float t = Mathf.SmoothStep(0F, 1F, elapsed / duration);
 				transform.position = Vector3.Lerp(startPos, targetPosition, t);
 				yield return null;
 			}
 
 			transform.position = targetPosition;
-			isAnimating = false;
+			mIsAnimating = false;
 
 			onComplete?.Invoke();
 		}
@@ -507,32 +475,32 @@ namespace TrumpTile.Core
 
 		public void PlayShakeAnimation()
 		{
-			if (isAnimating) return;
+			if (mIsAnimating) return;
 			StartCoroutine(ShakeCoroutine());
 		}
 
 		private IEnumerator ShakeCoroutine()
 		{
 			Vector3 originalPos = transform.position;
-			float elapsed = 0f;
+			float elapsed = 0F;
 
-			while (elapsed < shakeDuration)
+			while (elapsed < mShakeDuration)
 			{
 				elapsed += Time.deltaTime;
-				float progress = elapsed / shakeDuration;
-				float damping = 1f - progress;
+				float progress = elapsed / mShakeDuration;
+				float damping = 1F - progress;
 
-				float offsetX = Mathf.Sin(elapsed * 60f) * shakeIntensity * damping;
-				float offsetY = Mathf.Cos(elapsed * 60f) * shakeIntensity * damping * 0.5f;
+				float offsetX = Mathf.Sin(elapsed * 60F) * mShakeIntensity * damping;
+				float offsetY = Mathf.Cos(elapsed * 60F) * mShakeIntensity * damping * 0.5F;
 
-				transform.position = originalPos + new Vector3(offsetX, offsetY, 0f);
+				transform.position = originalPos + new Vector3(offsetX, offsetY, 0F);
 				yield return null;
 			}
 
 			transform.position = originalPos;
 		}
 
-		public void PlaySpawnAnimation(float delay = 0f)
+		public void PlaySpawnAnimation(float delay = 0F)
 		{
 			StartCoroutine(SpawnCoroutine(delay));
 		}
@@ -541,73 +509,73 @@ namespace TrumpTile.Core
 		{
 			transform.localScale = Vector3.zero;
 
-			if (delay > 0f)
+			if (delay > 0F)
 				yield return new WaitForSeconds(delay);
 
-			isAnimating = true;
-			float duration = 0.2f;
-			float elapsed = 0f;
+			mIsAnimating = true;
+			float duration = 0.2F;
+			float elapsed = 0F;
 
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
 				float t = elapsed / duration;
-				float scale = Mathf.Sin(t * Mathf.PI * 0.5f) * 1.1f;
-				if (t > 0.7f)
-					scale = Mathf.Lerp(1.1f, 1f, (t - 0.7f) / 0.3f);
+				float scale = Mathf.Sin(t * Mathf.PI * 0.5F) * 1.1F;
+				if (t > 0.7F)
+					scale = Mathf.Lerp(1.1F, 1F, (t - 0.7F) / 0.3F);
 
-				transform.localScale = originalScale * Mathf.Clamp01(scale);
+				transform.localScale = mOriginalScale * Mathf.Clamp01(scale);
 				yield return null;
 			}
 
-			transform.localScale = originalScale;
-			isAnimating = false;
+			transform.localScale = mOriginalScale;
+			mIsAnimating = false;
 		}
 
 		public void PlayMatchAnimation(Action onComplete = null)
 		{
-			isSelectable = false;
+			mIsSelectable = false;
 			EnableCollider(false);
 			StopCurrentAnimation();
-			currentAnimation = StartCoroutine(MatchCoroutine(onComplete));
+			mCurrentAnimation = StartCoroutine(MatchCoroutine(onComplete));
 		}
 
 		private IEnumerator MatchCoroutine(Action onComplete)
 		{
-			isAnimating = true;
+			mIsAnimating = true;
 
 			Vector3 startScale = transform.localScale;
-			float duration = 0.15f;
-			float elapsed = 0f;
+			float duration = 0.15F;
+			float elapsed = 0F;
 
-			while (elapsed < duration * 0.3f)
+			while (elapsed < duration * 0.3F)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / (duration * 0.3f);
-				transform.localScale = startScale * (1f + t * 0.3f);
+				float t = elapsed / (duration * 0.3F);
+				transform.localScale = startScale * (1F + t * 0.3F);
 				yield return null;
 			}
 
-			elapsed = 0f;
-			Color startColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+			elapsed = 0F;
+			Color startColor = mSpriteRenderer != null ? mSpriteRenderer.color : Color.white;
 
-			while (elapsed < duration * 0.7f)
+			while (elapsed < duration * 0.7F)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / (duration * 0.7f);
-				transform.localScale = startScale * 1.3f * (1f - t);
+				float t = elapsed / (duration * 0.7F);
+				transform.localScale = startScale * 1.3F * (1F - t);
 
-				if (spriteRenderer != null)
+				if (mSpriteRenderer != null)
 				{
 					Color newColor = startColor;
-					newColor.a = 1f - t;
-					spriteRenderer.color = newColor;
+					newColor.a = 1F - t;
+					mSpriteRenderer.color = newColor;
 				}
 
 				yield return null;
 			}
 
-			isAnimating = false;
+			mIsAnimating = false;
 			onComplete?.Invoke();
 		}
 
@@ -619,26 +587,26 @@ namespace TrumpTile.Core
 
 		private IEnumerator RemoveCoroutine()
 		{
-			isAnimating = true;
+			mIsAnimating = true;
 			EnableCollider(false);
 
-			float duration = 0.1f;
-			float elapsed = 0f;
+			float duration = 0.1F;
+			float elapsed = 0F;
 			Vector3 startScale = transform.localScale;
-			Color startColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+			Color startColor = mSpriteRenderer != null ? mSpriteRenderer.color : Color.white;
 
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
 				float t = elapsed / duration;
 
-				transform.localScale = startScale * (1f - t);
+				transform.localScale = startScale * (1F - t);
 
-				if (spriteRenderer != null)
+				if (mSpriteRenderer != null)
 				{
 					Color newColor = startColor;
-					newColor.a = 1f - t;
-					spriteRenderer.color = newColor;
+					newColor.a = 1F - t;
+					mSpriteRenderer.color = newColor;
 				}
 
 				yield return null;
@@ -653,12 +621,12 @@ namespace TrumpTile.Core
 
 		private void StopCurrentAnimation()
 		{
-			if (currentAnimation != null)
+			if (mCurrentAnimation != null)
 			{
-				StopCoroutine(currentAnimation);
-				currentAnimation = null;
+				StopCoroutine(mCurrentAnimation);
+				mCurrentAnimation = null;
 			}
-			isAnimating = false;
+			mIsAnimating = false;
 		}
 
 		public void ShowHint()
@@ -668,16 +636,16 @@ namespace TrumpTile.Core
 
 		private IEnumerator HintCoroutine()
 		{
-			if (spriteRenderer == null) yield break;
+			if (mSpriteRenderer == null) yield break;
 
-			Color originalColor = spriteRenderer.color;
+			Color originalColor = mSpriteRenderer.color;
 
 			for (int i = 0; i < 3; i++)
 			{
-				spriteRenderer.color = Color.yellow;
-				yield return new WaitForSeconds(0.1f);
-				spriteRenderer.color = originalColor;
-				yield return new WaitForSeconds(0.1f);
+				mSpriteRenderer.color = Color.yellow;
+				yield return new WaitForSeconds(0.1F);
+				mSpriteRenderer.color = originalColor;
+				yield return new WaitForSeconds(0.1F);
 			}
 		}
 

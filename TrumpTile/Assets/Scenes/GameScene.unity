@@ -151,8 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5e4bbf80d1b6934c8eb8cfb686e6504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSlots: 7
-  slotPositions:
+  mMaxSlots: 7
+  mSlotPositions:
   - {fileID: 11272110}
   - {fileID: 1003588008}
   - {fileID: 957712382}
@@ -160,8 +160,8 @@ MonoBehaviour:
   - {fileID: 583217217}
   - {fileID: 168004932}
   - {fileID: 181874257}
-  tileMoveDuration: 0.3
-  tileMergeTime: 0.2
+  mTileMoveDuration: 0.15
+  mTileMergeTime: 0.15
 --- !u!4 &10376035
 Transform:
   m_ObjectHideFlags: 0
@@ -479,32 +479,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be72b04a48d192749bd6cb2cfcd9bc13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreText: {fileID: 0}
-  levelText: {fileID: 0}
-  goldText: {fileID: 1931105871}
-  comboText: {fileID: 0}
-  timerText: {fileID: 0}
-  timerSlider: {fileID: 0}
-  strikeCountText: {fileID: 499882503}
-  blackHoleCountText: {fileID: 1119222977}
-  boomCountText: {fileID: 1464297978}
-  strikeButton: {fileID: 1442677958}
-  blackHoleButton: {fileID: 1895223458}
-  boomButton: {fileID: 785467446}
-  pauseButton: {fileID: 0}
-  levelClearPanel: {fileID: 0}
-  pausePanel: {fileID: 0}
-  clearLevelText: {fileID: 0}
-  clearScoreText: {fileID: 0}
-  nextLevelButton: {fileID: 0}
-  clearRestartButton: {fileID: 0}
-  clearMainMenuButton: {fileID: 0}
-  resumeButton: {fileID: 0}
-  pauseRestartButton: {fileID: 0}
-  pauseMainMenuButton: {fileID: 0}
-  floatingTextPrefab: {fileID: 0}
-  floatingTextParent: {fileID: 0}
-  comboAnimator: {fileID: 0}
+  mScoreText: {fileID: 0}
+  mLevelText: {fileID: 0}
+  mGoldText: {fileID: 1931105871}
+  mComboText: {fileID: 0}
+  mTimerText: {fileID: 0}
+  mTimerSlider: {fileID: 0}
+  mStrikeCountText: {fileID: 499882503}
+  mBlackHoleCountText: {fileID: 1119222977}
+  mBoomCountText: {fileID: 1464297978}
+  mStrikeButton: {fileID: 1442677958}
+  mBlackHoleButton: {fileID: 1895223458}
+  mBoomButton: {fileID: 785467446}
+  mPauseButton: {fileID: 0}
+  mLevelClearPanel: {fileID: 0}
+  mPausePanel: {fileID: 0}
+  mClearLevelText: {fileID: 0}
+  mClearScoreText: {fileID: 0}
+  mNextLevelButton: {fileID: 0}
+  mClearRestartButton: {fileID: 0}
+  mClearMainMenuButton: {fileID: 0}
+  mResumeButton: {fileID: 0}
+  mPauseRestartButton: {fileID: 0}
+  mPauseMainMenuButton: {fileID: 0}
+  mFloatingTextPrefab: {fileID: 0}
+  mFloatingTextParent: {fileID: 0}
+  mComboAnimator: {fileID: 0}
 --- !u!4 &106049956
 Transform:
   m_ObjectHideFlags: 0
@@ -3684,22 +3684,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0db347bf08c3a444bd2b51552596beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardManager: {fileID: 1966883229}
-  slotManager: {fileID: 10376034}
-  gameOverPopup: {fileID: 396594452}
-  victoryPopup: {fileID: 225975896}
-  levelFolderPath: Levels
-  startLevel: 1
-  matchCount: 3
-  maxSlots: 7
-  baseMatchScore: 100
-  comboMultiplier: 50
-  starThresholds: e8030000d0070000b80b0000
-  initialStrikeCount: 3
-  initialBlackHoleCount: 3
-  initialBoomCount: 3
-  enableDebugKeys: 1
-  slowMotionScale: 0.2
+  mBoardManager: {fileID: 1966883229}
+  mSlotManager: {fileID: 10376034}
+  mGameOverPopup: {fileID: 396594452}
+  mVictoryPopup: {fileID: 225975896}
+  mLevelFolderPath: Levels
+  mStartLevel: 1
+  mMatchCount: 3
+  mMaxSlots: 7
+  mBaseMatchScore: 100
+  mComboMultiplier: 50
+  mStarThresholds: e8030000d0070000b80b0000
+  mInitialStrikeCount: 3
+  mInitialBlackHoleCount: 3
+  mInitialBoomCount: 3
+  mEnableDebugKeys: 1
+  mSlowMotionScale: 0.2
 --- !u!1 &1020229145
 GameObject:
   m_ObjectHideFlags: 0
@@ -3797,44 +3797,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddb1d49981d18f419aa87fb91aed19d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  matchEffectPrefab: {fileID: 532525927986878635, guid: 90cfe078f29dd4f4fae525a69232a0f1, type: 3}
-  matchEffectDuration: 0.5
-  suitColors:
+  mMatchEffectPrefab: {fileID: 532525927986878635, guid: 90cfe078f29dd4f4fae525a69232a0f1, type: 3}
+  mMatchEffectDuration: 0.5
+  mSuitColors:
   - {r: 0.2, g: 0.2, b: 0.3, a: 1}
   - {r: 0.9, g: 0.2, b: 0.3, a: 1}
   - {r: 0.9, g: 0.2, b: 0.3, a: 1}
   - {r: 0.2, g: 0.2, b: 0.3, a: 1}
-  particleCount: 12
-  particleSpeed: 5
-  enableScreenFlash: 1
-  screenFlashGroup: {fileID: 0}
-  flashDuration: 0.1
-  flashIntensity: 0.3
-  victoryEffectPrefab: {fileID: 151010, guid: 1a35b29c9a2c62e43a2268b6cbcc16b2, type: 3}
-  victoryEffectSpawnPoint: {fileID: 0}
-  victoryEffectCount: 5
-  victoryEffectDelay: 0.2
-  victorySpawnRangeX: {x: -3, y: 3}
-  victorySpawnRangeY: {x: -2, y: 3}
-  gameOverEffectPrefab: {fileID: 0}
-  strikePopEffectPrefab: {fileID: 6816346978578423204, guid: 6da04fe977f38b149b2f9c70a7ac41c9, type: 3}
-  strikeLandEffectPrefab: {fileID: 7193328729572947549, guid: 24387a86020bcf642bf32c719aadad04, type: 3}
-  strikePopDuration: 0.3
-  strikeLandDuration: 0.2
-  blackHoleAppearEffectPrefab: {fileID: 1985554824650936333, guid: 5e3d2fc5023dd7d46842455c0382252e, type: 3}
-  blackHoleExplodeEffectPrefab: {fileID: 758696597615886893, guid: 0cd7b37474af57e42ad677ba5c7e724e, type: 3}
-  blackHoleAppearDuration: 0.6
-  blackHoleSuckDuration: 1
-  blackHoleExplodeDuration: 0.6
-  blackHoleScatterDelay: 0
-  blackHoleScatterDuration: 0.3
-  blackHoleScatterRandomMin: 0.01
-  blackHoleScatterRandomMax: 0.15
-  blackHolePosition: {x: 0, y: 0, z: 0}
-  bombExplodeEffectPrefab: {fileID: 2454791162407250383, guid: 0af91513c9654f245aee2d14b4df114c, type: 3}
-  bombExplodeDelay: 0.01
-  bombExplodeDuration: 0.2
-  bombRemoveDelay: 0
+  mParticleCount: 12
+  mParticleSpeed: 5
+  mEnableScreenFlash: 1
+  mScreenFlashGroup: {fileID: 0}
+  mFlashDuration: 0.1
+  mFlashIntensity: 0.3
+  mVictoryEffectPrefab: {fileID: 151010, guid: 1a35b29c9a2c62e43a2268b6cbcc16b2, type: 3}
+  mVictoryEffectSpawnPoint: {fileID: 0}
+  mVictoryEffectCount: 5
+  mVictoryEffectDelay: 0.2
+  mVictorySpawnRangeX: {x: -3, y: 3}
+  mVictorySpawnRangeY: {x: -2, y: 3}
+  mGameOverEffectPrefab: {fileID: 0}
+  mStrikePopEffectPrefab: {fileID: 6816346978578423204, guid: 6da04fe977f38b149b2f9c70a7ac41c9, type: 3}
+  mStrikeLandEffectPrefab: {fileID: 7193328729572947549, guid: 24387a86020bcf642bf32c719aadad04, type: 3}
+  mStrikePopDuration: 0.3
+  mStrikeLandDuration: 0.2
+  mBlackHoleAppearEffectPrefab: {fileID: 1985554824650936333, guid: 5e3d2fc5023dd7d46842455c0382252e, type: 3}
+  mBlackHoleExplodeEffectPrefab: {fileID: 758696597615886893, guid: 0cd7b37474af57e42ad677ba5c7e724e, type: 3}
+  mBlackHoleAppearDuration: 0.6
+  mBlackHoleSuckDuration: 1
+  mBlackHoleExplodeDuration: 0.6
+  mBlackHoleScatterDelay: 0
+  mBlackHoleScatterDuration: 0.3
+  mBlackHoleScatterRandomMin: 0.01
+  mBlackHoleScatterRandomMax: 0.15
+  mBlackHolePosition: {x: 0, y: 0, z: 0}
+  mBombExplodeEffectPrefab: {fileID: 2454791162407250383, guid: 0af91513c9654f245aee2d14b4df114c, type: 3}
+  mBombExplodeDelay: 0.01
+  mBombExplodeDuration: 0.2
+  mBombRemoveDelay: 0
 --- !u!1 &1030980520
 GameObject:
   m_ObjectHideFlags: 0
@@ -5923,16 +5923,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a3ac0fbef670ce46afb0e64ba654ca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellSize: 0.6
-  overlapThreshold: 0.8
-  layerOffsets:
+  mCellSize: 0.6
+  mOverlapThreshold: 0.8
+  mLayerOffsets:
   - {x: 0, y: 0}
   - {x: 0.04, y: -0.04}
   - {x: 0.08, y: -0.08}
   - {x: 0.12, y: -0.12}
   - {x: 0.16, y: -0.16}
-  tilePrefab: {fileID: 5319871722632711755, guid: 36972d1aa6e854d4ebd2dc91b52d84bd, type: 3}
-  allTileTypes:
+  mTilePrefab: {fileID: 5319871722632711755, guid: 36972d1aa6e854d4ebd2dc91b52d84bd, type: 3}
+  mAllTileTypes:
   - {fileID: 11400000, guid: a04baefd255237c48930ecac5b74c535, type: 2}
   - {fileID: 11400000, guid: abfcc4aaa91cfe044aada940d519081e, type: 2}
   - {fileID: 11400000, guid: f350d394fb17e7244be91b17d5a348d2, type: 2}
@@ -5985,9 +5985,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 437790795a65cc4418f62a63ac33ac97, type: 2}
   - {fileID: 11400000, guid: d9b6db18553cec7498fda558e46aa009, type: 2}
   - {fileID: 11400000, guid: 9e10659ec82d028478e3eb8383aa8bbc, type: 2}
-  tileDataFolderPath: TileData
-  autoLoadTileData: 1
-  enableDebugLog: 0
+  mTileDataFolderPath: TileData
+  mAutoLoadTileData: 1
+  mEnableDebugLog: 0
 --- !u!4 &1966883230
 Transform:
   m_ObjectHideFlags: 0

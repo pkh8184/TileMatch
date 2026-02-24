@@ -11,27 +11,27 @@ namespace TileMatch
         public int totalGamesPlayed;
         public int totalMatchesMade;
         public int maxCombo;
-        
+
         // 설정
-        public float bgmVolume = 0.5f;
-        public float sfxVolume = 1f;
+        public float bgmVolume = 0.5F;
+        public float sfxVolume = 1F;
         public bool vibrationEnabled = true;
-        
+
         // 현재 진행
         public int currentLevel = 1;
         public int currentScore = 0;
     }
-    
+
     public class SaveManager : MonoBehaviour
     {
         public static SaveManager Instance { get; private set; }
-        
+
         private const string SAVE_KEY = "TileMatchSaveData";
-        
-        private GameSaveData saveData;
-        
-        public GameSaveData Data => saveData;
-        
+
+        private GameSaveData mSaveData;
+
+        public GameSaveData Data => mSaveData;
+
         private void Awake()
         {
             if (Instance == null)
@@ -45,99 +45,99 @@ namespace TileMatch
                 Destroy(gameObject);
             }
         }
-        
+
         public void LoadData()
         {
             if (PlayerPrefs.HasKey(SAVE_KEY))
             {
                 string json = PlayerPrefs.GetString(SAVE_KEY);
-                saveData = JsonUtility.FromJson<GameSaveData>(json);
+                mSaveData = JsonUtility.FromJson<GameSaveData>(json);
             }
             else
             {
-                saveData = new GameSaveData();
+                mSaveData = new GameSaveData();
             }
         }
-        
+
         public void SaveData()
         {
-            string json = JsonUtility.ToJson(saveData);
+            string json = JsonUtility.ToJson(mSaveData);
             PlayerPrefs.SetString(SAVE_KEY, json);
             PlayerPrefs.Save();
         }
-        
+
         public void UpdateHighScore(int score)
         {
-            if (score > saveData.highScore)
+            if (score > mSaveData.highScore)
             {
-                saveData.highScore = score;
+                mSaveData.highScore = score;
                 SaveData();
             }
         }
-        
+
         public void UpdateHighestLevel(int level)
         {
-            if (level > saveData.highestLevel)
+            if (level > mSaveData.highestLevel)
             {
-                saveData.highestLevel = level;
+                mSaveData.highestLevel = level;
                 SaveData();
             }
         }
-        
+
         public void IncrementGamesPlayed()
         {
-            saveData.totalGamesPlayed++;
+            mSaveData.totalGamesPlayed++;
             SaveData();
         }
-        
+
         public void AddMatchesMade(int count)
         {
-            saveData.totalMatchesMade += count;
+            mSaveData.totalMatchesMade += count;
             SaveData();
         }
-        
+
         public void UpdateMaxCombo(int combo)
         {
-            if (combo > saveData.maxCombo)
+            if (combo > mSaveData.maxCombo)
             {
-                saveData.maxCombo = combo;
+                mSaveData.maxCombo = combo;
                 SaveData();
             }
         }
-        
+
         public void SaveProgress(int level, int score)
         {
-            saveData.currentLevel = level;
-            saveData.currentScore = score;
+            mSaveData.currentLevel = level;
+            mSaveData.currentScore = score;
             SaveData();
         }
-        
+
         public void SaveSettings(float bgmVolume, float sfxVolume, bool vibration)
         {
-            saveData.bgmVolume = bgmVolume;
-            saveData.sfxVolume = sfxVolume;
-            saveData.vibrationEnabled = vibration;
+            mSaveData.bgmVolume = bgmVolume;
+            mSaveData.sfxVolume = sfxVolume;
+            mSaveData.vibrationEnabled = vibration;
             SaveData();
         }
-        
+
         public void ResetProgress()
         {
-            saveData.currentLevel = 1;
-            saveData.currentScore = 0;
+            mSaveData.currentLevel = 1;
+            mSaveData.currentScore = 0;
             SaveData();
         }
-        
+
         public void ResetAllData()
         {
-            saveData = new GameSaveData();
+            mSaveData = new GameSaveData();
             SaveData();
         }
-        
+
         // 통계 가져오기
-        public int GetHighScore() => saveData.highScore;
-        public int GetHighestLevel() => saveData.highestLevel;
-        public int GetTotalGamesPlayed() => saveData.totalGamesPlayed;
-        public int GetTotalMatchesMade() => saveData.totalMatchesMade;
-        public int GetMaxCombo() => saveData.maxCombo;
+        public int GetHighScore() => mSaveData.highScore;
+        public int GetHighestLevel() => mSaveData.highestLevel;
+        public int GetTotalGamesPlayed() => mSaveData.totalGamesPlayed;
+        public int GetTotalMatchesMade() => mSaveData.totalMatchesMade;
+        public int GetMaxCombo() => mSaveData.maxCombo;
     }
 }

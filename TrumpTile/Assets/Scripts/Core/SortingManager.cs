@@ -4,7 +4,7 @@ namespace TrumpTile.Core
 {
 	/// <summary>
 	/// Sorting Order 중앙 관리
-	/// 
+	///
 	/// [Sorting Layer 구조]
 	/// - Background: 0 (배경)
 	/// - Board: 100~999 (보드 타일)
@@ -12,7 +12,7 @@ namespace TrumpTile.Core
 	/// - Effect: 2000~2999 (이펙트)
 	/// - Popup: 3000~3999 (팝업)
 	/// - Transition: 9999 (씬 전환)
-	/// 
+	///
 	/// [보드 타일 Sorting 규칙]
 	/// - 기본값: 100
 	/// - 레이어당 증가: +100
@@ -38,7 +38,7 @@ namespace TrumpTile.Core
 		public const int SLOT_TILE_INCREMENT = 10;
 
 		// 최대 그리드 Y (Y 보정용)
-		private static int maxGridY = 20;
+		private static int mMaxGridY = 20;
 
 		#endregion
 
@@ -49,7 +49,7 @@ namespace TrumpTile.Core
 		/// </summary>
 		public static void SetMaxGridY(int value)
 		{
-			maxGridY = Mathf.Max(1, value);
+			mMaxGridY = Mathf.Max(1, value);
 		}
 
 		#endregion
@@ -66,7 +66,7 @@ namespace TrumpTile.Core
 		{
 			// 레이어가 높을수록, Y가 낮을수록 앞에 표시
 			int layerOrder = layer * LAYER_INCREMENT;
-			int yOrder = Mathf.Clamp(maxGridY - gridY, 0, LAYER_INCREMENT - 1);
+			int yOrder = Mathf.Clamp(mMaxGridY - gridY, 0, LAYER_INCREMENT - 1);
 
 			return BOARD_BASE + layerOrder + yOrder;
 		}
@@ -78,7 +78,7 @@ namespace TrumpTile.Core
 		{
 			// X도 고려하여 더 정밀한 정렬
 			int layerOrder = layer * LAYER_INCREMENT;
-			int yOrder = Mathf.Clamp(maxGridY - gridY, 0, 50);
+			int yOrder = Mathf.Clamp(mMaxGridY - gridY, 0, 50);
 			int xOrder = Mathf.Clamp(gridX, 0, 49);
 
 			return BOARD_BASE + layerOrder + yOrder + xOrder;

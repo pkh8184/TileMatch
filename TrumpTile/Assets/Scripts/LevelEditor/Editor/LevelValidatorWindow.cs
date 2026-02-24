@@ -12,31 +12,31 @@ namespace TileMatch.LevelEditor
     /// </summary>
     public class LevelValidatorWindow : EditorWindow
     {
-        private Vector2 scrollPosition;
-        private List<LevelData> levelsToValidate = new List<LevelData>();
-        private List<ValidationResult> validationResults = new List<ValidationResult>();
-        
-        private bool validateTileCount = true;
-        private bool validateMatchCount = true;
-        private bool validateLevelNaming = true;
-        private bool validateLayerSorting = true;
-        private bool validateDuplicateTiles = true;
-        private bool validateClearability = true;
-        private bool validateBoardBounds = true;
-        
-        private string levelFolderPath = "Assets/Resources/Levels";
-        private bool isValidating = false;
-        
+        private Vector2 mScrollPosition;
+        private List<LevelData> mLevelsToValidate = new List<LevelData>();
+        private List<ValidationResult> mValidationResults = new List<ValidationResult>();
+
+        private bool mValidateTileCount = true;
+        private bool mValidateMatchCount = true;
+        private bool mValidateLevelNaming = true;
+        private bool mValidateLayerSorting = true;
+        private bool mValidateDuplicateTiles = true;
+        private bool mValidateClearability = true;
+        private bool mValidateBoardBounds = true;
+
+        private string mLevelFolderPath = "Assets/Resources/Levels";
+        private bool mIsValidating = false;
+
         // 검증 결과 통계
-        private int totalLevels = 0;
-        private int passedLevels = 0;
-        private int warningLevels = 0;
-        private int errorLevels = 0;
+        private int mTotalLevels = 0;
+        private int mPassedLevels = 0;
+        private int mWarningLevels = 0;
+        private int mErrorLevels = 0;
 
         [MenuItem("Tools/Tile Match/Level Validator")]
         public static void OpenWindow()
         {
-            var window = GetWindow<LevelValidatorWindow>();
+            LevelValidatorWindow window = GetWindow<LevelValidatorWindow>();
             window.titleContent = new GUIContent("Level Validator", EditorGUIUtility.IconContent("d_console.infoicon").image);
             window.minSize = new Vector2(600, 500);
             window.Show();
@@ -44,7 +44,7 @@ namespace TileMatch.LevelEditor
 
         private void OnGUI()
         {
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            mScrollPosition = EditorGUILayout.BeginScrollView(mScrollPosition);
 
             DrawHeader();
             DrawSettings();
@@ -61,7 +61,7 @@ namespace TileMatch.LevelEditor
         {
             EditorGUILayout.Space(10);
 
-            var headerStyle = new GUIStyle(EditorStyles.boldLabel)
+            GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel)
             {
                 fontSize = 18,
                 alignment = TextAnchor.MiddleCenter
@@ -86,13 +86,13 @@ namespace TileMatch.LevelEditor
             EditorGUILayout.LabelField("📁 Settings", EditorStyles.boldLabel);
 
             EditorGUILayout.BeginHorizontal();
-            levelFolderPath = EditorGUILayout.TextField("Level Folder", levelFolderPath);
+            mLevelFolderPath = EditorGUILayout.TextField("Level Folder", mLevelFolderPath);
             if (GUILayout.Button("...", GUILayout.Width(30)))
             {
                 string path = EditorUtility.OpenFolderPanel("Select Level Folder", "Assets", "");
                 if (!string.IsNullOrEmpty(path) && path.StartsWith(Application.dataPath))
                 {
-                    levelFolderPath = "Assets" + path.Substring(Application.dataPath.Length);
+                    mLevelFolderPath = "Assets" + path.Substring(Application.dataPath.Length);
                 }
             }
             EditorGUILayout.EndHorizontal();
@@ -100,13 +100,13 @@ namespace TileMatch.LevelEditor
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("✅ Validation Options", EditorStyles.boldLabel);
 
-            validateTileCount = EditorGUILayout.Toggle("타일 개수 (matchCount 배수)", validateTileCount);
-            validateMatchCount = EditorGUILayout.Toggle("매칭 가능 타일 (3개씩 존재)", validateMatchCount);
-            validateLevelNaming = EditorGUILayout.Toggle("레벨 이름/번호 일치", validateLevelNaming);
-            validateLayerSorting = EditorGUILayout.Toggle("레이어/Sorting 검증", validateLayerSorting);
-            validateDuplicateTiles = EditorGUILayout.Toggle("중복 타일 검증 (같은 위치+레이어)", validateDuplicateTiles);
-            validateClearability = EditorGUILayout.Toggle("클리어 가능성 검증", validateClearability);
-            validateBoardBounds = EditorGUILayout.Toggle("보드 범위 검증", validateBoardBounds);
+            mValidateTileCount = EditorGUILayout.Toggle("타일 개수 (matchCount 배수)", mValidateTileCount);
+            mValidateMatchCount = EditorGUILayout.Toggle("매칭 가능 타일 (3개씩 존재)", mValidateMatchCount);
+            mValidateLevelNaming = EditorGUILayout.Toggle("레벨 이름/번호 일치", mValidateLevelNaming);
+            mValidateLayerSorting = EditorGUILayout.Toggle("레이어/Sorting 검증", mValidateLayerSorting);
+            mValidateDuplicateTiles = EditorGUILayout.Toggle("중복 타일 검증 (같은 위치+레이어)", mValidateDuplicateTiles);
+            mValidateClearability = EditorGUILayout.Toggle("클리어 가능성 검증", mValidateClearability);
+            mValidateBoardBounds = EditorGUILayout.Toggle("보드 범위 검증", mValidateBoardBounds);
 
             EditorGUILayout.EndVertical();
         }
@@ -117,13 +117,13 @@ namespace TileMatch.LevelEditor
 
             EditorGUILayout.BeginHorizontal();
 
-            GUI.backgroundColor = new Color(0.3f, 0.7f, 1f);
+            GUI.backgroundColor = new Color(0.3F, 0.7F, 1F);
             if (GUILayout.Button("🔍 Validate All Levels", GUILayout.Height(35)))
             {
                 ValidateAllLevels();
             }
 
-            GUI.backgroundColor = new Color(0.3f, 0.8f, 0.3f);
+            GUI.backgroundColor = new Color(0.3F, 0.8F, 0.3F);
             if (GUILayout.Button("✅ Validate Selected", GUILayout.Height(35)))
             {
                 ValidateSelectedLevels();
@@ -150,7 +150,7 @@ namespace TileMatch.LevelEditor
 
         private void DrawStatistics()
         {
-            if (validationResults.Count == 0) return;
+            if (mValidationResults.Count == 0) return;
 
             EditorGUILayout.Space(10);
             EditorGUILayout.BeginVertical("box");
@@ -159,24 +159,24 @@ namespace TileMatch.LevelEditor
             EditorGUILayout.BeginHorizontal();
 
             // 통과
-            GUI.backgroundColor = new Color(0.3f, 0.8f, 0.3f);
+            GUI.backgroundColor = new Color(0.3F, 0.8F, 0.3F);
             EditorGUILayout.BeginVertical("box", GUILayout.Width(100));
             EditorGUILayout.LabelField("✅ PASS", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField($"{passedLevels}", new GUIStyle(EditorStyles.boldLabel) { fontSize = 20, alignment = TextAnchor.MiddleCenter });
+            EditorGUILayout.LabelField($"{mPassedLevels}", new GUIStyle(EditorStyles.boldLabel) { fontSize = 20, alignment = TextAnchor.MiddleCenter });
             EditorGUILayout.EndVertical();
 
             // 경고
-            GUI.backgroundColor = new Color(1f, 0.8f, 0.3f);
+            GUI.backgroundColor = new Color(1F, 0.8F, 0.3F);
             EditorGUILayout.BeginVertical("box", GUILayout.Width(100));
             EditorGUILayout.LabelField("⚠️ WARN", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField($"{warningLevels}", new GUIStyle(EditorStyles.boldLabel) { fontSize = 20, alignment = TextAnchor.MiddleCenter });
+            EditorGUILayout.LabelField($"{mWarningLevels}", new GUIStyle(EditorStyles.boldLabel) { fontSize = 20, alignment = TextAnchor.MiddleCenter });
             EditorGUILayout.EndVertical();
 
             // 오류
-            GUI.backgroundColor = new Color(1f, 0.4f, 0.4f);
+            GUI.backgroundColor = new Color(1F, 0.4F, 0.4F);
             EditorGUILayout.BeginVertical("box", GUILayout.Width(100));
             EditorGUILayout.LabelField("❌ ERROR", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField($"{errorLevels}", new GUIStyle(EditorStyles.boldLabel) { fontSize = 20, alignment = TextAnchor.MiddleCenter });
+            EditorGUILayout.LabelField($"{mErrorLevels}", new GUIStyle(EditorStyles.boldLabel) { fontSize = 20, alignment = TextAnchor.MiddleCenter });
             EditorGUILayout.EndVertical();
 
             GUI.backgroundColor = Color.white;
@@ -184,8 +184,8 @@ namespace TileMatch.LevelEditor
             GUILayout.FlexibleSpace();
 
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField($"Total: {totalLevels} levels");
-            float passRate = totalLevels > 0 ? (float)passedLevels / totalLevels * 100f : 0f;
+            EditorGUILayout.LabelField($"Total: {mTotalLevels} levels");
+            float passRate = mTotalLevels > 0 ? (float)mPassedLevels / mTotalLevels * 100F : 0F;
             EditorGUILayout.LabelField($"Pass Rate: {passRate:F1}%");
             EditorGUILayout.EndVertical();
 
@@ -196,12 +196,12 @@ namespace TileMatch.LevelEditor
 
         private void DrawResults()
         {
-            if (validationResults.Count == 0) return;
+            if (mValidationResults.Count == 0) return;
 
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("📋 Validation Results", EditorStyles.boldLabel);
 
-            foreach (var result in validationResults)
+            foreach (ValidationResult result in mValidationResults)
             {
                 DrawSingleResult(result);
             }
@@ -211,9 +211,9 @@ namespace TileMatch.LevelEditor
         {
             Color bgColor = result.status switch
             {
-                ValidationStatus.Pass => new Color(0.2f, 0.6f, 0.2f, 0.3f),
-                ValidationStatus.Warning => new Color(0.8f, 0.6f, 0.1f, 0.3f),
-                ValidationStatus.Error => new Color(0.8f, 0.2f, 0.2f, 0.3f),
+                EValidationStatus.Pass => new Color(0.2F, 0.6F, 0.2F, 0.3F),
+                EValidationStatus.Warning => new Color(0.8F, 0.6F, 0.1F, 0.3F),
+                EValidationStatus.Error => new Color(0.8F, 0.2F, 0.2F, 0.3F),
                 _ => Color.gray
             };
 
@@ -224,9 +224,9 @@ namespace TileMatch.LevelEditor
 
             string statusIcon = result.status switch
             {
-                ValidationStatus.Pass => "✅",
-                ValidationStatus.Warning => "⚠️",
-                ValidationStatus.Error => "❌",
+                EValidationStatus.Pass => "✅",
+                EValidationStatus.Warning => "⚠️",
+                EValidationStatus.Error => "❌",
                 _ => "❓"
             };
 
@@ -252,17 +252,17 @@ namespace TileMatch.LevelEditor
             if (result.issues.Count > 0)
             {
                 EditorGUI.indentLevel++;
-                foreach (var issue in result.issues)
+                foreach (ValidationIssue issue in result.issues)
                 {
                     Color issueColor = issue.severity switch
                     {
-                        IssueSeverity.Error => Color.red,
-                        IssueSeverity.Warning => new Color(1f, 0.6f, 0f),
-                        IssueSeverity.Info => Color.cyan,
+                        EIssueSeverity.Error => Color.red,
+                        EIssueSeverity.Warning => new Color(1F, 0.6F, 0F),
+                        EIssueSeverity.Info => Color.cyan,
                         _ => Color.white
                     };
 
-                    var style = new GUIStyle(EditorStyles.label) { normal = { textColor = issueColor } };
+                    GUIStyle style = new GUIStyle(EditorStyles.label) { normal = { textColor = issueColor } };
                     EditorGUILayout.LabelField($"• {issue.message}", style);
                 }
                 EditorGUI.indentLevel--;
@@ -277,11 +277,11 @@ namespace TileMatch.LevelEditor
 
         private void ValidateAllLevels()
         {
-            validationResults.Clear();
-            levelsToValidate.Clear();
+            mValidationResults.Clear();
+            mLevelsToValidate.Clear();
 
             // 폴더에서 모든 레벨 로드
-            string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { levelFolderPath });
+            string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { mLevelFolderPath });
 
             foreach (string guid in guids)
             {
@@ -289,83 +289,83 @@ namespace TileMatch.LevelEditor
                 LevelData level = AssetDatabase.LoadAssetAtPath<LevelData>(path);
                 if (level != null)
                 {
-                    levelsToValidate.Add(level);
+                    mLevelsToValidate.Add(level);
                 }
             }
 
             // 레벨 번호순 정렬
-            levelsToValidate = levelsToValidate.OrderBy(l => l.levelNumber).ToList();
+            mLevelsToValidate = mLevelsToValidate.OrderBy(l => l.levelNumber).ToList();
 
             // 검증 실행
-            totalLevels = levelsToValidate.Count;
-            passedLevels = 0;
-            warningLevels = 0;
-            errorLevels = 0;
+            mTotalLevels = mLevelsToValidate.Count;
+            mPassedLevels = 0;
+            mWarningLevels = 0;
+            mErrorLevels = 0;
 
-            for (int i = 0; i < levelsToValidate.Count; i++)
+            for (int i = 0; i < mLevelsToValidate.Count; i++)
             {
-                EditorUtility.DisplayProgressBar("Validating Levels", 
-                    $"Level {i + 1}/{totalLevels}", (float)i / totalLevels);
+                EditorUtility.DisplayProgressBar("Validating Levels",
+                    $"Level {i + 1}/{mTotalLevels}", (float)i / mTotalLevels);
 
-                var result = ValidateLevel(levelsToValidate[i]);
-                validationResults.Add(result);
+                ValidationResult result = ValidateLevel(mLevelsToValidate[i]);
+                mValidationResults.Add(result);
 
                 switch (result.status)
                 {
-                    case ValidationStatus.Pass: passedLevels++; break;
-                    case ValidationStatus.Warning: warningLevels++; break;
-                    case ValidationStatus.Error: errorLevels++; break;
+                    case EValidationStatus.Pass: mPassedLevels++; break;
+                    case EValidationStatus.Warning: mWarningLevels++; break;
+                    case EValidationStatus.Error: mErrorLevels++; break;
                 }
             }
 
             EditorUtility.ClearProgressBar();
 
-            Debug.Log($"[LevelValidator] 검증 완료: {totalLevels}개 레벨 중 " +
-                      $"✅ {passedLevels} PASS, ⚠️ {warningLevels} WARN, ❌ {errorLevels} ERROR");
+            Debug.Log($"[LevelValidator] 검증 완료: {mTotalLevels}개 레벨 중 " +
+                      $"✅ {mPassedLevels} PASS, ⚠️ {mWarningLevels} WARN, ❌ {mErrorLevels} ERROR");
         }
 
         private void ValidateSelectedLevels()
         {
-            validationResults.Clear();
-            levelsToValidate.Clear();
+            mValidationResults.Clear();
+            mLevelsToValidate.Clear();
 
             // 선택된 레벨들
-            foreach (var obj in Selection.objects)
+            foreach (Object obj in Selection.objects)
             {
                 if (obj is LevelData level)
                 {
-                    levelsToValidate.Add(level);
+                    mLevelsToValidate.Add(level);
                 }
             }
 
-            if (levelsToValidate.Count == 0)
+            if (mLevelsToValidate.Count == 0)
             {
                 EditorUtility.DisplayDialog("No Selection", "LevelData 에셋을 선택해주세요.", "OK");
                 return;
             }
 
-            totalLevels = levelsToValidate.Count;
-            passedLevels = 0;
-            warningLevels = 0;
-            errorLevels = 0;
+            mTotalLevels = mLevelsToValidate.Count;
+            mPassedLevels = 0;
+            mWarningLevels = 0;
+            mErrorLevels = 0;
 
-            foreach (var level in levelsToValidate)
+            foreach (LevelData level in mLevelsToValidate)
             {
-                var result = ValidateLevel(level);
-                validationResults.Add(result);
+                ValidationResult result = ValidateLevel(level);
+                mValidationResults.Add(result);
 
                 switch (result.status)
                 {
-                    case ValidationStatus.Pass: passedLevels++; break;
-                    case ValidationStatus.Warning: warningLevels++; break;
-                    case ValidationStatus.Error: errorLevels++; break;
+                    case EValidationStatus.Pass: mPassedLevels++; break;
+                    case EValidationStatus.Warning: mWarningLevels++; break;
+                    case EValidationStatus.Error: mErrorLevels++; break;
                 }
             }
         }
 
         private ValidationResult ValidateLevel(LevelData level)
         {
-            var result = new ValidationResult
+            ValidationResult result = new ValidationResult
             {
                 levelData = level,
                 levelName = $"Level {level.levelNumber}: {level.levelName}",
@@ -373,54 +373,54 @@ namespace TileMatch.LevelEditor
             };
 
             // 1. 타일 개수 검증 (matchCount 배수)
-            if (validateTileCount)
+            if (mValidateTileCount)
             {
                 ValidateTileCount(level, result);
             }
 
             // 2. 매칭 가능 타일 검증 (각 타입이 matchCount개씩)
-            if (validateMatchCount)
+            if (mValidateMatchCount)
             {
                 ValidateMatchCount(level, result);
             }
 
             // 3. 레벨 이름/번호 검증
-            if (validateLevelNaming)
+            if (mValidateLevelNaming)
             {
                 ValidateLevelNaming(level, result);
             }
 
             // 4. 레이어/Sorting 검증
-            if (validateLayerSorting)
+            if (mValidateLayerSorting)
             {
                 ValidateLayerSorting(level, result);
             }
 
             // 5. 중복 타일 검증
-            if (validateDuplicateTiles)
+            if (mValidateDuplicateTiles)
             {
                 ValidateDuplicateTiles(level, result);
             }
 
             // 6. 클리어 가능성 검증
-            if (validateClearability)
+            if (mValidateClearability)
             {
                 ValidateClearability(level, result);
             }
 
             // 7. 보드 범위 검증
-            if (validateBoardBounds)
+            if (mValidateBoardBounds)
             {
                 ValidateBoardBounds(level, result);
             }
 
             // 최종 상태 결정
-            if (result.issues.Any(i => i.severity == IssueSeverity.Error))
-                result.status = ValidationStatus.Error;
-            else if (result.issues.Any(i => i.severity == IssueSeverity.Warning))
-                result.status = ValidationStatus.Warning;
+            if (result.issues.Any(i => i.severity == EIssueSeverity.Error))
+                result.status = EValidationStatus.Error;
+            else if (result.issues.Any(i => i.severity == EIssueSeverity.Warning))
+                result.status = EValidationStatus.Warning;
             else
-                result.status = ValidationStatus.Pass;
+                result.status = EValidationStatus.Pass;
 
             return result;
         }
@@ -435,7 +435,7 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Error,
+                    severity = EIssueSeverity.Error,
                     category = "TileCount",
                     message = "타일이 없습니다!"
                 });
@@ -449,7 +449,7 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Error,
+                    severity = EIssueSeverity.Error,
                     category = "TileCount",
                     message = $"타일 개수({tileCount})가 matchCount({matchCount})의 배수가 아닙니다!"
                 });
@@ -463,18 +463,18 @@ namespace TileMatch.LevelEditor
             int matchCount = level.matchCount > 0 ? level.matchCount : 3;
 
             // 타일 타입별 개수
-            var typeCounts = level.tilePlacements
+            Dictionary<string, int> typeCounts = level.tilePlacements
                 .Where(t => !string.IsNullOrEmpty(t.tileTypeId))
                 .GroupBy(t => t.tileTypeId)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            foreach (var kvp in typeCounts)
+            foreach (KeyValuePair<string, int> kvp in typeCounts)
             {
                 if (kvp.Value % matchCount != 0)
                 {
                     result.issues.Add(new ValidationIssue
                     {
-                        severity = IssueSeverity.Error,
+                        severity = EIssueSeverity.Error,
                         category = "MatchCount",
                         message = $"타일 '{kvp.Key}'의 개수({kvp.Value})가 {matchCount}의 배수가 아닙니다!"
                     });
@@ -487,7 +487,7 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Warning,
+                    severity = EIssueSeverity.Warning,
                     category = "MatchCount",
                     message = $"타일 타입이 지정되지 않은 타일이 {emptyTypeCount}개 있습니다."
                 });
@@ -508,7 +508,7 @@ namespace TileMatch.LevelEditor
                 {
                     result.issues.Add(new ValidationIssue
                     {
-                        severity = IssueSeverity.Warning,
+                        severity = EIssueSeverity.Warning,
                         category = "Naming",
                         message = $"파일명({fileName})과 레벨 번호({level.levelNumber})가 일치하지 않습니다."
                     });
@@ -520,7 +520,7 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Info,
+                    severity = EIssueSeverity.Info,
                     category = "Naming",
                     message = "레벨 이름이 비어있습니다."
                 });
@@ -539,7 +539,7 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Warning,
+                    severity = EIssueSeverity.Warning,
                     category = "Layer",
                     message = $"음수 레이어({minLayer})가 존재합니다."
                 });
@@ -549,21 +549,21 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Warning,
+                    severity = EIssueSeverity.Warning,
                     category = "Layer",
                     message = $"타일 레이어({maxLayer})가 maxLayers({level.maxLayers})를 초과합니다."
                 });
             }
 
             // 레이어 연속성 체크
-            var usedLayers = level.tilePlacements.Select(t => t.layer).Distinct().OrderBy(l => l).ToList();
+            List<int> usedLayers = level.tilePlacements.Select(t => t.layer).Distinct().OrderBy(l => l).ToList();
             for (int i = 0; i < usedLayers.Count - 1; i++)
             {
                 if (usedLayers[i + 1] - usedLayers[i] > 1)
                 {
                     result.issues.Add(new ValidationIssue
                     {
-                        severity = IssueSeverity.Info,
+                        severity = EIssueSeverity.Info,
                         category = "Layer",
                         message = $"레이어 {usedLayers[i]}와 {usedLayers[i + 1]} 사이에 빈 레이어가 있습니다."
                     });
@@ -587,7 +587,7 @@ namespace TileMatch.LevelEditor
                 {
                     result.issues.Add(new ValidationIssue
                     {
-                        severity = IssueSeverity.Error,
+                        severity = EIssueSeverity.Error,
                         category = "Duplicate",
                         message = $"중복 타일: 위치({dup.Key.gridX}, {dup.Key.gridY}), 레이어 {dup.Key.layer}에 {dup.Count()}개 타일"
                     });
@@ -602,18 +602,18 @@ namespace TileMatch.LevelEditor
             int matchCount = level.matchCount > 0 ? level.matchCount : 3;
 
             // 각 타일 타입이 matchCount 배수인지 (이미 ValidateMatchCount에서 체크하지만 한번 더)
-            var typeCounts = level.tilePlacements
+            Dictionary<string, int> typeCounts = level.tilePlacements
                 .Where(t => !string.IsNullOrEmpty(t.tileTypeId))
                 .GroupBy(t => t.tileTypeId)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            bool allClearable = typeCounts.All(kvp => kvp.Value % matchCount == 0);
+            bool bAllClearable = typeCounts.All(kvp => kvp.Value % matchCount == 0);
 
-            if (!allClearable)
+            if (!bAllClearable)
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Error,
+                    severity = EIssueSeverity.Error,
                     category = "Clearability",
                     message = "클리어 불가능! 일부 타일 타입의 개수가 matchCount 배수가 아닙니다."
                 });
@@ -625,7 +625,7 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Error,
+                    severity = EIssueSeverity.Error,
                     category = "Clearability",
                     message = $"클리어 불가능! 총 타일 수({totalTiles})가 matchCount({matchCount}) 배수가 아닙니다."
                 });
@@ -636,7 +636,7 @@ namespace TileMatch.LevelEditor
         {
             if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
 
-            var outOfBounds = level.tilePlacements.Where(t =>
+            List<TilePlacement> outOfBounds = level.tilePlacements.Where(t =>
                 t.gridX < 0 || t.gridX >= level.boardWidth ||
                 t.gridY < 0 || t.gridY >= level.boardHeight
             ).ToList();
@@ -645,7 +645,7 @@ namespace TileMatch.LevelEditor
             {
                 result.issues.Add(new ValidationIssue
                 {
-                    severity = IssueSeverity.Error,
+                    severity = EIssueSeverity.Error,
                     category = "Bounds",
                     message = $"{outOfBounds.Count}개 타일이 보드 범위({level.boardWidth}x{level.boardHeight})를 벗어났습니다."
                 });
@@ -658,7 +658,7 @@ namespace TileMatch.LevelEditor
 
         private void ExportReport()
         {
-            if (validationResults.Count == 0)
+            if (mValidationResults.Count == 0)
             {
                 EditorUtility.DisplayDialog("No Results", "먼저 검증을 실행해주세요.", "OK");
                 return;
@@ -667,23 +667,23 @@ namespace TileMatch.LevelEditor
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("=== Level Validation Report ===");
             sb.AppendLine($"Date: {System.DateTime.Now}");
-            sb.AppendLine($"Total: {totalLevels} levels");
-            sb.AppendLine($"Pass: {passedLevels}, Warning: {warningLevels}, Error: {errorLevels}");
+            sb.AppendLine($"Total: {mTotalLevels} levels");
+            sb.AppendLine($"Pass: {mPassedLevels}, Warning: {mWarningLevels}, Error: {mErrorLevels}");
             sb.AppendLine();
 
-            foreach (var result in validationResults)
+            foreach (ValidationResult result in mValidationResults)
             {
                 string status = result.status switch
                 {
-                    ValidationStatus.Pass => "[PASS]",
-                    ValidationStatus.Warning => "[WARN]",
-                    ValidationStatus.Error => "[ERROR]",
+                    EValidationStatus.Pass => "[PASS]",
+                    EValidationStatus.Warning => "[WARN]",
+                    EValidationStatus.Error => "[ERROR]",
                     _ => "[???]"
                 };
 
                 sb.AppendLine($"{status} {result.levelName}");
 
-                foreach (var issue in result.issues)
+                foreach (ValidationIssue issue in result.issues)
                 {
                     sb.AppendLine($"  - [{issue.severity}] {issue.message}");
                 }
@@ -700,7 +700,7 @@ namespace TileMatch.LevelEditor
 
         private void AutoFixSafeIssues()
         {
-            if (validationResults.Count == 0)
+            if (mValidationResults.Count == 0)
             {
                 EditorUtility.DisplayDialog("No Results", "먼저 검증을 실행해주세요.", "OK");
                 return;
@@ -708,14 +708,14 @@ namespace TileMatch.LevelEditor
 
             int fixedCount = 0;
 
-            foreach (var result in validationResults.Where(r => r.status != ValidationStatus.Pass))
+            foreach (ValidationResult result in mValidationResults.Where(r => r.status != EValidationStatus.Pass))
             {
                 if (result.levelData == null) continue;
 
-                bool modified = false;
+                bool bModified = false;
 
                 // 중복 타일 제거
-                if (validateDuplicateTiles)
+                if (mValidateDuplicateTiles)
                 {
                     var duplicateGroups = result.levelData.tilePlacements
                         .GroupBy(t => new { t.gridX, t.gridY, t.layer })
@@ -725,35 +725,35 @@ namespace TileMatch.LevelEditor
                     foreach (var group in duplicateGroups)
                     {
                         // 첫 번째만 남기고 나머지 제거
-                        var toRemove = group.Skip(1).ToList();
-                        foreach (var tile in toRemove)
+                        List<TilePlacement> toRemove = group.Skip(1).ToList();
+                        foreach (TilePlacement tile in toRemove)
                         {
                             result.levelData.tilePlacements.Remove(tile);
-                            modified = true;
+                            bModified = true;
                             fixedCount++;
                         }
                     }
                 }
 
                 // 레벨 번호 수정 (파일명 기준)
-                if (validateLevelNaming)
+                if (mValidateLevelNaming)
                 {
                     string assetPath = AssetDatabase.GetAssetPath(result.levelData);
                     string fileName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
                     string numberStr = new string(fileName.Where(char.IsDigit).ToArray());
-                    
+
                     if (int.TryParse(numberStr, out int fileNumber))
                     {
                         if (fileNumber != result.levelData.levelNumber)
                         {
                             result.levelData.levelNumber = fileNumber;
-                            modified = true;
+                            bModified = true;
                             fixedCount++;
                         }
                     }
                 }
 
-                if (modified)
+                if (bModified)
                 {
                     EditorUtility.SetDirty(result.levelData);
                 }
@@ -761,7 +761,7 @@ namespace TileMatch.LevelEditor
 
             AssetDatabase.SaveAssets();
 
-            EditorUtility.DisplayDialog("Auto Fix Complete", 
+            EditorUtility.DisplayDialog("Auto Fix Complete",
                 $"{fixedCount}개 이슈가 자동 수정되었습니다.\n다시 검증을 실행해주세요.", "OK");
 
             // 다시 검증
@@ -772,20 +772,20 @@ namespace TileMatch.LevelEditor
 
         #region Data Classes
 
-        private enum ValidationStatus { Pass, Warning, Error }
-        private enum IssueSeverity { Info, Warning, Error }
+        private enum EValidationStatus { Pass, Warning, Error }
+        private enum EIssueSeverity { Info, Warning, Error }
 
         private class ValidationResult
         {
             public LevelData levelData;
             public string levelName;
-            public ValidationStatus status;
+            public EValidationStatus status;
             public List<ValidationIssue> issues;
         }
 
         private class ValidationIssue
         {
-            public IssueSeverity severity;
+            public EIssueSeverity severity;
             public string category;
             public string message;
         }

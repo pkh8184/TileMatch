@@ -11,17 +11,17 @@ namespace TrumpTile.Effects
     {
         [Header("Settings")]
         [SerializeField] private Sprite[] particleSprites;
-        
-        private SpriteRenderer spriteRenderer;
+
+        private SpriteRenderer mSpriteRenderer;
 
         private void Awake()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            
+            mSpriteRenderer = GetComponent<SpriteRenderer>();
+
             // 랜덤 스프라이트 선택
             if (particleSprites != null && particleSprites.Length > 0)
             {
-                spriteRenderer.sprite = particleSprites[Random.Range(0, particleSprites.Length)];
+                mSpriteRenderer.sprite = particleSprites[Random.Range(0, particleSprites.Length)];
             }
         }
 
@@ -30,9 +30,9 @@ namespace TrumpTile.Effects
         /// </summary>
         public void SetColor(Color color)
         {
-            if (spriteRenderer != null)
+            if (mSpriteRenderer != null)
             {
-                spriteRenderer.color = color;
+                mSpriteRenderer.color = color;
             }
         }
     }

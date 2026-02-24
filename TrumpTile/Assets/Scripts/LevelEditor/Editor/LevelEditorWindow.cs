@@ -3,10 +3,11 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using TrumpTile.Core;
 
 namespace TileMatch.LevelEditor
 {
-	public enum EditorTool { Select, Paint, Erase, Fill, Eyedropper }
+	public enum EEditorTool { Select, Paint, Erase, Fill, Eyedropper }
 
 	public class LevelSnapshot
 	{
@@ -17,56 +18,56 @@ namespace TileMatch.LevelEditor
 	public class LevelEditorWindow : EditorWindow
 	{
 		// 현재 편집 중인 레벨
-		private LevelData currentLevel;
+		private LevelData mCurrentLevel;
 
 		// 에디터 상태
-		private EditorTool currentTool = EditorTool.Select;
-		private int currentLayer = 0;
-		private string selectedTileType = "";
-		private bool showAllLayers = true;
-		private float layerOpacity = 0.5f;
+		private EEditorTool mCurrentTool = EEditorTool.Select;
+		private int mCurrentLayer = 0;
+		private string mSelectedTileType = "";
+		private bool mShowAllLayers = true;
+		private float mLayerOpacity = 0.5F;
 
 		// 뷰 설정
-		private Vector2 scrollPosition;
-		private float zoomLevel = 1f;
-		private Vector2 panOffset = Vector2.zero;
+		private Vector2 mScrollPosition;
+		private float mZoomLevel = 1F;
+		private Vector2 mPanOffset = Vector2.zero;
 
 		// 그리드 설정
-		private float cellSize = 40f;
-		private float cellPadding = 2f;
+		private float mCellSize = 40F;
+		private float mCellPadding = 2F;
 
 		// 선택 상태
-		private List<TilePlacement> selectedTiles;
-		private Vector2 dragStart;
-		private Rect selectionRect;
+		private List<TilePlacement> mSelectedTiles;
+		private Vector2 mDragStart;
+		private Rect mSelectionRect;
 
 		// UI 패널 상태
-		private bool showLevelSettings = true;
-		private bool showTileTypes = true;
-		private bool showStatistics = true;
+		private bool mShowLevelSettings = true;
+		private bool mShowTileTypes = true;
+		private bool mShowStatistics = true;
 
 		// 히스토리
-		private List<LevelSnapshot> undoHistory;
-		private List<LevelSnapshot> redoHistory;
-		private const int MaxHistorySize = 50;
+		private List<LevelSnapshot> mUndoHistory;
+		private List<LevelSnapshot> mRedoHistory;
+		private const int MAX_HISTORY_SIZE = 50;
 
 		// 타일 프리셋
-		private List<TileTypeConfig> tileTypePresets;
+		private List<TileTypeConfig> mTileTypePresets;
 
 		// 색상
 		private static readonly Color[] LayerColors = new Color[]
 		{
-			new Color(0.2f, 0.6f, 1f, 1f),
-			new Color(0.2f, 0.8f, 0.4f, 1f),
-			new Color(1f, 0.8f, 0.2f, 1f),
-			new Color(1f, 0.4f, 0.4f, 1f),
-			new Color(0.8f, 0.4f, 1f, 1f),
+			new Color(0.2F, 0.6F, 1F, 1F),
+			new Color(0.2F, 0.8F, 0.4F, 1F),
+			new Color(1F, 0.8F, 0.2F, 1F),
+			new Color(1F, 0.4F, 0.4F, 1F),
+			new Color(0.8F, 0.4F, 1F, 1F),
 		};
 
 		[MenuItem("Tools/Tile Match/Level Editor %#l")]
 		public static void OpenWindow()
 		{
-			var window = GetWindow<LevelEditorWindow>();
+			LevelEditorWindow window = GetWindow<LevelEditorWindow>();
 			window.titleContent = new GUIContent("Level Editor");
 			window.minSize = new Vector2(900, 600);
 			window.Show();
@@ -74,21 +75,21 @@ namespace TileMatch.LevelEditor
 
 		private void OnEnable()
 		{
-			selectedTiles = new List<TilePlacement>();
-			undoHistory = new List<LevelSnapshot>();
-			redoHistory = new List<LevelSnapshot>();
+			mSelectedTiles = new List<TilePlacement>();
+			mUndoHistory = new List<LevelSnapshot>();
+			mRedoHistory = new List<LevelSnapshot>();
 			InitializeTilePresets();
 		}
 
 		private void InitializeTilePresets()
 		{
-			tileTypePresets = new List<TileTypeConfig>();
+			mTileTypePresets = new List<TileTypeConfig>();
 
-			foreach (CardSuit suit in System.Enum.GetValues(typeof(CardSuit)))
+			foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
 			{
-				foreach (CardRank rank in System.Enum.GetValues(typeof(CardRank)))
+				foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
 				{
-					tileTypePresets.Add(new TileTypeConfig
+					mTileTypePresets.Add(new TileTypeConfig
 					{
 						typeId = $"{suit}_{rank}",
 						suit = suit,
@@ -102,10 +103,10 @@ namespace TileMatch.LevelEditor
 		private void OnGUI()
 		{
 			// 리스트 null 체크
-			if (selectedTiles == null) selectedTiles = new List<TilePlacement>();
-			if (undoHistory == null) undoHistory = new List<LevelSnapshot>();
-			if (redoHistory == null) redoHistory = new List<LevelSnapshot>();
-			if (tileTypePresets == null) InitializeTilePresets();
+			if (mSelectedTiles == null) mSelectedTiles = new List<TilePlacement>();
+			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
+			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
+			if (mTileTypePresets == null) InitializeTilePresets();
 
 			EditorGUILayout.BeginVertical();
 
@@ -144,11 +145,11 @@ namespace TileMatch.LevelEditor
 			GUILayout.Space(20);
 
 			// Undo/Redo
-			GUI.enabled = undoHistory != null && undoHistory.Count > 0;
+			GUI.enabled = mUndoHistory != null && mUndoHistory.Count > 0;
 			if (GUILayout.Button("Undo", EditorStyles.toolbarButton, GUILayout.Width(50)))
 				Undo();
 
-			GUI.enabled = redoHistory != null && redoHistory.Count > 0;
+			GUI.enabled = mRedoHistory != null && mRedoHistory.Count > 0;
 			if (GUILayout.Button("Redo", EditorStyles.toolbarButton, GUILayout.Width(50)))
 				Redo();
 
@@ -159,35 +160,35 @@ namespace TileMatch.LevelEditor
 			// 도구 선택
 			GUILayout.Label("Tool:", GUILayout.Width(35));
 
-			if (GUILayout.Toggle(currentTool == EditorTool.Select, "Select", EditorStyles.toolbarButton, GUILayout.Width(50)))
-				currentTool = EditorTool.Select;
-			if (GUILayout.Toggle(currentTool == EditorTool.Paint, "Paint", EditorStyles.toolbarButton, GUILayout.Width(50)))
-				currentTool = EditorTool.Paint;
-			if (GUILayout.Toggle(currentTool == EditorTool.Erase, "Erase", EditorStyles.toolbarButton, GUILayout.Width(50)))
-				currentTool = EditorTool.Erase;
+			if (GUILayout.Toggle(mCurrentTool == EEditorTool.Select, "Select", EditorStyles.toolbarButton, GUILayout.Width(50)))
+				mCurrentTool = EEditorTool.Select;
+			if (GUILayout.Toggle(mCurrentTool == EEditorTool.Paint, "Paint", EditorStyles.toolbarButton, GUILayout.Width(50)))
+				mCurrentTool = EEditorTool.Paint;
+			if (GUILayout.Toggle(mCurrentTool == EEditorTool.Erase, "Erase", EditorStyles.toolbarButton, GUILayout.Width(50)))
+				mCurrentTool = EEditorTool.Erase;
 
 			GUILayout.Space(20);
 
 			// 레이어 선택
 			GUILayout.Label("Layer:", GUILayout.Width(40));
-			int maxLayers = currentLevel != null ? Mathf.Min(currentLevel.maxLayers, 5) : 4;
+			int maxLayers = mCurrentLevel != null ? Mathf.Min(mCurrentLevel.maxLayers, 5) : 4;
 			for (int i = 0; i < maxLayers; i++)
 			{
-				GUI.backgroundColor = currentLayer == i ? LayerColors[i] : Color.white;
+				GUI.backgroundColor = mCurrentLayer == i ? LayerColors[i] : Color.white;
 				if (GUILayout.Button(i.ToString(), EditorStyles.toolbarButton, GUILayout.Width(25)))
-					currentLayer = i;
+					mCurrentLayer = i;
 			}
 			GUI.backgroundColor = Color.white;
 
 			GUILayout.Space(10);
-			showAllLayers = GUILayout.Toggle(showAllLayers, "Show All", EditorStyles.toolbarButton, GUILayout.Width(70));
+			mShowAllLayers = GUILayout.Toggle(mShowAllLayers, "Show All", EditorStyles.toolbarButton, GUILayout.Width(70));
 
 			GUILayout.FlexibleSpace();
 
 			// 줌
 			GUILayout.Label("Zoom:", GUILayout.Width(40));
-			zoomLevel = GUILayout.HorizontalSlider(zoomLevel, 0.5f, 2f, GUILayout.Width(80));
-			GUILayout.Label($"{zoomLevel:F1}x", GUILayout.Width(35));
+			mZoomLevel = GUILayout.HorizontalSlider(mZoomLevel, 0.5F, 2F, GUILayout.Width(80));
+			GUILayout.Label($"{mZoomLevel:F1}x", GUILayout.Width(35));
 
 			EditorGUILayout.EndHorizontal();
 		}
@@ -199,7 +200,7 @@ namespace TileMatch.LevelEditor
 		private void DrawLeftPanel()
 		{
 			EditorGUILayout.BeginVertical(GUILayout.Width(250));
-			scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+			mScrollPosition = EditorGUILayout.BeginScrollView(mScrollPosition);
 
 			DrawLevelSettings();
 			DrawStatistics();
@@ -210,31 +211,31 @@ namespace TileMatch.LevelEditor
 
 		private void DrawLevelSettings()
 		{
-			showLevelSettings = EditorGUILayout.Foldout(showLevelSettings, "Level Settings", true);
-			if (!showLevelSettings) return;
+			mShowLevelSettings = EditorGUILayout.Foldout(mShowLevelSettings, "Level Settings", true);
+			if (!mShowLevelSettings) return;
 
 			EditorGUILayout.BeginVertical("box");
 
-			if (currentLevel != null)
+			if (mCurrentLevel != null)
 			{
 				EditorGUI.BeginChangeCheck();
 
-				currentLevel.levelNumber = EditorGUILayout.IntField("Level Number", currentLevel.levelNumber);
-				currentLevel.levelName = EditorGUILayout.TextField("Level Name", currentLevel.levelName);
-				currentLevel.difficulty = (LevelDifficulty)EditorGUILayout.EnumPopup("Difficulty", currentLevel.difficulty);
+				mCurrentLevel.levelNumber = EditorGUILayout.IntField("Level Number", mCurrentLevel.levelNumber);
+				mCurrentLevel.levelName = EditorGUILayout.TextField("Level Name", mCurrentLevel.levelName);
+				mCurrentLevel.difficulty = (ELevelDifficulty)EditorGUILayout.EnumPopup("Difficulty", mCurrentLevel.difficulty);
 
 				EditorGUILayout.Space(5);
-				currentLevel.boardWidth = EditorGUILayout.IntSlider("Width", currentLevel.boardWidth, 4, 12);
-				currentLevel.boardHeight = EditorGUILayout.IntSlider("Height", currentLevel.boardHeight, 4, 12);
-				currentLevel.maxLayers = EditorGUILayout.IntSlider("Layers", currentLevel.maxLayers, 1, 5);
+				mCurrentLevel.boardWidth = EditorGUILayout.IntSlider("Width", mCurrentLevel.boardWidth, 4, 12);
+				mCurrentLevel.boardHeight = EditorGUILayout.IntSlider("Height", mCurrentLevel.boardHeight, 4, 12);
+				mCurrentLevel.maxLayers = EditorGUILayout.IntSlider("Layers", mCurrentLevel.maxLayers, 1, 5);
 
 				EditorGUILayout.Space(5);
-				currentLevel.slotCount = EditorGUILayout.IntSlider("Slot Count", currentLevel.slotCount, 5, 10);
-				currentLevel.matchCount = EditorGUILayout.IntSlider("Match Count", currentLevel.matchCount, 3, 4);
+				mCurrentLevel.slotCount = EditorGUILayout.IntSlider("Slot Count", mCurrentLevel.slotCount, 5, 10);
+				mCurrentLevel.matchCount = EditorGUILayout.IntSlider("Match Count", mCurrentLevel.matchCount, 3, 4);
 
 				if (EditorGUI.EndChangeCheck())
 				{
-					EditorUtility.SetDirty(currentLevel);
+					EditorUtility.SetDirty(mCurrentLevel);
 				}
 			}
 			else
@@ -249,22 +250,22 @@ namespace TileMatch.LevelEditor
 
 		private void DrawStatistics()
 		{
-			if (currentLevel == null) return;
+			if (mCurrentLevel == null) return;
 
-			showStatistics = EditorGUILayout.Foldout(showStatistics, "Statistics", true);
-			if (!showStatistics) return;
+			mShowStatistics = EditorGUILayout.Foldout(mShowStatistics, "Statistics", true);
+			if (!mShowStatistics) return;
 
 			EditorGUILayout.BeginVertical("box");
 
-			int totalTiles = currentLevel.tilePlacements != null ? currentLevel.tilePlacements.Count : 0;
+			int totalTiles = mCurrentLevel.tilePlacements != null ? mCurrentLevel.tilePlacements.Count : 0;
 			EditorGUILayout.LabelField("Total Tiles:", totalTiles.ToString());
 
 			// 레이어별 타일 수
-			if (currentLevel.tilePlacements != null)
+			if (mCurrentLevel.tilePlacements != null)
 			{
-				for (int i = 0; i < currentLevel.maxLayers && i < LayerColors.Length; i++)
+				for (int i = 0; i < mCurrentLevel.maxLayers && i < LayerColors.Length; i++)
 				{
-					int count = currentLevel.tilePlacements.Count(t => t != null && t.layer == i);
+					int count = mCurrentLevel.tilePlacements.Count(t => t != null && t.layer == i);
 					EditorGUILayout.LabelField($"  Layer {i}:", count.ToString());
 				}
 			}
@@ -272,7 +273,7 @@ namespace TileMatch.LevelEditor
 			// 유효성 검사
 			EditorGUILayout.Space(5);
 			string errorMsg;
-			if (currentLevel.Validate(out errorMsg))
+			if (mCurrentLevel.Validate(out errorMsg))
 			{
 				EditorGUILayout.HelpBox("Level is valid", MessageType.Info);
 			}
@@ -294,9 +295,9 @@ namespace TileMatch.LevelEditor
 				GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
 
 			// 배경
-			EditorGUI.DrawRect(gridArea, new Color(0.15f, 0.15f, 0.15f));
+			EditorGUI.DrawRect(gridArea, new Color(0.15F, 0.15F, 0.15F));
 
-			if (currentLevel == null)
+			if (mCurrentLevel == null)
 			{
 				GUI.Label(gridArea, "Create or Open a Level", new GUIStyle(EditorStyles.largeLabel)
 				{
@@ -312,36 +313,36 @@ namespace TileMatch.LevelEditor
 
 		private void DrawGrid(Rect area)
 		{
-			if (currentLevel == null) return;
+			if (mCurrentLevel == null) return;
 
-			float scaledCellSize = cellSize * zoomLevel;
-			float gridWidth = currentLevel.boardWidth * scaledCellSize;
-			float gridHeight = currentLevel.boardHeight * scaledCellSize;
+			float scaledCellSize = mCellSize * mZoomLevel;
+			float gridWidth = mCurrentLevel.boardWidth * scaledCellSize;
+			float gridHeight = mCurrentLevel.boardHeight * scaledCellSize;
 
 			Vector2 gridOrigin = new Vector2(
-				area.x + (area.width - gridWidth) / 2 + panOffset.x,
-				area.y + (area.height - gridHeight) / 2 + panOffset.y
+				area.x + (area.width - gridWidth) / 2 + mPanOffset.x,
+				area.y + (area.height - gridHeight) / 2 + mPanOffset.y
 			);
 
 			// 그리드 배경
 			Rect gridBounds = new Rect(gridOrigin.x, gridOrigin.y, gridWidth, gridHeight);
-			EditorGUI.DrawRect(gridBounds, new Color(0.25f, 0.25f, 0.28f));
+			EditorGUI.DrawRect(gridBounds, new Color(0.25F, 0.25F, 0.28F));
 
 			// 셀 그리기
-			for (int x = 0; x < currentLevel.boardWidth; x++)
+			for (int x = 0; x < mCurrentLevel.boardWidth; x++)
 			{
-				for (int y = 0; y < currentLevel.boardHeight; y++)
+				for (int y = 0; y < mCurrentLevel.boardHeight; y++)
 				{
 					Rect cellRect = new Rect(
-						gridOrigin.x + x * scaledCellSize + cellPadding,
-						gridOrigin.y + (currentLevel.boardHeight - 1 - y) * scaledCellSize + cellPadding,
-						scaledCellSize - cellPadding * 2,
-						scaledCellSize - cellPadding * 2
+						gridOrigin.x + x * scaledCellSize + mCellPadding,
+						gridOrigin.y + (mCurrentLevel.boardHeight - 1 - y) * scaledCellSize + mCellPadding,
+						scaledCellSize - mCellPadding * 2,
+						scaledCellSize - mCellPadding * 2
 					);
 
 					Color cellColor = (x + y) % 2 == 0 ?
-						new Color(0.3f, 0.3f, 0.33f) :
-						new Color(0.28f, 0.28f, 0.31f);
+						new Color(0.3F, 0.3F, 0.33F) :
+						new Color(0.28F, 0.28F, 0.31F);
 
 					EditorGUI.DrawRect(cellRect, cellColor);
 				}
@@ -350,34 +351,34 @@ namespace TileMatch.LevelEditor
 
 		private void DrawTiles(Rect area)
 		{
-			if (currentLevel == null || currentLevel.tilePlacements == null) return;
+			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
 
-			float scaledCellSize = cellSize * zoomLevel;
+			float scaledCellSize = mCellSize * mZoomLevel;
 			Vector2 gridOrigin = GetGridOrigin(area);
 
-			foreach (var tile in currentLevel.tilePlacements)
+			foreach (TilePlacement tile in mCurrentLevel.tilePlacements)
 			{
 				if (tile == null) continue;
 
-				if (!showAllLayers && tile.layer != currentLayer)
+				if (!mShowAllLayers && tile.layer != mCurrentLayer)
 					continue;
 
-				float alpha = (showAllLayers && tile.layer != currentLayer) ? layerOpacity : 1f;
+				float alpha = (mShowAllLayers && tile.layer != mCurrentLayer) ? mLayerOpacity : 1F;
 				DrawTile(tile, gridOrigin, scaledCellSize, alpha);
 			}
 		}
 
 		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, float alpha)
 		{
-			if (tile == null || currentLevel == null) return;
+			if (tile == null || mCurrentLevel == null) return;
 
-			float layerOffset = tile.layer * 3f * zoomLevel;
+			float layerOffset = tile.layer * 3F * mZoomLevel;
 
 			Rect tileRect = new Rect(
-				gridOrigin.x + tile.gridX * scaledCellSize + cellPadding + layerOffset,
-				gridOrigin.y + (currentLevel.boardHeight - 1 - tile.gridY) * scaledCellSize + cellPadding - layerOffset,
-				scaledCellSize - cellPadding * 2,
-				scaledCellSize - cellPadding * 2
+				gridOrigin.x + tile.gridX * scaledCellSize + mCellPadding + layerOffset,
+				gridOrigin.y + (mCurrentLevel.boardHeight - 1 - tile.gridY) * scaledCellSize + mCellPadding - layerOffset,
+				scaledCellSize - mCellPadding * 2,
+				scaledCellSize - mCellPadding * 2
 			);
 
 			// 레이어 색상
@@ -386,10 +387,10 @@ namespace TileMatch.LevelEditor
 			tileColor.a = alpha;
 
 			// 선택 하이라이트
-			if (selectedTiles != null && selectedTiles.Contains(tile))
+			if (mSelectedTiles != null && mSelectedTiles.Contains(tile))
 			{
 				Rect highlight = new Rect(tileRect.x - 2, tileRect.y - 2, tileRect.width + 4, tileRect.height + 4);
-				EditorGUI.DrawRect(highlight, new Color(1f, 0.8f, 0.2f, alpha));
+				EditorGUI.DrawRect(highlight, new Color(1F, 0.8F, 0.2F, alpha));
 			}
 
 			EditorGUI.DrawRect(tileRect, tileColor);
@@ -404,7 +405,7 @@ namespace TileMatch.LevelEditor
 					GUI.Label(tileRect, display, new GUIStyle(EditorStyles.boldLabel)
 					{
 						alignment = TextAnchor.MiddleCenter,
-						fontSize = Mathf.RoundToInt(10 * zoomLevel),
+						fontSize = Mathf.RoundToInt(10 * mZoomLevel),
 						normal = { textColor = new Color(1, 1, 1, alpha) }
 					});
 				}
@@ -436,15 +437,15 @@ namespace TileMatch.LevelEditor
 
 		private Vector2 GetGridOrigin(Rect area)
 		{
-			if (currentLevel == null) return Vector2.zero;
+			if (mCurrentLevel == null) return Vector2.zero;
 
-			float scaledCellSize = cellSize * zoomLevel;
-			float gridWidth = currentLevel.boardWidth * scaledCellSize;
-			float gridHeight = currentLevel.boardHeight * scaledCellSize;
+			float scaledCellSize = mCellSize * mZoomLevel;
+			float gridWidth = mCurrentLevel.boardWidth * scaledCellSize;
+			float gridHeight = mCurrentLevel.boardHeight * scaledCellSize;
 
 			return new Vector2(
-				area.x + (area.width - gridWidth) / 2 + panOffset.x,
-				area.y + (area.height - gridHeight) / 2 + panOffset.y
+				area.x + (area.width - gridWidth) / 2 + mPanOffset.x,
+				area.y + (area.height - gridHeight) / 2 + mPanOffset.y
 			);
 		}
 
@@ -464,20 +465,20 @@ namespace TileMatch.LevelEditor
 			}
 			else if (e.type == EventType.MouseDrag && e.button == 0)
 			{
-				if (currentTool == EditorTool.Paint)
+				if (mCurrentTool == EEditorTool.Paint)
 					PaintTile(gridPos);
-				else if (currentTool == EditorTool.Erase)
+				else if (mCurrentTool == EEditorTool.Erase)
 					EraseTile(gridPos);
 				Repaint();
 			}
 			else if (e.type == EventType.MouseDrag && e.button == 2)
 			{
-				panOffset += e.delta;
+				mPanOffset += e.delta;
 				Repaint();
 			}
 			else if (e.type == EventType.ScrollWheel)
 			{
-				zoomLevel = Mathf.Clamp(zoomLevel - e.delta.y * 0.05f, 0.5f, 2f);
+				mZoomLevel = Mathf.Clamp(mZoomLevel - e.delta.y * 0.05F, 0.5F, 2F);
 				Repaint();
 				e.Use();
 			}
@@ -485,44 +486,44 @@ namespace TileMatch.LevelEditor
 
 		private Vector2Int GetGridPosition(Vector2 mousePos, Rect area)
 		{
-			if (currentLevel == null) return Vector2Int.zero;
+			if (mCurrentLevel == null) return Vector2Int.zero;
 
 			Vector2 gridOrigin = GetGridOrigin(area);
-			float scaledCellSize = cellSize * zoomLevel;
+			float scaledCellSize = mCellSize * mZoomLevel;
 
 			int x = Mathf.FloorToInt((mousePos.x - gridOrigin.x) / scaledCellSize);
-			int y = currentLevel.boardHeight - 1 - Mathf.FloorToInt((mousePos.y - gridOrigin.y) / scaledCellSize);
+			int y = mCurrentLevel.boardHeight - 1 - Mathf.FloorToInt((mousePos.y - gridOrigin.y) / scaledCellSize);
 
 			return new Vector2Int(x, y);
 		}
 
 		private bool IsValidGridPosition(Vector2Int pos)
 		{
-			return currentLevel != null &&
-				   pos.x >= 0 && pos.x < currentLevel.boardWidth &&
-				   pos.y >= 0 && pos.y < currentLevel.boardHeight;
+			return mCurrentLevel != null &&
+				   pos.x >= 0 && pos.x < mCurrentLevel.boardWidth &&
+				   pos.y >= 0 && pos.y < mCurrentLevel.boardHeight;
 		}
 
 		private void HandleLeftClick(Vector2Int gridPos)
 		{
 			if (!IsValidGridPosition(gridPos)) return;
 
-			switch (currentTool)
+			switch (mCurrentTool)
 			{
-				case EditorTool.Select:
-					var tile = GetTileAt(gridPos, currentLayer);
-					if (selectedTiles == null) selectedTiles = new List<TilePlacement>();
-					selectedTiles.Clear();
+				case EEditorTool.Select:
+					TilePlacement tile = GetTileAt(gridPos, mCurrentLayer);
+					if (mSelectedTiles == null) mSelectedTiles = new List<TilePlacement>();
+					mSelectedTiles.Clear();
 					if (tile != null)
-						selectedTiles.Add(tile);
+						mSelectedTiles.Add(tile);
 					break;
 
-				case EditorTool.Paint:
+				case EEditorTool.Paint:
 					RecordUndo("Paint");
 					PaintTile(gridPos);
 					break;
 
-				case EditorTool.Erase:
+				case EEditorTool.Erase:
 					RecordUndo("Erase");
 					EraseTile(gridPos);
 					break;
@@ -533,8 +534,8 @@ namespace TileMatch.LevelEditor
 
 		private TilePlacement GetTileAt(Vector2Int pos, int layer)
 		{
-			if (currentLevel == null || currentLevel.tilePlacements == null) return null;
-			return currentLevel.tilePlacements.FirstOrDefault(t =>
+			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return null;
+			return mCurrentLevel.tilePlacements.FirstOrDefault(t =>
 				t != null && t.gridX == pos.x && t.gridY == pos.y && t.layer == layer);
 		}
 
@@ -548,8 +549,8 @@ namespace TileMatch.LevelEditor
 
 			EditorGUILayout.LabelField("Tile Palette", EditorStyles.boldLabel);
 
-			showTileTypes = EditorGUILayout.Foldout(showTileTypes, "Card Tiles", true);
-			if (showTileTypes)
+			mShowTileTypes = EditorGUILayout.Foldout(mShowTileTypes, "Card Tiles", true);
+			if (mShowTileTypes)
 			{
 				DrawTilePalette();
 			}
@@ -559,7 +560,7 @@ namespace TileMatch.LevelEditor
 			// Quick Actions
 			EditorGUILayout.LabelField("Quick Actions", EditorStyles.boldLabel);
 
-			GUI.enabled = currentLevel != null;
+			GUI.enabled = mCurrentLevel != null;
 
 			if (GUILayout.Button("Auto Fill Random"))
 			{
@@ -567,10 +568,10 @@ namespace TileMatch.LevelEditor
 				AutoFillRandom();
 			}
 
-			if (GUILayout.Button("Clear Layer " + currentLayer))
+			if (GUILayout.Button("Clear Layer " + mCurrentLayer))
 			{
 				RecordUndo("Clear Layer");
-				ClearLayer(currentLayer);
+				ClearLayer(mCurrentLayer);
 			}
 
 			if (GUILayout.Button("Clear All"))
@@ -586,19 +587,19 @@ namespace TileMatch.LevelEditor
 
 		private void DrawTilePalette()
 		{
-			if (tileTypePresets == null) return;
+			if (mTileTypePresets == null) return;
 
-			float buttonSize = 35f;
+			float buttonSize = 35F;
 			int columns = 4;
 
-			foreach (CardSuit suit in System.Enum.GetValues(typeof(CardSuit)))
+			foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
 			{
 				string suitSymbol = suit switch
 				{
-					CardSuit.Spade => "♠",
-					CardSuit.Heart => "♥",
-					CardSuit.Diamond => "♦",
-					CardSuit.Club => "♣",
+					ECardSuit.Spade => "♠",
+					ECardSuit.Heart => "♥",
+					ECardSuit.Diamond => "♦",
+					ECardSuit.Club => "♣",
 					_ => "?"
 				};
 
@@ -607,7 +608,7 @@ namespace TileMatch.LevelEditor
 				int count = 0;
 				EditorGUILayout.BeginHorizontal();
 
-				foreach (CardRank rank in System.Enum.GetValues(typeof(CardRank)))
+				foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
 				{
 					if (count > 0 && count % columns == 0)
 					{
@@ -618,18 +619,18 @@ namespace TileMatch.LevelEditor
 					string typeId = $"{suit}_{rank}";
 					string rankStr = rank switch
 					{
-						CardRank.Ace => "A",
-						CardRank.Jack => "J",
-						CardRank.Queen => "Q",
-						CardRank.King => "K",
+						ECardRank.Ace => "A",
+						ECardRank.Jack => "J",
+						ECardRank.Queen => "Q",
+						ECardRank.King => "K",
 						_ => ((int)rank).ToString()
 					};
 
-					GUI.backgroundColor = selectedTileType == typeId ? Color.yellow : Color.white;
+					GUI.backgroundColor = mSelectedTileType == typeId ? Color.yellow : Color.white;
 					if (GUILayout.Button(rankStr, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
 					{
-						selectedTileType = typeId;
-						currentTool = EditorTool.Paint;
+						mSelectedTileType = typeId;
+						mCurrentTool = EEditorTool.Paint;
 					}
 
 					count++;
@@ -649,12 +650,12 @@ namespace TileMatch.LevelEditor
 		{
 			EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-			GUILayout.Label($"Tool: {currentTool}");
-			GUILayout.Label($"Layer: {currentLayer}");
-			GUILayout.Label($"Selected: {(selectedTiles != null ? selectedTiles.Count : 0)}");
+			GUILayout.Label($"Tool: {mCurrentTool}");
+			GUILayout.Label($"Layer: {mCurrentLayer}");
+			GUILayout.Label($"Selected: {(mSelectedTiles != null ? mSelectedTiles.Count : 0)}");
 
-			if (!string.IsNullOrEmpty(selectedTileType))
-				GUILayout.Label($"Tile: {selectedTileType}");
+			if (!string.IsNullOrEmpty(mSelectedTileType))
+				GUILayout.Label($"Tile: {mSelectedTileType}");
 
 			GUILayout.FlexibleSpace();
 
@@ -667,51 +668,51 @@ namespace TileMatch.LevelEditor
 
 		private void PaintTile(Vector2Int gridPos)
 		{
-			if (!IsValidGridPosition(gridPos) || string.IsNullOrEmpty(selectedTileType)) return;
-			if (currentLevel == null) return;
-			if (currentLevel.tilePlacements == null)
-				currentLevel.tilePlacements = new List<TilePlacement>();
+			if (!IsValidGridPosition(gridPos) || string.IsNullOrEmpty(mSelectedTileType)) return;
+			if (mCurrentLevel == null) return;
+			if (mCurrentLevel.tilePlacements == null)
+				mCurrentLevel.tilePlacements = new List<TilePlacement>();
 
-			var existing = GetTileAt(gridPos, currentLayer);
+			TilePlacement existing = GetTileAt(gridPos, mCurrentLayer);
 			if (existing != null)
-				currentLevel.tilePlacements.Remove(existing);
+				mCurrentLevel.tilePlacements.Remove(existing);
 
-			currentLevel.tilePlacements.Add(new TilePlacement(gridPos.x, gridPos.y, currentLayer, selectedTileType));
-			EditorUtility.SetDirty(currentLevel);
+			mCurrentLevel.tilePlacements.Add(new TilePlacement(gridPos.x, gridPos.y, mCurrentLayer, mSelectedTileType));
+			EditorUtility.SetDirty(mCurrentLevel);
 		}
 
 		private void EraseTile(Vector2Int gridPos)
 		{
 			if (!IsValidGridPosition(gridPos)) return;
-			if (currentLevel == null || currentLevel.tilePlacements == null) return;
+			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
 
-			var tile = GetTileAt(gridPos, currentLayer);
+			TilePlacement tile = GetTileAt(gridPos, mCurrentLayer);
 			if (tile != null)
 			{
-				currentLevel.tilePlacements.Remove(tile);
-				if (selectedTiles != null)
-					selectedTiles.Remove(tile);
-				EditorUtility.SetDirty(currentLevel);
+				mCurrentLevel.tilePlacements.Remove(tile);
+				if (mSelectedTiles != null)
+					mSelectedTiles.Remove(tile);
+				EditorUtility.SetDirty(mCurrentLevel);
 			}
 		}
 
 		private void AutoFillRandom()
 		{
-			if (currentLevel == null) return;
-			if (tileTypePresets == null || tileTypePresets.Count == 0) return;
-			if (currentLevel.tilePlacements == null)
-				currentLevel.tilePlacements = new List<TilePlacement>();
+			if (mCurrentLevel == null) return;
+			if (mTileTypePresets == null || mTileTypePresets.Count == 0) return;
+			if (mCurrentLevel.tilePlacements == null)
+				mCurrentLevel.tilePlacements = new List<TilePlacement>();
 
-			currentLevel.tilePlacements.Clear();
+			mCurrentLevel.tilePlacements.Clear();
 
-			int totalCells = currentLevel.boardWidth * currentLevel.boardHeight * currentLevel.maxLayers / 2;
-			totalCells = (totalCells / currentLevel.matchCount) * currentLevel.matchCount;
+			int totalCells = mCurrentLevel.boardWidth * mCurrentLevel.boardHeight * mCurrentLevel.maxLayers / 2;
+			totalCells = (totalCells / mCurrentLevel.matchCount) * mCurrentLevel.matchCount;
 
 			List<string> tilesToPlace = new List<string>();
-			for (int i = 0; i < totalCells / currentLevel.matchCount; i++)
+			for (int i = 0; i < totalCells / mCurrentLevel.matchCount; i++)
 			{
-				var randomType = tileTypePresets[Random.Range(0, tileTypePresets.Count)];
-				for (int j = 0; j < currentLevel.matchCount; j++)
+				TileTypeConfig randomType = mTileTypePresets[Random.Range(0, mTileTypePresets.Count)];
+				for (int j = 0; j < mCurrentLevel.matchCount; j++)
 					tilesToPlace.Add(randomType.typeId);
 			}
 
@@ -723,38 +724,38 @@ namespace TileMatch.LevelEditor
 			}
 
 			int index = 0;
-			for (int layer = 0; layer < currentLevel.maxLayers && index < tilesToPlace.Count; layer++)
+			for (int layer = 0; layer < mCurrentLevel.maxLayers && index < tilesToPlace.Count; layer++)
 			{
 				int margin = layer;
-				for (int x = margin; x < currentLevel.boardWidth - margin && index < tilesToPlace.Count; x++)
+				for (int x = margin; x < mCurrentLevel.boardWidth - margin && index < tilesToPlace.Count; x++)
 				{
-					for (int y = margin; y < currentLevel.boardHeight - margin && index < tilesToPlace.Count; y++)
+					for (int y = margin; y < mCurrentLevel.boardHeight - margin && index < tilesToPlace.Count; y++)
 					{
 						if (layer > 0 && (x + y) % 2 != 0) continue;
-						currentLevel.tilePlacements.Add(new TilePlacement(x, y, layer, tilesToPlace[index++]));
+						mCurrentLevel.tilePlacements.Add(new TilePlacement(x, y, layer, tilesToPlace[index++]));
 					}
 				}
 			}
 
-			EditorUtility.SetDirty(currentLevel);
+			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
 		private void ClearLayer(int layer)
 		{
-			if (currentLevel == null || currentLevel.tilePlacements == null) return;
-			currentLevel.tilePlacements.RemoveAll(t => t != null && t.layer == layer);
-			if (selectedTiles != null) selectedTiles.Clear();
-			EditorUtility.SetDirty(currentLevel);
+			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
+			mCurrentLevel.tilePlacements.RemoveAll(t => t != null && t.layer == layer);
+			if (mSelectedTiles != null) mSelectedTiles.Clear();
+			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
 		private void ClearAllTiles()
 		{
-			if (currentLevel == null || currentLevel.tilePlacements == null) return;
-			currentLevel.tilePlacements.Clear();
-			if (selectedTiles != null) selectedTiles.Clear();
-			EditorUtility.SetDirty(currentLevel);
+			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
+			mCurrentLevel.tilePlacements.Clear();
+			if (mSelectedTiles != null) mSelectedTiles.Clear();
+			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
@@ -767,16 +768,16 @@ namespace TileMatch.LevelEditor
 			string path = EditorUtility.SaveFilePanelInProject("Create New Level", "Level_001", "asset", "Save level asset");
 			if (string.IsNullOrEmpty(path)) return;
 
-			currentLevel = ScriptableObject.CreateInstance<LevelData>();
-			currentLevel.levelName = System.IO.Path.GetFileNameWithoutExtension(path);
-			currentLevel.tilePlacements = new List<TilePlacement>();
+			mCurrentLevel = ScriptableObject.CreateInstance<LevelData>();
+			mCurrentLevel.levelName = System.IO.Path.GetFileNameWithoutExtension(path);
+			mCurrentLevel.tilePlacements = new List<TilePlacement>();
 
-			AssetDatabase.CreateAsset(currentLevel, path);
+			AssetDatabase.CreateAsset(mCurrentLevel, path);
 			AssetDatabase.SaveAssets();
 
-			if (selectedTiles != null) selectedTiles.Clear();
-			if (undoHistory != null) undoHistory.Clear();
-			if (redoHistory != null) redoHistory.Clear();
+			if (mSelectedTiles != null) mSelectedTiles.Clear();
+			if (mUndoHistory != null) mUndoHistory.Clear();
+			if (mRedoHistory != null) mRedoHistory.Clear();
 		}
 
 		private void OpenLevel()
@@ -785,17 +786,17 @@ namespace TileMatch.LevelEditor
 			if (string.IsNullOrEmpty(path)) return;
 
 			path = "Assets" + path.Substring(Application.dataPath.Length);
-			currentLevel = AssetDatabase.LoadAssetAtPath<LevelData>(path);
+			mCurrentLevel = AssetDatabase.LoadAssetAtPath<LevelData>(path);
 
-			if (selectedTiles != null) selectedTiles.Clear();
-			if (undoHistory != null) undoHistory.Clear();
-			if (redoHistory != null) redoHistory.Clear();
+			if (mSelectedTiles != null) mSelectedTiles.Clear();
+			if (mUndoHistory != null) mUndoHistory.Clear();
+			if (mRedoHistory != null) mRedoHistory.Clear();
 		}
 
 		private void SaveCurrentLevel()
 		{
-			if (currentLevel == null) return;
-			EditorUtility.SetDirty(currentLevel);
+			if (mCurrentLevel == null) return;
+			EditorUtility.SetDirty(mCurrentLevel);
 			AssetDatabase.SaveAssets();
 		}
 
@@ -805,14 +806,14 @@ namespace TileMatch.LevelEditor
 
 		private void RecordUndo(string actionName)
 		{
-			if (currentLevel == null || currentLevel.tilePlacements == null) return;
-			if (undoHistory == null) undoHistory = new List<LevelSnapshot>();
-			if (redoHistory == null) redoHistory = new List<LevelSnapshot>();
+			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
+			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
+			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
 
-			var snapshot = new LevelSnapshot
+			LevelSnapshot snapshot = new LevelSnapshot
 			{
 				actionName = actionName,
-				tilePlacements = currentLevel.tilePlacements.Select(t => new TilePlacement
+				tilePlacements = mCurrentLevel.tilePlacements.Select(t => new TilePlacement
 				{
 					gridX = t.gridX,
 					gridY = t.gridY,
@@ -824,52 +825,52 @@ namespace TileMatch.LevelEditor
 				}).ToList()
 			};
 
-			undoHistory.Add(snapshot);
-			if (undoHistory.Count > MaxHistorySize)
-				undoHistory.RemoveAt(0);
+			mUndoHistory.Add(snapshot);
+			if (mUndoHistory.Count > MAX_HISTORY_SIZE)
+				mUndoHistory.RemoveAt(0);
 
-			redoHistory.Clear();
+			mRedoHistory.Clear();
 		}
 
 		private void Undo()
 		{
-			if (undoHistory == null || undoHistory.Count == 0 || currentLevel == null) return;
-			if (redoHistory == null) redoHistory = new List<LevelSnapshot>();
+			if (mUndoHistory == null || mUndoHistory.Count == 0 || mCurrentLevel == null) return;
+			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
 
 			// Save current state to redo
-			redoHistory.Add(new LevelSnapshot
+			mRedoHistory.Add(new LevelSnapshot
 			{
-				tilePlacements = new List<TilePlacement>(currentLevel.tilePlacements ?? new List<TilePlacement>())
+				tilePlacements = new List<TilePlacement>(mCurrentLevel.tilePlacements ?? new List<TilePlacement>())
 			});
 
-			var prev = undoHistory[undoHistory.Count - 1];
-			undoHistory.RemoveAt(undoHistory.Count - 1);
+			LevelSnapshot prev = mUndoHistory[mUndoHistory.Count - 1];
+			mUndoHistory.RemoveAt(mUndoHistory.Count - 1);
 
-			currentLevel.tilePlacements = new List<TilePlacement>(prev.tilePlacements);
-			if (selectedTiles != null) selectedTiles.Clear();
+			mCurrentLevel.tilePlacements = new List<TilePlacement>(prev.tilePlacements);
+			if (mSelectedTiles != null) mSelectedTiles.Clear();
 
-			EditorUtility.SetDirty(currentLevel);
+			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
 		private void Redo()
 		{
-			if (redoHistory == null || redoHistory.Count == 0 || currentLevel == null) return;
-			if (undoHistory == null) undoHistory = new List<LevelSnapshot>();
+			if (mRedoHistory == null || mRedoHistory.Count == 0 || mCurrentLevel == null) return;
+			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
 
 			// Save current state to undo
-			undoHistory.Add(new LevelSnapshot
+			mUndoHistory.Add(new LevelSnapshot
 			{
-				tilePlacements = new List<TilePlacement>(currentLevel.tilePlacements ?? new List<TilePlacement>())
+				tilePlacements = new List<TilePlacement>(mCurrentLevel.tilePlacements ?? new List<TilePlacement>())
 			});
 
-			var next = redoHistory[redoHistory.Count - 1];
-			redoHistory.RemoveAt(redoHistory.Count - 1);
+			LevelSnapshot next = mRedoHistory[mRedoHistory.Count - 1];
+			mRedoHistory.RemoveAt(mRedoHistory.Count - 1);
 
-			currentLevel.tilePlacements = new List<TilePlacement>(next.tilePlacements);
-			if (selectedTiles != null) selectedTiles.Clear();
+			mCurrentLevel.tilePlacements = new List<TilePlacement>(next.tilePlacements);
+			if (mSelectedTiles != null) mSelectedTiles.Clear();
 
-			EditorUtility.SetDirty(currentLevel);
+			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
@@ -900,8 +901,8 @@ namespace TileMatch.LevelEditor
 			else if (e.keyCode >= KeyCode.Alpha1 && e.keyCode <= KeyCode.Alpha5)
 			{
 				int layer = e.keyCode - KeyCode.Alpha1;
-				if (currentLevel == null || layer < currentLevel.maxLayers)
-					currentLayer = layer;
+				if (mCurrentLevel == null || layer < mCurrentLevel.maxLayers)
+					mCurrentLayer = layer;
 				e.Use();
 			}
 		}

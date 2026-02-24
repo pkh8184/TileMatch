@@ -4,7 +4,7 @@ namespace TrumpTile.Core
 {
 	/// <summary>
 	/// 게임 규칙 및 상수 중앙 관리
-	/// 
+	///
 	/// [핵심 규칙]
 	/// 1. 타일 선택: blocked 타일은 선택 불가
 	/// 2. 매칭: 같은 타입 3개가 슬롯에 모이면 제거
@@ -33,35 +33,35 @@ namespace TrumpTile.Core
 		#region Board Rules
 
 		/// <summary>타일 간 최소 겹침 거리 (이 이하면 blocked)</summary>
-		public const float OVERLAP_THRESHOLD = 0.8f;
+		public const float OVERLAP_THRESHOLD = 0.8F;
 
 		/// <summary>레이어 오프셋 (X, Y 방향)</summary>
-		public const float LAYER_OFFSET = 0.15f;
+		public const float LAYER_OFFSET = 0.15F;
 
 		/// <summary>타일 셀 크기</summary>
-		public const float CELL_SIZE = 1.0f;
+		public const float CELL_SIZE = 1.0F;
 
 		#endregion
 
 		#region Timing Rules
 
 		/// <summary>타일 이동 시간</summary>
-		public const float TILE_MOVE_DURATION = 0.3f;
+		public const float TILE_MOVE_DURATION = 0.3F;
 
 		/// <summary>매칭 애니메이션 시간</summary>
-		public const float MATCH_ANIMATION_DURATION = 0.2f;
+		public const float MATCH_ANIMATION_DURATION = 0.2F;
 
 		/// <summary>섞기 애니메이션 시간</summary>
-		public const float SHUFFLE_DURATION = 0.5f;
+		public const float SHUFFLE_DURATION = 0.5F;
 
 		/// <summary>버튼 쿨다운 시간</summary>
-		public const float BUTTON_COOLDOWN = 0.5f;
+		public const float BUTTON_COOLDOWN = 0.5F;
 
 		/// <summary>게임오버 카운트다운 시간</summary>
-		public const float GAMEOVER_COUNTDOWN = 10f;
+		public const float GAMEOVER_COUNTDOWN = 10F;
 
 		/// <summary>레벨 클리어 대기 시간</summary>
-		public const float LEVEL_CLEAR_DELAY = 0.5f;
+		public const float LEVEL_CLEAR_DELAY = 0.5F;
 
 		#endregion
 
@@ -169,17 +169,17 @@ namespace TrumpTile.Core
 		/// <summary>
 		/// 아이템 사용 가능 상태인지 확인
 		/// </summary>
-		public static bool CanUseItem(GameManager.GameState state, bool isItemInProgress)
+		public static bool CanUseItem(GameManager.EGameState state, bool bIsItemInProgress)
 		{
-			return state == GameManager.GameState.Playing && !isItemInProgress;
+			return state == GameManager.EGameState.Playing && !bIsItemInProgress;
 		}
 
 		/// <summary>
 		/// 타일 선택 가능 상태인지 확인
 		/// </summary>
-		public static bool CanSelectTile(GameManager.GameState state, bool isShuffling)
+		public static bool CanSelectTile(GameManager.EGameState state, bool bIsShuffling)
 		{
-			return state == GameManager.GameState.Playing && !isShuffling;
+			return state == GameManager.EGameState.Playing && !bIsShuffling;
 		}
 
 		#endregion

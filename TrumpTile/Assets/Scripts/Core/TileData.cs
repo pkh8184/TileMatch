@@ -5,7 +5,7 @@ namespace TrumpTile.Core
 	/// <summary>
 	/// 카드 무늬
 	/// </summary>
-	public enum CardSuit
+	public enum ECardSuit
 	{
 		Spade = 0,    // ♠
 		Heart = 1,    // ♥
@@ -16,7 +16,7 @@ namespace TrumpTile.Core
 	/// <summary>
 	/// 카드 숫자
 	/// </summary>
-	public enum CardRank
+	public enum ECardRank
 	{
 		Ace = 1,
 		Two = 2,
@@ -43,7 +43,6 @@ namespace TrumpTile.Core
 		public string tileTypeId;  // 예: "Spade_Ace", "Heart_King"
 		public string displayName;
 
-		// 프로퍼티 (BoardManager, SlotManager에서 사용)
 		public string TileID => tileTypeId;
 
 		/// <summary>
@@ -56,8 +55,8 @@ namespace TrumpTile.Core
 		}
 
 		[Header("Card Info")]
-		public CardSuit suit;
-		public CardRank rank;
+		public ECardSuit suit;
+		public ECardRank rank;
 
 		[Header("Visual")]
 		public Sprite sprite;
@@ -76,10 +75,10 @@ namespace TrumpTile.Core
 			{
 				switch (rank)
 				{
-					case CardRank.Ace: return 11;
-					case CardRank.Jack:
-					case CardRank.Queen:
-					case CardRank.King:
+					case ECardRank.Ace: return 11;
+					case ECardRank.Jack:
+					case ECardRank.Queen:
+					case ECardRank.King:
 						return 10;
 					default:
 						return (int)rank;
@@ -96,8 +95,8 @@ namespace TrumpTile.Core
 			{
 				switch (suit)
 				{
-					case CardSuit.Heart:
-					case CardSuit.Diamond:
+					case ECardSuit.Heart:
+					case ECardSuit.Diamond:
 						return Color.red;
 					default:
 						return Color.black;
@@ -135,13 +134,11 @@ namespace TrumpTile.Core
 #if UNITY_EDITOR
 		private void OnValidate()
 		{
-			// 자동으로 ID 생성
 			if (string.IsNullOrEmpty(tileTypeId))
 			{
 				tileTypeId = $"{suit}_{rank}";
 			}
 
-			// 자동으로 이름 생성
 			if (string.IsNullOrEmpty(displayName))
 			{
 				displayName = $"{suit} {rank}";

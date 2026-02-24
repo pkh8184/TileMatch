@@ -15,27 +15,27 @@ namespace TrumpTile.UI
         public static MainMenuUI Instance { get; private set; }
 
         [Header("상단 버튼")]
-        [SerializeField] private Button settingButton;      // 설정
-        [SerializeField] private Button mapButton;          // 지도 (하우징)
-        [SerializeField] private Button shopButton;         // 상점
+        [SerializeField] private Button mSettingButton;      // 설정
+        [SerializeField] private Button mMapButton;          // 지도 (하우징)
+        [SerializeField] private Button mShopButton;         // 상점
 
         [Header("재화")]
-        [SerializeField] private TextMeshProUGUI goldText;  // 골드 표시
+        [SerializeField] private TextMeshProUGUI mGoldText;  // 골드 표시
 
         [Header("스테이지")]
-        [SerializeField] private Button stageButton;        // 스테이지 버튼
-        [SerializeField] private TextMeshProUGUI stageLevelText; // "LEVEL 1" 표시
+        [SerializeField] private Button mStageButton;        // 스테이지 버튼
+        [SerializeField] private TextMeshProUGUI mStageLevelText; // "LEVEL 1" 표시
 
         [Header("프로필")]
-        [SerializeField] private Button profileButton;      // 프로필 버튼
-        [SerializeField] private Image profileImage;        // 프로필 이미지
+        [SerializeField] private Button mProfileButton;      // 프로필 버튼
+        [SerializeField] private Image mProfileImage;        // 프로필 이미지
 
         [Header("팝업")]
-        [SerializeField] private GameObject settingPopup;
-        [SerializeField] private GameObject mapPopup;
-        [SerializeField] private GameObject shopPopup;
-        [SerializeField] private GameObject profilePopup;
-        [SerializeField] private GameObject stageSelectPopup;
+        [SerializeField] private GameObject mSettingPopup;
+        [SerializeField] private GameObject mMapPopup;
+        [SerializeField] private GameObject mShopPopup;
+        [SerializeField] private GameObject mProfilePopup;
+        [SerializeField] private GameObject mStageSelectPopup;
 
         private void Awake()
         {
@@ -51,22 +51,22 @@ namespace TrumpTile.UI
         private void SetupButtons()
         {
             // 상단 버튼
-            if (settingButton != null)
-                settingButton.onClick.AddListener(OnSettingClick);
+            if (mSettingButton != null)
+                mSettingButton.onClick.AddListener(OnSettingClick);
 
-            if (mapButton != null)
-                mapButton.onClick.AddListener(OnMapClick);
+            if (mMapButton != null)
+                mMapButton.onClick.AddListener(OnMapClick);
 
-            if (shopButton != null)
-                shopButton.onClick.AddListener(OnShopClick);
+            if (mShopButton != null)
+                mShopButton.onClick.AddListener(OnShopClick);
 
             // 스테이지 버튼
-            if (stageButton != null)
-                stageButton.onClick.AddListener(OnStageClick);
+            if (mStageButton != null)
+                mStageButton.onClick.AddListener(OnStageClick);
 
             // 프로필 버튼
-            if (profileButton != null)
-                profileButton.onClick.AddListener(OnProfileClick);
+            if (mProfileButton != null)
+                mProfileButton.onClick.AddListener(OnProfileClick);
         }
 
         /// <summary>
@@ -86,10 +86,10 @@ namespace TrumpTile.UI
         /// </summary>
         public void UpdateGold()
         {
-            if (goldText != null && UserDataManager.Instance != null)
+            if (mGoldText != null && UserDataManager.Instance != null)
             {
                 int gold = UserDataManager.Instance.Gold;
-                goldText.text = FormatNumber(gold);
+                mGoldText.text = FormatNumber(gold);
             }
         }
 
@@ -98,10 +98,10 @@ namespace TrumpTile.UI
         /// </summary>
         public void UpdateStageLevel()
         {
-            if (stageLevelText != null && UserDataManager.Instance != null)
+            if (mStageLevelText != null && UserDataManager.Instance != null)
             {
                 int currentStage = UserDataManager.Instance.CurrentStage;
-                stageLevelText.text = $"LEVEL {currentStage}";
+                mStageLevelText.text = $"LEVEL {currentStage}";
             }
         }
 
@@ -110,11 +110,11 @@ namespace TrumpTile.UI
         /// </summary>
         public void UpdateProfile()
         {
-            if (profileImage != null && UserDataManager.Instance != null)
+            if (mProfileImage != null && UserDataManager.Instance != null)
             {
                 // 프로필 이미지 로드 (나중에 구현)
                 // Sprite profileSprite = UserDataManager.Instance.GetProfileSprite();
-                // profileImage.sprite = profileSprite;
+                // mProfileImage.sprite = profileSprite;
             }
         }
 
@@ -134,41 +134,41 @@ namespace TrumpTile.UI
         {
             Debug.Log("[MainMenuUI] Setting clicked");
             AudioManager.Instance?.PlayButtonClick();
-            
+
             // 설정 팝업 열기
-            if (settingPopup != null)
-                settingPopup.SetActive(true);
+            if (mSettingPopup != null)
+                mSettingPopup.SetActive(true);
         }
 
         private void OnMapClick()
         {
             Debug.Log("[MainMenuUI] Map clicked");
             AudioManager.Instance?.PlayButtonClick();
-            
+
             // 지도(하우징) 팝업 열기
-            if (mapPopup != null)
-                mapPopup.SetActive(true);
+            if (mMapPopup != null)
+                mMapPopup.SetActive(true);
         }
 
         private void OnShopClick()
         {
             Debug.Log("[MainMenuUI] Shop clicked");
             AudioManager.Instance?.PlayButtonClick();
-            
+
             // 상점 팝업 열기
-            if (shopPopup != null)
-                shopPopup.SetActive(true);
+            if (mShopPopup != null)
+                mShopPopup.SetActive(true);
         }
 
         private void OnStageClick()
         {
             Debug.Log("[MainMenuUI] Stage clicked");
             AudioManager.Instance?.PlayButtonClick();
-            
+
             // 스테이지 선택 팝업 또는 바로 게임 시작
-            if (stageSelectPopup != null)
+            if (mStageSelectPopup != null)
             {
-                stageSelectPopup.SetActive(true);
+                mStageSelectPopup.SetActive(true);
             }
             else
             {
@@ -181,10 +181,10 @@ namespace TrumpTile.UI
         {
             Debug.Log("[MainMenuUI] Profile clicked");
             AudioManager.Instance?.PlayButtonClick();
-            
+
             // 프로필 팝업 열기
-            if (profilePopup != null)
-                profilePopup.SetActive(true);
+            if (mProfilePopup != null)
+                mProfilePopup.SetActive(true);
         }
 
         #endregion
@@ -206,7 +206,7 @@ namespace TrumpTile.UI
         public void StartGame(int stageLevel)
         {
             Debug.Log($"[MainMenuUI] Starting game - Stage {stageLevel}");
-            
+
             // 스테이지 정보 저장
             if (UserDataManager.Instance != null)
                 UserDataManager.Instance.SetSelectedStage(stageLevel);

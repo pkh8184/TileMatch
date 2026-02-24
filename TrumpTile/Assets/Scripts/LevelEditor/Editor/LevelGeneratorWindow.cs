@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using TrumpTile.Core;
 
 namespace TileMatch.LevelEditor
 {
@@ -18,66 +19,66 @@ namespace TileMatch.LevelEditor
 		#region Fields
 
 		// 생성 설정
-		private int startLevelNumber = 1;
-		private int endLevelNumber = 300;
-		private string outputFolder = "Assets/Resources/Levels";
-		private string levelPrefix = "Level_";
+		private int mStartLevelNumber = 1;
+		private int mEndLevelNumber = 300;
+		private string mOutputFolder = "Assets/Resources/Levels";
+		private string mLevelPrefix = "Level_";
 
 		// 보드 설정
-		private int minBoardWidth = 5;
-		private int maxBoardWidth = 8;
-		private int minBoardHeight = 6;
-		private int maxBoardHeight = 10;
-		private int minLayers = 1;
-		private int maxLayers = 4;
+		private int mMinBoardWidth = 5;
+		private int mMaxBoardWidth = 8;
+		private int mMinBoardHeight = 6;
+		private int mMaxBoardHeight = 10;
+		private int mMinLayers = 1;
+		private int mMaxLayers = 4;
 
 		// 타일 설정
-		private int minTileTypes = 4;
-		private int maxTileTypes = 16;
-		private int matchCount = 3;
-		private int minTileSets = 6;  // 최소 타일 세트 수 (18개)
-		private int maxTileSets = 40; // 최대 타일 세트 수 (120개)
+		private int mMinTileTypes = 4;
+		private int mMaxTileTypes = 16;
+		private int mMatchCount = 3;
+		private int mMinTileSets = 6;  // 최소 타일 세트 수 (18개)
+		private int mMaxTileSets = 40; // 최대 타일 세트 수 (120개)
 
 		// 난이도 곡선
-		private AnimationCurve difficultyCurve;
-		private AnimationCurve boardSizeCurve;
-		private AnimationCurve layerCurve;
-		private AnimationCurve tileTypeCurve;
-		private AnimationCurve tileCountCurve;
+		private AnimationCurve mDifficultyCurve;
+		private AnimationCurve mBoardSizeCurve;
+		private AnimationCurve mLayerCurve;
+		private AnimationCurve mTileTypeCurve;
+		private AnimationCurve mTileCountCurve;
 
 		// 특수 타일
-		private bool enableFrozenTiles = false;
-		private bool enableLockedTiles = false;
-		private AnimationCurve frozenTileCurve;
-		private AnimationCurve lockedTileCurve;
+		private bool mEnableFrozenTiles = false;
+		private bool mEnableLockedTiles = false;
+		private AnimationCurve mFrozenTileCurve;
+		private AnimationCurve mLockedTileCurve;
 
 		// 패턴 설정
-		private bool useSymmetricPatterns = true;
-		private bool centerAlignTiles = true;
-		private float fillDensity = 0.75f;
+		private bool mUseSymmetricPatterns = true;
+		private bool mCenterAlignTiles = true;
+		private float mFillDensity = 0.75F;
 
 		// 시간 제한
-		private bool enableTimeLimit = false;
-		private AnimationCurve timeLimitCurve;
+		private bool mEnableTimeLimit = false;
+		private AnimationCurve mTimeLimitCurve;
 
 		// 아이템 설정
-		private AnimationCurve shuffleCountCurve;
-		private AnimationCurve undoCountCurve;
-		private AnimationCurve hintCountCurve;
+		private AnimationCurve mShuffleCountCurve;
+		private AnimationCurve mUndoCountCurve;
+		private AnimationCurve mHintCountCurve;
 
-		private Vector2 scrollPosition;
-		private bool showAdvancedSettings = false;
-		private bool showCurveSettings = false;
-		private bool showPreview = true;
+		private Vector2 mScrollPosition;
+		private bool mShowAdvancedSettings = false;
+		private bool mShowCurveSettings = false;
+		private bool mShowPreview = true;
 
-		private int previewLevel = 1;
+		private int mPreviewLevel = 1;
 
 		#endregion
 
 		[MenuItem("Tools/Tile Match/Level Generator")]
 		public static void OpenWindow()
 		{
-			var window = GetWindow<LevelGeneratorWindow>();
+			LevelGeneratorWindow window = GetWindow<LevelGeneratorWindow>();
 			window.titleContent = new GUIContent("Level Generator V2");
 			window.minSize = new Vector2(500, 700);
 			window.Show();
@@ -91,79 +92,79 @@ namespace TileMatch.LevelEditor
 		private void InitializeCurves()
 		{
 			// 난이도 곡선 - S자 형태로 자연스러운 난이도 상승
-			difficultyCurve = new AnimationCurve(
-				new Keyframe(0, 0, 0, 0.5f),
-				new Keyframe(0.3f, 0.2f),
-				new Keyframe(0.6f, 0.5f),
-				new Keyframe(0.85f, 0.8f),
-				new Keyframe(1, 1, 0.5f, 0));
+			mDifficultyCurve = new AnimationCurve(
+				new Keyframe(0, 0, 0, 0.5F),
+				new Keyframe(0.3F, 0.2F),
+				new Keyframe(0.6F, 0.5F),
+				new Keyframe(0.85F, 0.8F),
+				new Keyframe(1, 1, 0.5F, 0));
 
 			// 보드 크기 - 천천히 증가
-			boardSizeCurve = new AnimationCurve(
+			mBoardSizeCurve = new AnimationCurve(
 				new Keyframe(0, 0),
-				new Keyframe(0.4f, 0.3f),
-				new Keyframe(0.7f, 0.6f),
+				new Keyframe(0.4F, 0.3F),
+				new Keyframe(0.7F, 0.6F),
 				new Keyframe(1, 1));
 
 			// 레이어 수 - 중반부터 증가
-			layerCurve = new AnimationCurve(
+			mLayerCurve = new AnimationCurve(
 				new Keyframe(0, 0),
-				new Keyframe(0.3f, 0.1f),
-				new Keyframe(0.6f, 0.4f),
+				new Keyframe(0.3F, 0.1F),
+				new Keyframe(0.6F, 0.4F),
 				new Keyframe(1, 1));
 
 			// 타일 종류 - 점진적 증가
-			tileTypeCurve = new AnimationCurve(
+			mTileTypeCurve = new AnimationCurve(
 				new Keyframe(0, 0),
-				new Keyframe(0.5f, 0.4f),
+				new Keyframe(0.5F, 0.4F),
 				new Keyframe(1, 1));
 
 			// 타일 개수 - 점진적 증가
-			tileCountCurve = new AnimationCurve(
+			mTileCountCurve = new AnimationCurve(
 				new Keyframe(0, 0),
-				new Keyframe(0.3f, 0.25f),
-				new Keyframe(0.7f, 0.6f),
+				new Keyframe(0.3F, 0.25F),
+				new Keyframe(0.7F, 0.6F),
 				new Keyframe(1, 1));
 
 			// 특수 타일 - 후반에 등장
-			frozenTileCurve = new AnimationCurve(
+			mFrozenTileCurve = new AnimationCurve(
 				new Keyframe(0, 0),
-				new Keyframe(0.4f, 0),
-				new Keyframe(0.6f, 0.05f),
-				new Keyframe(1, 0.12f));
+				new Keyframe(0.4F, 0),
+				new Keyframe(0.6F, 0.05F),
+				new Keyframe(1, 0.12F));
 
-			lockedTileCurve = new AnimationCurve(
+			mLockedTileCurve = new AnimationCurve(
 				new Keyframe(0, 0),
-				new Keyframe(0.5f, 0),
-				new Keyframe(0.75f, 0.03f),
-				new Keyframe(1, 0.08f));
+				new Keyframe(0.5F, 0),
+				new Keyframe(0.75F, 0.03F),
+				new Keyframe(1, 0.08F));
 
 			// 시간 제한 (초)
-			timeLimitCurve = new AnimationCurve(
+			mTimeLimitCurve = new AnimationCurve(
 				new Keyframe(0, 180),
-				new Keyframe(0.5f, 150),
+				new Keyframe(0.5F, 150),
 				new Keyframe(1, 90));
 
 			// 아이템 개수 - 초반에 많고 후반에 적음
-			shuffleCountCurve = new AnimationCurve(
+			mShuffleCountCurve = new AnimationCurve(
 				new Keyframe(0, 5),
-				new Keyframe(0.5f, 3),
+				new Keyframe(0.5F, 3),
 				new Keyframe(1, 1));
 
-			undoCountCurve = new AnimationCurve(
+			mUndoCountCurve = new AnimationCurve(
 				new Keyframe(0, 5),
-				new Keyframe(0.5f, 3),
+				new Keyframe(0.5F, 3),
 				new Keyframe(1, 1));
 
-			hintCountCurve = new AnimationCurve(
+			mHintCountCurve = new AnimationCurve(
 				new Keyframe(0, 5),
-				new Keyframe(0.5f, 3),
+				new Keyframe(0.5F, 3),
 				new Keyframe(1, 1));
 		}
 
 		private void OnGUI()
 		{
-			scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+			mScrollPosition = EditorGUILayout.BeginScrollView(mScrollPosition);
 
 			DrawHeader();
 			DrawBasicSettings();
@@ -172,8 +173,8 @@ namespace TileMatch.LevelEditor
 			DrawPatternSettings();
 
 			EditorGUILayout.Space(5);
-			showAdvancedSettings = EditorGUILayout.Foldout(showAdvancedSettings, "🔧 Advanced Settings", true);
-			if (showAdvancedSettings)
+			mShowAdvancedSettings = EditorGUILayout.Foldout(mShowAdvancedSettings, "🔧 Advanced Settings", true);
+			if (mShowAdvancedSettings)
 			{
 				DrawSpecialTileSettings();
 				DrawItemSettings();
@@ -181,15 +182,15 @@ namespace TileMatch.LevelEditor
 			}
 
 			EditorGUILayout.Space(5);
-			showCurveSettings = EditorGUILayout.Foldout(showCurveSettings, "📈 Difficulty Curves", true);
-			if (showCurveSettings)
+			mShowCurveSettings = EditorGUILayout.Foldout(mShowCurveSettings, "📈 Difficulty Curves", true);
+			if (mShowCurveSettings)
 			{
 				DrawCurveSettings();
 			}
 
 			EditorGUILayout.Space(5);
-			showPreview = EditorGUILayout.Foldout(showPreview, "👁 Preview", true);
-			if (showPreview)
+			mShowPreview = EditorGUILayout.Foldout(mShowPreview, "👁 Preview", true);
+			if (mShowPreview)
 			{
 				DrawPreview();
 			}
@@ -205,7 +206,7 @@ namespace TileMatch.LevelEditor
 		{
 			EditorGUILayout.Space(10);
 
-			var headerStyle = new GUIStyle(EditorStyles.boldLabel)
+			GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel)
 			{
 				fontSize = 18,
 				alignment = TextAnchor.MiddleCenter
@@ -229,28 +230,28 @@ namespace TileMatch.LevelEditor
 			EditorGUILayout.LabelField("📁 Basic Settings", EditorStyles.boldLabel);
 
 			EditorGUILayout.BeginHorizontal();
-			startLevelNumber = EditorGUILayout.IntField("Start Level", startLevelNumber);
-			endLevelNumber = EditorGUILayout.IntField("End Level", endLevelNumber);
+			mStartLevelNumber = EditorGUILayout.IntField("Start Level", mStartLevelNumber);
+			mEndLevelNumber = EditorGUILayout.IntField("End Level", mEndLevelNumber);
 			EditorGUILayout.EndHorizontal();
 
-			int totalLevels = endLevelNumber - startLevelNumber + 1;
+			int totalLevels = mEndLevelNumber - mStartLevelNumber + 1;
 			EditorGUILayout.LabelField($"Total: {totalLevels} levels", EditorStyles.miniLabel);
 
 			EditorGUILayout.Space(5);
 
 			EditorGUILayout.BeginHorizontal();
-			outputFolder = EditorGUILayout.TextField("Output Folder", outputFolder);
+			mOutputFolder = EditorGUILayout.TextField("Output Folder", mOutputFolder);
 			if (GUILayout.Button("...", GUILayout.Width(30)))
 			{
 				string path = EditorUtility.OpenFolderPanel("Select Output Folder", "Assets", "");
 				if (!string.IsNullOrEmpty(path) && path.StartsWith(Application.dataPath))
 				{
-					outputFolder = "Assets" + path.Substring(Application.dataPath.Length);
+					mOutputFolder = "Assets" + path.Substring(Application.dataPath.Length);
 				}
 			}
 			EditorGUILayout.EndHorizontal();
 
-			levelPrefix = EditorGUILayout.TextField("Level Prefix", levelPrefix);
+			mLevelPrefix = EditorGUILayout.TextField("Level Prefix", mLevelPrefix);
 
 			EditorGUILayout.EndVertical();
 		}
@@ -262,23 +263,23 @@ namespace TileMatch.LevelEditor
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Width", GUILayout.Width(60));
-			minBoardWidth = EditorGUILayout.IntSlider(minBoardWidth, 4, 10);
+			mMinBoardWidth = EditorGUILayout.IntSlider(mMinBoardWidth, 4, 10);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			maxBoardWidth = EditorGUILayout.IntSlider(maxBoardWidth, 4, 12);
+			mMaxBoardWidth = EditorGUILayout.IntSlider(mMaxBoardWidth, 4, 12);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Height", GUILayout.Width(60));
-			minBoardHeight = EditorGUILayout.IntSlider(minBoardHeight, 4, 10);
+			mMinBoardHeight = EditorGUILayout.IntSlider(mMinBoardHeight, 4, 10);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			maxBoardHeight = EditorGUILayout.IntSlider(maxBoardHeight, 4, 12);
+			mMaxBoardHeight = EditorGUILayout.IntSlider(mMaxBoardHeight, 4, 12);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Layers", GUILayout.Width(60));
-			minLayers = EditorGUILayout.IntSlider(minLayers, 1, 3);
+			mMinLayers = EditorGUILayout.IntSlider(mMinLayers, 1, 3);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			maxLayers = EditorGUILayout.IntSlider(maxLayers, 1, 5);
+			mMaxLayers = EditorGUILayout.IntSlider(mMaxLayers, 1, 5);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.EndVertical();
@@ -291,21 +292,21 @@ namespace TileMatch.LevelEditor
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Tile Types", GUILayout.Width(80));
-			minTileTypes = EditorGUILayout.IntSlider(minTileTypes, 2, 20);
+			mMinTileTypes = EditorGUILayout.IntSlider(mMinTileTypes, 2, 20);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			maxTileTypes = EditorGUILayout.IntSlider(maxTileTypes, 2, 52);
+			mMaxTileTypes = EditorGUILayout.IntSlider(mMaxTileTypes, 2, 52);
 			EditorGUILayout.EndHorizontal();
 
-			matchCount = EditorGUILayout.IntSlider("Match Count", matchCount, 2, 4);
+			mMatchCount = EditorGUILayout.IntSlider("Match Count", mMatchCount, 2, 4);
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Tile Sets", GUILayout.Width(80));
-			minTileSets = EditorGUILayout.IntSlider(minTileSets, 3, 30);
+			mMinTileSets = EditorGUILayout.IntSlider(mMinTileSets, 3, 30);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			maxTileSets = EditorGUILayout.IntSlider(maxTileSets, 6, 60);
+			mMaxTileSets = EditorGUILayout.IntSlider(mMaxTileSets, 6, 60);
 			EditorGUILayout.EndHorizontal();
 
-			EditorGUILayout.LabelField($"Tiles per level: {minTileSets * matchCount} ~ {maxTileSets * matchCount}", EditorStyles.miniLabel);
+			EditorGUILayout.LabelField($"Tiles per level: {mMinTileSets * mMatchCount} ~ {mMaxTileSets * mMatchCount}", EditorStyles.miniLabel);
 
 			EditorGUILayout.EndVertical();
 		}
@@ -315,9 +316,9 @@ namespace TileMatch.LevelEditor
 			EditorGUILayout.BeginVertical("box");
 			EditorGUILayout.LabelField("🎨 Pattern Settings", EditorStyles.boldLabel);
 
-			useSymmetricPatterns = EditorGUILayout.Toggle("Use Symmetric Patterns", useSymmetricPatterns);
-			centerAlignTiles = EditorGUILayout.Toggle("Center Align Tiles", centerAlignTiles);
-			fillDensity = EditorGUILayout.Slider("Fill Density", fillDensity, 0.3f, 1f);
+			mUseSymmetricPatterns = EditorGUILayout.Toggle("Use Symmetric Patterns", mUseSymmetricPatterns);
+			mCenterAlignTiles = EditorGUILayout.Toggle("Center Align Tiles", mCenterAlignTiles);
+			mFillDensity = EditorGUILayout.Slider("Fill Density", mFillDensity, 0.3F, 1F);
 
 			EditorGUILayout.EndVertical();
 		}
@@ -327,8 +328,8 @@ namespace TileMatch.LevelEditor
 			EditorGUILayout.BeginVertical("box");
 			EditorGUILayout.LabelField("❄ Special Tiles", EditorStyles.boldLabel);
 
-			enableFrozenTiles = EditorGUILayout.Toggle("Enable Frozen Tiles", enableFrozenTiles);
-			enableLockedTiles = EditorGUILayout.Toggle("Enable Locked Tiles", enableLockedTiles);
+			mEnableFrozenTiles = EditorGUILayout.Toggle("Enable Frozen Tiles", mEnableFrozenTiles);
+			mEnableLockedTiles = EditorGUILayout.Toggle("Enable Locked Tiles", mEnableLockedTiles);
 
 			EditorGUILayout.EndVertical();
 		}
@@ -348,7 +349,7 @@ namespace TileMatch.LevelEditor
 			EditorGUILayout.BeginVertical("box");
 			EditorGUILayout.LabelField("⏱ Time Settings", EditorStyles.boldLabel);
 
-			enableTimeLimit = EditorGUILayout.Toggle("Enable Time Limit", enableTimeLimit);
+			mEnableTimeLimit = EditorGUILayout.Toggle("Enable Time Limit", mEnableTimeLimit);
 
 			EditorGUILayout.EndVertical();
 		}
@@ -357,11 +358,11 @@ namespace TileMatch.LevelEditor
 		{
 			EditorGUILayout.BeginVertical("box");
 
-			difficultyCurve = EditorGUILayout.CurveField("Difficulty", difficultyCurve);
-			boardSizeCurve = EditorGUILayout.CurveField("Board Size", boardSizeCurve);
-			layerCurve = EditorGUILayout.CurveField("Layers", layerCurve);
-			tileTypeCurve = EditorGUILayout.CurveField("Tile Types", tileTypeCurve);
-			tileCountCurve = EditorGUILayout.CurveField("Tile Count", tileCountCurve);
+			mDifficultyCurve = EditorGUILayout.CurveField("Difficulty", mDifficultyCurve);
+			mBoardSizeCurve = EditorGUILayout.CurveField("Board Size", mBoardSizeCurve);
+			mLayerCurve = EditorGUILayout.CurveField("Layers", mLayerCurve);
+			mTileTypeCurve = EditorGUILayout.CurveField("Tile Types", mTileTypeCurve);
+			mTileCountCurve = EditorGUILayout.CurveField("Tile Count", mTileCountCurve);
 
 			EditorGUILayout.EndVertical();
 		}
@@ -370,16 +371,16 @@ namespace TileMatch.LevelEditor
 		{
 			EditorGUILayout.BeginVertical("box");
 
-			previewLevel = EditorGUILayout.IntSlider("Preview Level", previewLevel, startLevelNumber, endLevelNumber);
+			mPreviewLevel = EditorGUILayout.IntSlider("Preview Level", mPreviewLevel, mStartLevelNumber, mEndLevelNumber);
 
-			float progress = (float)(previewLevel - startLevelNumber) / Mathf.Max(1, endLevelNumber - startLevelNumber);
-			var stats = CalculateLevelStats(progress);
+			float progress = (float)(mPreviewLevel - mStartLevelNumber) / Mathf.Max(1, mEndLevelNumber - mStartLevelNumber);
+			LevelStats stats = CalculateLevelStats(progress);
 
 			EditorGUILayout.LabelField($"Difficulty: {stats.difficulty}");
 			EditorGUILayout.LabelField($"Board: {stats.width} x {stats.height}");
 			EditorGUILayout.LabelField($"Layers: {stats.layers}");
 			EditorGUILayout.LabelField($"Tile Types: {stats.tileTypes}");
-			EditorGUILayout.LabelField($"Tile Sets: {stats.tileSets} ({stats.tileSets * matchCount} tiles)");
+			EditorGUILayout.LabelField($"Tile Sets: {stats.tileSets} ({stats.tileSets * mMatchCount} tiles)");
 
 			EditorGUILayout.EndVertical();
 		}
@@ -388,7 +389,7 @@ namespace TileMatch.LevelEditor
 		{
 			EditorGUILayout.Space(10);
 
-			GUI.backgroundColor = new Color(0.3f, 0.8f, 0.3f);
+			GUI.backgroundColor = new Color(0.3F, 0.8F, 0.3F);
 			if (GUILayout.Button("🎲 Generate All Levels", GUILayout.Height(40)))
 			{
 				GenerateAllLevels();
@@ -398,12 +399,12 @@ namespace TileMatch.LevelEditor
 			EditorGUILayout.BeginHorizontal();
 			if (GUILayout.Button("Generate Single Level"))
 			{
-				GenerateSingleLevel(previewLevel);
+				GenerateSingleLevel(mPreviewLevel);
 			}
 			if (GUILayout.Button("Open Output Folder"))
 			{
-				CreateFolderIfNeeded(outputFolder);
-				EditorUtility.RevealInFinder(outputFolder);
+				CreateFolderIfNeeded(mOutputFolder);
+				EditorUtility.RevealInFinder(mOutputFolder);
 			}
 			EditorGUILayout.EndHorizontal();
 		}
@@ -414,14 +415,14 @@ namespace TileMatch.LevelEditor
 
 		private void GenerateAllLevels()
 		{
-			CreateFolderIfNeeded(outputFolder);
+			CreateFolderIfNeeded(mOutputFolder);
 
-			int total = endLevelNumber - startLevelNumber + 1;
+			int total = mEndLevelNumber - mStartLevelNumber + 1;
 
-			for (int i = startLevelNumber; i <= endLevelNumber; i++)
+			for (int i = mStartLevelNumber; i <= mEndLevelNumber; i++)
 			{
-				float progressBar = (float)(i - startLevelNumber) / total;
-				EditorUtility.DisplayProgressBar("Generating Levels", $"Level {i}/{endLevelNumber}", progressBar);
+				float progressBar = (float)(i - mStartLevelNumber) / total;
+				EditorUtility.DisplayProgressBar("Generating Levels", $"Level {i}/{mEndLevelNumber}", progressBar);
 
 				GenerateSingleLevel(i);
 			}
@@ -435,8 +436,8 @@ namespace TileMatch.LevelEditor
 
 		private void GenerateSingleLevel(int levelNumber)
 		{
-			float progress = (float)(levelNumber - startLevelNumber) / Mathf.Max(1, endLevelNumber - startLevelNumber);
-			var stats = CalculateLevelStats(progress);
+			float progress = (float)(levelNumber - mStartLevelNumber) / Mathf.Max(1, mEndLevelNumber - mStartLevelNumber);
+			LevelStats stats = CalculateLevelStats(progress);
 
 			LevelData level = ScriptableObject.CreateInstance<LevelData>();
 			level.levelNumber = levelNumber;
@@ -446,27 +447,27 @@ namespace TileMatch.LevelEditor
 			level.boardHeight = stats.height;
 			level.maxLayers = stats.layers;
 			level.slotCount = 7;
-			level.matchCount = matchCount;
+			level.matchCount = mMatchCount;
 			level.targetScore = CalculateTargetScore(stats);
 
 			// 패턴 생성
-			if (useSymmetricPatterns)
-				level.tilePlacements = GenerateSymmetricPattern(stats.width, stats.height, stats.layers, fillDensity);
+			if (mUseSymmetricPatterns)
+				level.tilePlacements = GenerateSymmetricPattern(stats.width, stats.height, stats.layers, mFillDensity);
 			else
-				level.tilePlacements = GenerateBalancedPattern(stats.width, stats.height, stats.layers, fillDensity);
+				level.tilePlacements = GenerateBalancedPattern(stats.width, stats.height, stats.layers, mFillDensity);
 
 			// 타일 수 조정
 			AdjustTileCount(level, stats.tileSets);
 
 			// 중앙 정렬
-			if (centerAlignTiles)
+			if (mCenterAlignTiles)
 				CenterAlignPlacements(level);
 
 			// 타일 타입 할당
 			AssignTileTypes(level, stats.tileTypes);
 
 			// 특수 타일 적용
-			if (enableFrozenTiles || enableLockedTiles)
+			if (mEnableFrozenTiles || mEnableLockedTiles)
 				ApplySpecialTiles(level, stats.frozenRatio, stats.lockedRatio);
 
 			// 아이템 설정
@@ -475,14 +476,14 @@ namespace TileMatch.LevelEditor
 			level.initialHintCount = stats.hintCount;
 
 			// 시간 제한
-			if (enableTimeLimit)
+			if (mEnableTimeLimit)
 				level.timeLimit = stats.timeLimit;
 
 			// 저장
-			string path = $"{outputFolder}/{levelPrefix}{levelNumber:D3}.asset";
+			string path = $"{mOutputFolder}/{mLevelPrefix}{levelNumber:D3}.asset";
 
 			// 기존 파일 확인 및 덮어쓰기
-			var existing = AssetDatabase.LoadAssetAtPath<LevelData>(path);
+			LevelData existing = AssetDatabase.LoadAssetAtPath<LevelData>(path);
 			if (existing != null)
 			{
 				EditorUtility.CopySerialized(level, existing);
@@ -496,22 +497,22 @@ namespace TileMatch.LevelEditor
 
 		private LevelStats CalculateLevelStats(float progress)
 		{
-			float diff = difficultyCurve.Evaluate(progress);
+			float diff = mDifficultyCurve.Evaluate(progress);
 
 			return new LevelStats
 			{
 				difficulty = GetDifficultyFromValue(diff),
-				width = Mathf.RoundToInt(Mathf.Lerp(minBoardWidth, maxBoardWidth, boardSizeCurve.Evaluate(progress))),
-				height = Mathf.RoundToInt(Mathf.Lerp(minBoardHeight, maxBoardHeight, boardSizeCurve.Evaluate(progress))),
-				layers = Mathf.RoundToInt(Mathf.Lerp(minLayers, maxLayers, layerCurve.Evaluate(progress))),
-				tileTypes = Mathf.RoundToInt(Mathf.Lerp(minTileTypes, maxTileTypes, tileTypeCurve.Evaluate(progress))),
-				tileSets = Mathf.RoundToInt(Mathf.Lerp(minTileSets, maxTileSets, tileCountCurve.Evaluate(progress))),
-				frozenRatio = enableFrozenTiles ? frozenTileCurve.Evaluate(progress) : 0,
-				lockedRatio = enableLockedTiles ? lockedTileCurve.Evaluate(progress) : 0,
-				timeLimit = Mathf.RoundToInt(timeLimitCurve.Evaluate(progress)),
-				shuffleCount = Mathf.RoundToInt(shuffleCountCurve.Evaluate(progress)),
-				undoCount = Mathf.RoundToInt(undoCountCurve.Evaluate(progress)),
-				hintCount = Mathf.RoundToInt(hintCountCurve.Evaluate(progress))
+				width = Mathf.RoundToInt(Mathf.Lerp(mMinBoardWidth, mMaxBoardWidth, mBoardSizeCurve.Evaluate(progress))),
+				height = Mathf.RoundToInt(Mathf.Lerp(mMinBoardHeight, mMaxBoardHeight, mBoardSizeCurve.Evaluate(progress))),
+				layers = Mathf.RoundToInt(Mathf.Lerp(mMinLayers, mMaxLayers, mLayerCurve.Evaluate(progress))),
+				tileTypes = Mathf.RoundToInt(Mathf.Lerp(mMinTileTypes, mMaxTileTypes, mTileTypeCurve.Evaluate(progress))),
+				tileSets = Mathf.RoundToInt(Mathf.Lerp(mMinTileSets, mMaxTileSets, mTileCountCurve.Evaluate(progress))),
+				frozenRatio = mEnableFrozenTiles ? mFrozenTileCurve.Evaluate(progress) : 0,
+				lockedRatio = mEnableLockedTiles ? mLockedTileCurve.Evaluate(progress) : 0,
+				timeLimit = Mathf.RoundToInt(mTimeLimitCurve.Evaluate(progress)),
+				shuffleCount = Mathf.RoundToInt(mShuffleCountCurve.Evaluate(progress)),
+				undoCount = Mathf.RoundToInt(mUndoCountCurve.Evaluate(progress)),
+				hintCount = Mathf.RoundToInt(mHintCountCurve.Evaluate(progress))
 			};
 		}
 
@@ -521,19 +522,19 @@ namespace TileMatch.LevelEditor
 
 		private struct LevelStats
 		{
-			public LevelDifficulty difficulty;
+			public ELevelDifficulty difficulty;
 			public int width, height, layers, tileTypes, tileSets;
 			public float frozenRatio, lockedRatio;
 			public int timeLimit, shuffleCount, undoCount, hintCount;
 		}
 
-		private LevelDifficulty GetDifficultyFromValue(float value)
+		private ELevelDifficulty GetDifficultyFromValue(float value)
 		{
-			if (value < 0.2f) return LevelDifficulty.Tutorial;
-			if (value < 0.4f) return LevelDifficulty.Easy;
-			if (value < 0.6f) return LevelDifficulty.Normal;
-			if (value < 0.8f) return LevelDifficulty.Hard;
-			return LevelDifficulty.Expert;
+			if (value < 0.2F) return ELevelDifficulty.Tutorial;
+			if (value < 0.4F) return ELevelDifficulty.Easy;
+			if (value < 0.6F) return ELevelDifficulty.Normal;
+			if (value < 0.8F) return ELevelDifficulty.Hard;
+			return ELevelDifficulty.Expert;
 		}
 
 		private int CalculateTargetScore(LevelStats stats)
@@ -558,7 +559,7 @@ namespace TileMatch.LevelEditor
 			for (int layer = 0; layer < layers; layer++)
 			{
 				int margin = layer;
-				float layerDensity = density * (1f - layer * 0.15f);
+				float layerDensity = density * (1F - layer * 0.15F);
 
 				for (int x = margin; x < halfWidth; x++)
 				{
@@ -602,7 +603,7 @@ namespace TileMatch.LevelEditor
 			for (int layer = 0; layer < layers; layer++)
 			{
 				int margin = layer;
-				float layerDensity = density * (1f - layer * 0.2f);
+				float layerDensity = density * (1F - layer * 0.2F);
 
 				for (int x = margin; x < width - margin; x++)
 				{
@@ -633,7 +634,7 @@ namespace TileMatch.LevelEditor
 			if (level.tilePlacements == null)
 				level.tilePlacements = new List<TilePlacement>();
 
-			int targetCount = targetSets * matchCount;
+			int targetCount = targetSets * mMatchCount;
 
 			// 너무 많으면 제거
 			while (level.tilePlacements.Count > targetCount)
@@ -655,7 +656,7 @@ namespace TileMatch.LevelEditor
 				if (level.tilePlacements.Count > 0)
 				{
 					// 기존 타일 근처에 추가
-					var existing = level.tilePlacements[Random.Range(0, level.tilePlacements.Count)];
+					TilePlacement existing = level.tilePlacements[Random.Range(0, level.tilePlacements.Count)];
 					newX = Mathf.Clamp(existing.gridX + Random.Range(-1, 2), 0, level.boardWidth - 1);
 					newY = Mathf.Clamp(existing.gridY + Random.Range(-1, 2), 0, level.boardHeight - 1);
 					newLayer = existing.layer;
@@ -668,18 +669,18 @@ namespace TileMatch.LevelEditor
 				}
 
 				// 중복 위치 체크 - 같은 위치에 같은 레이어 타일이 있으면 스킵
-				bool isDuplicate = level.tilePlacements.Any(t =>
+				bool bIsDuplicate = level.tilePlacements.Any(t =>
 					t.gridX == newX && t.gridY == newY && t.layer == newLayer);
 
-				if (!isDuplicate)
+				if (!bIsDuplicate)
 				{
 					level.tilePlacements.Add(new TilePlacement(newX, newY, newLayer, ""));
 				}
 			}
 
 			// matchCount 배수로 맞추기
-			int remainder = level.tilePlacements.Count % matchCount;
-			for (int i = 0; i < remainder && level.tilePlacements.Count > matchCount; i++)
+			int remainder = level.tilePlacements.Count % mMatchCount;
+			for (int i = 0; i < remainder && level.tilePlacements.Count > mMatchCount; i++)
 			{
 				level.tilePlacements.RemoveAt(Random.Range(0, level.tilePlacements.Count));
 			}
@@ -706,7 +707,7 @@ namespace TileMatch.LevelEditor
 			int offsetY = (level.boardHeight - usedHeight) / 2 - minY;
 
 			// 모든 타일 위치 조정
-			foreach (var tile in level.tilePlacements)
+			foreach (TilePlacement tile in level.tilePlacements)
 			{
 				tile.gridX += offsetX;
 				tile.gridY += offsetY;
@@ -727,21 +728,21 @@ namespace TileMatch.LevelEditor
 
 			// 모든 가능한 타일 타입 생성
 			List<string> allTypes = new List<string>();
-			foreach (CardSuit suit in System.Enum.GetValues(typeof(CardSuit)))
-				foreach (CardRank rank in System.Enum.GetValues(typeof(CardRank)))
+			foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
+				foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
 					allTypes.Add($"{suit}_{rank}");
 
 			// 사용할 타입 선택 (셔플 후 선택)
-			var selectedTypes = allTypes.OrderBy(x => Random.value).Take(typeCount).ToList();
+			List<string> selectedTypes = allTypes.OrderBy(x => Random.value).Take(typeCount).ToList();
 
 			// 타일 타입 할당 (matchCount개씩 - 클리어 보장!)
-			int sets = level.tilePlacements.Count / matchCount;
+			int sets = level.tilePlacements.Count / mMatchCount;
 			List<string> assignments = new List<string>();
 
 			for (int i = 0; i < sets; i++)
 			{
 				string type = selectedTypes[i % selectedTypes.Count];
-				for (int j = 0; j < matchCount; j++)
+				for (int j = 0; j < mMatchCount; j++)
 					assignments.Add(type);
 			}
 
@@ -757,13 +758,13 @@ namespace TileMatch.LevelEditor
 		{
 			if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
 
-			var shuffled = level.tilePlacements.OrderBy(x => Random.value).ToList();
+			List<TilePlacement> shuffled = level.tilePlacements.OrderBy(x => Random.value).ToList();
 
 			// Frozen 타일 (상위 레이어에 우선 적용)
 			if (frozenRatio > 0)
 			{
 				int frozenCount = Mathf.RoundToInt(level.tilePlacements.Count * frozenRatio);
-				var upperLayerTiles = shuffled.Where(t => t.layer > 0).OrderBy(x => Random.value).ToList();
+				List<TilePlacement> upperLayerTiles = shuffled.Where(t => t.layer > 0).OrderBy(x => Random.value).ToList();
 
 				for (int i = 0; i < frozenCount && i < upperLayerTiles.Count; i++)
 				{
@@ -776,7 +777,7 @@ namespace TileMatch.LevelEditor
 			if (lockedRatio > 0)
 			{
 				int lockedCount = Mathf.RoundToInt(level.tilePlacements.Count * lockedRatio);
-				var available = shuffled.Where(t => !t.isFrozen).OrderBy(x => Random.value).ToList();
+				List<TilePlacement> available = shuffled.Where(t => !t.isFrozen).OrderBy(x => Random.value).ToList();
 
 				for (int i = 0; i < lockedCount && i < available.Count; i++)
 					available[i].isLocked = true;
@@ -806,6 +807,6 @@ namespace TileMatch.LevelEditor
 		#endregion
 	}
 
-	public enum PatternType { Pyramid, Diamond, Rectangle, Cross, Heart, Star, Spiral, Random, Custom }
+	public enum EPatternType { Pyramid, Diamond, Rectangle, Cross, Heart, Star, Spiral, Random, Custom }
 }
 #endif

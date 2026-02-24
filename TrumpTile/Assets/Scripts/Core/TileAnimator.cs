@@ -10,39 +10,39 @@ namespace TrumpTile.Animation
     public class TileAnimator : MonoBehaviour
     {
         [Header("Move Animation")]
-        [SerializeField] private float moveSpeed = 10f;
+        [SerializeField] private float moveSpeed = 10F;
         [SerializeField] private AnimationCurve moveCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         [Header("Select Animation")]
-        [SerializeField] private float selectScale = 1.15f;
-        [SerializeField] private float selectDuration = 0.1f;
-        [SerializeField] private float hoverBobAmount = 0.05f;
-        [SerializeField] private float hoverBobSpeed = 3f;
+        [SerializeField] private float selectScale = 1.15F;
+        [SerializeField] private float selectDuration = 0.1F;
+        [SerializeField] private float hoverBobAmount = 0.05F;
+        [SerializeField] private float hoverBobSpeed = 3F;
 
         [Header("Match Animation")]
-        [SerializeField] private float matchScalePunch = 1.3f;
-        [SerializeField] private float matchDuration = 0.2f;
+        [SerializeField] private float matchScalePunch = 1.3F;
+        [SerializeField] private float matchDuration = 0.2F;
 
         [Header("Spawn Animation")]
-        [SerializeField] private float spawnDuration = 0.3f;
-        [SerializeField] private float spawnDelay = 0.02f; // 타일 간 딜레이
+        [SerializeField] private float spawnDuration = 0.3F;
+        [SerializeField] private float spawnDelay = 0.02F; // 타일 간 딜레이
 
         [Header("Shake Animation")]
-        [SerializeField] private float shakeDuration = 0.3f;
-        [SerializeField] private float shakeIntensity = 0.1f;
+        [SerializeField] private float shakeDuration = 0.3F;
+        [SerializeField] private float shakeIntensity = 0.1F;
 
-        private Vector3 originalScale;
-        private Vector3 originalPosition;
-        private bool isAnimating;
-        private Coroutine currentAnimation;
+        private Vector3 mOriginalScale;
+        private Vector3 mOriginalPosition;
+        private bool mIsAnimating;
+        private Coroutine mCurrentAnimation;
 
-        public bool IsAnimating => isAnimating;
+        public bool IsAnimating => mIsAnimating;
         public event Action OnAnimationComplete;
 
         private void Awake()
         {
-            originalScale = transform.localScale;
-            originalPosition = transform.position;
+            mOriginalScale = transform.localScale;
+            mOriginalPosition = transform.position;
         }
 
         #region Move Animation
@@ -52,20 +52,20 @@ namespace TrumpTile.Animation
         /// </summary>
         public void MoveTo(Vector3 targetPosition, Action onComplete = null)
         {
-            if (currentAnimation != null)
-                StopCoroutine(currentAnimation);
+            if (mCurrentAnimation != null)
+                StopCoroutine(mCurrentAnimation);
 
-            currentAnimation = StartCoroutine(MoveToCoroutine(targetPosition, onComplete));
+            mCurrentAnimation = StartCoroutine(MoveToCoroutine(targetPosition, onComplete));
         }
 
         private IEnumerator MoveToCoroutine(Vector3 targetPosition, Action onComplete)
         {
-            isAnimating = true;
+            mIsAnimating = true;
             Vector3 startPos = transform.position;
             float distance = Vector3.Distance(startPos, targetPosition);
             float duration = distance / moveSpeed;
 
-            float elapsed = 0f;
+            float elapsed = 0F;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
@@ -76,7 +76,7 @@ namespace TrumpTile.Animation
             }
 
             transform.position = targetPosition;
-            isAnimating = false;
+            mIsAnimating = false;
 
             onComplete?.Invoke();
             OnAnimationComplete?.Invoke();
@@ -87,24 +87,24 @@ namespace TrumpTile.Animation
         /// </summary>
         public void MoveToSlot(Vector3 targetPosition, Action onComplete = null)
         {
-            if (currentAnimation != null)
-                StopCoroutine(currentAnimation);
+            if (mCurrentAnimation != null)
+                StopCoroutine(mCurrentAnimation);
 
-            currentAnimation = StartCoroutine(MoveToSlotCoroutine(targetPosition, onComplete));
+            mCurrentAnimation = StartCoroutine(MoveToSlotCoroutine(targetPosition, onComplete));
         }
 
         private IEnumerator MoveToSlotCoroutine(Vector3 targetPosition, Action onComplete)
         {
-            isAnimating = true;
+            mIsAnimating = true;
             Vector3 startPos = transform.position;
             float distance = Vector3.Distance(startPos, targetPosition);
-            float duration = Mathf.Clamp(distance / moveSpeed, 0.15f, 0.4f);
+            float duration = Mathf.Clamp(distance / moveSpeed, 0.15F, 0.4F);
 
             // 아크 높이 계산
-            float arcHeight = distance * 0.3f;
-            Vector3 midPoint = (startPos + targetPosition) / 2f + Vector3.up * arcHeight;
+            float arcHeight = distance * 0.3F;
+            Vector3 midPoint = (startPos + targetPosition) / 2F + Vector3.up * arcHeight;
 
-            float elapsed = 0f;
+            float elapsed = 0F;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
@@ -116,7 +116,7 @@ namespace TrumpTile.Animation
                 transform.position = Vector3.Lerp(a, b, t);
 
                 // 이동 중 약간 회전
-                float rotation = Mathf.Sin(t * Mathf.PI) * 15f;
+                float rotation = Mathf.Sin(t * Mathf.PI) * 15F;
                 transform.rotation = Quaternion.Euler(0, 0, rotation);
 
                 yield return null;
@@ -124,7 +124,7 @@ namespace TrumpTile.Animation
 
             transform.position = targetPosition;
             transform.rotation = Quaternion.identity;
-            isAnimating = false;
+            mIsAnimating = false;
 
             onComplete?.Invoke();
             OnAnimationComplete?.Invoke();
@@ -144,15 +144,15 @@ namespace TrumpTile.Animation
 
         private IEnumerator SelectAnimationCoroutine()
         {
-            float elapsed = 0f;
-            Vector3 targetScale = originalScale * selectScale;
+            float elapsed = 0F;
+            Vector3 targetScale = mOriginalScale * selectScale;
 
             while (elapsed < selectDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / selectDuration;
 
-                transform.localScale = Vector3.Lerp(originalScale, targetScale, t);
+                transform.localScale = Vector3.Lerp(mOriginalScale, targetScale, t);
                 yield return null;
             }
 
@@ -164,10 +164,10 @@ namespace TrumpTile.Animation
 
         private IEnumerator HoverBobCoroutine()
         {
-            while (transform.localScale.x >= originalScale.x * selectScale * 0.99f)
+            while (transform.localScale.x >= mOriginalScale.x * selectScale * 0.99F)
             {
                 float yOffset = Mathf.Sin(Time.time * hoverBobSpeed) * hoverBobAmount;
-                Vector3 pos = originalPosition;
+                Vector3 pos = mOriginalPosition;
                 pos.y += yOffset;
                 // transform.position = pos; // 호버 위치 유지가 필요하면 사용
                 yield return null;
@@ -184,7 +184,7 @@ namespace TrumpTile.Animation
 
         private IEnumerator DeselectAnimationCoroutine()
         {
-            float elapsed = 0f;
+            float elapsed = 0F;
             Vector3 startScale = transform.localScale;
 
             while (elapsed < selectDuration)
@@ -192,11 +192,11 @@ namespace TrumpTile.Animation
                 elapsed += Time.deltaTime;
                 float t = elapsed / selectDuration;
 
-                transform.localScale = Vector3.Lerp(startScale, originalScale, t);
+                transform.localScale = Vector3.Lerp(startScale, mOriginalScale, t);
                 yield return null;
             }
 
-            transform.localScale = originalScale;
+            transform.localScale = mOriginalScale;
         }
 
         #endregion
@@ -208,46 +208,46 @@ namespace TrumpTile.Animation
         /// </summary>
         public void PlayMatchAnimation(Action onComplete = null)
         {
-            if (currentAnimation != null)
-                StopCoroutine(currentAnimation);
+            if (mCurrentAnimation != null)
+                StopCoroutine(mCurrentAnimation);
 
-            currentAnimation = StartCoroutine(MatchAnimationCoroutine(onComplete));
+            mCurrentAnimation = StartCoroutine(MatchAnimationCoroutine(onComplete));
         }
 
         private IEnumerator MatchAnimationCoroutine(Action onComplete)
         {
-            isAnimating = true;
+            mIsAnimating = true;
 
             // 펀치 스케일
-            float elapsed = 0f;
-            Vector3 punchScale = originalScale * matchScalePunch;
+            float elapsed = 0F;
+            Vector3 punchScale = mOriginalScale * matchScalePunch;
 
             // 확대
-            while (elapsed < matchDuration * 0.3f)
+            while (elapsed < matchDuration * 0.3F)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / (matchDuration * 0.3f);
+                float t = elapsed / (matchDuration * 0.3F);
 
-                transform.localScale = Vector3.Lerp(originalScale, punchScale, t);
+                transform.localScale = Vector3.Lerp(mOriginalScale, punchScale, t);
                 yield return null;
             }
 
             // 축소 및 페이드
-            elapsed = 0f;
-            var spriteRenderer = GetComponent<SpriteRenderer>();
+            elapsed = 0F;
+            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
             Color startColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
 
-            while (elapsed < matchDuration * 0.7f)
+            while (elapsed < matchDuration * 0.7F)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / (matchDuration * 0.7f);
+                float t = elapsed / (matchDuration * 0.7F);
 
                 transform.localScale = Vector3.Lerp(punchScale, Vector3.zero, t);
 
                 if (spriteRenderer != null)
                 {
                     Color newColor = startColor;
-                    newColor.a = 1f - t;
+                    newColor.a = 1F - t;
                     spriteRenderer.color = newColor;
                 }
 
@@ -255,7 +255,7 @@ namespace TrumpTile.Animation
             }
 
             transform.localScale = Vector3.zero;
-            isAnimating = false;
+            mIsAnimating = false;
 
             onComplete?.Invoke();
             OnAnimationComplete?.Invoke();
@@ -268,7 +268,7 @@ namespace TrumpTile.Animation
         /// <summary>
         /// 스폰 애니메이션 (등장)
         /// </summary>
-        public void PlaySpawnAnimation(float delay = 0f, Action onComplete = null)
+        public void PlaySpawnAnimation(float delay = 0F, Action onComplete = null)
         {
             StartCoroutine(SpawnAnimationCoroutine(delay, onComplete));
         }
@@ -277,11 +277,11 @@ namespace TrumpTile.Animation
         {
             transform.localScale = Vector3.zero;
 
-            if (delay > 0f)
+            if (delay > 0F)
                 yield return new WaitForSeconds(delay);
 
-            isAnimating = true;
-            float elapsed = 0f;
+            mIsAnimating = true;
+            float elapsed = 0F;
 
             while (elapsed < spawnDuration)
             {
@@ -289,15 +289,15 @@ namespace TrumpTile.Animation
                 float t = elapsed / spawnDuration;
 
                 // 바운스 효과
-                float bounce = Mathf.Sin(t * Mathf.PI * 1.5f);
-                float scale = t + bounce * 0.2f * (1f - t);
+                float bounce = Mathf.Sin(t * Mathf.PI * 1.5F);
+                float scale = t + bounce * 0.2F * (1F - t);
 
-                transform.localScale = originalScale * Mathf.Clamp01(scale);
+                transform.localScale = mOriginalScale * Mathf.Clamp01(scale);
                 yield return null;
             }
 
-            transform.localScale = originalScale;
-            isAnimating = false;
+            transform.localScale = mOriginalScale;
+            mIsAnimating = false;
 
             onComplete?.Invoke();
         }
@@ -311,11 +311,11 @@ namespace TrumpTile.Animation
             {
                 if (tiles[i] != null)
                 {
-                    tiles[i].PlaySpawnAnimation(i * 0.02f);
+                    tiles[i].PlaySpawnAnimation(i * 0.02F);
                 }
             }
 
-            yield return new WaitForSeconds(tiles.Length * 0.02f + 0.3f);
+            yield return new WaitForSeconds(tiles.Length * 0.02F + 0.3F);
         }
 
         #endregion
@@ -333,18 +333,18 @@ namespace TrumpTile.Animation
         private IEnumerator ShakeAnimationCoroutine()
         {
             Vector3 originalPos = transform.position;
-            float elapsed = 0f;
+            float elapsed = 0F;
 
             while (elapsed < shakeDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / shakeDuration;
 
-                float damping = 1f - t;
-                float offsetX = Mathf.Sin(Time.time * 50f) * shakeIntensity * damping;
-                float offsetY = Mathf.Cos(Time.time * 50f) * shakeIntensity * damping * 0.5f;
+                float damping = 1F - t;
+                float offsetX = Mathf.Sin(Time.time * 50F) * shakeIntensity * damping;
+                float offsetY = Mathf.Cos(Time.time * 50F) * shakeIntensity * damping * 0.5F;
 
-                transform.position = originalPos + new Vector3(offsetX, offsetY, 0f);
+                transform.position = originalPos + new Vector3(offsetX, offsetY, 0F);
                 yield return null;
             }
 
@@ -372,12 +372,12 @@ namespace TrumpTile.Animation
         /// </summary>
         public void StopAnimation()
         {
-            if (currentAnimation != null)
+            if (mCurrentAnimation != null)
             {
-                StopCoroutine(currentAnimation);
-                currentAnimation = null;
+                StopCoroutine(mCurrentAnimation);
+                mCurrentAnimation = null;
             }
-            isAnimating = false;
+            mIsAnimating = false;
         }
 
         /// <summary>
@@ -386,14 +386,14 @@ namespace TrumpTile.Animation
         public void ResetState()
         {
             StopAnimation();
-            transform.localScale = originalScale;
+            transform.localScale = mOriginalScale;
             transform.rotation = Quaternion.identity;
 
-            var sr = GetComponent<SpriteRenderer>();
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
             if (sr != null)
             {
                 Color c = sr.color;
-                c.a = 1f;
+                c.a = 1F;
                 sr.color = c;
             }
         }
@@ -403,7 +403,7 @@ namespace TrumpTile.Animation
         /// </summary>
         public void SetOriginalScale(Vector3 scale)
         {
-            originalScale = scale;
+            mOriginalScale = scale;
         }
 
         #endregion

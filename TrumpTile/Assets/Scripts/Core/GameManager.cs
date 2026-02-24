@@ -14,7 +14,7 @@ namespace TrumpTile.Core
 {
 	/// <summary>
 	/// 게임 전체 상태 및 흐름 관리
-	/// 
+	///
 	/// [UserDataManager 연동]
 	/// - SelectedStage: 메인에서 선택한 스테이지로 시작
 	/// - ClearStage(): 클리어 시 호출하여 진행 저장
@@ -25,60 +25,60 @@ namespace TrumpTile.Core
 		public static GameManager Instance { get; private set; }
 
 		[Header("References")]
-		[SerializeField] private BoardManager boardManager;
-		[SerializeField] private SlotManager slotManager;
-		[SerializeField] private GameOverPopup gameOverPopup;
-		[SerializeField] private VictoryPopup victoryPopup;
+		[SerializeField] private BoardManager mBoardManager;
+		[SerializeField] private SlotManager mSlotManager;
+		[SerializeField] private GameOverPopup mGameOverPopup;
+		[SerializeField] private VictoryPopup mVictoryPopup;
 
 		[Header("Level Settings")]
-		[SerializeField] private string levelFolderPath = "Levels";
-		[SerializeField] private int startLevel = 1;
+		[SerializeField] private string mLevelFolderPath = "Levels";
+		[SerializeField] private int mStartLevel = 1;
 
 		[Header("Game Rules")]
-		[SerializeField] private int matchCount = 3;
-		[SerializeField] private int maxSlots = 7;
+		[SerializeField] private int mMatchCount = 3;
+		[SerializeField] private int mMaxSlots = 7;
 
 		[Header("Scoring")]
-		[SerializeField] private int baseMatchScore = 100;
-		[SerializeField] private int comboMultiplier = 50;
-		[SerializeField] private int[] starThresholds = { 1000, 2000, 3000 };
+		[SerializeField] private int mBaseMatchScore = 100;
+		[SerializeField] private int mComboMultiplier = 50;
+		[SerializeField] private int[] mStarThresholds = { 1000, 2000, 3000 };
 
 		[Header("Items")]
-		[SerializeField] private int initialStrikeCount = 3;
-		[SerializeField] private int initialBlackHoleCount = 3;
-		[SerializeField] private int initialBoomCount = 3;
+		[SerializeField] private int mInitialStrikeCount = 3;
+		[SerializeField] private int mInitialBlackHoleCount = 3;
+		[SerializeField] private int mInitialBoomCount = 3;
 
 		[Header("Debug")]
-		[SerializeField] private bool enableDebugKeys = true;
-		[SerializeField] private float slowMotionScale = 0.2f;
-		private bool isSlowMotion = false;
+		[SerializeField] private bool mEnableDebugKeys = true;
+		[SerializeField] private float mSlowMotionScale = 0.2F;
+		private bool mIsSlowMotion = false;
 
 		// 게임 상태
-		public enum GameState { Loading, Playing, Paused, GameOver, GameClear }
-		public GameState CurrentState { get; private set; }
+		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
+		public EGameState CurrentState { get; private set; }
 
 		// Public 프로퍼티
-		public int MatchCount => matchCount;
+		public int MatchCount => mMatchCount;
 
 		// 레벨 정보
-		private LevelData[] allLevels;
-		private int currentLevelIndex;
-		public int CurrentLevel => currentLevelIndex + 1;
-		public int MaxLevel => allLevels != null ? allLevels.Length : 0;
+		private LevelData[] mAllLevels;
+		private int mCurrentLevelIndex;
+		public int CurrentLevel => mCurrentLevelIndex + 1;
+		public int MaxLevel => mAllLevels != null ? mAllLevels.Length : 0;
 
 		// 점수 및 통계
-		private int currentScore;
-		private int comboCount;
-		private int matchedTileCount;
-		private int totalTileCount;
+		private int mCurrentScore;
+		private int mComboCount;
+		private int mMatchedTileCount;
+		private int mTotalTileCount;
 
 		// 아이템
-		private int strikeCount;
-		private int blackHoleCount;
-		private int boomCount;
+		private int mStrikeCount;
+		private int mBlackHoleCount;
+		private int mBoomCount;
 
 		// 아이템 사용 중 플래그
-		private bool isItemInProgress = false;
+		private bool mIsItemInProgress = false;
 
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
@@ -109,8 +109,8 @@ namespace TrumpTile.Core
 			SubscribeEvents();
 			InitializeItems();
 
-			Debug.Log($"[GameManager] Starting level: {startLevel}");
-			StartLevel(startLevel);
+			Debug.Log($"[GameManager] Starting level: {mStartLevel}");
+			StartLevel(mStartLevel);
 		}
 
 		private void OnDestroy()
@@ -125,7 +125,7 @@ namespace TrumpTile.Core
 
 		private void Update()
 		{
-			if (enableDebugKeys)
+			if (mEnableDebugKeys)
 			{
 				HandleDebugKeys();
 			}
@@ -145,9 +145,9 @@ namespace TrumpTile.Core
 
 			if (Input.GetKeyDown(KeyCode.T))
 			{
-				isSlowMotion = !isSlowMotion;
-				Time.timeScale = isSlowMotion ? slowMotionScale : 1f;
-				Debug.Log($"[GameManager] SlowMotion: {isSlowMotion}");
+				mIsSlowMotion = !mIsSlowMotion;
+				Time.timeScale = mIsSlowMotion ? mSlowMotionScale : 1F;
+				Debug.Log($"[GameManager] SlowMotion: {mIsSlowMotion}");
 			}
 
 			if (Input.GetKeyDown(KeyCode.C))
@@ -167,51 +167,51 @@ namespace TrumpTile.Core
 
 		private void LoadAllLevels()
 		{
-			allLevels = Resources.LoadAll<LevelData>(levelFolderPath)
+			mAllLevels = Resources.LoadAll<LevelData>(mLevelFolderPath)
 				.OrderBy(l => l.levelNumber)
 				.ToArray();
 
-			if (allLevels == null || allLevels.Length == 0)
+			if (mAllLevels == null || mAllLevels.Length == 0)
 			{
-				Debug.LogError($"[GameManager] No levels found in Resources/{levelFolderPath}");
+				Debug.LogError($"[GameManager] No levels found in Resources/{mLevelFolderPath}");
 			}
 			else
 			{
-				Debug.Log($"[GameManager] Loaded {allLevels.Length} levels");
+				Debug.Log($"[GameManager] Loaded {mAllLevels.Length} levels");
 			}
 		}
 
 		public void StartLevel(int levelNumber)
 		{
-			if (allLevels == null || allLevels.Length == 0)
+			if (mAllLevels == null || mAllLevels.Length == 0)
 			{
 				Debug.LogError("[GameManager] No levels available!");
 				return;
 			}
 
-			currentLevelIndex = Mathf.Clamp(levelNumber - 1, 0, allLevels.Length - 1);
-			LevelData levelData = allLevels[currentLevelIndex];
+			mCurrentLevelIndex = Mathf.Clamp(levelNumber - 1, 0, mAllLevels.Length - 1);
+			LevelData levelData = mAllLevels[mCurrentLevelIndex];
 
 			Debug.Log($"[GameManager] Starting Level {CurrentLevel}: {levelData.levelName}");
 
-			CurrentState = GameState.Loading;
-			currentScore = 0;
-			comboCount = 0;
-			matchedTileCount = 0;
-			isItemInProgress = false;
+			CurrentState = EGameState.Loading;
+			mCurrentScore = 0;
+			mComboCount = 0;
+			mMatchedTileCount = 0;
+			mIsItemInProgress = false;
 
-			slotManager?.ResetSlots();
-			boardManager?.LoadLevel(levelData);
+			mSlotManager?.ResetSlots();
+			mBoardManager?.LoadLevel(levelData);
 
-			totalTileCount = boardManager?.TotalTileCount ?? 0;
+			mTotalTileCount = mBoardManager?.TotalTileCount ?? 0;
 
 			UIManager.Instance?.UpdateLevel(CurrentLevel);
-			UIManager.Instance?.UpdateScore(currentScore);
-			OnScoreChanged?.Invoke(currentScore);
+			UIManager.Instance?.UpdateScore(mCurrentScore);
+			OnScoreChanged?.Invoke(mCurrentScore);
 			OnComboChanged?.Invoke(0);
-			OnItemCountChanged?.Invoke(strikeCount, blackHoleCount, boomCount);
+			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
 
-			CurrentState = GameState.Playing;
+			CurrentState = EGameState.Playing;
 		}
 
 		public void RestartLevel()
@@ -227,7 +227,7 @@ namespace TrumpTile.Core
 		{
 			Debug.Log($"[GameManager] NextLevel called - Current: {CurrentLevel}, Max: {MaxLevel}");
 
-			if (currentLevelIndex < allLevels.Length - 1)
+			if (mCurrentLevelIndex < mAllLevels.Length - 1)
 			{
 				int nextLevelNumber = CurrentLevel + 1;
 				Debug.Log($"[GameManager] Going to level {nextLevelNumber}");
@@ -245,7 +245,7 @@ namespace TrumpTile.Core
 		/// </summary>
 		public bool HasNextLevel()
 		{
-			return currentLevelIndex < allLevels.Length - 1;
+			return mCurrentLevelIndex < mAllLevels.Length - 1;
 		}
 
 		public void GoToLevel(int levelNumber)
@@ -278,11 +278,11 @@ namespace TrumpTile.Core
 
 		public void AddScore(int amount)
 		{
-			currentScore += amount;
-			OnScoreChanged?.Invoke(currentScore);
+			mCurrentScore += amount;
+			OnScoreChanged?.Invoke(mCurrentScore);
 		}
 
-		public int GetScore() => currentScore;
+		public int GetScore() => mCurrentScore;
 
 		#endregion
 
@@ -290,20 +290,20 @@ namespace TrumpTile.Core
 
 		private void OnMatchHandler(int matchedCount)
 		{
-			comboCount++;
-			OnComboChanged?.Invoke(comboCount);
+			mComboCount++;
+			OnComboChanged?.Invoke(mComboCount);
 
-			if (comboCount > 1)
+			if (mComboCount > 1)
 			{
-				AddScore(comboMultiplier * (comboCount - 1));
+				AddScore(mComboMultiplier * (mComboCount - 1));
 			}
 
-			matchedTileCount += matchedCount;
-			OnProgressChanged?.Invoke(matchedTileCount, totalTileCount);
+			mMatchedTileCount += matchedCount;
+			OnProgressChanged?.Invoke(mMatchedTileCount, mTotalTileCount);
 
-			if (comboCount > 1)
+			if (mComboCount > 1)
 			{
-				AudioManager.Instance?.PlayMatchSound(comboCount);
+				AudioManager.Instance?.PlayMatchSound(mComboCount);
 			}
 		}
 
@@ -313,19 +313,19 @@ namespace TrumpTile.Core
 
 		public void OnGameOver()
 		{
-			if (CurrentState == GameState.GameOver) return;
+			if (CurrentState == EGameState.GameOver) return;
 
 			Debug.Log("[GameManager] Game Over!");
 
-			CurrentState = GameState.GameOver;
+			CurrentState = EGameState.GameOver;
 
 			UIManager.Instance?.DisableItemButtons();
 			EffectManager.Instance?.PlayGameOverEffect();
 			AudioManager.Instance?.PlayGameOver();
 
-			if (gameOverPopup != null)
+			if (mGameOverPopup != null)
 			{
-				gameOverPopup.Show();
+				mGameOverPopup.Show();
 			}
 		}
 
@@ -333,29 +333,29 @@ namespace TrumpTile.Core
 		{
 			Debug.Log("[GameManager] Continue game - Revive");
 
-			CurrentState = GameState.Playing;
+			CurrentState = EGameState.Playing;
 
-			slotManager?.ResumeGame();
+			mSlotManager?.ResumeGame();
 
-			slotManager?.RemoveOneTileToBoard();
-			slotManager?.RemoveOneTileToBoard();
+			mSlotManager?.RemoveOneTileToBoard();
+			mSlotManager?.RemoveOneTileToBoard();
 
 			UIManager.Instance?.UpdateItemButtonStates();
 		}
 
 		public void LevelClear()
 		{
-			if (CurrentState == GameState.GameClear) return;
+			if (CurrentState == EGameState.GameClear) return;
 			StartCoroutine(LevelClearCoroutine());
 		}
 
 		private IEnumerator LevelClearCoroutine()
 		{
-			CurrentState = GameState.GameClear;
+			CurrentState = EGameState.GameClear;
 
 			UIManager.Instance?.DisableItemButtons();
 
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.5F);
 
 			EffectManager.Instance?.PlayClearEffect();
 			AudioManager.Instance?.PlayGameClear();
@@ -365,14 +365,14 @@ namespace TrumpTile.Core
 			// UserDataManager에 클리어 정보 저장
 			SaveLevelProgress(CurrentLevel, stars);
 
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.5F);
 
 			// VictoryPopup 표시
-			if (victoryPopup != null)
+			if (mVictoryPopup != null)
 			{
-				bool hasNext = HasNextLevel();
-				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {hasNext}");
-				victoryPopup.Show(CurrentLevel, currentScore, stars, hasNext);
+				bool bHasNext = HasNextLevel();
+				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
+				mVictoryPopup.Show(CurrentLevel, mCurrentScore, stars, bHasNext);
 			}
 			else
 			{
@@ -384,9 +384,9 @@ namespace TrumpTile.Core
 		private int CalculateStars()
 		{
 			int stars = 1;
-			for (int i = 0; i < starThresholds.Length; i++)
+			for (int i = 0; i < mStarThresholds.Length; i++)
 			{
-				if (currentScore >= starThresholds[i])
+				if (mCurrentScore >= mStarThresholds[i])
 				{
 					stars = i + 1;
 				}
@@ -396,20 +396,20 @@ namespace TrumpTile.Core
 
 		public void PauseGame()
 		{
-			if (CurrentState != GameState.Playing) return;
+			if (CurrentState != EGameState.Playing) return;
 
-			CurrentState = GameState.Paused;
-			Time.timeScale = 0f;
+			CurrentState = EGameState.Paused;
+			Time.timeScale = 0F;
 			AudioManager.Instance?.PauseBGM();
 			UIManager.Instance?.ShowPausePanel();
 		}
 
 		public void ResumeGame()
 		{
-			if (CurrentState != GameState.Paused) return;
+			if (CurrentState != EGameState.Paused) return;
 
-			CurrentState = GameState.Playing;
-			Time.timeScale = 1f;
+			CurrentState = EGameState.Playing;
+			Time.timeScale = 1F;
 			AudioManager.Instance?.ResumeBGM();
 		}
 
@@ -419,145 +419,138 @@ namespace TrumpTile.Core
 
 		public bool CanUseItem()
 		{
-			return CurrentState == GameState.Playing && !isItemInProgress;
+			return CurrentState == EGameState.Playing && !mIsItemInProgress;
 		}
 
 		public void UseStrike()
 		{
 			if (!CanUseItem()) return;
-			if (strikeCount <= 0) return;
-			if (slotManager == null || slotManager.CurrentTileCount == 0) return;
+			if (mStrikeCount <= 0) return;
+			if (mSlotManager == null || mSlotManager.CurrentTileCount == 0) return;
 
-			strikeCount--;
-			OnItemCountChanged?.Invoke(strikeCount, blackHoleCount, boomCount);
+			mStrikeCount--;
+			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
 
 			StartCoroutine(StrikeCoroutine());
 		}
 
 		private IEnumerator StrikeCoroutine()
 		{
-			isItemInProgress = true;
+			mIsItemInProgress = true;
 
-			Vector3 popPosition = slotManager.GetLastTilePosition();
+			Vector3 popPosition = mSlotManager.GetLastTilePosition();
 
 			EffectManager.Instance?.PlayStrikePopEffect(popPosition);
 			AudioManager.Instance?.PlayItemUse();
 
-			yield return new WaitForSeconds(0.3f);
+			yield return new WaitForSeconds(0.3F);
 
 			Vector3 landPosition;
-			bool success = slotManager.RemoveOneTileToBoard(out landPosition);
+			bool bSuccess = mSlotManager.RemoveOneTileToBoard(out landPosition);
 
-			if (success)
+			if (bSuccess)
 			{
-				Vector3 actualLandPosition = boardManager?.GetLastPlacedTilePosition() ?? landPosition;
+				Vector3 actualLandPosition = mBoardManager?.GetLastPlacedTilePosition() ?? landPosition;
 				EffectManager.Instance?.PlayStrikeLandEffect(actualLandPosition);
 			}
 
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitForSeconds(0.2F);
 
-			isItemInProgress = false;
+			mIsItemInProgress = false;
 		}
 
 		public void UseBlackHole()
 		{
 			if (!CanUseItem()) return;
-			if (blackHoleCount <= 0) return;
-			if (boardManager == null || !boardManager.HasRemainingTiles()) return;
+			if (mBlackHoleCount <= 0) return;
+			if (mBoardManager == null || !mBoardManager.HasRemainingTiles()) return;
 
-			blackHoleCount--;
-			OnItemCountChanged?.Invoke(strikeCount, blackHoleCount, boomCount);
+			mBlackHoleCount--;
+			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
 
 			StartCoroutine(BlackHoleCoroutine());
 		}
 
 		private IEnumerator BlackHoleCoroutine()
 		{
-			isItemInProgress = true;
+			mIsItemInProgress = true;
 
-			var boardTiles = boardManager.GetBoardTiles();
+			List<TileController> boardTiles = mBoardManager.GetBoardTiles();
 
-			var tileTransforms = boardTiles
+			List<Transform> tileTransforms = boardTiles
 				.Where(t => t != null)
 				.Select(t => t.transform)
 				.ToList();
 
-			var originalPositions = new Dictionary<TileController, Vector3>();
-			foreach (var tile in boardTiles)
-			{
-				if (tile != null)
-				{
-					originalPositions[tile] = tile.transform.position;
-				}
-			}
-
+			// EffectManager가 타일 위치 복원 애니메이션까지 담당하므로 중복 복원 제거
+			bool bEffectComplete = false;
 			EffectManager.Instance?.PlayBlackHoleEffect(
 				tileTransforms,
 				() => { },
-				() => { boardManager.StartCoroutine(boardManager.ShuffleBoardAnimated()); }
+				() =>
+				{
+					mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
+					bEffectComplete = true;
+				}
 			);
 
-			yield return new WaitForSeconds(1.5f);
-
-			foreach (var tile in boardTiles)
+			// 이펙트 완료 콜백 대기 (타임아웃 5초)
+			float timeout = 5F;
+			float elapsed = 0F;
+			while (!bEffectComplete && elapsed < timeout)
 			{
-				if (tile != null && originalPositions.ContainsKey(tile))
-				{
-					tile.transform.position = originalPositions[tile];
-				}
+				elapsed += Time.deltaTime;
+				yield return null;
 			}
 
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.2F);
 
-			isItemInProgress = false;
+			mIsItemInProgress = false;
 		}
 
 		public void UseBoom()
 		{
 			if (!CanUseItem()) return;
-			if (boomCount <= 0) return;
+			if (mBoomCount <= 0) return;
 
-			var allBoardTiles = boardManager?.GetBoardTiles() ?? new List<TileController>();
-			var allSlotTiles = slotManager?.GetAllSlotTiles() ?? new List<TileController>();
+			List<TileController> allBoardTiles = mBoardManager?.GetBoardTiles() ?? new List<TileController>();
+			List<TileController> allSlotTiles = mSlotManager?.GetAllSlotTiles() ?? new List<TileController>();
 
-			var allTiles = new List<TileController>();
+			List<TileController> allTiles = new List<TileController>();
 			allTiles.AddRange(allBoardTiles);
 			allTiles.AddRange(allSlotTiles);
 
-			var selectableTiles = allTiles
+			List<IGrouping<string, TileController>> selectableTiles = allTiles
 				.Where(t => t != null && t.Data != null)
-				.ToList();
-
-			var groups = selectableTiles
 				.GroupBy(t => t.Data.TileID)
-				.Where(g => g.Count() >= matchCount)
+				.Where(g => g.Count() >= mMatchCount)
 				.ToList();
 
-			if (groups.Count == 0) return;
+			if (selectableTiles.Count == 0) return;
 
-			boomCount--;
-			OnItemCountChanged?.Invoke(strikeCount, blackHoleCount, boomCount);
+			mBoomCount--;
+			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
 
-			StartCoroutine(BoomCoroutine(groups));
+			StartCoroutine(BoomCoroutine(selectableTiles));
 		}
 
 		private IEnumerator BoomCoroutine(List<IGrouping<string, TileController>> groups)
 		{
-			isItemInProgress = true;
+			mIsItemInProgress = true;
 
 			AudioManager.Instance?.PlayItemUse();
 
 			int setsToRemove = Mathf.Min(3, groups.Count);
 
-			var allPositions = new List<Vector3>();
-			var allTilesToRemove = new List<TileController>();
+			List<Vector3> allPositions = new List<Vector3>();
+			List<TileController> allTilesToRemove = new List<TileController>();
 
 			for (int i = 0; i < setsToRemove; i++)
 			{
-				var group = groups[i];
-				var tilesToRemove = group.Take(matchCount).ToList();
+				IGrouping<string, TileController> group = groups[i];
+				List<TileController> tilesToRemove = group.Take(mMatchCount).ToList();
 
-				foreach (var tile in tilesToRemove)
+				foreach (TileController tile in tilesToRemove)
 				{
 					if (tile != null)
 					{
@@ -567,55 +560,55 @@ namespace TrumpTile.Core
 				}
 			}
 
-			bool effectComplete = false;
-			EffectManager.Instance?.PlayBoomEffect(allPositions, () => { effectComplete = true; });
+			bool bEffectComplete = false;
+			EffectManager.Instance?.PlayBoomEffect(allPositions, () => { bEffectComplete = true; });
 
-			foreach (var tile in allTilesToRemove)
+			foreach (TileController tile in allTilesToRemove)
 			{
 				if (tile != null)
 				{
 					if (tile.IsInSlot)
 					{
-						slotManager?.RemoveTileDirectly(tile);
+						mSlotManager?.RemoveTileDirectly(tile);
 					}
 					else
 					{
-						boardManager?.RemoveTile(tile);
+						mBoardManager?.RemoveTile(tile);
 					}
 
 					tile.Remove();
 				}
 			}
 
-			float timeout = 2f;
-			float elapsed = 0f;
-			while (!effectComplete && elapsed < timeout)
+			float timeout = 2F;
+			float elapsed = 0F;
+			while (!bEffectComplete && elapsed < timeout)
 			{
 				elapsed += Time.deltaTime;
 				yield return null;
 			}
 
-			boardManager?.UpdateAllBlockedStates();
+			mBoardManager?.UpdateAllBlockedStates();
 
-			yield return new WaitForSeconds(0.3f);
+			yield return new WaitForSeconds(0.3F);
 
-			isItemInProgress = false;
+			mIsItemInProgress = false;
 
 			CheckLevelClear();
 		}
 
 		private void InitializeItems()
 		{
-			strikeCount = initialStrikeCount;
-			blackHoleCount = initialBlackHoleCount;
-			boomCount = initialBoomCount;
+			mStrikeCount = mInitialStrikeCount;
+			mBlackHoleCount = mInitialBlackHoleCount;
+			mBoomCount = mInitialBoomCount;
 
-			OnItemCountChanged?.Invoke(strikeCount, blackHoleCount, boomCount);
+			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
 		}
 
-		public int GetStrikeCount() => strikeCount;
-		public int GetBlackHoleCount() => blackHoleCount;
-		public int GetBoomCount() => boomCount;
+		public int GetStrikeCount() => mStrikeCount;
+		public int GetBlackHoleCount() => mBlackHoleCount;
+		public int GetBoomCount() => mBoomCount;
 
 		#endregion
 
@@ -623,21 +616,21 @@ namespace TrumpTile.Core
 
 		private void SubscribeEvents()
 		{
-			if (slotManager != null)
+			if (mSlotManager != null)
 			{
-				slotManager.OnMatch += OnMatchHandler;
-				slotManager.OnGameOver += OnGameOver;
-				slotManager.OnLevelClear += LevelClear;
+				mSlotManager.OnMatch += OnMatchHandler;
+				mSlotManager.OnGameOver += OnGameOver;
+				mSlotManager.OnLevelClear += LevelClear;
 			}
 		}
 
 		private void UnsubscribeEvents()
 		{
-			if (slotManager != null)
+			if (mSlotManager != null)
 			{
-				slotManager.OnMatch -= OnMatchHandler;
-				slotManager.OnGameOver -= OnGameOver;
-				slotManager.OnLevelClear -= LevelClear;
+				mSlotManager.OnMatch -= OnMatchHandler;
+				mSlotManager.OnGameOver -= OnGameOver;
+				mSlotManager.OnLevelClear -= LevelClear;
 			}
 		}
 
@@ -647,12 +640,12 @@ namespace TrumpTile.Core
 
 		private void CheckLevelClear()
 		{
-			if (CurrentState != GameState.Playing) return;
+			if (CurrentState != EGameState.Playing) return;
 
-			bool boardEmpty = boardManager == null || !boardManager.HasRemainingTiles();
-			bool slotEmpty = slotManager == null || slotManager.CurrentTileCount == 0;
+			bool bBoardEmpty = mBoardManager == null || !mBoardManager.HasRemainingTiles();
+			bool bSlotEmpty = mSlotManager == null || mSlotManager.CurrentTileCount == 0;
 
-			if (boardEmpty && slotEmpty)
+			if (bBoardEmpty && bSlotEmpty)
 			{
 				LevelClear();
 			}
@@ -702,10 +695,10 @@ namespace TrumpTile.Core
 		/// </summary>
 		private void LoadProgress()
 		{
-			// Inspector에서 startLevel을 1보다 크게 설정했으면 그 값 사용 (디버그용)
-			if (startLevel > 1)
+			// Inspector에서 mStartLevel을 1보다 크게 설정했으면 그 값 사용 (디버그용)
+			if (mStartLevel > 1)
 			{
-				Debug.Log($"[GameManager] Using Inspector startLevel: {startLevel}");
+				Debug.Log($"[GameManager] Using Inspector startLevel: {mStartLevel}");
 				return;
 			}
 
@@ -715,27 +708,27 @@ namespace TrumpTile.Core
 				// SelectedStage가 설정되어 있으면 (메인에서 선택한 경우)
 				if (UserDataManager.Instance.SelectedStage > 0)
 				{
-					startLevel = UserDataManager.Instance.SelectedStage;
-					Debug.Log($"[GameManager] Using SelectedStage: {startLevel}");
+					mStartLevel = UserDataManager.Instance.SelectedStage;
+					Debug.Log($"[GameManager] Using SelectedStage: {mStartLevel}");
 				}
 				else
 				{
 					// 아니면 CurrentStage 사용 (다음 플레이할 스테이지)
-					startLevel = UserDataManager.Instance.CurrentStage;
-					Debug.Log($"[GameManager] Using CurrentStage: {startLevel}");
+					mStartLevel = UserDataManager.Instance.CurrentStage;
+					Debug.Log($"[GameManager] Using CurrentStage: {mStartLevel}");
 				}
 			}
 			else
 			{
 				// Fallback: PlayerPrefs
-				startLevel = PlayerPrefs.GetInt("CurrentLevel", 1);
-				Debug.Log($"[GameManager] Using PlayerPrefs CurrentLevel: {startLevel}");
+				mStartLevel = PlayerPrefs.GetInt("CurrentLevel", 1);
+				Debug.Log($"[GameManager] Using PlayerPrefs CurrentLevel: {mStartLevel}");
 			}
 
 			// 최대 레벨 제한
 			if (MaxLevel > 0)
 			{
-				startLevel = Mathf.Clamp(startLevel, 1, MaxLevel);
+				mStartLevel = Mathf.Clamp(mStartLevel, 1, MaxLevel);
 			}
 		}
 
