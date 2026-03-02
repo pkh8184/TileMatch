@@ -101,7 +101,9 @@ namespace TrumpTile.GameMain.Core
 		{
 			// DataManager 초기화 대기
 			while (DataManager.Instance == null || !DataManager.Instance.IsInitialized)
+			{
 				await Task.Yield();
+			}
 
 			LoadProgress();
 			SubscribeEvents();
@@ -303,7 +305,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void OnGameOver()
 		{
-			if (CurrentState == EGameState.GameOver) return;
+			if (CurrentState == EGameState.GameOver)
+			{
+				return;
+			}
 
 			Debug.Log("[GameManager] Game Over!");
 
@@ -335,7 +340,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void LevelClear()
 		{
-			if (CurrentState == EGameState.GameClear) return;
+			if (CurrentState == EGameState.GameClear)
+			{
+				return;
+			}
 			StartCoroutine(LevelClearCoroutine());
 		}
 
@@ -386,7 +394,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void PauseGame()
 		{
-			if (CurrentState != EGameState.Playing) return;
+			if (CurrentState != EGameState.Playing)
+			{
+				return;
+			}
 
 			CurrentState = EGameState.Paused;
 			Time.timeScale = 0F;
@@ -396,7 +407,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void ResumeGame()
 		{
-			if (CurrentState != EGameState.Paused) return;
+			if (CurrentState != EGameState.Paused)
+			{
+				return;
+			}
 
 			CurrentState = EGameState.Playing;
 			Time.timeScale = 1F;
@@ -414,9 +428,18 @@ namespace TrumpTile.GameMain.Core
 
 		public void UseStrike()
 		{
-			if (!CanUseItem()) return;
-			if (mStrikeCount <= 0) return;
-			if (mSlotManager == null || mSlotManager.CurrentTileCount == 0) return;
+			if (!CanUseItem())
+			{
+				return;
+			}
+			if (mStrikeCount <= 0)
+			{
+				return;
+			}
+			if (mSlotManager == null || mSlotManager.CurrentTileCount == 0)
+			{
+				return;
+			}
 
 			mStrikeCount--;
 			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
@@ -451,9 +474,18 @@ namespace TrumpTile.GameMain.Core
 
 		public void UseBlackHole()
 		{
-			if (!CanUseItem()) return;
-			if (mBlackHoleCount <= 0) return;
-			if (mBoardManager == null || !mBoardManager.HasRemainingTiles()) return;
+			if (!CanUseItem())
+			{
+				return;
+			}
+			if (mBlackHoleCount <= 0)
+			{
+				return;
+			}
+			if (mBoardManager == null || !mBoardManager.HasRemainingTiles())
+			{
+				return;
+			}
 
 			mBlackHoleCount--;
 			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
@@ -500,8 +532,14 @@ namespace TrumpTile.GameMain.Core
 
 		public void UseBoom()
 		{
-			if (!CanUseItem()) return;
-			if (mBoomCount <= 0) return;
+			if (!CanUseItem())
+			{
+				return;
+			}
+			if (mBoomCount <= 0)
+			{
+				return;
+			}
 
 			List<TileController> allBoardTiles = mBoardManager?.GetBoardTiles() ?? new List<TileController>();
 			List<TileController> allSlotTiles = mSlotManager?.GetAllSlotTiles() ?? new List<TileController>();
@@ -516,7 +554,10 @@ namespace TrumpTile.GameMain.Core
 				.Where(g => g.Count() >= mMatchCount)
 				.ToList();
 
-			if (selectableTiles.Count == 0) return;
+			if (selectableTiles.Count == 0)
+			{
+				return;
+			}
 
 			mBoomCount--;
 			OnItemCountChanged?.Invoke(mStrikeCount, mBlackHoleCount, mBoomCount);
@@ -630,7 +671,10 @@ namespace TrumpTile.GameMain.Core
 
 		private void CheckLevelClear()
 		{
-			if (CurrentState != EGameState.Playing) return;
+			if (CurrentState != EGameState.Playing)
+			{
+				return;
+			}
 
 			bool bBoardEmpty = mBoardManager == null || !mBoardManager.HasRemainingTiles();
 			bool bSlotEmpty = mSlotManager == null || mSlotManager.CurrentTileCount == 0;

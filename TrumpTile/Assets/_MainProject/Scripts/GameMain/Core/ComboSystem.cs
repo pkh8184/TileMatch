@@ -31,13 +31,9 @@ namespace TrumpTile.GameMain.Core
 	/// - mComboDisplayPoint: 콤보 레이블이 표시될 월드 위치 Transform (미설정 시 슬롯 위치 사용)
 	/// - mDefaultComboEndTime: 매칭 항목이 없을 때 사용할 기본 타이머
 	///
-	/// [레벨 시작/재시작 시]
-	/// GameManager에서 ComboSystem.Instance?.ResetCombo() 호출 필요
 	/// </summary>
 	public class ComboSystem : MonoBehaviour
 	{
-		public static ComboSystem Instance { get; private set; }
-
 		[Header("Combo Database")]
 		[Tooltip("사용할 ComboDatabase 에셋")]
 		[SerializeField] private ComboDatabase mComboDatabase;
@@ -57,28 +53,23 @@ namespace TrumpTile.GameMain.Core
 
 		#region Unity Lifecycle
 
-		private void Awake()
-		{
-			if (Instance == null)
-				Instance = this;
-			else
-				Destroy(gameObject);
-		}
-
 		private void Start()
 		{
 			if (mComboDatabase == null)
+			{
 				Debug.LogWarning("[ComboSystem] ComboDatabase가 설정되지 않았습니다.");
+			}
 
 			EventManager.Inst.AddEvent(EventKeys.MATCH_OCCURRED, OnMatchOccurred);
 		}
 
 		private void OnDestroy()
 		{
-			EventManager.Inst.RemoveEvent(EventKeys.MATCH_OCCURRED);
-
-			if (Instance == this)
-				Instance = null;
+			EventManager em = EventManager.Inst;
+			if (em != null)
+			{
+				em.RemoveEvent(EventKeys.MATCH_OCCURRED);
+			}
 		}
 
 		#endregion
@@ -115,10 +106,14 @@ namespace TrumpTile.GameMain.Core
 			float timerDuration = entry != null ? entry.comboEndTime : GetFallbackEndTime();
 
 			if (entry != null)
+			{
 				TriggerCombo(entry);
+			}
 
 			if (mResetTimerCoroutine != null)
+			{
 				StopCoroutine(mResetTimerCoroutine);
+			}
 
 			mResetTimerCoroutine = StartCoroutine(ResetTimerCoroutine(timerDuration));
 		}
@@ -127,26 +122,45 @@ namespace TrumpTile.GameMain.Core
 		/// 현재 연속 횟수에 맞는 ComboEntry를 선택합니다.
 		/// isRandom=TRUE 항목이 여러 개면 그 중 랜덤 선택,
 		/// isRandom=FALSE만 있으면 첫 번째 항목 반환.
+		/// 정확히 일치하는 항목이 없고 카운트가 DB 최대치를 초과하면 마지막 항목을 반환.
 		/// </summary>
 		private ComboEntry SelectComboEntry(int count)
 		{
 			ComboEntry[] entries = mComboDatabase?.Entries;
 			if (entries == null || entries.Length == 0)
+			{
 				return null;
+			}
 
 			ComboEntry[] candidates = entries
 				.Where(e => e.consecutiveCount == count)
 				.ToArray();
 
 			if (candidates.Length == 0)
+			{
+				// 카운트가 DB 최대치를 초과한 경우 가장 높은 항목을 반환
+				ComboEntry lastEntry = entries
+					.OrderByDescending(e => e.consecutiveCount)
+					.FirstOrDefault();
+
+				if (lastEntry != null && count > lastEntry.consecutiveCount)
+				{
+					return lastEntry;
+				}
+
 				return null;
+			}
 
 			if (candidates.Length == 1)
+			{
 				return candidates[0];
+			}
 
 			ComboEntry[] randomPool = candidates.Where(e => e.isRandom).ToArray();
 			if (randomPool.Length > 0)
+			{
 				return randomPool[Random.Range(0, randomPool.Length)];
+			}
 
 			return candidates[0];
 		}
@@ -158,7 +172,9 @@ namespace TrumpTile.GameMain.Core
 		{
 			ComboEntry[] entries = mComboDatabase?.Entries;
 			if (entries == null || entries.Length == 0)
+			{
 				return mDefaultComboEndTime;
+			}
 
 			ComboEntry last = entries
 				.Where(e => e.consecutiveCount <= mConsecutiveMatchCount)
@@ -175,11 +191,13 @@ namespace TrumpTile.GameMain.Core
 		private void TriggerCombo(ComboEntry entry)
 		{
 			if (entry.hasSound && entry.audioClip != null)
+			{
 				AudioManager.Instance?.PlaySFX(entry.audioClip);
+			}
 
-			UIManager.Instance?.ShowFloatingText(GetDisplayPosition(), entry.label + "!", entry.labelColor);
+			UIManager.Instance.ShowFloatingText(GetDisplayPosition(), entry.label + "!", entry.labelColor);
 
-			ComboTriggeredPayload payload = new()
+			ComboTriggeredPayload payload = new ComboTriggeredPayload()
 			{
 				Label = entry.label,
 				ConsecutiveCount = mConsecutiveMatchCount,
@@ -195,10 +213,14 @@ namespace TrumpTile.GameMain.Core
 		private Vector3 GetDisplayPosition()
 		{
 			if (mComboDisplayPoint != null)
+			{
 				return mComboDisplayPoint.position;
+			}
 
 			if (SlotManager.Instance != null)
+			{
 				return SlotManager.Instance.GetLastTilePosition() + Vector3.up * 1.5f;
+			}
 
 			return Vector3.zero;
 		}

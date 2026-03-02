@@ -19,33 +19,33 @@ namespace TrumpTile.GameMain.UI
 	public class GameOverPopup : MonoBehaviour
 	{
 		[Header("UI References")]
-		[SerializeField] private GameObject popupPanel;
-		[SerializeField] private Image dimBackground;
-		[SerializeField] private RectTransform gaugeArea;
-		[SerializeField] private Image gaugeFill;
-		[SerializeField] private TextMeshProUGUI countText;
-		[SerializeField] private TextMeshProUGUI messageText;
-		[SerializeField] private Button continueButton;
-		[SerializeField] private RectTransform continueButtonRect;
-		[SerializeField] private Button restartButton;
-		[SerializeField] private RectTransform restartButtonRect;
+		[SerializeField] private GameObject mPopupPanel;
+		[SerializeField] private Image mDimBackground;
+		[SerializeField] private RectTransform mGaugeArea;
+		[SerializeField] private Image mGaugeFill;
+		[SerializeField] private TextMeshProUGUI mCountText;
+		[SerializeField] private TextMeshProUGUI mMessageText;
+		[SerializeField] private Button mContinueButton;
+		[SerializeField] private RectTransform mContinueButtonRect;
+		[SerializeField] private Button mRestartButton;
+		[SerializeField] private RectTransform mRestartButtonRect;
 
 		[Header("Animation Settings")]
-		[SerializeField] private float dimAlpha = 0.95F;
-		[SerializeField] private float gaugePopDuration = 0.4F;
-		[SerializeField] private float gaugePopScale = 1.2F;
-		[SerializeField] private float buttonPopDuration = 0.3F;
-		[SerializeField] private float buttonPopScale = 1.3F;
-		[SerializeField] private float buttonDelay = 0.1F;
+		[SerializeField] private float mDimAlpha = 0.95F;
+		[SerializeField] private float mGaugePopDuration = 0.4F;
+		[SerializeField] private float mGaugePopScale = 1.2F;
+		[SerializeField] private float mButtonPopDuration = 0.3F;
+		[SerializeField] private float mButtonPopScale = 1.3F;
+		[SerializeField] private float mButtonDelay = 0.1F;
 
 		[Header("Countdown Settings")]
-		[SerializeField] private float countdownTime = 10F;
-		[SerializeField] private float inputBlockDuration = 2F;
-		[SerializeField] private int maxReviveCount = 3;
+		[SerializeField] private float mCountdownTime = 10F;
+		[SerializeField] private float mInputBlockDuration = 2F;
+		[SerializeField] private int mMaxReviveCount = 3;
 
 		[Header("Messages")]
 		[SerializeField]
-		private string[] messages = new string[]
+		private string[] mMessages = new string[]
 		{
 			"Don't give Up!",
 			"Almost there!",
@@ -53,8 +53,8 @@ namespace TrumpTile.GameMain.UI
 		};
 
 		[Header("Colors")]
-		[SerializeField] private Color gaugeFullColor = new Color(0.3F, 0.85F, 0.3F);
-		[SerializeField] private Color gaugeLowColor = new Color(0.85F, 0.3F, 0.3F);
+		[SerializeField] private Color mGaugeFullColor = new Color(0.3F, 0.85F, 0.3F);
+		[SerializeField] private Color mGaugeLowColor = new Color(0.85F, 0.3F, 0.3F);
 
 		// Events
 		public event Action OnContinue;
@@ -78,35 +78,45 @@ namespace TrumpTile.GameMain.UI
 			SaveOriginalValues();
 			SetupButtons();
 
-			if (popupPanel != null)
-				popupPanel.SetActive(false);
+			if (mPopupPanel != null)
+			{
+				mPopupPanel.SetActive(false);
+			}
 		}
 
 		private void SaveOriginalValues()
 		{
-			mGaugeOriginalScale = gaugeArea != null ? gaugeArea.localScale : Vector3.one;
-			mContinueOriginalScale = continueButtonRect != null ? continueButtonRect.localScale : Vector3.one;
-			mRestartOriginalScale = restartButtonRect != null ? restartButtonRect.localScale : Vector3.one;
+			mGaugeOriginalScale = mGaugeArea != null ? mGaugeArea.localScale : Vector3.one;
+			mContinueOriginalScale = mContinueButtonRect != null ? mContinueButtonRect.localScale : Vector3.one;
+			mRestartOriginalScale = mRestartButtonRect != null ? mRestartButtonRect.localScale : Vector3.one;
 		}
 
 		private void SetupButtons()
 		{
-			if (continueButton != null)
-				continueButton.onClick.AddListener(OnContinueClick);
+			if (mContinueButton != null)
+			{
+				mContinueButton.onClick.AddListener(OnContinueClick);
+			}
 
-			if (restartButton != null)
-				restartButton.onClick.AddListener(OnRestartClick);
+			if (mRestartButton != null)
+			{
+				mRestartButton.onClick.AddListener(OnRestartClick);
+			}
 		}
 
 		private void OnDestroy()
 		{
 			DOTween.Kill(this);
 
-			if (continueButton != null)
-				continueButton.onClick.RemoveListener(OnContinueClick);
+			if (mContinueButton != null)
+			{
+				mContinueButton.onClick.RemoveListener(OnContinueClick);
+			}
 
-			if (restartButton != null)
-				restartButton.onClick.RemoveListener(OnRestartClick);
+			if (mRestartButton != null)
+			{
+				mRestartButton.onClick.RemoveListener(OnRestartClick);
+			}
 		}
 
 		public void ResetForNewGame()
@@ -119,7 +129,10 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		public void Show()
 		{
-			if (mIsPopupActive) return;
+			if (mIsPopupActive)
+			{
+				return;
+			}
 
 			Debug.Log("[GameOverPopup] Show");
 
@@ -133,8 +146,10 @@ namespace TrumpTile.GameMain.UI
 			SetUIInitialState();
 
 			// 3. 팝업 활성화
-			if (popupPanel != null)
-				popupPanel.SetActive(true);
+			if (mPopupPanel != null)
+			{
+				mPopupPanel.SetActive(true);
+			}
 
 			// 4. UI 애니메이션 시작
 			PlayUIAnimation();
@@ -151,11 +166,11 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		private void SetBackgroundDark()
 		{
-			if (dimBackground != null)
+			if (mDimBackground != null)
 			{
-				Color c = dimBackground.color;
-				c.a = dimAlpha;
-				dimBackground.color = c;
+				Color c = mDimBackground.color;
+				c.a = mDimAlpha;
+				mDimBackground.color = c;
 			}
 		}
 
@@ -165,41 +180,53 @@ namespace TrumpTile.GameMain.UI
 		private void SetUIInitialState()
 		{
 			// 게이지 스케일 0
-			if (gaugeArea != null)
-				gaugeArea.localScale = Vector3.zero;
+			if (mGaugeArea != null)
+			{
+				mGaugeArea.localScale = Vector3.zero;
+			}
 
 			// 버튼들 스케일 0
-			if (continueButtonRect != null)
-				continueButtonRect.localScale = Vector3.zero;
+			if (mContinueButtonRect != null)
+			{
+				mContinueButtonRect.localScale = Vector3.zero;
+			}
 
-			if (restartButtonRect != null)
-				restartButtonRect.localScale = Vector3.zero;
+			if (mRestartButtonRect != null)
+			{
+				mRestartButtonRect.localScale = Vector3.zero;
+			}
 
 			// 게이지 채움 초기화
-			if (gaugeFill != null)
+			if (mGaugeFill != null)
 			{
-				gaugeFill.fillAmount = 1F;
-				gaugeFill.color = gaugeFullColor;
+				mGaugeFill.fillAmount = 1F;
+				mGaugeFill.color = mGaugeFullColor;
 			}
 
 			// 카운트 텍스트
-			if (countText != null)
-				countText.text = Mathf.CeilToInt(countdownTime).ToString();
-
-			// 메시지 설정
-			if (messageText != null && messages.Length > 0)
-				messageText.text = messages[UnityEngine.Random.Range(0, messages.Length)];
-
-			// 버튼 상태
-			bool bCanRevive = mCurrentReviveCount < maxReviveCount;
-			if (continueButton != null)
+			if (mCountText != null)
 			{
-				continueButton.gameObject.SetActive(bCanRevive);
-				continueButton.interactable = false;
+				mCountText.text = Mathf.CeilToInt(mCountdownTime).ToString();
 			}
 
-			if (restartButton != null)
-				restartButton.interactable = false;
+			// 메시지 설정
+			if (mMessageText != null && mMessages.Length > 0)
+			{
+				mMessageText.text = mMessages[UnityEngine.Random.Range(0, mMessages.Length)];
+			}
+
+			// 버튼 상태
+			bool bCanRevive = mCurrentReviveCount < mMaxReviveCount;
+			if (mContinueButton != null)
+			{
+				mContinueButton.gameObject.SetActive(bCanRevive);
+				mContinueButton.interactable = false;
+			}
+
+			if (mRestartButton != null)
+			{
+				mRestartButton.interactable = false;
+			}
 		}
 
 		/// <summary>
@@ -210,41 +237,41 @@ namespace TrumpTile.GameMain.UI
 			Sequence seq = DOTween.Sequence();
 
 			// 게이지 바운스
-			if (gaugeArea != null)
+			if (mGaugeArea != null)
 			{
 				seq.Append(
-					gaugeArea.DOScale(mGaugeOriginalScale * gaugePopScale, gaugePopDuration * 0.6F)
+					mGaugeArea.DOScale(mGaugeOriginalScale * mGaugePopScale, mGaugePopDuration * 0.6F)
 						.SetEase(Ease.OutBack)
 				);
 				seq.Append(
-					gaugeArea.DOScale(mGaugeOriginalScale, gaugePopDuration * 0.4F)
+					mGaugeArea.DOScale(mGaugeOriginalScale, mGaugePopDuration * 0.4F)
 						.SetEase(Ease.InOutQuad)
 				);
 			}
 
 			// Continue 버튼 바운스
-			if (continueButtonRect != null && continueButton.gameObject.activeSelf)
+			if (mContinueButtonRect != null && mContinueButton.gameObject.activeSelf)
 			{
 				seq.Append(
-					continueButtonRect.DOScale(mContinueOriginalScale * buttonPopScale, buttonPopDuration * 0.5F)
+					mContinueButtonRect.DOScale(mContinueOriginalScale * mButtonPopScale, mButtonPopDuration * 0.5F)
 						.SetEase(Ease.OutBack)
 				);
 				seq.Append(
-					continueButtonRect.DOScale(mContinueOriginalScale, buttonPopDuration * 0.5F)
+					mContinueButtonRect.DOScale(mContinueOriginalScale, mButtonPopDuration * 0.5F)
 						.SetEase(Ease.InOutQuad)
 				);
 			}
 
 			// Restart 버튼 바운스
-			if (restartButtonRect != null)
+			if (mRestartButtonRect != null)
 			{
-				seq.AppendInterval(buttonDelay);
+				seq.AppendInterval(mButtonDelay);
 				seq.Append(
-					restartButtonRect.DOScale(mRestartOriginalScale * buttonPopScale, buttonPopDuration * 0.5F)
+					mRestartButtonRect.DOScale(mRestartOriginalScale * mButtonPopScale, mButtonPopDuration * 0.5F)
 						.SetEase(Ease.OutBack)
 				);
 				seq.Append(
-					restartButtonRect.DOScale(mRestartOriginalScale, buttonPopDuration * 0.5F)
+					mRestartButtonRect.DOScale(mRestartOriginalScale, mButtonPopDuration * 0.5F)
 						.SetEase(Ease.InOutQuad)
 				);
 			}
@@ -256,7 +283,9 @@ namespace TrumpTile.GameMain.UI
 		private void StartCountdown()
 		{
 			if (mCountdownCoroutine != null)
+			{
 				StopCoroutine(mCountdownCoroutine);
+			}
 
 			mCountdownCoroutine = StartCoroutine(CountdownCoroutine());
 		}
@@ -266,7 +295,10 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		public void Hide()
 		{
-			if (!mIsPopupActive) return;
+			if (!mIsPopupActive)
+			{
+				return;
+			}
 
 			Debug.Log("[GameOverPopup] Hide");
 
@@ -281,8 +313,10 @@ namespace TrumpTile.GameMain.UI
 				mCountdownCoroutine = null;
 			}
 
-			if (popupPanel != null)
-				popupPanel.SetActive(false);
+			if (mPopupPanel != null)
+			{
+				mPopupPanel.SetActive(false);
+			}
 
 			ResetUI();
 		}
@@ -292,14 +326,20 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		private void ResetUI()
 		{
-			if (gaugeArea != null)
-				gaugeArea.localScale = mGaugeOriginalScale;
+			if (mGaugeArea != null)
+			{
+				mGaugeArea.localScale = mGaugeOriginalScale;
+			}
 
-			if (continueButtonRect != null)
-				continueButtonRect.localScale = mContinueOriginalScale;
+			if (mContinueButtonRect != null)
+			{
+				mContinueButtonRect.localScale = mContinueOriginalScale;
+			}
 
-			if (restartButtonRect != null)
-				restartButtonRect.localScale = mRestartOriginalScale;
+			if (mRestartButtonRect != null)
+			{
+				mRestartButtonRect.localScale = mRestartOriginalScale;
+			}
 		}
 
 		/// <summary>
@@ -307,21 +347,21 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		private IEnumerator UnblockInputAfterDelay()
 		{
-			yield return new WaitForSeconds(inputBlockDuration);
+			yield return new WaitForSeconds(mInputBlockDuration);
 
 			mIsInputBlocked = false;
 
 			// 버튼 활성화 + 펄스 효과
-			if (continueButton != null && continueButton.gameObject.activeSelf)
+			if (mContinueButton != null && mContinueButton.gameObject.activeSelf)
 			{
-				continueButton.interactable = true;
-				continueButtonRect?.DOPunchScale(Vector3.one * 0.1F, 0.2F, 5, 0.5F);
+				mContinueButton.interactable = true;
+				mContinueButtonRect?.DOPunchScale(Vector3.one * 0.1F, 0.2F, 5, 0.5F);
 			}
 
-			if (restartButton != null)
+			if (mRestartButton != null)
 			{
-				restartButton.interactable = true;
-				restartButtonRect?.DOPunchScale(Vector3.one * 0.1F, 0.2F, 5, 0.5F);
+				mRestartButton.interactable = true;
+				mRestartButtonRect?.DOPunchScale(Vector3.one * 0.1F, 0.2F, 5, 0.5F);
 			}
 
 			Debug.Log("[GameOverPopup] Input unblocked");
@@ -332,32 +372,32 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		private IEnumerator CountdownCoroutine()
 		{
-			float remainingTime = countdownTime;
+			float remainingTime = mCountdownTime;
 			int lastSecond = -1;
 
 			while (remainingTime > 0F)
 			{
 				remainingTime -= Time.deltaTime;
-				float progress = remainingTime / countdownTime;
+				float progress = remainingTime / mCountdownTime;
 
 				// 게이지 업데이트
-				if (gaugeFill != null)
+				if (mGaugeFill != null)
 				{
-					gaugeFill.fillAmount = progress;
-					gaugeFill.color = Color.Lerp(gaugeLowColor, gaugeFullColor, progress);
+					mGaugeFill.fillAmount = progress;
+					mGaugeFill.color = Color.Lerp(mGaugeLowColor, mGaugeFullColor, progress);
 				}
 
 				// 카운트 텍스트
 				int currentSecond = Mathf.CeilToInt(remainingTime);
-				if (countText != null && currentSecond != lastSecond)
+				if (mCountText != null && currentSecond != lastSecond)
 				{
-					countText.text = currentSecond.ToString();
+					mCountText.text = currentSecond.ToString();
 					lastSecond = currentSecond;
 
 					// 마지막 3초 펄스
 					if (currentSecond <= 3 && currentSecond > 0)
 					{
-						countText.rectTransform.DOPunchScale(Vector3.one * 0.2F, 0.3F, 5, 0.5F);
+						mCountText.rectTransform.DOPunchScale(Vector3.one * 0.2F, 0.3F, 5, 0.5F);
 					}
 				}
 
@@ -371,7 +411,10 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnContinueClick()
 		{
-			if (mIsInputBlocked) return;
+			if (mIsInputBlocked)
+			{
+				return;
+			}
 
 			Debug.Log("[GameOverPopup] Continue clicked");
 			mCurrentReviveCount++;
@@ -382,7 +425,10 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnRestartClick()
 		{
-			if (mIsInputBlocked) return;
+			if (mIsInputBlocked)
+			{
+				return;
+			}
 
 			Debug.Log("[GameOverPopup] Restart clicked");
 			ExecuteRestart();
@@ -396,7 +442,7 @@ namespace TrumpTile.GameMain.UI
 
 		public int GetRemainingRevives()
 		{
-			return maxReviveCount - mCurrentReviveCount;
+			return mMaxReviveCount - mCurrentReviveCount;
 		}
 	}
 }

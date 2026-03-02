@@ -67,34 +67,54 @@ namespace TrumpTile.GameMain.Core
 		private void SetupButtons()
 		{
 			if (mStrikeButton != null)
+			{
 				mStrikeButton.onClick.AddListener(OnStrikeClick);
+			}
 
 			if (mBlackHoleButton != null)
+			{
 				mBlackHoleButton.onClick.AddListener(OnBlackHoleClick);
+			}
 
 			if (mBoomButton != null)
+			{
 				mBoomButton.onClick.AddListener(OnBoomClick);
+			}
 
 			if (mPauseButton != null)
+			{
 				mPauseButton.onClick.AddListener(OnPauseClick);
+			}
 
 			if (mNextLevelButton != null)
+			{
 				mNextLevelButton.onClick.AddListener(OnNextLevelClick);
+			}
 
 			if (mClearRestartButton != null)
+			{
 				mClearRestartButton.onClick.AddListener(OnRestartClick);
+			}
 
 			if (mClearMainMenuButton != null)
+			{
 				mClearMainMenuButton.onClick.AddListener(OnMainMenuClick);
+			}
 
 			if (mResumeButton != null)
+			{
 				mResumeButton.onClick.AddListener(OnResumeClick);
+			}
 
 			if (mPauseRestartButton != null)
+			{
 				mPauseRestartButton.onClick.AddListener(OnRestartClick);
+			}
 
 			if (mPauseMainMenuButton != null)
+			{
 				mPauseMainMenuButton.onClick.AddListener(OnMainMenuClick);
+			}
 		}
 
 		private void SubscribeEvents()
@@ -123,21 +143,30 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnStrikeClick()
 		{
-			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem()) return;
+			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem())
+			{
+				return;
+			}
 			AudioManager.Instance?.PlayButtonClick();
 			GameManager.Instance.UseStrike();
 		}
 
 		private void OnBlackHoleClick()
 		{
-			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem()) return;
+			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem())
+			{
+				return;
+			}
 			AudioManager.Instance?.PlayButtonClick();
 			GameManager.Instance.UseBlackHole();
 		}
 
 		private void OnBoomClick()
 		{
-			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem()) return;
+			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem())
+			{
+				return;
+			}
 			AudioManager.Instance?.PlayButtonClick();
 			GameManager.Instance.UseBoom();
 		}
@@ -194,7 +223,10 @@ namespace TrumpTile.GameMain.Core
 
 		private IEnumerator ScorePunchAnimation()
 		{
-			if (mScoreText == null) yield break;
+			if (mScoreText == null)
+			{
+				yield break;
+			}
 
 			Vector3 originalScale = Vector3.one;
 			Vector3 punchScale = Vector3.one * 1.2F;
@@ -217,13 +249,17 @@ namespace TrumpTile.GameMain.Core
 		public void UpdateLevel(int level)
 		{
 			if (mLevelText != null)
+			{
 				mLevelText.text = $"Level {level}";
+			}
 		}
 
 		public void UpdateGold(int gold)
 		{
 			if (mGoldText != null)
+			{
 				mGoldText.text = $"{gold:N0}";
+			}
 		}
 
 		public void UpdateCombo(int combo)
@@ -236,7 +272,9 @@ namespace TrumpTile.GameMain.Core
 					mComboText.text = $"x{combo}";
 
 					if (mComboAnimator != null)
+					{
 						mComboAnimator.SetTrigger("Pulse");
+					}
 
 					StartCoroutine(ComboPunchAnimation());
 				}
@@ -249,7 +287,10 @@ namespace TrumpTile.GameMain.Core
 
 		private IEnumerator ComboPunchAnimation()
 		{
-			if (mComboText == null) yield break;
+			if (mComboText == null)
+			{
+				yield break;
+			}
 
 			Vector3 punchScale = Vector3.one * 1.5F;
 			mComboText.transform.localScale = punchScale;
@@ -285,13 +326,19 @@ namespace TrumpTile.GameMain.Core
 			mBoomCount = boom;
 
 			if (mStrikeCountText != null)
+			{
 				mStrikeCountText.text = strike.ToString();
+			}
 
 			if (mBlackHoleCountText != null)
+			{
 				mBlackHoleCountText.text = blackHole.ToString();
+			}
 
 			if (mBoomCountText != null)
+			{
 				mBoomCountText.text = boom.ToString();
+			}
 
 			UpdateItemButtonStates();
 		}
@@ -307,25 +354,37 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			if (mStrikeButton != null)
+			{
 				mStrikeButton.interactable = bCanUse && mStrikeCount > 0;
+			}
 
 			if (mBlackHoleButton != null)
+			{
 				mBlackHoleButton.interactable = bCanUse && mBlackHoleCount > 0;
+			}
 
 			if (mBoomButton != null)
+			{
 				mBoomButton.interactable = bCanUse && mBoomCount > 0;
+			}
 		}
 
 		public void DisableItemButtons()
 		{
 			if (mStrikeButton != null)
+			{
 				mStrikeButton.interactable = false;
+			}
 
 			if (mBlackHoleButton != null)
+			{
 				mBlackHoleButton.interactable = false;
+			}
 
 			if (mBoomButton != null)
+			{
 				mBoomButton.interactable = false;
+			}
 		}
 
 		public void UpdateProgress(int matched, int total)
@@ -339,8 +398,14 @@ namespace TrumpTile.GameMain.Core
 
 		public void HideAllPanels()
 		{
-			if (mLevelClearPanel != null) mLevelClearPanel.SetActive(false);
-			if (mPausePanel != null) mPausePanel.SetActive(false);
+			if (mLevelClearPanel != null)
+			{
+				mLevelClearPanel.SetActive(false);
+			}
+			if (mPausePanel != null)
+			{
+				mPausePanel.SetActive(false);
+			}
 		}
 
 		public void ShowLevelClearPanel(int stars = 3)
@@ -350,17 +415,23 @@ namespace TrumpTile.GameMain.Core
 				mLevelClearPanel.SetActive(true);
 
 				if (mClearScoreText != null && GameManager.Instance != null)
+				{
 					mClearScoreText.text = $"{GameManager.Instance.GetScore():N0}";
+				}
 
 				if (mClearLevelText != null && GameManager.Instance != null)
+				{
 					mClearLevelText.text = $"Level {GameManager.Instance.CurrentLevel}";
+				}
 			}
 		}
 
 		public void ShowPausePanel()
 		{
 			if (mPausePanel != null)
+			{
 				mPausePanel.SetActive(true);
+			}
 		}
 
 		#endregion
@@ -369,7 +440,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void ShowFloatingText(Vector3 position, string text, Color color)
 		{
-			if (mFloatingTextPrefab == null) return;
+			if (mFloatingTextPrefab == null)
+			{
+				return;
+			}
 
 			Transform parent = mFloatingTextParent != null ? mFloatingTextParent : transform;
 			GameObject floatingObj = Instantiate(mFloatingTextPrefab, position, Quaternion.identity, parent);

@@ -17,24 +17,24 @@ namespace TrumpTile.GameMain.UI
 	public class VictoryPopup : MonoBehaviour
 	{
 		[Header("UI References")]
-		[SerializeField] private GameObject popupPanel;
-		[SerializeField] private TextMeshProUGUI titleText;
-		[SerializeField] private Button nextButton;
-		[SerializeField] private Button mainButton;
+		[SerializeField] private GameObject mPopupPanel;
+		[SerializeField] private TextMeshProUGUI mTitleText;
+		[SerializeField] private Button mNextButton;
+		[SerializeField] private Button mMainButton;
 
 		[Header("Optional")]
-		[SerializeField] private TextMeshProUGUI levelText;
-		[SerializeField] private TextMeshProUGUI scoreText;
-		[SerializeField] private GameObject[] starObjects;
+		[SerializeField] private TextMeshProUGUI mLevelText;
+		[SerializeField] private TextMeshProUGUI mScoreText;
+		[SerializeField] private GameObject[] mStarObjects;
 
 		[Header("Animation")]
-		[SerializeField] private float showDelay = 0.3F;
-		[SerializeField] private float animationDuration = 0.4F;
-		[SerializeField] private Ease showEase = Ease.OutBack;
+		[SerializeField] private float mShowDelay = 0.3F;
+		[SerializeField] private float mAnimationDuration = 0.4F;
+		[SerializeField] private Ease mShowEase = Ease.OutBack;
 
 		[Header("Audio")]
-		[SerializeField] private AudioClip victorySound;
-		[SerializeField] private AudioClip buttonSound;
+		[SerializeField] private AudioClip mVictorySound;
+		[SerializeField] private AudioClip mButtonSound;
 
 		private CanvasGroup mCanvasGroup;
 		private RectTransform mPanelRect;
@@ -45,24 +45,24 @@ namespace TrumpTile.GameMain.UI
 		{
 			Debug.Log("[VictoryPopup] Awake START");
 
-			// popupPanel이 없으면 자기 자신 사용
-			if (popupPanel == null)
+			// mPopupPanel이 없으면 자기 자신 사용
+			if (mPopupPanel == null)
 			{
-				popupPanel = gameObject;
+				mPopupPanel = gameObject;
 			}
 
 			// CanvasGroup 설정
-			mCanvasGroup = popupPanel.GetComponent<CanvasGroup>();
+			mCanvasGroup = mPopupPanel.GetComponent<CanvasGroup>();
 			if (mCanvasGroup == null)
 			{
-				mCanvasGroup = popupPanel.AddComponent<CanvasGroup>();
+				mCanvasGroup = mPopupPanel.AddComponent<CanvasGroup>();
 			}
 
-			mPanelRect = popupPanel.GetComponent<RectTransform>();
+			mPanelRect = mPopupPanel.GetComponent<RectTransform>();
 
 			SetupButtonListeners();
 
-			Debug.Log($"[VictoryPopup] Awake DONE - NextBtn: {nextButton != null}, MainBtn: {mainButton != null}");
+			Debug.Log($"[VictoryPopup] Awake DONE - NextBtn: {mNextButton != null}, MainBtn: {mMainButton != null}");
 		}
 
 		/// <summary>
@@ -71,10 +71,10 @@ namespace TrumpTile.GameMain.UI
 		private void SetupButtonListeners()
 		{
 			// 기존 리스너 제거 후 새로 연결
-			if (nextButton != null)
+			if (mNextButton != null)
 			{
-				nextButton.onClick.RemoveAllListeners();
-				nextButton.onClick.AddListener(OnNextButtonClicked);
+				mNextButton.onClick.RemoveAllListeners();
+				mNextButton.onClick.AddListener(OnNextButtonClicked);
 				Debug.Log("[VictoryPopup] Next button listener added");
 			}
 			else
@@ -82,10 +82,10 @@ namespace TrumpTile.GameMain.UI
 				Debug.LogWarning("[VictoryPopup] Next button is NULL!");
 			}
 
-			if (mainButton != null)
+			if (mMainButton != null)
 			{
-				mainButton.onClick.RemoveAllListeners();
-				mainButton.onClick.AddListener(OnMainButtonClicked);
+				mMainButton.onClick.RemoveAllListeners();
+				mMainButton.onClick.AddListener(OnMainButtonClicked);
 				Debug.Log("[VictoryPopup] Main button listener added");
 			}
 			else
@@ -108,14 +108,14 @@ namespace TrumpTile.GameMain.UI
 			gameObject.SetActive(true);
 
 			// 버튼 활성화
-			if (nextButton != null)
+			if (mNextButton != null)
 			{
-				nextButton.interactable = true;
-				nextButton.gameObject.SetActive(mHasNextLevel);
+				mNextButton.interactable = true;
+				mNextButton.gameObject.SetActive(mHasNextLevel);
 			}
-			if (mainButton != null)
+			if (mMainButton != null)
 			{
-				mainButton.interactable = true;
+				mMainButton.interactable = true;
 			}
 
 			StartCoroutine(ShowCoroutine(level, score, stars));
@@ -124,28 +124,28 @@ namespace TrumpTile.GameMain.UI
 		private IEnumerator ShowCoroutine(int level, int score, int stars)
 		{
 			// 패널 활성화
-			if (popupPanel != null)
+			if (mPopupPanel != null)
 			{
-				popupPanel.SetActive(true);
+				mPopupPanel.SetActive(true);
 
-				foreach (Transform child in popupPanel.transform)
+				foreach (Transform child in mPopupPanel.transform)
 				{
 					child.gameObject.SetActive(true);
 				}
 			}
 
 			// NEXT 버튼 표시 여부
-			if (nextButton != null)
+			if (mNextButton != null)
 			{
-				nextButton.gameObject.SetActive(mHasNextLevel);
+				mNextButton.gameObject.SetActive(mHasNextLevel);
 			}
 
-			yield return new WaitForSeconds(showDelay);
+			yield return new WaitForSeconds(mShowDelay);
 
 			// 사운드
-			if (victorySound != null)
+			if (mVictorySound != null)
 			{
-				AudioManager.Instance?.PlaySFX(victorySound);
+				AudioManager.Instance?.PlaySFX(mVictorySound);
 			}
 			else
 			{
@@ -153,29 +153,29 @@ namespace TrumpTile.GameMain.UI
 			}
 
 			// 텍스트 설정
-			if (titleText != null)
+			if (mTitleText != null)
 			{
-				titleText.text = "YOU WIN!";
+				mTitleText.text = "YOU WIN!";
 			}
 
-			if (levelText != null && level > 0)
+			if (mLevelText != null && level > 0)
 			{
-				levelText.text = $"Level {level}";
+				mLevelText.text = $"Level {level}";
 			}
 
-			if (scoreText != null)
+			if (mScoreText != null)
 			{
-				scoreText.text = $"{score:N0}";
+				mScoreText.text = $"{score:N0}";
 			}
 
 			// 별 표시
-			if (starObjects != null)
+			if (mStarObjects != null)
 			{
-				for (int i = 0; i < starObjects.Length; i++)
+				for (int i = 0; i < mStarObjects.Length; i++)
 				{
-					if (starObjects[i] != null)
+					if (mStarObjects[i] != null)
 					{
-						starObjects[i].SetActive(i < stars);
+						mStarObjects[i].SetActive(i < stars);
 					}
 				}
 			}
@@ -186,14 +186,14 @@ namespace TrumpTile.GameMain.UI
 				mCanvasGroup.alpha = 0F;
 				mPanelRect.localScale = Vector3.one * 0.5F;
 
-				mCanvasGroup.DOFade(1F, animationDuration);
-				mPanelRect.DOScale(1F, animationDuration).SetEase(showEase);
+				mCanvasGroup.DOFade(1F, mAnimationDuration);
+				mPanelRect.DOScale(1F, mAnimationDuration).SetEase(mShowEase);
 			}
 			else
 			{
-				if (popupPanel != null)
+				if (mPopupPanel != null)
 				{
-					popupPanel.transform.localScale = Vector3.one;
+					mPopupPanel.transform.localScale = Vector3.one;
 				}
 				if (mCanvasGroup != null)
 				{
@@ -209,9 +209,9 @@ namespace TrumpTile.GameMain.UI
 		{
 			Debug.Log("[VictoryPopup] Hide");
 
-			if (popupPanel != null)
+			if (mPopupPanel != null)
 			{
-				popupPanel.SetActive(false);
+				mPopupPanel.SetActive(false);
 			}
 			gameObject.SetActive(false);
 		}
@@ -233,8 +233,14 @@ namespace TrumpTile.GameMain.UI
 			PlayButtonSound();
 
 			// 버튼 비활성화
-			if (nextButton != null) nextButton.interactable = false;
-			if (mainButton != null) mainButton.interactable = false;
+			if (mNextButton != null)
+			{
+				mNextButton.interactable = false;
+			}
+			if (mMainButton != null)
+			{
+				mMainButton.interactable = false;
+			}
 
 			// 팝업 숨기기
 			Hide();
@@ -268,8 +274,14 @@ namespace TrumpTile.GameMain.UI
 			PlayButtonSound();
 
 			// 버튼 비활성화
-			if (nextButton != null) nextButton.interactable = false;
-			if (mainButton != null) mainButton.interactable = false;
+			if (mNextButton != null)
+			{
+				mNextButton.interactable = false;
+			}
+			if (mMainButton != null)
+			{
+				mMainButton.interactable = false;
+			}
 
 			// 팝업 숨기기
 			Hide();
@@ -288,9 +300,9 @@ namespace TrumpTile.GameMain.UI
 
 		private void PlayButtonSound()
 		{
-			if (buttonSound != null)
+			if (mButtonSound != null)
 			{
-				AudioManager.Instance?.PlaySFX(buttonSound);
+				AudioManager.Instance?.PlaySFX(mButtonSound);
 			}
 			else
 			{
@@ -304,7 +316,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnEnable()
 		{
 			// Awake에서 이미 설정했지만, 혹시 모르니 다시 확인
-			if (nextButton != null && nextButton.onClick.GetPersistentEventCount() == 0)
+			if (mNextButton != null && mNextButton.onClick.GetPersistentEventCount() == 0)
 			{
 				SetupButtonListeners();
 			}

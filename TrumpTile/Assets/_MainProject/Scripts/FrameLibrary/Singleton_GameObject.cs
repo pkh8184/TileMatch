@@ -2,34 +2,43 @@ using UnityEngine;
 
 namespace TrumpTile.FrameLibrary
 {
-    public abstract class Singleton_GameObject<T> : MonoBehaviour where T : Component
-    {
-        private static T _inst;
-        public static T Inst
-        {
-            get
-            {
-                if (_inst == null)
-                {
-                    string objName = typeof(T).Name;
-                    T singletonComp = GameObject.FindObjectOfType<T>();
+	public abstract class Singleton_GameObject<T> : MonoBehaviour where T : Component
+	{
+		private static T mInst;
+		private static bool mbIsQuitting = false;
 
-                    if (singletonComp != null)
-                    {
-                        _inst = singletonComp;
-                    }
-                    else
-                    {
-                        GameObject singletonObj = null;
-                        if (singletonObj == null)
-                            singletonObj = new GameObject(objName);
+		public static T Inst
+		{
+			get
+			{
+				if (mbIsQuitting)
+				{
+					return null;
+				}
 
-                        _inst = singletonObj.AddComponent<T>();
-                    }
-                }
+				if (mInst == null)
+				{
+					string objName = typeof(T).Name;
+					T singletonComp = GameObject.FindObjectOfType<T>();
 
-                return _inst;
-            }
-        }
-    }
+					if (singletonComp != null)
+					{
+						mInst = singletonComp;
+					}
+					else
+					{
+						GameObject singletonObj = new GameObject(objName);
+						mInst = singletonObj.AddComponent<T>();
+					}
+				}
+
+				return mInst;
+			}
+		}
+
+		private void OnApplicationQuit()
+		{
+			mbIsQuitting = true;
+		}
+	}
 }

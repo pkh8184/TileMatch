@@ -70,21 +70,27 @@ namespace TrumpTile.GameMain.Core
 			{
 				mClearCanvasGroup = clearPopup.GetComponent<CanvasGroup>();
 				if (mClearCanvasGroup == null)
+				{
 					mClearCanvasGroup = clearPopup.AddComponent<CanvasGroup>();
+				}
 			}
 
 			if (gameOverPopup != null)
 			{
 				mGameOverCanvasGroup = gameOverPopup.GetComponent<CanvasGroup>();
 				if (mGameOverCanvasGroup == null)
+				{
 					mGameOverCanvasGroup = gameOverPopup.AddComponent<CanvasGroup>();
+				}
 			}
 
 			if (pausePopup != null)
 			{
 				mPauseCanvasGroup = pausePopup.GetComponent<CanvasGroup>();
 				if (mPauseCanvasGroup == null)
+				{
 					mPauseCanvasGroup = pausePopup.AddComponent<CanvasGroup>();
+				}
 			}
 		}
 
@@ -92,32 +98,57 @@ namespace TrumpTile.GameMain.Core
 		{
 			// Clear Popup Buttons
 			if (clearNextButton != null)
+			{
 				clearNextButton.onClick.AddListener(OnNextLevel);
+			}
 			if (clearRetryButton != null)
+			{
 				clearRetryButton.onClick.AddListener(OnRetry);
+			}
 			if (clearHomeButton != null)
+			{
 				clearHomeButton.onClick.AddListener(OnHome);
+			}
 
 			// Game Over Popup Buttons
 			if (gameOverRetryButton != null)
+			{
 				gameOverRetryButton.onClick.AddListener(OnRetry);
+			}
 			if (gameOverHomeButton != null)
+			{
 				gameOverHomeButton.onClick.AddListener(OnHome);
+			}
 
 			// Pause Popup Buttons
 			if (pauseResumeButton != null)
+			{
 				pauseResumeButton.onClick.AddListener(OnResume);
+			}
 			if (pauseRetryButton != null)
+			{
 				pauseRetryButton.onClick.AddListener(OnRetry);
+			}
 			if (pauseHomeButton != null)
+			{
 				pauseHomeButton.onClick.AddListener(OnHome);
+			}
 		}
 
 		private void HideAllPopups()
 		{
-			if (clearPopup != null) clearPopup.SetActive(false);
-			if (gameOverPopup != null) gameOverPopup.SetActive(false);
-			if (pausePopup != null) pausePopup.SetActive(false);
+			if (clearPopup != null)
+			{
+				clearPopup.SetActive(false);
+			}
+			if (gameOverPopup != null)
+			{
+				gameOverPopup.SetActive(false);
+			}
+			if (pausePopup != null)
+			{
+				pausePopup.SetActive(false);
+			}
 		}
 
 		#region Show Popups
@@ -131,14 +162,18 @@ namespace TrumpTile.GameMain.Core
 
 			// 텍스트 설정
 			if (clearLevelText != null)
+			{
 				clearLevelText.text = $"Level {level}";
+			}
 			if (clearScoreText != null)
+			{
 				clearScoreText.text = $"Score: {score:N0}";
+			}
 
 			// 별 초기화 (모두 숨김)
 			if (stars != null)
 			{
-				foreach (var star in stars)
+				foreach (GameObject star in stars)
 				{
 					if (star != null)
 					{
@@ -183,7 +218,9 @@ namespace TrumpTile.GameMain.Core
 			if (gameOverPopup == null) return;
 
 			if (gameOverLevelText != null)
+			{
 				gameOverLevelText.text = $"Level {level}";
+			}
 
 			AudioManager.Instance?.PlaySFX(gameOverSound);
 			StartCoroutine(ShowPopupCoroutine(gameOverPopup, mGameOverCanvasGroup));
@@ -214,7 +251,10 @@ namespace TrumpTile.GameMain.Core
 		{
 			float elapsed = 0F;
 			popup.localScale = Vector3.zero;
-			if (canvasGroup != null) canvasGroup.alpha = 0F;
+			if (canvasGroup != null)
+			{
+				canvasGroup.alpha = 0F;
+			}
 
 			while (elapsed < popupAnimDuration)
 			{
@@ -223,13 +263,18 @@ namespace TrumpTile.GameMain.Core
 
 				popup.localScale = Vector3.LerpUnclamped(Vector3.zero, Vector3.one, t);
 				if (canvasGroup != null)
+				{
 					canvasGroup.alpha = Mathf.Lerp(0F, 1F, t);
+				}
 
 				yield return null;
 			}
 
 			popup.localScale = Vector3.one;
-			if (canvasGroup != null) canvasGroup.alpha = 1F;
+			if (canvasGroup != null)
+			{
+				canvasGroup.alpha = 1F;
+			}
 		}
 
 		private IEnumerator AnimatePopupOut(Transform popup, CanvasGroup canvasGroup)
@@ -243,7 +288,9 @@ namespace TrumpTile.GameMain.Core
 
 				popup.localScale = Vector3.LerpUnclamped(Vector3.zero, Vector3.one, t);
 				if (canvasGroup != null)
+				{
 					canvasGroup.alpha = Mathf.Lerp(0F, 1F, t);
+				}
 
 				yield return null;
 			}
@@ -265,7 +312,9 @@ namespace TrumpTile.GameMain.Core
 				// Bounce effect
 				float scale = Mathf.Sin(t * Mathf.PI * 0.5F) * 1.2F;
 				if (t > 0.7F)
+				{
 					scale = Mathf.Lerp(1.2F, 1F, (t - 0.7F) / 0.3F);
+				}
 
 				star.localScale = Vector3.one * scale;
 				yield return null;

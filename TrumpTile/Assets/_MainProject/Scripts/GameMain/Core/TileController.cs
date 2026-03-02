@@ -94,7 +94,9 @@ namespace TrumpTile.GameMain.Core
 		private void Awake()
 		{
 			if (mSpriteRenderer == null)
+			{
 				mSpriteRenderer = GetComponent<SpriteRenderer>();
+			}
 
 			mBoxCollider = GetComponent<BoxCollider2D>();
 			mOriginalScale = transform.localScale;
@@ -149,9 +151,18 @@ namespace TrumpTile.GameMain.Core
 
 		private void SetOverlaysActive(bool active)
 		{
-			if (mBlockedOverlay != null) mBlockedOverlay.SetActive(active);
-			if (mFrozenOverlay != null) mFrozenOverlay.SetActive(false);
-			if (mLockedOverlay != null) mLockedOverlay.SetActive(false);
+			if (mBlockedOverlay != null)
+			{
+				mBlockedOverlay.SetActive(active);
+			}
+			if (mFrozenOverlay != null)
+			{
+				mFrozenOverlay.SetActive(false);
+			}
+			if (mLockedOverlay != null)
+			{
+				mLockedOverlay.SetActive(false);
+			}
 		}
 
 		#endregion
@@ -160,7 +171,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void UpdateSortingOrder()
 		{
-			if (mSpriteRenderer == null) return;
+			if (mSpriteRenderer == null)
+			{
+				return;
+			}
 
 			if (mIsInSlot)
 			{
@@ -203,7 +217,10 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnMouseDown()
 		{
-			if (mIsAnimating) return;
+			if (mIsAnimating)
+			{
+				return;
+			}
 
 			if (mIsInSlot)
 			{
@@ -211,7 +228,10 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
-			if (!IsSelectable) return;
+			if (!IsSelectable)
+			{
+				return;
+			}
 
 			if (mIsFrozen && mFrozenCount > 0)
 			{
@@ -220,10 +240,14 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.Playing)
+			{
 				return;
+			}
 
 			if (BoardManager.Instance != null && BoardManager.Instance.IsTileBlocked(this))
+			{
 				return;
+			}
 
 			HandleTileSelected();
 		}
@@ -236,7 +260,10 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnMouseEnter()
 		{
-			if (mIsInSlot || !IsSelectable) return;
+			if (mIsInSlot || !IsSelectable)
+			{
+				return;
+			}
 			SetHighlight(true);
 		}
 
@@ -251,7 +278,10 @@ namespace TrumpTile.GameMain.Core
 			if (mFrozenCount <= 0)
 			{
 				mIsFrozen = false;
-				if (mFrozenOverlay != null) mFrozenOverlay.SetActive(false);
+				if (mFrozenOverlay != null)
+				{
+					mFrozenOverlay.SetActive(false);
+				}
 			}
 			AudioManager.Instance?.PlayTileSelect();
 		}
@@ -284,7 +314,9 @@ namespace TrumpTile.GameMain.Core
 			mFrozenCount = count;
 
 			if (mFrozenOverlay != null)
+			{
 				mFrozenOverlay.SetActive(frozen);
+			}
 		}
 
 		public void SetLocked(bool locked)
@@ -292,7 +324,9 @@ namespace TrumpTile.GameMain.Core
 			mIsLocked = locked;
 
 			if (mLockedOverlay != null)
+			{
 				mLockedOverlay.SetActive(locked);
+			}
 		}
 
 		public void EnableCollider(bool enable)
@@ -336,7 +370,10 @@ namespace TrumpTile.GameMain.Core
 			mIsInSlot = true;
 			mSlotIndex = index;
 
-			if (mBlockedOverlay != null) mBlockedOverlay.SetActive(false);
+			if (mBlockedOverlay != null)
+			{
+				mBlockedOverlay.SetActive(false);
+			}
 
 			SetMovingToSlotSorting();
 			AudioManager.Instance?.PlayTileMove();
@@ -383,7 +420,10 @@ namespace TrumpTile.GameMain.Core
 			mIsInSlot = false;
 			mSlotIndex = -1;
 
-			if (mBlockedOverlay != null) mBlockedOverlay.SetActive(false);
+			if (mBlockedOverlay != null)
+			{
+				mBlockedOverlay.SetActive(false);
+			}
 
 			UpdateSortingOrder();
 
@@ -472,7 +512,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void PlayShakeAnimation()
 		{
-			if (mIsAnimating) return;
+			if (mIsAnimating)
+			{
+				return;
+			}
 			StartCoroutine(ShakeCoroutine());
 		}
 
@@ -507,7 +550,9 @@ namespace TrumpTile.GameMain.Core
 			transform.localScale = Vector3.zero;
 
 			if (delay > 0F)
+			{
 				yield return new WaitForSeconds(delay);
+			}
 
 			mIsAnimating = true;
 			float duration = 0.2F;
@@ -519,7 +564,9 @@ namespace TrumpTile.GameMain.Core
 				float t = elapsed / duration;
 				float scale = Mathf.Sin(t * Mathf.PI * 0.5F) * 1.1F;
 				if (t > 0.7F)
+				{
 					scale = Mathf.Lerp(1.1F, 1F, (t - 0.7F) / 0.3F);
+				}
 
 				transform.localScale = mOriginalScale * Mathf.Clamp01(scale);
 				yield return null;
@@ -633,7 +680,10 @@ namespace TrumpTile.GameMain.Core
 
 		private IEnumerator HintCoroutine()
 		{
-			if (mSpriteRenderer == null) yield break;
+			if (mSpriteRenderer == null)
+			{
+				yield break;
+			}
 
 			Color originalColor = mSpriteRenderer.color;
 

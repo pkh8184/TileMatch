@@ -139,9 +139,18 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public static int CalculateStars(int score)
 		{
-			if (score >= STAR_3_THRESHOLD) return 3;
-			if (score >= STAR_2_THRESHOLD) return 2;
-			if (score >= STAR_1_THRESHOLD) return 1;
+			if (score >= STAR_3_THRESHOLD)
+			{
+				return 3;
+			}
+			if (score >= STAR_2_THRESHOLD)
+			{
+				return 2;
+			}
+			if (score >= STAR_1_THRESHOLD)
+			{
+				return 1;
+			}
 			return 0;
 		}
 
@@ -150,7 +159,10 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public static int CalculateComboBonus(int comboCount)
 		{
-			if (comboCount <= 1) return 0;
+			if (comboCount <= 1)
+			{
+				return 0;
+			}
 			return COMBO_BONUS * (comboCount - 1);
 		}
 

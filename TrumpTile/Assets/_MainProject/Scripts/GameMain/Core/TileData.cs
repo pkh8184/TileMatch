@@ -51,7 +51,10 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public bool Matches(TileData other)
 		{
-			if (other == null) return false;
+			if (other == null)
+			{
+				return false;
+			}
 			return tileTypeId == other.tileTypeId;
 		}
 
@@ -110,7 +113,10 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public bool IsSameType(TileData other)
 		{
-			if (other == null) return false;
+			if (other == null)
+			{
+				return false;
+			}
 			return tileTypeId == other.tileTypeId;
 		}
 
@@ -119,7 +125,10 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public bool IsSameSuit(TileData other)
 		{
-			if (other == null) return false;
+			if (other == null)
+			{
+				return false;
+			}
 			return suit == other.suit;
 		}
 
@@ -128,7 +137,10 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public bool IsSameRank(TileData other)
 		{
-			if (other == null) return false;
+			if (other == null)
+			{
+				return false;
+			}
 			return rank == other.rank;
 		}
 

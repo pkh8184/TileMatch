@@ -136,7 +136,10 @@ namespace TrumpTile.GameMain.Core
 		private Dictionary<string, TileData> CreateTileDataMap()
 		{
 			Dictionary<string, TileData> map = new Dictionary<string, TileData>();
-			if (mAllTileTypes == null) return map;
+			if (mAllTileTypes == null)
+			{
+				return map;
+			}
 
 			foreach (TileData data in mAllTileTypes)
 			{
@@ -179,8 +182,14 @@ namespace TrumpTile.GameMain.Core
 
 		public bool IsTileBlocked(TileController tile)
 		{
-			if (tile == null) return false;
-			if (tile.IsInSlot) return false;
+			if (tile == null)
+			{
+				return false;
+			}
+			if (tile.IsInSlot)
+			{
+				return false;
+			}
 
 			int tileX = tile.GridX;
 			int tileY = tile.GridY;
@@ -191,8 +200,14 @@ namespace TrumpTile.GameMain.Core
 
 			foreach (TileController other in mAllTiles)
 			{
-				if (other == null || other == tile || other.IsInSlot) continue;
-				if (other.LayerIndex <= tileLayer) continue;
+				if (other == null || other == tile || other.IsInSlot)
+				{
+					continue;
+				}
+				if (other.LayerIndex <= tileLayer)
+				{
+					continue;
+				}
 
 				Vector3 otherPos = other.transform.position;
 
@@ -226,7 +241,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void RemoveTileFromBoard(TileController tile)
 		{
-			if (tile == null) return;
+			if (tile == null)
+			{
+				return;
+			}
 
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap.Remove(gridPos);
@@ -238,7 +256,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void RemoveTile(TileController tile)
 		{
-			if (tile == null) return;
+			if (tile == null)
+			{
+				return;
+			}
 
 			mAllTiles.Remove(tile);
 
@@ -254,7 +275,10 @@ namespace TrumpTile.GameMain.Core
 
 		public void ReturnTileToBoard(TileController tile, int origX, int origY, int origLayer)
 		{
-			if (tile == null) return;
+			if (tile == null)
+			{
+				return;
+			}
 
 			Vector3Int origGridPos = new Vector3Int(origX, origY, origLayer);
 
@@ -269,7 +293,10 @@ namespace TrumpTile.GameMain.Core
 
 		public bool PlaceTileOnEmptySpot(TileController tile)
 		{
-			if (tile == null) return false;
+			if (tile == null)
+			{
+				return false;
+			}
 
 			for (int layer = mMaxLayers - 1; layer >= 0; layer--)
 			{
@@ -294,7 +321,10 @@ namespace TrumpTile.GameMain.Core
 
 			foreach (TileController tile in mAllTiles)
 			{
-				if (tile == null || tile.IsInSlot) continue;
+				if (tile == null || tile.IsInSlot)
+				{
+					continue;
+				}
 
 				if (tile.LayerIndex >= layer)
 				{
@@ -317,12 +347,18 @@ namespace TrumpTile.GameMain.Core
 				{
 					for (int dy = -radius; dy <= radius; dy++)
 					{
-						if (Mathf.Abs(dx) != radius && Mathf.Abs(dy) != radius) continue;
+						if (Mathf.Abs(dx) != radius && Mathf.Abs(dy) != radius)
+						{
+							continue;
+						}
 
 						int x = centerX + dx;
 						int y = centerY + dy;
 
-						if (x < 0 || x >= mGridWidth || y < 0 || y >= mGridHeight) continue;
+						if (x < 0 || x >= mGridWidth || y < 0 || y >= mGridHeight)
+						{
+							continue;
+						}
 
 						Vector2Int pos = new Vector2Int(x, y);
 						if (!occupiedPositions.Contains(pos))
@@ -379,7 +415,10 @@ namespace TrumpTile.GameMain.Core
 
 		public IEnumerator ShuffleBoardAnimated()
 		{
-			if (mIsShuffling) yield break;
+			if (mIsShuffling)
+			{
+				yield break;
+			}
 			mIsShuffling = true;
 
 			List<TileController> boardTiles = mAllTiles
@@ -466,7 +505,10 @@ namespace TrumpTile.GameMain.Core
 					.Where(g => g.Count() >= matchCount)
 					.ToList();
 
-				if (groups.Count == 0) break;
+				if (groups.Count == 0)
+				{
+					break;
+				}
 
 				IGrouping<string, TileController> randomGroup = groups[Random.Range(0, groups.Count)];
 				List<TileController> tilesToRemove = randomGroup.Take(matchCount).ToList();
