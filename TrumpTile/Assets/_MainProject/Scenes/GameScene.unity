@@ -418,6 +418,43 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 76822130}
   m_CullTransparentMesh: 1
+--- !u!1 &78011182
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 78011183}
+  m_Layer: 5
+  m_Name: Combo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &78011183
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 78011182}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 386239097}
+  - {fileID: 1267538386}
+  m_Father: {fileID: 361807537}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &98680904
 GameObject:
   m_ObjectHideFlags: 0
@@ -951,18 +988,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3b63284cba79fa4fa1ae97b0947be48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popupPanel: {fileID: 0}
-  titleText: {fileID: 0}
-  nextButton: {fileID: 0}
-  mainButton: {fileID: 0}
-  levelText: {fileID: 0}
-  scoreText: {fileID: 0}
-  starObjects: []
-  showDelay: 0.3
-  animationDuration: 0.4
-  showEase: 27
-  victorySound: {fileID: 0}
-  buttonSound: {fileID: 0}
+  mPopupPanel: {fileID: 0}
+  mTitleText: {fileID: 0}
+  mNextButton: {fileID: 175232380}
+  mMainButton: {fileID: 534470062}
+  mLevelText: {fileID: 76822132}
+  mScoreText: {fileID: 0}
+  mStarObjects: []
+  mShowDelay: 0.3
+  mAnimationDuration: 0.4
+  mShowEase: 27
+  mVictorySound: {fileID: 0}
+  mButtonSound: {fileID: 0}
 --- !u!1 &306365038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1393,8 +1430,7 @@ RectTransform:
   - {fileID: 1318157916}
   - {fileID: 1014261564}
   - {fileID: 345972913}
-  - {fileID: 386239097}
-  - {fileID: 1267538386}
+  - {fileID: 78011183}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1650,12 +1686,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 386239096}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 361807537}
+  m_Father: {fileID: 78011183}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1711,31 +1747,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39e831fa2843d7549b44b57c441709f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popupPanel: {fileID: 0}
-  dimBackground: {fileID: 0}
-  gaugeArea: {fileID: 0}
-  gaugeFill: {fileID: 0}
-  countText: {fileID: 0}
-  messageText: {fileID: 0}
-  continueButton: {fileID: 0}
-  continueButtonRect: {fileID: 0}
-  restartButton: {fileID: 0}
-  restartButtonRect: {fileID: 0}
-  dimAlpha: 0.95
-  gaugePopDuration: 0.4
-  gaugePopScale: 1.2
-  buttonPopDuration: 0.3
-  buttonPopScale: 1.3
-  buttonDelay: 0.1
-  countdownTime: 10
-  inputBlockDuration: 2
-  maxReviveCount: 3
-  messages:
+  mPopupPanel: {fileID: 1278212479}
+  mDimBackground: {fileID: 2080589891}
+  mGaugeArea: {fileID: 0}
+  mGaugeFill: {fileID: 802940644}
+  mCountText: {fileID: 587410370}
+  mMessageText: {fileID: 1921329748}
+  mContinueButton: {fileID: 802048419}
+  mContinueButtonRect: {fileID: 0}
+  mRestartButton: {fileID: 1278212481}
+  mRestartButtonRect: {fileID: 0}
+  mDimAlpha: 0.9
+  mGaugePopDuration: 0.4
+  mGaugePopScale: 1.2
+  mButtonPopDuration: 0.3
+  mButtonPopScale: 1.3
+  mButtonDelay: 0.1
+  mCountdownTime: 5
+  mInputBlockDuration: 2
+  mMaxReviveCount: 3
+  mMessages:
   - Don't give Up!
-  - Almost there!
-  - Keep going!
-  gaugeFullColor: {r: 0.3, g: 0.85, b: 0.3, a: 1}
-  gaugeLowColor: {r: 0.85, g: 0.3, b: 0.3, a: 1}
+  mGaugeFullColor: {r: 0.3, g: 0.85, b: 0.3, a: 1}
+  mGaugeLowColor: {r: 0.85, g: 0.3, b: 0.3, a: 1}
 --- !u!1 &408928043
 GameObject:
   m_ObjectHideFlags: 0
@@ -4472,7 +4506,7 @@ GameObject:
   - component: {fileID: 1267538388}
   - component: {fileID: 1267538387}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ComboText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4485,12 +4519,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1267538385}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 361807537}
+  m_Father: {fileID: 78011183}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

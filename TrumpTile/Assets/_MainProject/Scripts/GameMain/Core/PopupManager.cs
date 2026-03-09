@@ -12,36 +12,36 @@ namespace TrumpTile.GameMain.Core
 		public static PopupManager Instance { get; private set; }
 
 		[Header("Game Clear Popup")]
-		[SerializeField] private GameObject clearPopup;
-		[SerializeField] private TextMeshProUGUI clearLevelText;
-		[SerializeField] private TextMeshProUGUI clearScoreText;
-		[SerializeField] private GameObject[] stars; // 별 3개
-		[SerializeField] private Button clearNextButton;
-		[SerializeField] private Button clearRetryButton;
-		[SerializeField] private Button clearHomeButton;
+		[SerializeField] private GameObject mClearPopup;
+		[SerializeField] private TextMeshProUGUI mClearLevelText;
+		[SerializeField] private TextMeshProUGUI mClearScoreText;
+		[SerializeField] private GameObject[] mStars; // 별 3개
+		[SerializeField] private Button mClearNextButton;
+		[SerializeField] private Button mClearRetryButton;
+		[SerializeField] private Button mClearHomeButton;
 
 		[Header("Game Over Popup")]
-		[SerializeField] private GameObject gameOverPopup;
-		[SerializeField] private TextMeshProUGUI gameOverLevelText;
-		[SerializeField] private Button gameOverRetryButton;
-		[SerializeField] private Button gameOverHomeButton;
+		[SerializeField] private GameObject mGameOverPopup;
+		[SerializeField] private TextMeshProUGUI mGameOverLevelText;
+		[SerializeField] private Button mGameOverRetryButton;
+		[SerializeField] private Button mGameOverHomeButton;
 
 		[Header("Pause Popup")]
-		[SerializeField] private GameObject pausePopup;
-		[SerializeField] private Button pauseResumeButton;
-		[SerializeField] private Button pauseRetryButton;
-		[SerializeField] private Button pauseHomeButton;
+		[SerializeField] private GameObject mPausePopup;
+		[SerializeField] private Button mPauseResumeButton;
+		[SerializeField] private Button mPauseRetryButton;
+		[SerializeField] private Button mPauseHomeButton;
 
 		[Header("Animation Settings")]
-		[SerializeField] private float popupAnimDuration = 0.3F;
-		[SerializeField] private AnimationCurve popupCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-		[SerializeField] private float starAnimDelay = 0.2F;
+		[SerializeField] private float mPopupAnimDuration = 0.3F;
+		[SerializeField] private AnimationCurve mPopupCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+		[SerializeField] private float mStarAnimDelay = 0.2F;
 
 		[Header("Audio")]
-		[SerializeField] private AudioClip clearSound;
-		[SerializeField] private AudioClip gameOverSound;
-		[SerializeField] private AudioClip starSound;
-		[SerializeField] private AudioClip buttonSound;
+		[SerializeField] private AudioClip mClearSound;
+		[SerializeField] private AudioClip mGameOverSound;
+		[SerializeField] private AudioClip mStarSound;
+		[SerializeField] private AudioClip mButtonSound;
 
 		private CanvasGroup mClearCanvasGroup;
 		private CanvasGroup mGameOverCanvasGroup;
@@ -66,30 +66,30 @@ namespace TrumpTile.GameMain.Core
 
 		private void SetupCanvasGroups()
 		{
-			if (clearPopup != null)
+			if (mClearPopup != null)
 			{
-				mClearCanvasGroup = clearPopup.GetComponent<CanvasGroup>();
+				mClearCanvasGroup = mClearPopup.GetComponent<CanvasGroup>();
 				if (mClearCanvasGroup == null)
 				{
-					mClearCanvasGroup = clearPopup.AddComponent<CanvasGroup>();
+					mClearCanvasGroup = mClearPopup.AddComponent<CanvasGroup>();
 				}
 			}
 
-			if (gameOverPopup != null)
+			if (mGameOverPopup != null)
 			{
-				mGameOverCanvasGroup = gameOverPopup.GetComponent<CanvasGroup>();
+				mGameOverCanvasGroup = mGameOverPopup.GetComponent<CanvasGroup>();
 				if (mGameOverCanvasGroup == null)
 				{
-					mGameOverCanvasGroup = gameOverPopup.AddComponent<CanvasGroup>();
+					mGameOverCanvasGroup = mGameOverPopup.AddComponent<CanvasGroup>();
 				}
 			}
 
-			if (pausePopup != null)
+			if (mPausePopup != null)
 			{
-				mPauseCanvasGroup = pausePopup.GetComponent<CanvasGroup>();
+				mPauseCanvasGroup = mPausePopup.GetComponent<CanvasGroup>();
 				if (mPauseCanvasGroup == null)
 				{
-					mPauseCanvasGroup = pausePopup.AddComponent<CanvasGroup>();
+					mPauseCanvasGroup = mPausePopup.AddComponent<CanvasGroup>();
 				}
 			}
 		}
@@ -97,57 +97,57 @@ namespace TrumpTile.GameMain.Core
 		private void SetupButtons()
 		{
 			// Clear Popup Buttons
-			if (clearNextButton != null)
+			if (mClearNextButton != null)
 			{
-				clearNextButton.onClick.AddListener(OnNextLevel);
+				mClearNextButton.onClick.AddListener(OnNextLevel);
 			}
-			if (clearRetryButton != null)
+			if (mClearRetryButton != null)
 			{
-				clearRetryButton.onClick.AddListener(OnRetry);
+				mClearRetryButton.onClick.AddListener(OnRetry);
 			}
-			if (clearHomeButton != null)
+			if (mClearHomeButton != null)
 			{
-				clearHomeButton.onClick.AddListener(OnHome);
+				mClearHomeButton.onClick.AddListener(OnHome);
 			}
 
 			// Game Over Popup Buttons
-			if (gameOverRetryButton != null)
+			if (mGameOverRetryButton != null)
 			{
-				gameOverRetryButton.onClick.AddListener(OnRetry);
+				mGameOverRetryButton.onClick.AddListener(OnRetry);
 			}
-			if (gameOverHomeButton != null)
+			if (mGameOverHomeButton != null)
 			{
-				gameOverHomeButton.onClick.AddListener(OnHome);
+				mGameOverHomeButton.onClick.AddListener(OnHome);
 			}
 
 			// Pause Popup Buttons
-			if (pauseResumeButton != null)
+			if (mPauseResumeButton != null)
 			{
-				pauseResumeButton.onClick.AddListener(OnResume);
+				mPauseResumeButton.onClick.AddListener(OnResume);
 			}
-			if (pauseRetryButton != null)
+			if (mPauseRetryButton != null)
 			{
-				pauseRetryButton.onClick.AddListener(OnRetry);
+				mPauseRetryButton.onClick.AddListener(OnRetry);
 			}
-			if (pauseHomeButton != null)
+			if (mPauseHomeButton != null)
 			{
-				pauseHomeButton.onClick.AddListener(OnHome);
+				mPauseHomeButton.onClick.AddListener(OnHome);
 			}
 		}
 
 		private void HideAllPopups()
 		{
-			if (clearPopup != null)
+			if (mClearPopup != null)
 			{
-				clearPopup.SetActive(false);
+				mClearPopup.SetActive(false);
 			}
-			if (gameOverPopup != null)
+			if (mGameOverPopup != null)
 			{
-				gameOverPopup.SetActive(false);
+				mGameOverPopup.SetActive(false);
 			}
-			if (pausePopup != null)
+			if (mPausePopup != null)
 			{
-				pausePopup.SetActive(false);
+				mPausePopup.SetActive(false);
 			}
 		}
 
@@ -158,22 +158,22 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void ShowClearPopup(int level, int score, int starCount)
 		{
-			if (clearPopup == null) return;
+			if (mClearPopup == null) return;
 
 			// 텍스트 설정
-			if (clearLevelText != null)
+			if (mClearLevelText != null)
 			{
-				clearLevelText.text = $"Level {level}";
+				mClearLevelText.text = $"Level {level}";
 			}
-			if (clearScoreText != null)
+			if (mClearScoreText != null)
 			{
-				clearScoreText.text = $"Score: {score:N0}";
+				mClearScoreText.text = $"Score: {score:N0}";
 			}
 
 			// 별 초기화 (모두 숨김)
-			if (stars != null)
+			if (mStars != null)
 			{
-				foreach (GameObject star in stars)
+				foreach (GameObject star in mStars)
 				{
 					if (star != null)
 					{
@@ -189,22 +189,22 @@ namespace TrumpTile.GameMain.Core
 		private IEnumerator ShowClearPopupCoroutine(int starCount)
 		{
 			// 사운드 재생
-			AudioManager.Instance?.PlaySFX(clearSound);
+			AudioManager.Instance?.PlaySFX(mClearSound);
 
 			// 팝업 표시 애니메이션
-			clearPopup.SetActive(true);
-			yield return StartCoroutine(AnimatePopupIn(clearPopup.transform, mClearCanvasGroup));
+			mClearPopup.SetActive(true);
+			yield return StartCoroutine(AnimatePopupIn(mClearPopup.transform, mClearCanvasGroup));
 
 			// 별 애니메이션
-			if (stars != null)
+			if (mStars != null)
 			{
-				for (int i = 0; i < Mathf.Min(starCount, stars.Length); i++)
+				for (int i = 0; i < Mathf.Min(starCount, mStars.Length); i++)
 				{
-					yield return new WaitForSeconds(starAnimDelay);
-					if (stars[i] != null)
+					yield return new WaitForSeconds(mStarAnimDelay);
+					if (mStars[i] != null)
 					{
-						AudioManager.Instance?.PlaySFX(starSound);
-						StartCoroutine(AnimateStarIn(stars[i].transform));
+						AudioManager.Instance?.PlaySFX(mStarSound);
+						StartCoroutine(AnimateStarIn(mStars[i].transform));
 					}
 				}
 			}
@@ -215,15 +215,15 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void ShowGameOverPopup(int level)
 		{
-			if (gameOverPopup == null) return;
+			if (mGameOverPopup == null) return;
 
-			if (gameOverLevelText != null)
+			if (mGameOverLevelText != null)
 			{
-				gameOverLevelText.text = $"Level {level}";
+				mGameOverLevelText.text = $"Level {level}";
 			}
 
-			AudioManager.Instance?.PlaySFX(gameOverSound);
-			StartCoroutine(ShowPopupCoroutine(gameOverPopup, mGameOverCanvasGroup));
+			AudioManager.Instance?.PlaySFX(mGameOverSound);
+			StartCoroutine(ShowPopupCoroutine(mGameOverPopup, mGameOverCanvasGroup));
 		}
 
 		/// <summary>
@@ -231,10 +231,10 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void ShowPausePopup()
 		{
-			if (pausePopup == null) return;
+			if (mPausePopup == null) return;
 
 			Time.timeScale = 0F;
-			StartCoroutine(ShowPopupCoroutine(pausePopup, mPauseCanvasGroup));
+			StartCoroutine(ShowPopupCoroutine(mPausePopup, mPauseCanvasGroup));
 		}
 
 		private IEnumerator ShowPopupCoroutine(GameObject popup, CanvasGroup canvasGroup)
@@ -256,10 +256,10 @@ namespace TrumpTile.GameMain.Core
 				canvasGroup.alpha = 0F;
 			}
 
-			while (elapsed < popupAnimDuration)
+			while (elapsed < mPopupAnimDuration)
 			{
 				elapsed += Time.unscaledDeltaTime;
-				float t = popupCurve.Evaluate(elapsed / popupAnimDuration);
+				float t = mPopupCurve.Evaluate(elapsed / mPopupAnimDuration);
 
 				popup.localScale = Vector3.LerpUnclamped(Vector3.zero, Vector3.one, t);
 				if (canvasGroup != null)
@@ -281,10 +281,10 @@ namespace TrumpTile.GameMain.Core
 		{
 			float elapsed = 0F;
 
-			while (elapsed < popupAnimDuration)
+			while (elapsed < mPopupAnimDuration)
 			{
 				elapsed += Time.unscaledDeltaTime;
-				float t = 1F - popupCurve.Evaluate(elapsed / popupAnimDuration);
+				float t = 1F - mPopupCurve.Evaluate(elapsed / mPopupAnimDuration);
 
 				popup.localScale = Vector3.LerpUnclamped(Vector3.zero, Vector3.one, t);
 				if (canvasGroup != null)
@@ -329,8 +329,8 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnNextLevel()
 		{
-			AudioManager.Instance?.PlaySFX(buttonSound);
-			StartCoroutine(HideAndAction(clearPopup, mClearCanvasGroup, () =>
+			AudioManager.Instance?.PlaySFX(mButtonSound);
+			StartCoroutine(HideAndAction(mClearPopup, mClearCanvasGroup, () =>
 			{
 				GameManager.Instance?.NextLevel();
 			}));
@@ -338,24 +338,24 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnRetry()
 		{
-			AudioManager.Instance?.PlaySFX(buttonSound);
+			AudioManager.Instance?.PlaySFX(mButtonSound);
 
 			GameObject activePopup = null;
 			CanvasGroup activeCanvasGroup = null;
 
-			if (clearPopup != null && clearPopup.activeSelf)
+			if (mClearPopup != null && mClearPopup.activeSelf)
 			{
-				activePopup = clearPopup;
+				activePopup = mClearPopup;
 				activeCanvasGroup = mClearCanvasGroup;
 			}
-			else if (gameOverPopup != null && gameOverPopup.activeSelf)
+			else if (mGameOverPopup != null && mGameOverPopup.activeSelf)
 			{
-				activePopup = gameOverPopup;
+				activePopup = mGameOverPopup;
 				activeCanvasGroup = mGameOverCanvasGroup;
 			}
-			else if (pausePopup != null && pausePopup.activeSelf)
+			else if (mPausePopup != null && mPausePopup.activeSelf)
 			{
-				activePopup = pausePopup;
+				activePopup = mPausePopup;
 				activeCanvasGroup = mPauseCanvasGroup;
 			}
 
@@ -371,24 +371,24 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnHome()
 		{
-			AudioManager.Instance?.PlaySFX(buttonSound);
+			AudioManager.Instance?.PlaySFX(mButtonSound);
 
 			GameObject activePopup = null;
 			CanvasGroup activeCanvasGroup = null;
 
-			if (clearPopup != null && clearPopup.activeSelf)
+			if (mClearPopup != null && mClearPopup.activeSelf)
 			{
-				activePopup = clearPopup;
+				activePopup = mClearPopup;
 				activeCanvasGroup = mClearCanvasGroup;
 			}
-			else if (gameOverPopup != null && gameOverPopup.activeSelf)
+			else if (mGameOverPopup != null && mGameOverPopup.activeSelf)
 			{
-				activePopup = gameOverPopup;
+				activePopup = mGameOverPopup;
 				activeCanvasGroup = mGameOverCanvasGroup;
 			}
-			else if (pausePopup != null && pausePopup.activeSelf)
+			else if (mPausePopup != null && mPausePopup.activeSelf)
 			{
-				activePopup = pausePopup;
+				activePopup = mPausePopup;
 				activeCanvasGroup = mPauseCanvasGroup;
 			}
 
@@ -404,8 +404,8 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnResume()
 		{
-			AudioManager.Instance?.PlaySFX(buttonSound);
-			StartCoroutine(HideAndAction(pausePopup, mPauseCanvasGroup, () =>
+			AudioManager.Instance?.PlaySFX(mButtonSound);
+			StartCoroutine(HideAndAction(mPausePopup, mPauseCanvasGroup, () =>
 			{
 				Time.timeScale = 1F;
 			}));
