@@ -1,3 +1,4 @@
+using TrumpTile.FrameLibrary;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,9 +8,8 @@ namespace TrumpTile.GameMain.Core
 	/// <summary>
 	/// BGM 및 효과음 관리
 	/// </summary>
-	public class AudioManager : MonoBehaviour
+	public class AudioManager : Singleton_GameObject<AudioManager>
 	{
-		public static AudioManager Instance { get; private set; }
 
 		[Header("Audio Sources")]
 		[SerializeField] private AudioSource mBgmSource;
@@ -66,16 +66,8 @@ namespace TrumpTile.GameMain.Core
 
 		private void Awake()
 		{
-			if (Instance == null)
-			{
-				Instance = this;
-				DontDestroyOnLoad(gameObject);
-				InitializeAudio();
-			}
-			else
-			{
-				Destroy(gameObject);
-			}
+			DontDestroyOnLoad(gameObject);
+			InitializeAudio();
 		}
 
 		private void InitializeAudio()

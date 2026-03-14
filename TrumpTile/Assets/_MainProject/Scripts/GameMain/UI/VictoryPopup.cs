@@ -145,11 +145,11 @@ namespace TrumpTile.GameMain.UI
 			// 사운드
 			if (mVictorySound != null)
 			{
-				AudioManager.Instance?.PlaySFX(mVictorySound);
+				AudioManager.Inst?.PlaySFX(mVictorySound);
 			}
 			else
 			{
-				AudioManager.Instance?.PlayGameClear();
+				AudioManager.Inst?.PlayGameClear();
 			}
 
 			// 텍스트 설정
@@ -302,11 +302,11 @@ namespace TrumpTile.GameMain.UI
 		{
 			if (mButtonSound != null)
 			{
-				AudioManager.Instance?.PlaySFX(mButtonSound);
+				AudioManager.Inst?.PlaySFX(mButtonSound);
 			}
 			else
 			{
-				AudioManager.Instance?.PlayButtonClick();
+				AudioManager.Inst?.PlayButtonClick();
 			}
 		}
 

@@ -1,8 +1,8 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using TrumpTile.GameMain.Core;
-using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -14,8 +14,18 @@ namespace TrumpTile.GameMain.UI
 	/// - 약관 확인 URL 연결
 	/// - 소셜 링크 (인스타그램 / X / YouTube)
 	/// </summary>
+	[RequireComponent(typeof(CanvasGroup))]
+	[RequireComponent(typeof(RectTransform))]
 	public class SettingsPopup : MonoBehaviour
 	{
+		[Header("팝업 패널")]
+		[SerializeField] private RectTransform mPopupPanel; // 스케일 애니메이션 대상 (미설정 시 자신의 RectTransform 사용)
+
+		[Header("애니메이션")]
+		[SerializeField] private float mAnimDuration = 0.25F;
+		[SerializeField] private Ease mShowEase = Ease.OutBack;
+		[SerializeField] private Ease mHideEase = Ease.InBack;
+
 		[Header("닫기")]
 		[SerializeField] private Button mCloseButton;
 
@@ -36,6 +46,10 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private Button mCopyUidButton;
 		[SerializeField] private GameObject mCopyToastObject; // 복사 완료 토스트 (선택)
 
+		private CanvasGroup mCanvasGroup;
+		private CanvasGroup mCopyToastCanvasGroup;
+		private RectTransform mAnimTarget;
+
 		[Header("약관")]
 		[SerializeField] private Button mTermsButton;
 		[SerializeField] private Button mPrivacyButton;
@@ -45,22 +59,72 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private Button mTwitterButton;
 		[SerializeField] private Button mYoutubeButton;
 
-		[Header("링크 데이터")]
-		[SerializeField] private AppLinksData mAppLinksData;
-
 		// 토글 이벤트가 코드에서 바뀔 때 무한루프 방지
 		private bool mBIsRefreshing = false;
 
 		private void Awake()
 		{
+			// 팝업 CanvasGroup
+			mCanvasGroup = GetComponent<CanvasGroup>();
+			if (mCanvasGroup == null)
+			{
+				mCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+			}
+
+			// 애니메이션 대상 RectTransform
+			mAnimTarget = mPopupPanel != null ? mPopupPanel : GetComponent<RectTransform>();
+
+			// 토스트 CanvasGroup
+			if (mCopyToastObject != null)
+			{
+				mCopyToastCanvasGroup = mCopyToastObject.GetComponent<CanvasGroup>();
+				if (mCopyToastCanvasGroup == null)
+				{
+					mCopyToastCanvasGroup = mCopyToastObject.AddComponent<CanvasGroup>();
+				}
+
+				mCopyToastObject.SetActive(false);
+			}
+
 			SetupButtons();
 			SetupToggles();
+
+			gameObject.SetActive(false);
 		}
 
-		private void OnEnable()
+		#region Show / Hide
+
+		/// <summary>
+		/// 설정 팝업 열기
+		/// </summary>
+		public void Show()
 		{
+			Debug.Log("show");
+			gameObject.SetActive(true);
 			RefreshUI();
+
+			mCanvasGroup.alpha = 0F;
+			mAnimTarget.localScale = Vector3.one * 0.85F;
+
+			DOTween.Sequence()
+				.Append(mCanvasGroup.DOFade(1F, mAnimDuration).SetEase(Ease.OutQuart))
+				.Join(mAnimTarget.DOScale(1F, mAnimDuration).SetEase(mShowEase))
+				.SetUpdate(true);
 		}
+
+		/// <summary>
+		/// 설정 팝업 닫기
+		/// </summary>
+		public void Hide()
+		{
+			DOTween.Sequence()
+				.Append(mCanvasGroup.DOFade(0F, mAnimDuration * 0.75F).SetEase(Ease.InQuart))
+				.Join(mAnimTarget.DOScale(0.85F, mAnimDuration * 0.75F).SetEase(mHideEase))
+				.OnComplete(() => gameObject.SetActive(false))
+				.SetUpdate(true);
+		}
+
+		#endregion
 
 		#region 초기화
 
@@ -143,19 +207,19 @@ namespace TrumpTile.GameMain.UI
 		{
 			mBIsRefreshing = true;
 
-			if (mBgmToggle != null && SettingsManager.Instance != null)
+			if (mBgmToggle != null && SettingsManager.Inst != null)
 			{
-				mBgmToggle.isOn = SettingsManager.Instance.BGMEnabled;
+				mBgmToggle.isOn = SettingsManager.Inst.BGMEnabled;
 			}
 
-			if (mSfxToggle != null && SettingsManager.Instance != null)
+			if (mSfxToggle != null && SettingsManager.Inst != null)
 			{
-				mSfxToggle.isOn = SettingsManager.Instance.SFXEnabled;
+				mSfxToggle.isOn = SettingsManager.Inst.SFXEnabled;
 			}
 
-			if (mVibrationToggle != null && SettingsManager.Instance != null)
+			if (mVibrationToggle != null && SettingsManager.Inst != null)
 			{
-				mVibrationToggle.isOn = SettingsManager.Instance.VibrationEnabled;
+				mVibrationToggle.isOn = SettingsManager.Inst.VibrationEnabled;
 			}
 
 			mBIsRefreshing = false;
@@ -163,13 +227,13 @@ namespace TrumpTile.GameMain.UI
 
 		private void RefreshLanguageText()
 		{
-			if (mCurrentLanguageText == null || SettingsManager.Instance == null)
+			if (mCurrentLanguageText == null || SettingsManager.Inst == null)
 			{
 				return;
 			}
 
-			ELanguage currentLanguage = SettingsManager.Instance.Language;
-			mCurrentLanguageText.text = SettingsManager.Instance.GetLanguageDisplayName(currentLanguage);
+			ELanguage currentLanguage = SettingsManager.Inst.Language;
+			mCurrentLanguageText.text = SettingsManager.Inst.GetLanguageDisplayName(currentLanguage);
 		}
 
 		private void RefreshUid()
@@ -219,8 +283,8 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
-			SettingsManager.Instance?.SetBGM(bIsOn);
-			AudioManager.Instance?.PlayButtonClick();
+			SettingsManager.Inst?.SetBGM(bIsOn);
+			AudioManager.Inst?.PlayButtonClick();
 		}
 
 		private void OnSfxToggleChanged(bool bIsOn)
@@ -230,11 +294,11 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
-			SettingsManager.Instance?.SetSFX(bIsOn);
+			SettingsManager.Inst?.SetSFX(bIsOn);
 			// SFX가 꺼진 경우엔 소리 재생 안 함, 켠 경우엔 확인용 재생
 			if (bIsOn)
 			{
-				AudioManager.Instance?.PlayButtonClick();
+				AudioManager.Inst?.PlayButtonClick();
 			}
 		}
 
@@ -245,13 +309,13 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
-			SettingsManager.Instance?.SetVibration(bIsOn);
-			AudioManager.Instance?.PlayButtonClick();
+			SettingsManager.Inst?.SetVibration(bIsOn);
+			AudioManager.Inst?.PlayButtonClick();
 
 			// 진동 켤 때 진동으로 피드백
 			if (bIsOn)
 			{
-				SettingsManager.Instance?.Vibrate();
+				SettingsManager.Inst?.Vibrate();
 			}
 		}
 
@@ -261,13 +325,13 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnCloseClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
-			gameObject.SetActive(false);
+			AudioManager.Inst?.PlayButtonClick();
+			Hide();
 		}
 
 		private void OnLanguageClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 
 			if (mLanguagePopup != null)
 			{
@@ -277,79 +341,60 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnCopyUidClick()
 		{
-			if (UserDataManager.Instance == null)
+			if (SettingsManager.Inst != null)
 			{
-				return;
+				SettingsManager.Inst.CopyUID();
 			}
 
-			string uid = UserDataManager.Instance.UID;
-			GUIUtility.systemCopyBuffer = uid;
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 
-			Debug.Log($"[SettingsPopup] UID copied: {uid}");
-
-			// 복사 완료 토스트 표시
-			if (mCopyToastObject != null)
+			if (mCopyToastCanvasGroup != null)
 			{
-				StartCoroutine(ShowCopyToast());
+				ShowCopyToast();
 			}
 		}
 
-		private System.Collections.IEnumerator ShowCopyToast()
+		private void ShowCopyToast()
 		{
 			mCopyToastObject.SetActive(true);
+			mCopyToastCanvasGroup.alpha = 0F;
 
-			float elapsed = 0F;
-			while (elapsed < 1.5F)
-			{
-				elapsed += Time.unscaledDeltaTime;
-				yield return null;
-			}
-
-			if (mCopyToastObject != null)
-			{
-				mCopyToastObject.SetActive(false);
-			}
+			DOTween.Sequence()
+				.Append(mCopyToastCanvasGroup.DOFade(1F, 0.2F))
+				.AppendInterval(1F)
+				.Append(mCopyToastCanvasGroup.DOFade(0F, 0.3F))
+				.OnComplete(() => mCopyToastObject.SetActive(false))
+				.SetUpdate(true);
 		}
 
 		private void OnTermsClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
-			OpenURL(mAppLinksData?.TermsUrl);
+			AudioManager.Inst?.PlayButtonClick();
+			SettingsManager.Inst.OpenTermsUrl();
 		}
 
 		private void OnPrivacyClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
-			OpenURL(mAppLinksData?.PrivacyUrl);
+			AudioManager.Inst?.PlayButtonClick();
+			SettingsManager.Inst.OpenPrivacyUrl();
 		}
 
 		private void OnInstagramClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
-			OpenURL(mAppLinksData?.InstagramUrl);
+			AudioManager.Inst?.PlayButtonClick();
+			SettingsManager.Inst.OpenInstagramUrl();
 		}
 
 		private void OnTwitterClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
-			OpenURL(mAppLinksData?.TwitterUrl);
+			AudioManager.Inst?.PlayButtonClick();
+			SettingsManager.Inst.OpenTwitterUrl();
 		}
 
 		private void OnYoutubeClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
-			OpenURL(mAppLinksData?.YoutubeUrl);
-		}
-
-		private void OpenURL(string url)
-		{
-			if (string.IsNullOrEmpty(url))
-			{
-				return;
-			}
-
-			Application.OpenURL(url);
+			AudioManager.Inst?.PlayButtonClick();
+			SettingsManager.Inst.OpenYoutubeUrl();
 		}
 
 		#endregion

@@ -93,12 +93,12 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		private void RefreshSelectedIndicator()
 		{
-			if (SettingsManager.Instance == null)
+			if (SettingsManager.Inst == null)
 			{
 				return;
 			}
 
-			ELanguage currentLanguage = SettingsManager.Instance.Language;
+			ELanguage currentLanguage = SettingsManager.Inst.Language;
 
 			SetSelectedIndicator(mKoreanSelected, currentLanguage == ELanguage.Korean);
 			SetSelectedIndicator(mEnglishSelected, currentLanguage == ELanguage.English);
@@ -121,8 +121,8 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnLanguageSelected(ELanguage language)
 		{
-			AudioManager.Instance?.PlayButtonClick();
-			SettingsManager.Instance?.SetLanguage(language);
+			AudioManager.Inst?.PlayButtonClick();
+			SettingsManager.Inst?.SetLanguage(language);
 			RefreshSelectedIndicator();
 
 			// SettingsPopup의 언어 텍스트 갱신
@@ -137,7 +137,7 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnCloseClick()
 		{
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 			gameObject.SetActive(false);
 		}
 

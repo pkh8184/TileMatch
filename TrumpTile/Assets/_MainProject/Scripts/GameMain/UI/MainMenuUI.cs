@@ -30,7 +30,7 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private Image mProfileImage;        // 프로필 이미지
 
 		[Header("팝업")]
-		[SerializeField] private GameObject mSettingPopup;
+		[SerializeField] private SettingsPopup mSettingPopup;
 		[SerializeField] private GameObject mMapPopup;
 		[SerializeField] private GameObject mShopPopup;
 		[SerializeField] private GameObject mProfilePopup;
@@ -142,19 +142,19 @@ namespace TrumpTile.GameMain.UI
 		private void OnSettingClick()
 		{
 			Debug.Log("[MainMenuUI] Setting clicked");
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 
 			// 설정 팝업 열기
 			if (mSettingPopup != null)
 			{
-				mSettingPopup.SetActive(true);
+				mSettingPopup.Show();
 			}
 		}
 
 		private void OnMapClick()
 		{
 			Debug.Log("[MainMenuUI] Map clicked");
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 
 			// 지도(하우징) 팝업 열기
 			if (mMapPopup != null)
@@ -166,7 +166,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnShopClick()
 		{
 			Debug.Log("[MainMenuUI] Shop clicked");
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 
 			// 상점 팝업 열기
 			if (mShopPopup != null)
@@ -178,7 +178,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnStageClick()
 		{
 			Debug.Log("[MainMenuUI] Stage clicked");
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 
 			// 스테이지 선택 팝업 또는 바로 게임 시작
 			if (mStageSelectPopup != null)
@@ -195,7 +195,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnProfileClick()
 		{
 			Debug.Log("[MainMenuUI] Profile clicked");
-			AudioManager.Instance?.PlayButtonClick();
+			AudioManager.Inst?.PlayButtonClick();
 
 			// 프로필 팝업 열기
 			if (mProfilePopup != null)

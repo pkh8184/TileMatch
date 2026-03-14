@@ -1,3 +1,6 @@
+using TrumpTile.FrameLibrary;
+using TrumpTile.GameMain.Data;
+using TrumpTile.GameMain.UI;
 using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
@@ -17,9 +20,10 @@ namespace TrumpTile.GameMain.Core
 	/// 앱 설정 관리 (BGM / SFX / 진동 / 언어)
 	/// DontDestroyOnLoad 싱글톤
 	/// </summary>
-	public class SettingsManager : MonoBehaviour
+	public class SettingsManager : Singleton_GameObject<SettingsManager>
 	{
-		public static SettingsManager Instance { get; private set; }
+		[Header("링크 데이터")]
+		[SerializeField] private AppLinksData mAppLinksData;
 
 		private const string KEY_BGM = "Settings_BGM";
 		private const string KEY_SFX = "Settings_SFX";
@@ -38,16 +42,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void Awake()
 		{
-			if (Instance == null)
-			{
-				Instance = this;
-				DontDestroyOnLoad(gameObject);
-				LoadSettings();
-			}
-			else
-			{
-				Destroy(gameObject);
-			}
+			LoadSettings();
 		}
 
 		private void Start()
@@ -68,8 +63,8 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void ApplySettings()
 		{
-			AudioManager.Instance?.SetBGMEnabled(mBBgmEnabled);
-			AudioManager.Instance?.SetSFXEnabled(mBSfxEnabled);
+			AudioManager.Inst?.SetBGMEnabled(mBBgmEnabled);
+			AudioManager.Inst?.SetSFXEnabled(mBSfxEnabled);
 		}
 
 		#region BGM
@@ -82,7 +77,7 @@ namespace TrumpTile.GameMain.Core
 			mBBgmEnabled = bEnabled;
 			PlayerPrefs.SetInt(KEY_BGM, bEnabled ? 1 : 0);
 			PlayerPrefs.Save();
-			AudioManager.Instance?.SetBGMEnabled(mBBgmEnabled);
+			AudioManager.Inst?.SetBGMEnabled(mBBgmEnabled);
 		}
 
 		#endregion
@@ -97,7 +92,7 @@ namespace TrumpTile.GameMain.Core
 			mBSfxEnabled = bEnabled;
 			PlayerPrefs.SetInt(KEY_SFX, bEnabled ? 1 : 0);
 			PlayerPrefs.Save();
-			AudioManager.Instance?.SetSFXEnabled(mBSfxEnabled);
+			AudioManager.Inst?.SetSFXEnabled(mBSfxEnabled);
 		}
 
 		#endregion
@@ -178,6 +173,84 @@ namespace TrumpTile.GameMain.Core
 				case ELanguage.Arabic: return "العربية";
 				default: return "한국어";
 			}
+		}
+
+		#endregion
+
+		#region 약관 / 소셜
+
+		public void OpenTermsUrl()
+		{
+			if (mAppLinksData != null)
+			{
+				OpenURL(mAppLinksData.TermsUrl);
+			}
+		}
+
+		public void OpenPrivacyUrl()
+		{
+			if (mAppLinksData != null)
+			{
+				OpenURL(mAppLinksData.PrivacyUrl);
+			}
+		}
+
+		public void OpenInstagramUrl()
+		{
+			if (mAppLinksData != null)
+			{
+				OpenURL(mAppLinksData.InstagramUrl);
+			}
+		}
+
+		public void OpenTwitterUrl()
+		{
+			if (mAppLinksData != null)
+			{
+				OpenURL(mAppLinksData.TwitterUrl);
+			}
+		}
+
+		public void OpenYoutubeUrl()
+		{
+			if (mAppLinksData != null)
+			{
+				OpenURL(mAppLinksData.YoutubeUrl);
+			}
+		}
+
+		private void OpenURL(string url)
+		{
+			if (string.IsNullOrEmpty(url))
+			{
+				return;
+			}
+
+			Application.OpenURL(url);
+		}
+
+		#endregion
+
+		#region 계정
+
+		/// <summary>
+		/// 사용자 UID를 클립보드에 복사
+		/// </summary>
+		public void CopyUID()
+		{
+			if (UserDataManager.Instance == null)
+			{
+				return;
+			}
+
+			string uid = UserDataManager.Instance.UID;
+			if (string.IsNullOrEmpty(uid))
+			{
+				return;
+			}
+
+			GUIUtility.systemCopyBuffer = uid;
+			Debug.Log($"[SettingsManager] UID copied: {uid}");
 		}
 
 		#endregion
