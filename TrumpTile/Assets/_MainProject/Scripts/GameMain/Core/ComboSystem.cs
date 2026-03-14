@@ -192,7 +192,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			if (entry.hasSound && entry.audioClip != null)
 			{
-				AudioManager.Instance?.PlaySFX(entry.audioClip);
+				AudioManager.Inst?.PlaySFX(entry.audioClip);
 			}
 
 			UIManager.Instance.ShowFloatingText(GetDisplayPosition(), entry.label + "!", entry.labelColor);
