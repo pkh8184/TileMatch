@@ -4,5 +4,8 @@ namespace TrumpTile.GameMain.Core
     {
         // LobbyManager -> 앱 버전 업데이트 필요 시
         public const string REQUIRED_VERSION_UPDATE = "VersionUpdate";
+
+        
+        public const string REFRESH_UI = "RefreshUI";
     }
 }
