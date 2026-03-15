@@ -30,6 +30,9 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private string mPlayerName = "Player";
 		[SerializeField] private int mProfileIconId = 0;
 
+		[Header("계정")]
+		[SerializeField] private string mUID = "";
+
 		// 이벤트
 		public event Action<int> OnGoldChanged;
 		public event Action<int> OnGemChanged;
@@ -43,6 +46,7 @@ namespace TrumpTile.GameMain.UI
 		public int SelectedStage => mSelectedStage;
 		public string PlayerName => mPlayerName;
 		public int ProfileIconId => mProfileIconId;
+		public string UID => mUID;
 
 		// 아이템 프로퍼티
 		public int StrikeCount => mStrikeCount;
@@ -306,7 +310,8 @@ namespace TrumpTile.GameMain.UI
 				blackHoleCount = this.mBlackHoleCount,
 				boomCount = this.mBoomCount,
 				playerName = this.mPlayerName,
-				profileIconId = this.mProfileIconId
+				profileIconId = this.mProfileIconId,
+				uid = this.mUID
 			};
 
 			string json = JsonUtility.ToJson(saveData);
@@ -335,12 +340,21 @@ namespace TrumpTile.GameMain.UI
 				mBoomCount = saveData.boomCount;
 				mPlayerName = saveData.playerName;
 				mProfileIconId = saveData.profileIconId;
+				mUID = saveData.uid;
 
 				Debug.Log("[UserDataManager] Data loaded");
 			}
 			else
 			{
 				Debug.Log("[UserDataManager] No save data, using defaults");
+			}
+
+			// UID가 없으면 최초 1회 생성
+			if (string.IsNullOrEmpty(mUID))
+			{
+				mUID = System.Guid.NewGuid().ToString("N").ToUpper();
+				SaveData();
+				Debug.Log($"[UserDataManager] UID generated: {mUID}");
 			}
 		}
 
@@ -382,6 +396,7 @@ namespace TrumpTile.GameMain.UI
 			public int boomCount;
 			public string playerName;
 			public int profileIconId;
+			public string uid;
 		}
 	}
 }

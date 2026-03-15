@@ -283,7 +283,7 @@ namespace TrumpTile.GameMain.Core
 					mFrozenOverlay.SetActive(false);
 				}
 			}
-			AudioManager.Instance?.PlayTileSelect();
+			AudioManager.Inst?.PlayTileSelect();
 		}
 
 		#endregion
@@ -376,7 +376,7 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			SetMovingToSlotSorting();
-			AudioManager.Instance?.PlayTileMove();
+			AudioManager.Inst?.PlayTileMove();
 			StopCurrentAnimation();
 
 			if (bWasInSlot)

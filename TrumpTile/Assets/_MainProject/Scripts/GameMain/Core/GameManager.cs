@@ -252,7 +252,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
 
-			AudioManager.Instance?.PlayMainMenuBGM();
+			AudioManager.Inst?.PlayMainMenuBGM();
 
 			if (TransitionManager.Instance != null)
 			{
@@ -295,7 +295,7 @@ namespace TrumpTile.GameMain.Core
 
 			if (mComboCount > 1)
 			{
-				AudioManager.Instance?.PlayMatchSound(mComboCount);
+				AudioManager.Inst?.PlayMatchSound(mComboCount);
 			}
 		}
 
@@ -316,7 +316,7 @@ namespace TrumpTile.GameMain.Core
 
 			UIManager.Instance?.DisableItemButtons();
 			EffectManager.Instance?.PlayGameOverEffect();
-			AudioManager.Instance?.PlayGameOver();
+			AudioManager.Inst?.PlayGameOver();
 
 			if (mGameOverPopup != null)
 			{
@@ -356,7 +356,7 @@ namespace TrumpTile.GameMain.Core
 			yield return new WaitForSeconds(0.5F);
 
 			EffectManager.Instance?.PlayClearEffect();
-			AudioManager.Instance?.PlayGameClear();
+			AudioManager.Inst?.PlayGameClear();
 
 			int stars = CalculateStars();
 
@@ -401,7 +401,7 @@ namespace TrumpTile.GameMain.Core
 
 			CurrentState = EGameState.Paused;
 			Time.timeScale = 0F;
-			AudioManager.Instance?.PauseBGM();
+			AudioManager.Inst?.PauseBGM();
 			UIManager.Instance?.ShowPausePanel();
 		}
 
@@ -414,7 +414,7 @@ namespace TrumpTile.GameMain.Core
 
 			CurrentState = EGameState.Playing;
 			Time.timeScale = 1F;
-			AudioManager.Instance?.ResumeBGM();
+			AudioManager.Inst?.ResumeBGM();
 		}
 
 		#endregion
@@ -454,7 +454,7 @@ namespace TrumpTile.GameMain.Core
 			Vector3 popPosition = mSlotManager.GetLastTilePosition();
 
 			EffectManager.Instance?.PlayStrikePopEffect(popPosition);
-			AudioManager.Instance?.PlayItemUse();
+			AudioManager.Inst?.PlayItemUse();
 
 			yield return new WaitForSeconds(0.3F);
 
@@ -569,7 +569,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			mIsItemInProgress = true;
 
-			AudioManager.Instance?.PlayItemUse();
+			AudioManager.Inst?.PlayItemUse();
 
 			int setsToRemove = Mathf.Min(3, groups.Count);
 

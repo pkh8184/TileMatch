@@ -1,3 +1,4 @@
+using TrumpTile.FrameLibrary;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,9 +8,8 @@ namespace TrumpTile.GameMain.Core
 	/// <summary>
 	/// BGM 및 효과음 관리
 	/// </summary>
-	public class AudioManager : MonoBehaviour
+	public class AudioManager : Singleton_GameObject<AudioManager>
 	{
-		public static AudioManager Instance { get; private set; }
 
 		[Header("Audio Sources")]
 		[SerializeField] private AudioSource mBgmSource;
@@ -60,20 +60,14 @@ namespace TrumpTile.GameMain.Core
 		private const string MUTE_KEY = "AudioMuted";
 
 		private bool mIsMuted;
+		private bool mBBgmEnabled = true;
+		private bool mBSfxEnabled = true;
 		private Coroutine mBgmFadeCoroutine;
 
 		private void Awake()
 		{
-			if (Instance == null)
-			{
-				Instance = this;
-				DontDestroyOnLoad(gameObject);
-				InitializeAudio();
-			}
-			else
-			{
-				Destroy(gameObject);
-			}
+			DontDestroyOnLoad(gameObject);
+			InitializeAudio();
 		}
 
 		private void InitializeAudio()
@@ -137,8 +131,30 @@ namespace TrumpTile.GameMain.Core
 		}
 
 		public bool IsMuted => mIsMuted;
+		public bool BGMEnabled => mBBgmEnabled;
+		public bool SFXEnabled => mBSfxEnabled;
 		public float BGMVolume => mBgmVolume;
 		public float SFXVolume => mSfxVolume;
+
+		/// <summary>
+		/// BGM On/Off 설정
+		/// </summary>
+		public void SetBGMEnabled(bool bEnabled)
+		{
+			mBBgmEnabled = bEnabled;
+			if (mBgmSource != null)
+			{
+				mBgmSource.volume = (mBBgmEnabled && !mIsMuted) ? mBgmVolume : 0F;
+			}
+		}
+
+		/// <summary>
+		/// SFX On/Off 설정
+		/// </summary>
+		public void SetSFXEnabled(bool bEnabled)
+		{
+			mBSfxEnabled = bEnabled;
+		}
 
 		private void LoadVolumeSettings()
 		{
@@ -178,6 +194,7 @@ namespace TrumpTile.GameMain.Core
 		public void PlayBGM(AudioClip clip, bool bFade = true)
 		{
 			if (clip == null || mBgmSource == null) return;
+			if (!mBBgmEnabled) return;
 
 			if (mBgmSource.clip == clip && mBgmSource.isPlaying) return;
 
@@ -297,7 +314,7 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void PlaySFX(AudioClip clip, float volumeMultiplier = 1F, bool bRandomPitch = false)
 		{
-			if (clip == null || mIsMuted) return;
+			if (clip == null || mIsMuted || !mBSfxEnabled) return;
 
 			AudioSource source = GetAvailableSFXSource();
 			source.clip = clip;

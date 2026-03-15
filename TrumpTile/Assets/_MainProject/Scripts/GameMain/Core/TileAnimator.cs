@@ -10,26 +10,26 @@ namespace TrumpTile.GameMain.Core
 	public class TileAnimator : MonoBehaviour
 	{
 		[Header("Move Animation")]
-		[SerializeField] private float moveSpeed = 10F;
-		[SerializeField] private AnimationCurve moveCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+		[SerializeField] private float mMoveSpeed = 10F;
+		[SerializeField] private AnimationCurve mMoveCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
 		[Header("Select Animation")]
-		[SerializeField] private float selectScale = 1.15F;
-		[SerializeField] private float selectDuration = 0.1F;
-		[SerializeField] private float hoverBobAmount = 0.05F;
-		[SerializeField] private float hoverBobSpeed = 3F;
+		[SerializeField] private float mSelectScale = 1.15F;
+		[SerializeField] private float mSelectDuration = 0.1F;
+		[SerializeField] private float mHoverBobAmount = 0.05F;
+		[SerializeField] private float mHoverBobSpeed = 3F;
 
 		[Header("Match Animation")]
-		[SerializeField] private float matchScalePunch = 1.3F;
-		[SerializeField] private float matchDuration = 0.2F;
+		[SerializeField] private float mMatchScalePunch = 1.3F;
+		[SerializeField] private float mMatchDuration = 0.2F;
 
 		[Header("Spawn Animation")]
-		[SerializeField] private float spawnDuration = 0.3F;
-		[SerializeField] private float spawnDelay = 0.02F; // 타일 간 딜레이
+		[SerializeField] private float mSpawnDuration = 0.3F;
+		[SerializeField] private float mSpawnDelay = 0.02F; // 타일 간 딜레이
 
 		[Header("Shake Animation")]
-		[SerializeField] private float shakeDuration = 0.3F;
-		[SerializeField] private float shakeIntensity = 0.1F;
+		[SerializeField] private float mShakeDuration = 0.3F;
+		[SerializeField] private float mShakeIntensity = 0.1F;
 
 		private Vector3 mOriginalScale;
 		private Vector3 mOriginalPosition;
@@ -65,13 +65,13 @@ namespace TrumpTile.GameMain.Core
 			mIsAnimating = true;
 			Vector3 startPos = transform.position;
 			float distance = Vector3.Distance(startPos, targetPosition);
-			float duration = distance / moveSpeed;
+			float duration = distance / mMoveSpeed;
 
 			float elapsed = 0F;
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
-				float t = moveCurve.Evaluate(elapsed / duration);
+				float t = mMoveCurve.Evaluate(elapsed / duration);
 
 				transform.position = Vector3.Lerp(startPos, targetPosition, t);
 				yield return null;
@@ -102,7 +102,7 @@ namespace TrumpTile.GameMain.Core
 			mIsAnimating = true;
 			Vector3 startPos = transform.position;
 			float distance = Vector3.Distance(startPos, targetPosition);
-			float duration = Mathf.Clamp(distance / moveSpeed, 0.15F, 0.4F);
+			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.15F, 0.4F);
 
 			// 아크 높이 계산
 			float arcHeight = distance * 0.3F;
@@ -112,7 +112,7 @@ namespace TrumpTile.GameMain.Core
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
-				float t = moveCurve.Evaluate(elapsed / duration);
+				float t = mMoveCurve.Evaluate(elapsed / duration);
 
 				// 베지어 곡선으로 아크 이동
 				Vector3 a = Vector3.Lerp(startPos, midPoint, t);
@@ -149,12 +149,12 @@ namespace TrumpTile.GameMain.Core
 		private IEnumerator SelectAnimationCoroutine()
 		{
 			float elapsed = 0F;
-			Vector3 targetScale = mOriginalScale * selectScale;
+			Vector3 targetScale = mOriginalScale * mSelectScale;
 
-			while (elapsed < selectDuration)
+			while (elapsed < mSelectDuration)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / selectDuration;
+				float t = elapsed / mSelectDuration;
 
 				transform.localScale = Vector3.Lerp(mOriginalScale, targetScale, t);
 				yield return null;
@@ -168,9 +168,9 @@ namespace TrumpTile.GameMain.Core
 
 		private IEnumerator HoverBobCoroutine()
 		{
-			while (transform.localScale.x >= mOriginalScale.x * selectScale * 0.99F)
+			while (transform.localScale.x >= mOriginalScale.x * mSelectScale * 0.99F)
 			{
-				float yOffset = Mathf.Sin(Time.time * hoverBobSpeed) * hoverBobAmount;
+				float yOffset = Mathf.Sin(Time.time * mHoverBobSpeed) * mHoverBobAmount;
 				Vector3 pos = mOriginalPosition;
 				pos.y += yOffset;
 				// transform.position = pos; // 호버 위치 유지가 필요하면 사용
@@ -191,10 +191,10 @@ namespace TrumpTile.GameMain.Core
 			float elapsed = 0F;
 			Vector3 startScale = transform.localScale;
 
-			while (elapsed < selectDuration)
+			while (elapsed < mSelectDuration)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / selectDuration;
+				float t = elapsed / mSelectDuration;
 
 				transform.localScale = Vector3.Lerp(startScale, mOriginalScale, t);
 				yield return null;
@@ -226,13 +226,13 @@ namespace TrumpTile.GameMain.Core
 
 			// 펀치 스케일
 			float elapsed = 0F;
-			Vector3 punchScale = mOriginalScale * matchScalePunch;
+			Vector3 punchScale = mOriginalScale * mMatchScalePunch;
 
 			// 확대
-			while (elapsed < matchDuration * 0.3F)
+			while (elapsed < mMatchDuration * 0.3F)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / (matchDuration * 0.3F);
+				float t = elapsed / (mMatchDuration * 0.3F);
 
 				transform.localScale = Vector3.Lerp(mOriginalScale, punchScale, t);
 				yield return null;
@@ -243,10 +243,10 @@ namespace TrumpTile.GameMain.Core
 			SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
 			Color startColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
 
-			while (elapsed < matchDuration * 0.7F)
+			while (elapsed < mMatchDuration * 0.7F)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / (matchDuration * 0.7F);
+				float t = elapsed / (mMatchDuration * 0.7F);
 
 				transform.localScale = Vector3.Lerp(punchScale, Vector3.zero, t);
 
@@ -291,10 +291,10 @@ namespace TrumpTile.GameMain.Core
 			mIsAnimating = true;
 			float elapsed = 0F;
 
-			while (elapsed < spawnDuration)
+			while (elapsed < mSpawnDuration)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / spawnDuration;
+				float t = elapsed / mSpawnDuration;
 
 				// 바운스 효과
 				float bounce = Mathf.Sin(t * Mathf.PI * 1.5F);
@@ -319,11 +319,14 @@ namespace TrumpTile.GameMain.Core
 			{
 				if (tiles[i] != null)
 				{
-					tiles[i].PlaySpawnAnimation(i * 0.02F);
+					tiles[i].PlaySpawnAnimation(i * tiles[i].mSpawnDelay);
 				}
 			}
 
-			yield return new WaitForSeconds(tiles.Length * 0.02F + 0.3F);
+			if (tiles.Length > 0 && tiles[0] != null)
+			{
+				yield return new WaitForSeconds(tiles.Length * tiles[0].mSpawnDelay + tiles[0].mSpawnDuration);
+			}
 		}
 
 		#endregion
@@ -343,14 +346,14 @@ namespace TrumpTile.GameMain.Core
 			Vector3 originalPos = transform.position;
 			float elapsed = 0F;
 
-			while (elapsed < shakeDuration)
+			while (elapsed < mShakeDuration)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / shakeDuration;
+				float t = elapsed / mShakeDuration;
 
 				float damping = 1F - t;
-				float offsetX = Mathf.Sin(Time.time * 50F) * shakeIntensity * damping;
-				float offsetY = Mathf.Cos(Time.time * 50F) * shakeIntensity * damping * 0.5F;
+				float offsetX = Mathf.Sin(Time.time * 50F) * mShakeIntensity * damping;
+				float offsetY = Mathf.Cos(Time.time * 50F) * mShakeIntensity * damping * 0.5F;
 
 				transform.position = originalPos + new Vector3(offsetX, offsetY, 0F);
 				yield return null;
