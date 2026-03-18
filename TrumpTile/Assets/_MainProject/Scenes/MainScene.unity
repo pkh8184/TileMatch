@@ -6133,9 +6133,9 @@ MonoBehaviour:
   mSettingButton: {fileID: 0}
   mMapButton: {fileID: 0}
   mShopButton: {fileID: 0}
-  mGoldText: {fileID: 0}
-  mStageButton: {fileID: 0}
-  mStageLevelText: {fileID: 0}
+  mGoldText: {fileID: 1614698796}
+  mStageButton: {fileID: 2115005383}
+  mStageLevelText: {fileID: 1969866435}
   mProfileButton: {fileID: 0}
   mProfileImage: {fileID: 0}
   mSettingPopup: {fileID: 0}
@@ -7588,11 +7588,23 @@ MonoBehaviour:
   mNickName: {fileID: 247554633}
   mProfileImage: {fileID: 46074966}
   mProfileFrame: {fileID: 961192535}
-  mIconListButton: {fileID: 0}
-  mFrameListButton: {fileID: 0}
-  mIconButtonArray: []
-  mFrameButtonArray: []
-  mConfirmButton: {fileID: 0}
+  mIconListButton: {fileID: 993005537}
+  mFrameListButton: {fileID: 639649209}
+  mIconButtonArray:
+  - {fileID: 1728264733}
+  - {fileID: 1757717973}
+  - {fileID: 2100773547}
+  - {fileID: 2070111127}
+  - {fileID: 420081164}
+  - {fileID: 1799962560}
+  mFrameButtonArray:
+  - {fileID: 758467897}
+  - {fileID: 723805156}
+  - {fileID: 693608184}
+  - {fileID: 1326583731}
+  - {fileID: 296294272}
+  - {fileID: 517985920}
+  mConfirmButton: {fileID: 104689040}
   mIconListGameObject: {fileID: 0}
   mFrameListGameObject: {fileID: 0}
 --- !u!1 &786578029
@@ -11130,7 +11142,6 @@ GameObject:
   - component: {fileID: 1097015139}
   - component: {fileID: 1097015142}
   - component: {fileID: 1097015141}
-  - component: {fileID: 1097015143}
   m_Layer: 5
   m_Name: ChallengeView (3)
   m_TagString: Untagged
@@ -11198,24 +11209,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1097015138}
   m_CullTransparentMesh: 1
---- !u!114 &1097015143
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1097015138}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 097f5bbecc19c0f4f9f4f40843dc986c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 7
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mChallengeName: "\uC5F0\uC18D \uCCAB \uC2DC\uB3C4 \uAE30\uB85D"
-  mImage: {fileID: 0}
-  mChallengeText: {fileID: 0}
 --- !u!1 &1151491017
 GameObject:
   m_ObjectHideFlags: 0
@@ -14878,7 +14871,7 @@ GameObject:
   - component: {fileID: 1614698797}
   - component: {fileID: 1614698796}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: GoldText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15461,7 +15454,6 @@ GameObject:
   - component: {fileID: 1653650118}
   - component: {fileID: 1653650121}
   - component: {fileID: 1653650120}
-  - component: {fileID: 1653650122}
   m_Layer: 5
   m_Name: ChallengeView (4)
   m_TagString: Untagged
@@ -15529,24 +15521,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653650117}
   m_CullTransparentMesh: 1
---- !u!114 &1653650122
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1653650117}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 097f5bbecc19c0f4f9f4f40843dc986c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 11
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mChallengeName: "\uC5F0\uC18D \uB85C\uADF8\uC778 \uAE30\uB85D"
-  mImage: {fileID: 0}
-  mChallengeText: {fileID: 0}
 --- !u!1 &1663548195
 GameObject:
   m_ObjectHideFlags: 0
@@ -15636,7 +15610,6 @@ GameObject:
   - component: {fileID: 1709075745}
   - component: {fileID: 1709075748}
   - component: {fileID: 1709075747}
-  - component: {fileID: 1709075749}
   m_Layer: 5
   m_Name: ChallengeView (2)
   m_TagString: Untagged
@@ -15704,24 +15677,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1709075744}
   m_CullTransparentMesh: 1
---- !u!114 &1709075749
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1709075744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 097f5bbecc19c0f4f9f4f40843dc986c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 10
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mChallengeName: "\uC644\uB8CC\uB41C \uD558\uC6B0\uC9D5"
-  mImage: {fileID: 0}
-  mChallengeText: {fileID: 0}
 --- !u!1 &1711252714
 GameObject:
   m_ObjectHideFlags: 0
@@ -16213,7 +16168,6 @@ GameObject:
   - component: {fileID: 1741537197}
   - component: {fileID: 1741537200}
   - component: {fileID: 1741537199}
-  - component: {fileID: 1741537201}
   m_Layer: 5
   m_Name: ChallengeView (1)
   m_TagString: Untagged
@@ -16281,24 +16235,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1741537196}
   m_CullTransparentMesh: 1
---- !u!114 &1741537201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1741537196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 097f5bbecc19c0f4f9f4f40843dc986c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 5
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mChallengeName: "\uD074\uB9AC\uC5B4 \uC2A4\uD14C\uC774\uC9C0"
-  mImage: {fileID: 0}
-  mChallengeText: {fileID: 0}
 --- !u!1 &1742456058
 GameObject:
   m_ObjectHideFlags: 0
@@ -20286,54 +20222,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2146513941}
   m_CullTransparentMesh: 1
---- !u!114 &115099866714590391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4724849539136495126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab42dde2d223d484ab132bfa4ed3006c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 4
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mImage: {fileID: 0}
---- !u!114 &115099868183988325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4724849538452216516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab42dde2d223d484ab132bfa4ed3006c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 3
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mImage: {fileID: 0}
---- !u!114 &115099868208309623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4724849538476668886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab42dde2d223d484ab132bfa4ed3006c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 2
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mImage: {fileID: 0}
 --- !u!222 &134928216018693210
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20618,7 +20506,6 @@ GameObject:
   - component: {fileID: 6540289417262677429}
   - component: {fileID: 134928216018693210}
   - component: {fileID: 3261555292056904374}
-  - component: {fileID: 6417181935593476250}
   m_Layer: 5
   m_Name: CurrencyView
   m_TagString: Untagged
@@ -20655,7 +20542,6 @@ GameObject:
   - component: {fileID: 1361596082532776138}
   - component: {fileID: 3871709750633367289}
   - component: {fileID: 874172290120783786}
-  - component: {fileID: 2597226915213256755}
   m_Layer: 5
   m_Name: PlayerDataView_CurrentStage
   m_TagString: Untagged
@@ -20924,20 +20810,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2597226915213256755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1968916936515418052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db187e90fa5963b4ea98653d43667b4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 5
-  mValueText: {fileID: 0}
 --- !u!114 &2636407348313074745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21458,7 +21330,6 @@ GameObject:
   - component: {fileID: 168116231220979018}
   - component: {fileID: 6433917907107837093}
   - component: {fileID: 8490935669119498825}
-  - component: {fileID: 115099868183988325}
   m_Layer: 5
   m_Name: CurrencyView (1)
   m_TagString: Untagged
@@ -21477,7 +21348,6 @@ GameObject:
   - component: {fileID: 168116231179225176}
   - component: {fileID: 6433917907081812407}
   - component: {fileID: 8490935669143803739}
-  - component: {fileID: 115099868208309623}
   m_Layer: 5
   m_Name: CurrencyView (3)
   m_TagString: Untagged
@@ -21496,7 +21366,6 @@ GameObject:
   - component: {fileID: 168116230821880216}
   - component: {fileID: 6433917908846719095}
   - component: {fileID: 8490935670879387291}
-  - component: {fileID: 115099866714590391}
   m_Layer: 5
   m_Name: CurrencyView (2)
   m_TagString: Untagged
@@ -21533,7 +21402,6 @@ GameObject:
   - component: {fileID: 9111524606312132119}
   - component: {fileID: 2193249031084865223}
   - component: {fileID: 3596515112108910159}
-  - component: {fileID: 6084616142784293179}
   m_Layer: 5
   m_Name: ChallengeView
   m_TagString: Untagged
@@ -21640,7 +21508,6 @@ GameObject:
   - component: {fileID: 5173174291050026377}
   - component: {fileID: 6959329671863249850}
   - component: {fileID: 6417134582888807145}
-  - component: {fileID: 8152824748385699184}
   m_Layer: 5
   m_Name: PlayerDataView_FirstLoginDate
   m_TagString: Untagged
@@ -21683,24 +21550,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1960441579255979586}
   m_CullTransparentMesh: 1
---- !u!114 &6084616142784293179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4840227965940836679}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 097f5bbecc19c0f4f9f4f40843dc986c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 6
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mChallengeName: "\uCCAB \uC2DC\uB3C4\uB85C \uD074\uB9AC\uC5B4"
-  mImage: {fileID: 0}
-  mChallengeText: {fileID: 0}
 --- !u!222 &6148506496190496354
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21769,22 +21618,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6417181935593476250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1802719544277172795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab42dde2d223d484ab132bfa4ed3006c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 0
-  mValueText: {fileID: 0}
-  mIcon: {fileID: 0}
-  mImage: {fileID: 0}
 --- !u!222 &6433917907081812407
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22234,20 +22067,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -0.0000038146973}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8152824748385699184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5655797043450731143}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db187e90fa5963b4ea98653d43667b4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPlayerDataType: 12
-  mValueText: {fileID: 0}
 --- !u!114 &8194849778022711674
 MonoBehaviour:
   m_ObjectHideFlags: 0

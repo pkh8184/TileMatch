@@ -246,6 +246,8 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
+			mAllTiles.Remove(tile);
+
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap.Remove(gridPos);
 

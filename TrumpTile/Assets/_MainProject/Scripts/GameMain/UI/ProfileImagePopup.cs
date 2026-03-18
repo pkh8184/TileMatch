@@ -38,26 +38,37 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();
 
+            mIconListButton.onClick.AddListener(() => ShowList(true));
+            mFrameListButton.onClick.AddListener(() => ShowList(false));
+
+            for (int i = 0; i < mIconButtonArray.Length; i++)
+            {
+                int index = i;
+                mIconButtonArray[index].onClick.AddListener(() => SetIconIndex(index));
+            }
+            for (int i = 0; i < mFrameButtonArray.Length; i++)
+            {
+                int index = i;
+                mFrameButtonArray[index].onClick.AddListener(() => SetFrameIndex(index));
+            }
+
+            mConfirmButton.onClick.AddListener(ConfirmImage);
+        }
+
+        protected override void Show()
+        {
+            RefreshLocalData();
+            base.Show();
+        }
+
+        protected override void RefreshLocalData()
+        {
             mImageIndex = PlayerDataManager.Inst.UserData.ProfileImageIndex;
             mFrameIndex = PlayerDataManager.Inst.UserData.ProfileFrameIndex;
 
             mNickName.text = PlayerDataManager.Inst.UserData.NickName;
             mProfileImage.sprite = PlayerDataManager.Inst.GetProfileImage();
             mProfileFrame.sprite = PlayerDataManager.Inst.GetProfileFrame();
-
-            mIconListButton.onClick.AddListener(() => ShowList(true));
-            mFrameListButton.onClick.AddListener(() => ShowList(false));
-
-            for (int i = 0; i < mIconButtonArray.Length; i++)
-            {
-                mIconButtonArray[i].onClick.AddListener(() => SetIconIndex(i));
-            }
-            for (int i = 0; i < mFrameButtonArray.Length; i++)
-            {
-                mFrameButtonArray[i].onClick.AddListener(() => SetFrameIndex(i));
-            }
-
-            mConfirmButton.onClick.AddListener(ConfirmImage);
         }
         private void ShowList(bool isIcon)
         {
