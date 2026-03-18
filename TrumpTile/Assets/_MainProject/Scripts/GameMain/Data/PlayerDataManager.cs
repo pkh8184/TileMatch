@@ -3,14 +3,81 @@ using System.Collections.Generic;
 using UnityEngine;
 using TrumpTile.FrameLibrary;
 using TrumpTile.GameMain.UI;
+using System;
+using UnityEngine.AddressableAssets;
 
 namespace TrumpTile.GameMain.Data
 {
+    public enum EPlayerDataType
+    {
+        //재화
+        Gold,
+        Star,
+        //아이템
+        Bomb,
+        BlackHole,
+        Timer,
+        //스테이지
+        CurrentStage,
+        FirstTryClearCount,
+        MaxStreakClearStageCount,
+        ClearedStage,
+        CurrentStageForStageStart,
+        //하우징
+        CurrentHousingChapter,
+        CurrentHousingSubChapter,
+        CompletedChapterCount,
+        //로그인
+        MaxStreakLoginCount,
+        FirstLoginDate
+    }
+
     public class PlayerDataManager : Singleton_GameObject<PlayerDataManager>
     {
-        private UserData mUserData;
-        public UserData UserData { get => mUserData; set => mUserData = value;}
+        /// <summary>
+        /// 플레이어 데이터와 관련된 이벤트들
+        /// </summary>
+        //서버 요청 후 플레이어 데이터 갱신 이벤트
+        public Action OnPlayerDataRefresh;
+        //로컬 데이터 갱신 이벤트
+        public Action OnPlayerLocalDataRefresh;
 
+        private List<Sprite> mProfileImageSpriteList = new List<Sprite>();
+        private List<Sprite> mProfileFrameSpriteList = new List<Sprite>();
+
+        private UserData mUserData;
+        public UserData UserData { get => mUserData; }
+
+        public void Initialize(Dictionary<object, object> dictionary)
+        {
+            mUserData = new UserData(dictionary);
+
+            Addressables.LoadAssetsAsync<Sprite>("ProfileImages", (sprite) =>
+            {
+                mProfileImageSpriteList.Add(sprite);
+            });
+
+            Addressables.LoadAssetsAsync<Sprite>("ProfileFrames", (sprite) =>
+            {
+                mProfileFrameSpriteList.Add(sprite);
+            });
+        }
+        public void SetProfileImageIndex(int index)
+        {
+            mUserData.ProfileImageIndex = index;
+        }
+        public void SetProfileFrameIndex(int index)
+        {
+            mUserData.ProfileFrameIndex = index;
+        }
+        public Sprite GetProfileImage()
+        {
+            return mProfileImageSpriteList[mUserData.ProfileImageIndex];
+        }
+        public Sprite GetProfileFrame()
+        {
+            return mProfileFrameSpriteList[mUserData.ProfileFrameIndex];
+        }
         public string GetDataToString(EPlayerDataType ePlayerDataType)
         {
             string data = null;
@@ -42,6 +109,9 @@ namespace TrumpTile.GameMain.Data
                     break;
                 case EPlayerDataType.ClearedStage:
                     data = (mUserData.CurrentStage - 1).ToString();
+                    break;
+                case EPlayerDataType.CurrentStageForStageStart:
+                    data = "LEVEL " + mUserData.CurrentStage.ToString();
                     break;
                 case EPlayerDataType.CurrentHousingChapter:
                     data = mUserData.CurrentHousingChapter.ToString();

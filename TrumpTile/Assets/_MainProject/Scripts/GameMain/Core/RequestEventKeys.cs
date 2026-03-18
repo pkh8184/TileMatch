@@ -6,6 +6,6 @@ namespace TrumpTile.GameMain.Core
         public const string REQUIRED_VERSION_UPDATE = "VersionUpdate";
 
         
-        public const string REFRESH_UI = "RefreshUI";
+        public const string REFRESH_PLAYER_DATA = "RefreshUI";
     }
 }
