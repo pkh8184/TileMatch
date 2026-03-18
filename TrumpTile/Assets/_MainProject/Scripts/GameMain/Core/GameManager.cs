@@ -653,6 +653,12 @@ namespace TrumpTile.GameMain.Core
 				mSlotManager.OnGameOver += OnGameOver;
 				mSlotManager.OnLevelClear += LevelClear;
 			}
+
+			if (mGameOverPopup != null)
+			{
+				mGameOverPopup.OnContinue += OnContinueGame;
+				mGameOverPopup.OnRestart += RestartLevel;
+			}
 		}
 
 		private void UnsubscribeEvents()
@@ -662,6 +668,12 @@ namespace TrumpTile.GameMain.Core
 				mSlotManager.OnMatch -= OnMatchHandler;
 				mSlotManager.OnGameOver -= OnGameOver;
 				mSlotManager.OnLevelClear -= LevelClear;
+			}
+
+			if (mGameOverPopup != null)
+			{
+				mGameOverPopup.OnContinue -= OnContinueGame;
+				mGameOverPopup.OnRestart -= RestartLevel;
 			}
 		}
 
