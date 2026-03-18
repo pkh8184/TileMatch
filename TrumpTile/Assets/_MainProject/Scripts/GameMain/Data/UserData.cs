@@ -12,6 +12,11 @@ namespace TrumpTile.GameMain.Data
     [Serializable]
     public class UserData
     {
+        //로컬 데이터
+        public string NickName;
+        public int ProfileImageIndex;
+        public int ProfileFrameIndex;
+
         //광고 제거 여부
         public ObscuredBool RemoveAds;
 
@@ -67,6 +72,10 @@ namespace TrumpTile.GameMain.Data
             long seconds = Convert.ToInt64(timestampData["_seconds"]);
             FirstLoginDate = DateTimeOffset.FromUnixTimeSeconds(seconds).LocalDateTime;
             MaxStreakLoginCount = (int)Convert.ToInt64(loginData["maxStreakLoginCount"]);
+
+            NickName = PlayerPrefs.GetString("NickName");
+            ProfileImageIndex = PlayerPrefs.GetInt("ProfileImageIndex");
+            ProfileFrameIndex = PlayerPrefs.GetInt("ProfileFrameIndex");
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
