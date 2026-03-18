@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using Firebase.Firestore;
 using System.Collections.Generic;
 
 namespace TrumpTile.GameMain.Data
