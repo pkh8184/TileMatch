@@ -1,4 +1,6 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,8 +18,9 @@ namespace TrumpTile.LevelEditor.Editor
         {
             foreach (Transform transform in Selection.transforms)
             {
+
                 RectTransform t = transform as RectTransform;
-                RectTransform p = transform.parent as RectTransform;
+                RectTransform p = t.parent as RectTransform;
 
                 if (t == null || p == null) continue;
 
@@ -30,6 +33,43 @@ namespace TrumpTile.LevelEditor.Editor
                 t.anchorMax = newAnchorsMax;
                 t.offsetMin = t.offsetMax = Vector2.zero;
             }
+        }
+        [MenuItem("Custom/Anchors to Corners Include Children %]")]
+        public static void AnchorsToCornersIncludeChildren()
+        {
+            foreach (Transform transform in Selection.transforms)
+            {
+                RectTransform[] children = transform.GetComponentsInChildren<RectTransform>();
+
+                List<RectTransform> sortedByDepth = children.OrderByDescending(t => GetDepth(t)).ToList();
+
+                foreach (RectTransform child in sortedByDepth)
+                {
+                    RectTransform t = child;
+                    RectTransform p = t.parent as RectTransform;
+
+                    if (p == null) continue;
+
+                    Vector2 newAnchorsMin = new Vector2(t.anchorMin.x + t.offsetMin.x / p.rect.width,
+                                                        t.anchorMin.y + t.offsetMin.y / p.rect.height);
+                    Vector2 newAnchorsMax = new Vector2(t.anchorMax.x + t.offsetMax.x / p.rect.width,
+                                                        t.anchorMax.y + t.offsetMax.y / p.rect.height);
+
+                    t.anchorMin = newAnchorsMin;
+                    t.anchorMax = newAnchorsMax;
+                    t.offsetMin = t.offsetMax = Vector2.zero;
+                }
+            }
+        }
+        private static int GetDepth(Transform t)
+        {
+            int depth = 0;
+            while (t.parent != null)
+            {
+                depth++;
+                t = t.parent;
+            }
+            return depth;
         }
     }
 }

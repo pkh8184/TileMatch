@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.Data;
+using TrumpTile.GameMain.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,9 +10,18 @@ namespace TrumpTile.GameMain.Core
 {
     public class TitleManager : MonoBehaviour
     {
+        private void Awake()
+        {
+            UIBase[] uiBaseArray = FindObjectsOfType<UIBase>();
+
+            foreach (var item in uiBaseArray)
+            {
+                item.Initialize();
+            }
+        }
         private IEnumerator Start()
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(5f);
             SceneManager.LoadScene("MainScene");
         }
         //private async void Awake()
