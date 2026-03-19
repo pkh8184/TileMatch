@@ -57,9 +57,6 @@ namespace TrumpTile.GameMain.Core
 
 			mBannerView.LoadAd(new AdRequest());
 			Debug.Log("[AdManager] 배너 광고 로드 요청");
-
-			// 테스트 코드
-			ShowBannerAd();
 		}
 
 		public void ShowBannerAd()
