@@ -12,11 +12,6 @@ namespace TrumpTile.GameMain.UI
 
         [Header("Popup 뒷배경 오브젝트")]
         [SerializeField] private GameObject background;
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
         protected override void Show()
         {
             base.Show();
