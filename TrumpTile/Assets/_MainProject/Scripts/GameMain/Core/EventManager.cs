@@ -15,7 +15,7 @@ namespace TrumpTile.GameMain.Core
 		{
 		}
 
-		public void OnDestroy()
+		private void OnDestroy()
 		{
 			mEvents.Clear();
 		}
@@ -27,22 +27,32 @@ namespace TrumpTile.GameMain.Core
 		//이벤트 추가
 		public void AddEvent(string eventKey, Action<object> action)
 		{
-			//이벤트 있으면 제거 후 추가
 			if (mEvents.ContainsKey(eventKey))
 			{
-				mEvents.Remove(eventKey);
+				mEvents[eventKey] -= action;
+				mEvents[eventKey] += action;
 			}
-
-			mEvents.Add(eventKey, action);
+			else
+				mEvents.Add(eventKey, action);
 		}
 
-		//이벤트 있으면 제거
+		//특정 콜백만 제거
+		public void RemoveEvent(string eventKey, Action<object> action)
+		{
+			if (mEvents.ContainsKey(eventKey) == false)
+				return;
+
+			mEvents[eventKey] -= action;
+
+			if (mEvents[eventKey] == null)
+				mEvents.Remove(eventKey);
+		}
+
+		//키에 등록된 모든 콜백 제거
 		public void RemoveEvent(string eventKey)
 		{
 			if (mEvents.ContainsKey(eventKey) == false)
-			{
 				return;
-			}
 
 			mEvents.Remove(eventKey);
 		}
@@ -51,11 +61,15 @@ namespace TrumpTile.GameMain.Core
 		public void ActiveEvent<T>(string eventKey, T parameter)
 		{
 			if (mEvents.ContainsKey(eventKey) == false)
-			{
 				return;
-			}
 
 			mEvents[eventKey].Invoke(parameter);
+		}
+
+		//파라미터 없는 이벤트 실행
+		public void ActiveEvent(string eventKey)
+		{
+			ActiveEvent<object>(eventKey, null);
 		}
 
 		#endregion
