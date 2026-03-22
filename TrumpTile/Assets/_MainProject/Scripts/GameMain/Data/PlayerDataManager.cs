@@ -52,15 +52,15 @@ namespace TrumpTile.GameMain.Data
         {
             mUserData = new UserData(dictionary);
 
-            Addressables.LoadAssetsAsync<Sprite>("ProfileImages", (sprite) =>
-            {
-                mProfileImageSpriteList.Add(sprite);
-            });
+            //Addressables.LoadAssetsAsync<Sprite>("ProfileImages", (sprite) =>
+            //{
+            //    mProfileImageSpriteList.Add(sprite);
+            //});
 
-            Addressables.LoadAssetsAsync<Sprite>("ProfileFrames", (sprite) =>
-            {
-                mProfileFrameSpriteList.Add(sprite);
-            });
+            //Addressables.LoadAssetsAsync<Sprite>("ProfileFrames", (sprite) =>
+            //{
+            //    mProfileFrameSpriteList.Add(sprite);
+            //});
         }
         public void SetProfileImageIndex(int index)
         {
