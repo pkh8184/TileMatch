@@ -22,8 +22,11 @@ namespace TrumpTile.GameMain.UI
                 hideButton.onClick.AddListener(Hide);
             }
 
-            PlayerDataManager.Inst.OnPlayerDataRefresh += Refresh;
-            PlayerDataManager.Inst.OnPlayerLocalDataRefresh += RefreshLocalData;
+            if (PlayerDataManager.Inst != null)
+            {
+                PlayerDataManager.Inst.OnPlayerDataRefresh += Refresh;
+                PlayerDataManager.Inst.OnPlayerLocalDataRefresh += RefreshLocalData;
+            }
         }
 
         protected virtual void Show()
