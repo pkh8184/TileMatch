@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -18,7 +19,7 @@ namespace TrumpTile.GameMain.Core
 		public static SlotManager Instance { get; private set; }
 
 		[Header("Slot Settings")]
-		[SerializeField] private int mMaxSlots = 7;
+		[SerializeField] private int mMaxSlots = 6;
 		[SerializeField] private Transform[] mSlotPositions;
 
 		[Header("Animation")]
@@ -70,6 +71,17 @@ namespace TrumpTile.GameMain.Core
 		}
 
 		#region Public Methods
+
+		/// <summary>
+		/// 게임 시작 시 해금 상태에 따라 슬롯 수 초기화
+		/// ResetSlots() 이전에 반드시 호출
+		/// </summary>
+		public void Initialize()
+		{
+			bool bUnlocked = UserDataManager.Instance != null && UserDataManager.Instance.IsExtraSlotUnlocked;
+			SetSlotCount(bUnlocked ? 7 : 6);
+			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, ExtraSlotUnlocked: {bUnlocked}");
+		}
 
 		public void ResetSlots()
 		{
