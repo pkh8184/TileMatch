@@ -26,6 +26,11 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private int mBlackHoleCount = 3;
 		[SerializeField] private int mBoomCount = 3;
 
+		[Header("슬롯 해금")]
+		[SerializeField] private bool mExtraSlotUnlocked = false;
+
+		public bool IsExtraSlotUnlocked => mExtraSlotUnlocked;
+
 		[Header("프로필")]
 		[SerializeField] private string mPlayerName = "Player";
 		[SerializeField] private int mProfileIconId = 0;
@@ -269,6 +274,26 @@ namespace TrumpTile.GameMain.UI
 			}
 		}
 
+		/// <summary>
+		/// 추가 슬롯 구매 (골드 차감 + 영구 해금)
+		/// </summary>
+		public bool PurchaseExtraSlot(int goldCost)
+		{
+			if (mExtraSlotUnlocked)
+			{
+				return false;
+			}
+
+			if (!UseGold(goldCost))
+			{
+				return false;
+			}
+
+			mExtraSlotUnlocked = true;
+			SaveData();
+			return true;
+		}
+
 		#endregion
 
 		#region 프로필
@@ -311,7 +336,8 @@ namespace TrumpTile.GameMain.UI
 				boomCount = this.mBoomCount,
 				playerName = this.mPlayerName,
 				profileIconId = this.mProfileIconId,
-				uid = this.mUID
+				uid = this.mUID,
+				extraSlotUnlocked = this.mExtraSlotUnlocked
 			};
 
 			string json = JsonUtility.ToJson(saveData);
@@ -341,6 +367,7 @@ namespace TrumpTile.GameMain.UI
 				mPlayerName = saveData.playerName;
 				mProfileIconId = saveData.profileIconId;
 				mUID = saveData.uid;
+				mExtraSlotUnlocked = saveData.extraSlotUnlocked;
 
 				Debug.Log("[UserDataManager] Data loaded");
 			}
@@ -372,6 +399,7 @@ namespace TrumpTile.GameMain.UI
 			mBoomCount = 3;
 			mPlayerName = "Player";
 			mProfileIconId = 0;
+			mExtraSlotUnlocked = false;
 
 			PlayerPrefs.DeleteKey(SAVE_KEY);
 			PlayerPrefs.Save();
@@ -397,6 +425,7 @@ namespace TrumpTile.GameMain.UI
 			public string playerName;
 			public int profileIconId;
 			public string uid;
+			public bool extraSlotUnlocked;
 		}
 	}
 }

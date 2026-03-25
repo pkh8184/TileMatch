@@ -33,7 +33,7 @@ namespace TrumpTile.GameMain.Core
 
 		[Header("Game Rules")]
 		[SerializeField] private int mMatchCount = 3;
-		[SerializeField] private int mMaxSlots = 7;
+		[SerializeField] private int mMaxSlots = 6;
 
 		[Header("Scoring")]
 		[SerializeField] private int mBaseMatchScore = 100;
@@ -192,7 +192,8 @@ namespace TrumpTile.GameMain.Core
 			mMatchedTileCount = 0;
 			mIsItemInProgress = false;
 
-			mSlotManager?.ResetSlots();
+			mSlotManager?.Initialize();  // 반드시 ResetSlots() 이전
+		mSlotManager?.ResetSlots();
 			mBoardManager?.LoadLevel(levelData);
 
 			mTotalTileCount = mBoardManager?.TotalTileCount ?? 0;
