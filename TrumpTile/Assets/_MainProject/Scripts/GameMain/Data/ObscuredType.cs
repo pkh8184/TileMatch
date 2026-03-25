@@ -88,6 +88,10 @@ namespace TrumpTile.GameMain.Data
         {
             return Value.GetHashCode();
         }
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
         #endregion
     }
     /// <summary>

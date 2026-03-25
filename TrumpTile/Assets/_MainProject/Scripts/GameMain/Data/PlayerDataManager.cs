@@ -37,10 +37,6 @@ namespace TrumpTile.GameMain.Data
         /// <summary>
         /// 플레이어 데이터와 관련된 이벤트들
         /// </summary>
-        //서버 요청 후 플레이어 데이터 갱신 이벤트
-        public Action OnPlayerDataRefresh;
-        //로컬 데이터 갱신 이벤트
-        public Action OnPlayerLocalDataRefresh;
 
         private List<Sprite> mProfileImageSpriteList = new List<Sprite>();
         private List<Sprite> mProfileFrameSpriteList = new List<Sprite>();
@@ -48,6 +44,10 @@ namespace TrumpTile.GameMain.Data
         private UserData mUserData;
         public UserData UserData { get => mUserData; }
 
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
         public void Initialize(Dictionary<object, object> dictionary)
         {
             mUserData = new UserData(dictionary);
@@ -84,19 +84,19 @@ namespace TrumpTile.GameMain.Data
             switch (ePlayerDataType)
             {
                 case EPlayerDataType.Gold:
-                    data = ((int)mUserData.Gold).ToString("N0");
+                    data = mUserData.Gold.Value.ToString("N0");
                     break;
                 case EPlayerDataType.Star:
-                    data = ((int)mUserData.Star).ToString("NO");
+                    data = mUserData.Star.Value.ToString("N0");
                     break;
                 case EPlayerDataType.Bomb:
-                    data = ((int)mUserData.Bomb).ToString("NO");
+                    data = mUserData.Bomb.Value.ToString("N0");
                     break;
                 case EPlayerDataType.BlackHole:
-                    data = ((int)mUserData.Blackhole).ToString("NO");
+                    data = mUserData.Blackhole.Value.ToString("N0");
                     break;
                 case EPlayerDataType.Timer:
-                    data = ((int)mUserData.Timer).ToString("N0");
+                    data = mUserData.Timer.Value.ToString("N0");
                     break;
                 case EPlayerDataType.CurrentStage:
                     data = mUserData.CurrentStage.ToString();
@@ -126,7 +126,8 @@ namespace TrumpTile.GameMain.Data
                     data = mUserData.MaxStreakLoginCount.ToString();
                     break;
                 case EPlayerDataType.FirstLoginDate:
-                    data = "플레이 시작 시점 : " + mUserData.FirstLoginDate.ToString();
+                    string date = mUserData.FirstLoginDate.ToString().Substring(0, 10);
+                    data = "플레이 시작 시점 : " + date;
                     break;
                 default:
                     break;

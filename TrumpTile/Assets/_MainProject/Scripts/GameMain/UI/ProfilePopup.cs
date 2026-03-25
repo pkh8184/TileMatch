@@ -26,6 +26,10 @@ namespace TrumpTile.GameMain.UI
         //[Header("ProfileImagePopup 참조")]
         //[SerializeField] private ProfileImagePopup mProfileImagePopup;
 
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
         protected override void Refresh()
         {
             mCurrentStage.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.CurrentStage);

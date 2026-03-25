@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Text;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using UnityEngine;
@@ -37,11 +38,12 @@ namespace TrumpTile.GameMain.UI
             base.Initialize();
 
             StartCoroutine(Co_PlayStudioLogoFadeAnim());
-            mGuideText.text = mGuideArray[UnityEngine.Random.Range(0, mGuideArray.Length)];
+            string guide = mGuideArray[UnityEngine.Random.Range(0, mGuideArray.Length)];
+            mGuideText.text = GetStringLineBreaked(guide);
 
             titleManager = FindObjectOfType<TitleManager>();
-            titleManager.OnRequiredVersionUpdate += mVersionCheckPopup.ShowWithOutButton;
-            titleManager.OnLoadingComplete += PlayFadeOutAnimOnSceneChange;
+            EventManager.Inst.AddEvent(RequestEventKeys.LOADING_COMPLETE, PlayFadeOutAnimOnSceneChange);
+            EventManager.Inst.AddEvent(RequestEventKeys.REQUIRED_VERSION_UPDATE, (obj) => mVersionCheckPopup.ShowWithOutButton());
             mVersionCheckPopup.AddActionToConfirmButton(GoToPlayStoreForUpdate);
             
         }
@@ -63,18 +65,18 @@ namespace TrumpTile.GameMain.UI
         {
             mStudioLogo.transform.parent.gameObject.SetActive(true);
 
-            mStudioLogo.DOFade(1, mLogoFadeDuration);
-            yield return new WaitForSeconds(mLogoFadeDuration);
-            mStudioLogo.DOFade(0, mLogoFadeDuration);
-            yield return new WaitForSeconds(mLogoFadeDuration);
+            Sequence seq = DOTween.Sequence();
+            seq.Append(mStudioLogo.DOFade(1, mLogoFadeDuration));
+            seq.Append(mStudioLogo.DOFade(0, mLogoFadeDuration));
+            seq.OnComplete(() => mStudioLogo.transform.parent.gameObject.SetActive(false));
 
-            mStudioLogo.transform.parent.gameObject.SetActive(false);
+            yield return seq.WaitForCompletion();
 
             StartCoroutine(Co_PlayLoadingSliderAnim());
         }
         private IEnumerator Co_PlayLoadingSliderAnim()
         {
-            while(true)
+            while(mLoadingSlider.value < 1)
             {
                 mLoadingSlider.value = titleManager.LoadingProgress / 100;
                 yield return null;
@@ -106,6 +108,22 @@ namespace TrumpTile.GameMain.UI
             }
 
             Application.Quit();
+        }
+        private string GetStringLineBreaked(string s)
+        {
+            StringBuilder sb = new StringBuilder(s);
+            int count = 0;
+
+            for (int i = 0; i < sb.Length; i++)
+            {
+                count++;
+                if (count >= 15 && sb[i] == ' ')
+                {
+                    sb[i] = '\n';
+                    count = 0;
+                }
+            }
+            return sb.ToString();
         }
     }
 }

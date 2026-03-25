@@ -89,7 +89,7 @@ namespace TrumpTile.GameMain.UI
             PlayerDataManager.Inst.SetProfileImageIndex(mImageIndex);
             PlayerDataManager.Inst.SetProfileFrameIndex(mFrameIndex);
 
-            //EventManager.Inst.ActiveEvent()
+            EventManager.Inst.ActiveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA);
         }
         private void SetIconIndex(int index)
         {
