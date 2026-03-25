@@ -10,9 +10,6 @@ namespace TrumpTile.GameMain.UI
     public class MainView : ViewBase
     {
         [Header("MainView 버튼")]
-        [SerializeField] private Button mSettingViewButton;
-        [SerializeField] private Button mShopViewButton;
-        [SerializeField] private Button mProfileViewButton;
         [SerializeField] private Button mStageStartButton;
 
         [Header("MainView 텍스트")]
@@ -30,7 +27,7 @@ namespace TrumpTile.GameMain.UI
 
         //플레이어의 로컬 데이터 -> 따로 로컬데이터매니저에서 관리하는 게 좋을듯 (03/18)
         private Image mProfileFrame;
-        private Image mProfileMask;
+        private Image mProfileImage;
 
 
         public override void Initialize()
@@ -43,18 +40,23 @@ namespace TrumpTile.GameMain.UI
         protected override void Refresh()
         {
             mGoldText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Gold);
-            mCurrentStageText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.CurrentStage);
+            mCurrentStageText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
         }
-        
+        protected override void RefreshLocalData()
+        {
+            mProfileFrame.sprite = PlayerDataManager.Inst.GetProfileFrame();
+            mProfileImage.sprite = PlayerDataManager.Inst.GetProfileImage();
+        }
+
         private IEnumerator Co_PlayFadeInAnim()
         {
             mFadeImage.gameObject.SetActive(true);
 
-            mFadeImage.DOFade(0, mFadeDuration);
+            Sequence seq = DOTween.Sequence();
+            seq.Append(mFadeImage.DOFade(0, mFadeDuration));
+            seq.OnComplete(() => mFadeImage.gameObject.SetActive(false));
 
-            yield return new WaitForSeconds(mFadeDuration);
-
-            mFadeImage.gameObject.SetActive(false);
+            yield return seq.WaitForCompletion();
         }
     }
 }

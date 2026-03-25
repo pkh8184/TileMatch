@@ -20,10 +20,8 @@ namespace TrumpTile.GameMain.Core
         [SerializeField] private float mHoldSecond;
 
         private float mLoadingProgress = 0;
-
-        public Action OnRequiredVersionUpdate;
-        public Action<object> OnLoadingComplete;
         public float LoadingProgress { get => mLoadingProgress; }
+
         private void Awake()
         {
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
@@ -32,8 +30,6 @@ namespace TrumpTile.GameMain.Core
             {
                 item.Initialize();
             }
-            EventManager.Inst.AddEvent(RequestEventKeys.REQUIRED_VERSION_UPDATE, (obj) => OnRequiredVersionUpdate());
-            EventManager.Inst.AddEvent("LoadingComplete", OnLoadingComplete);
         }
         private IEnumerator Start()
         {

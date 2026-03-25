@@ -1,3 +1,4 @@
+using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,11 +23,11 @@ namespace TrumpTile.GameMain.UI
                 hideButton.onClick.AddListener(Hide);
             }
 
-            if (PlayerDataManager.Inst != null)
-            {
-                PlayerDataManager.Inst.OnPlayerDataRefresh += Refresh;
-                PlayerDataManager.Inst.OnPlayerLocalDataRefresh += RefreshLocalData;
-            }
+            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, (obj) => Refresh());
+            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, (obj) => RefreshLocalData());
+
+            Refresh();
+            //RefreshLocalData();
         }
 
         protected virtual void Show()
