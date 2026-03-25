@@ -144,6 +144,10 @@ namespace TrumpTile.GameMain.Core
 			{
 				return false;
 			}
+			if(tile.TileTypeId == "Bonus")
+			{
+				return false;
+			}
 
 			if (mSlotTiles.Count >= mMaxSlots)
 			{
