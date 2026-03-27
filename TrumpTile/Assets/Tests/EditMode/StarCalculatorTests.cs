@@ -4,7 +4,7 @@ namespace TrumpTile.Tests.EditMode
 {
     /// <summary>
     /// 시간 기반 별 판정 로직 테스트
-    /// StarConfig 값: TileTimeCoefficient=2.0, Star2Ratio=1.25, Star1Ratio=1.5
+    /// StarConfig 값: TileTimeCoefficient=2.0, Star2Ratio=1.25
     /// 타일 48개 → targetTime = 96초
     /// </summary>
     public class StarCalculatorTests
@@ -41,7 +41,7 @@ namespace TrumpTile.Tests.EditMode
         [Test]
         public void Stars1_WhenClearedOverStar2Threshold()
         {
-            // 144초(96×1.5) 초과
+            // 120초(96×1.25) 초과 시 1성
             int result = CalculateStars(elapsedTime: 150F, targetTime: 96F, star2Ratio: 1.25F);
             Assert.AreEqual(1, result);
         }
