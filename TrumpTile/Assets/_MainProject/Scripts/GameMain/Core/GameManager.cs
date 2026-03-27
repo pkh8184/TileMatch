@@ -35,10 +35,12 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private int mMatchCount = 3;
 		[SerializeField] private int mMaxSlots = 6;
 
+		[Header("Star Config")]
+		[SerializeField] private StarConfig mStarConfig;
+
 		[Header("Scoring")]
 		[SerializeField] private int mBaseMatchScore = 100;
 		[SerializeField] private int mComboMultiplier = 50;
-		[SerializeField] private int[] mStarThresholds = { 1000, 2000, 3000 };
 
 		[Header("Items")]
 		[SerializeField] private int mInitialStrikeCount = 3;
@@ -61,6 +63,10 @@ namespace TrumpTile.GameMain.Core
 		private int mCurrentLevelIndex;
 		public int CurrentLevel => mCurrentLevelIndex + 1;
 		public int MaxLevel => DataManager.Instance != null ? DataManager.Instance.TotalStages : 0;
+
+		// 타이머
+		private float mElapsedTime;
+		private float mTargetClearTime;
 
 		// 점수 및 통계
 		private int mCurrentScore;
@@ -125,6 +131,11 @@ namespace TrumpTile.GameMain.Core
 
 		private void Update()
 		{
+			if (CurrentState == EGameState.Playing)
+			{
+				mElapsedTime += Time.deltaTime;
+			}
+
 			if (mEnableDebugKeys)
 			{
 				HandleDebugKeys();
@@ -197,6 +208,14 @@ namespace TrumpTile.GameMain.Core
 			mBoardManager?.LoadLevel(levelData);
 
 			mTotalTileCount = mBoardManager?.TotalTileCount ?? 0;
+
+			// 타이머 초기화
+			mElapsedTime = 0F;
+			mTargetClearTime = mStarConfig != null
+				? mTotalTileCount * mStarConfig.TileTimeCoefficient
+				: mTotalTileCount * 2.0F;
+
+			Debug.Log($"[GameManager] TargetClearTime: {mTargetClearTime}s (tiles: {mTotalTileCount})");
 
 			UIManager.Instance?.UpdateLevel(CurrentLevel);
 			UIManager.Instance?.UpdateScore(mCurrentScore);
@@ -371,7 +390,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				bool bHasNext = HasNextLevel();
 				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
-				mVictoryPopup.Show(CurrentLevel, mCurrentScore, stars, bHasNext);
+				mVictoryPopup.Show(CurrentLevel, (int)mElapsedTime, stars, bHasNext);
 			}
 			else
 			{
@@ -382,15 +401,24 @@ namespace TrumpTile.GameMain.Core
 
 		private int CalculateStars()
 		{
-			int stars = 1;
-			for (int i = 0; i < mStarThresholds.Length; i++)
+			if (mStarConfig == null)
 			{
-				if (mCurrentScore >= mStarThresholds[i])
-				{
-					stars = i + 1;
-				}
+				Debug.LogWarning("[GameManager] StarConfig is null, defaulting to 1 star");
+				return 1;
 			}
-			return Mathf.Min(stars, 3);
+
+			if (mElapsedTime <= mTargetClearTime)
+			{
+				return 3;
+			}
+			else if (mElapsedTime <= mTargetClearTime * mStarConfig.Star2TimeRatio)
+			{
+				return 2;
+			}
+			else
+			{
+				return 1;
+			}
 		}
 
 		public void PauseGame()
