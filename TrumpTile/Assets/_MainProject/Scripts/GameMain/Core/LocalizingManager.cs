@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Localization.Settings;
+using TrumpTile.GameMain.UI;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -20,8 +21,12 @@ namespace TrumpTile.GameMain.Core
             SceneManager.sceneLoaded += (scene, mode) =>
             {
                 bool isRTL = LocalizationSettings.SelectedLocale.Identifier.Code == "ar";
-                foreach (var tmp in FindObjectsOfType<TMP_Text>())
+                foreach (var tmp in FindObjectsOfType<TMP_Text>(true))
                 {
+                    if(tmp.GetComponent<IgnoreRTL>())
+                    {
+                        continue;
+                    }
                     tmp.isRightToLeftText = isRTL;
                 }
             };
