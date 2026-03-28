@@ -255,7 +255,9 @@ namespace TrumpTile.GameMain.Core
 		private void HandleTileSelected()
 		{
 			BoardManager.Instance?.RemoveTileFromBoard(this);
+
 			SlotManager.Instance?.AddTile(this);
+            
 		}
 
 		private void OnMouseEnter()
