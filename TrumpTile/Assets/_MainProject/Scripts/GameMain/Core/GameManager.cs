@@ -390,7 +390,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				bool bHasNext = HasNextLevel();
 				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
-				mVictoryPopup.Show(CurrentLevel, (int)mElapsedTime, stars, bHasNext);
+				mVictoryPopup.Show(CurrentLevel, mElapsedTime, stars, bHasNext);
 			}
 			else
 			{
