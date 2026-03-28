@@ -255,13 +255,7 @@ namespace TrumpTile.GameMain.Core
 
 			Log($"Tile removed from board: {tile.TileTypeId}");
 
-			if(tile.TileTypeId == "Bonus")
-			{
-                //AudioManager.Inst?.PlayBonus();
-				//03.26 곽원준 : 플레이어 골드 증가시켜야함 -> 스테이지 종료 데이터 만들 필요 있음
-                Destroy(tile.gameObject);
-				Debug.Log("[BoardManager] Remove Bonus Tile ");
-            }
+			ProcessBonusTile(tile);
         }
 
 		public void RemoveTile(TileController tile)
@@ -635,6 +629,23 @@ namespace TrumpTile.GameMain.Core
 			mGridHeight = height;
 		}
 
-		#endregion
-	}
+        #endregion
+
+        #region Bonus Tile
+		/// <summary>
+		/// 보너스 타일에 대한 처리
+		/// </summary>
+		/// <param name="tile"></param>
+		private void ProcessBonusTile(TileController tile)
+		{
+            if (tile.TileTypeId == "Bonus")
+            {
+                //AudioManager.Inst?.PlayBonus();
+                //03.26 곽원준 : 플레이어 골드 증가시켜야함 -> 스테이지 종료 데이터 만들 필요 있음
+                Destroy(tile.gameObject);
+                Debug.Log("[BoardManager] Remove Bonus Tile ");
+            }
+        }
+        #endregion
+    }
 }
