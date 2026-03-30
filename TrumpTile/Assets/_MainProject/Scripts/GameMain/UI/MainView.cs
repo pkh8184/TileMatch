@@ -39,11 +39,21 @@ namespace TrumpTile.GameMain.UI
 
         protected override void Refresh()
         {
+            if(!CanRefresh())
+            {
+                return;
+            }
+
             mGoldText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Gold);
             mCurrentStageText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
         }
         protected override void RefreshLocalData()
         {
+            if (!CanRefresh())
+            {
+                return;
+            }
+
             mProfileFrame.sprite = PlayerDataManager.Inst.GetProfileFrame();
             mProfileImage.sprite = PlayerDataManager.Inst.GetProfileImage();
         }

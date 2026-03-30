@@ -41,7 +41,7 @@ namespace TrumpTile.GameMain.Data
         private List<Sprite> mProfileImageSpriteList = new List<Sprite>();
         private List<Sprite> mProfileFrameSpriteList = new List<Sprite>();
 
-        private UserData mUserData;
+        private UserData mUserData = null;
         public UserData UserData { get => mUserData; }
 
         private void Awake()

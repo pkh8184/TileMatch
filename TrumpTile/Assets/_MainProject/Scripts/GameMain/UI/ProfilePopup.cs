@@ -32,6 +32,11 @@ namespace TrumpTile.GameMain.UI
         }
         protected override void Refresh()
         {
+            if(!CanRefresh())
+            {
+                return;
+            }
+
             mCurrentStage.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.CurrentStage);
             mFirstLoginDate.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.FirstLoginDate);
             mFirstTryClearCount.text = PlayerDataManager.Inst.GetDataToString (EPlayerDataType.FirstTryClearCount);
