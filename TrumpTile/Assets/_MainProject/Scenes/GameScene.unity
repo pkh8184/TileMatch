@@ -207,12 +207,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1850608928}
+  m_Father: {fileID: 670773065}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.30952382, y: 0.30952382}
   m_AnchorMax: {x: 0.6904762, y: 0.6904762}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.0000019073486, y: 0.0000019073486}
+  m_SizeDelta: {x: 11.42857, y: -3.4636192}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &19078676
 MonoBehaviour:
@@ -1763,6 +1763,7 @@ MonoBehaviour:
   mMainButton: {fileID: 534470062}
   mLevelText: {fileID: 76822132}
   mScoreText: {fileID: 0}
+  mClearTimeText: {fileID: 0}
   mStarObjects: []
   mShowDelay: 0.3
   mAnimationDuration: 0.4
@@ -1846,7 +1847,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -4434,6 +4435,57 @@ MonoBehaviour:
   mHindiSelected: {fileID: 0}
   mArabicSelected: {fileID: 0}
   mSettingsPopup: {fileID: 983641393}
+--- !u!1 &670773064
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 670773065}
+  - component: {fileID: 670773066}
+  m_Layer: 5
+  m_Name: LockedSlotView
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &670773065
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670773064}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 19078675}
+  - {fileID: 1615392102}
+  m_Father: {fileID: 1850608928}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &670773066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670773064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d34d55f70a1f4b9e93cd15076cb45f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mPurchasePopup: {fileID: 711161497}
 --- !u!1 &680795680
 GameObject:
   m_ObjectHideFlags: 0
@@ -4531,6 +4583,7 @@ RectTransform:
   - {fileID: 396594451}
   - {fileID: 225975895}
   - {fileID: 983641392}
+  - {fileID: 711161498}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4734,6 +4787,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 691842660}
   m_CullTransparentMesh: 1
+--- !u!1 &711161496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 711161498}
+  - component: {fileID: 711161497}
+  m_Layer: 5
+  m_Name: ExtraSlotPurchasePopup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &711161497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711161496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c12058a1ddb2a41329c1d2012d7933b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showButton: {fileID: 0}
+  hideButton: {fileID: 0}
+  mShowDuration: 1
+  mHideDuration: 1
+  background: {fileID: 0}
+  mExtraSlotGoldPrice: 500
+  mLockedSlotView: {fileID: 0}
+  mUnlockDelay: 1
+  mPriceText: {fileID: 0}
+  mCurrentGoldText: {fileID: 0}
+  mNoticeText: {fileID: 0}
+  mConfirmButton: {fileID: 0}
+  mCancelButton: {fileID: 0}
+--- !u!224 &711161498
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711161496}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 680795684}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &728650910
 GameObject:
   m_ObjectHideFlags: 0
@@ -6919,9 +7033,9 @@ MonoBehaviour:
   mStartLevel: 1
   mMatchCount: 3
   mMaxSlots: 7
+  mStarConfig: {fileID: 0}
   mBaseMatchScore: 100
   mComboMultiplier: 50
-  mStarThresholds: e8030000d0070000b80b0000
   mInitialStrikeCount: 3
   mInitialBlackHoleCount: 3
   mInitialBoomCount: 3
@@ -9391,12 +9505,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1850608928}
+  m_Father: {fileID: 670773065}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.57904744, y: -0.061904907}
   m_AnchorMax: {x: 1.150476, y: 0.22380938}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 10.942825, y: 3.80999}
+  m_SizeDelta: {x: 17.142849, y: -2.5977154}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1615392103
 MonoBehaviour:
@@ -10653,8 +10767,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 19078675}
-  - {fileID: 1615392102}
+  - {fileID: 670773065}
   m_Father: {fileID: 1028483419}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.84705883, y: 0.175}
