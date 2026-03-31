@@ -25,6 +25,7 @@ namespace TrumpTile.GameMain.UI
 		[Header("Optional")]
 		[SerializeField] private TextMeshProUGUI mLevelText;
 		[SerializeField] private TextMeshProUGUI mScoreText;
+		[SerializeField] private TextMeshProUGUI mClearTimeText;
 		[SerializeField] private GameObject[] mStarObjects;
 
 		[Header("Animation")]
@@ -97,9 +98,9 @@ namespace TrumpTile.GameMain.UI
 		/// <summary>
 		/// 승리 팝업 표시
 		/// </summary>
-		public void Show(int level = 0, int score = 0, int stars = 3, bool hasNext = true)
+		public void Show(int level = 0, float clearTime = 0F, int stars = 3, bool hasNext = true)
 		{
-			Debug.Log($"[VictoryPopup] Show - Level: {level}, Score: {score}, Stars: {stars}, HasNext: {hasNext}");
+			Debug.Log($"[VictoryPopup] Show - Level: {level}, ClearTime: {clearTime}, Stars: {stars}, HasNext: {hasNext}");
 
 			mHasNextLevel = hasNext;
 			mIsButtonClicked = false;
@@ -118,10 +119,10 @@ namespace TrumpTile.GameMain.UI
 				mMainButton.interactable = true;
 			}
 
-			StartCoroutine(ShowCoroutine(level, score, stars));
+			StartCoroutine(ShowCoroutine(level, clearTime, stars));
 		}
 
-		private IEnumerator ShowCoroutine(int level, int score, int stars)
+		private IEnumerator ShowCoroutine(int level, float clearTime, int stars)
 		{
 			// 패널 활성화
 			if (mPopupPanel != null)
@@ -165,7 +166,16 @@ namespace TrumpTile.GameMain.UI
 
 			if (mScoreText != null)
 			{
-				mScoreText.text = $"{score:N0}";
+				int minutes = Mathf.FloorToInt(clearTime / 60F);
+				int seconds = Mathf.FloorToInt(clearTime % 60F);
+				mScoreText.text = $"{minutes:D2}:{seconds:D2}";
+			}
+
+			if (mClearTimeText != null)
+			{
+				int minutes = Mathf.FloorToInt(clearTime / 60F);
+				int seconds = Mathf.FloorToInt(clearTime % 60F);
+				mClearTimeText.text = $"{minutes:D2}:{seconds:D2}";
 			}
 
 			// 별 표시
