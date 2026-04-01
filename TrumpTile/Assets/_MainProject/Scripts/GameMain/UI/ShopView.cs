@@ -26,11 +26,6 @@ namespace TrumpTile.GameMain.UI
 
         protected override void Refresh()
         {
-            if (!CanRefresh())
-            {
-                return;
-            }
-
             mGoldText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Gold);
             mBlackholeText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.BlackHole);
             mTimerText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Timer);

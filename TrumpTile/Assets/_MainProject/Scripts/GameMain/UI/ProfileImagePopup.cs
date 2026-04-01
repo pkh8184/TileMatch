@@ -63,15 +63,10 @@ namespace TrumpTile.GameMain.UI
 
         protected override void RefreshLocalData()
         {
-            if (!CanRefresh())
-            {
-                return;
-            }
+            mImageIndex = PlayerDataManager.Inst.GetProfileImageIndex();
+            mFrameIndex = PlayerDataManager.Inst.GetProfileFrameIndex();
 
-            mImageIndex = PlayerDataManager.Inst.UserData.ProfileImageIndex;
-            mFrameIndex = PlayerDataManager.Inst.UserData.ProfileFrameIndex;
-
-            mNickName.text = PlayerDataManager.Inst.UserData.NickName;
+            mNickName.text = PlayerDataManager.Inst.GetNickname();
             mProfileImage.sprite = PlayerDataManager.Inst.GetProfileImage();
             mProfileFrame.sprite = PlayerDataManager.Inst.GetProfileFrame();
         }

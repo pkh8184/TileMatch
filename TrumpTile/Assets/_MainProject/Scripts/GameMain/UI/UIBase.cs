@@ -48,10 +48,6 @@ namespace TrumpTile.GameMain.UI
         }
         protected virtual void Refresh() { }
         protected virtual void RefreshLocalData() { }
-        protected bool CanRefresh()
-        {
-            return PlayerDataManager.Inst.UserData != null;
-        }
         
         /// <summary>
         /// 현재 언어가 아랍어로 설정된 경우 TMP_Text의 IsRTL을 true로 해줌. 

@@ -16,10 +16,6 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private TMP_Text mGoldText;
         [SerializeField] private TMP_Text mCurrentStageText;
 
-        [Header("MainView 팝업")]
-        [SerializeField] private PopupBase mSettingPopup;
-        [SerializeField] private PopupBase mProfilePopup;
-
         [Header("씬 전환 시 Fade 이미지")]
         [SerializeField] private Image mFadeImage;
         [Header("씬 전환 시 Fade 애니메이션 시간")]
@@ -39,23 +35,13 @@ namespace TrumpTile.GameMain.UI
 
         protected override void Refresh()
         {
-            if(!CanRefresh())
-            {
-                return;
-            }
-
-            mGoldText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Gold);
-            mCurrentStageText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
+            mGoldText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.Gold);
+            mCurrentStageText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
         }
         protected override void RefreshLocalData()
         {
-            if (!CanRefresh())
-            {
-                return;
-            }
-
-            mProfileFrame.sprite = PlayerDataManager.Inst.GetProfileFrame();
-            mProfileImage.sprite = PlayerDataManager.Inst.GetProfileImage();
+            mProfileFrame.sprite = PlayerDataManager.Inst?.GetProfileFrame();
+            mProfileImage.sprite = PlayerDataManager.Inst?.GetProfileImage();
         }
 
         private IEnumerator Co_PlayFadeInAnim()

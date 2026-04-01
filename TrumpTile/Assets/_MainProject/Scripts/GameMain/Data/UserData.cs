@@ -16,6 +16,10 @@ namespace TrumpTile.GameMain.Data
         public string NickName;
         public int ProfileImageIndex;
         public int ProfileFrameIndex;
+        public bool BGMOn;
+        public bool SFXOn;
+        public bool HapticOn;
+        public int LocaleIndex;
 
         //광고 제거 여부
         public ObscuredBool RemoveAds;
@@ -42,6 +46,10 @@ namespace TrumpTile.GameMain.Data
         //로그인 데이터
         public DateTime FirstLoginDate;
         public ObscuredInt MaxStreakLoginCount;
+
+        //기타 데이터
+        public readonly string UID;
+        public readonly string TermsAndConditionVersion;
 
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
@@ -73,9 +81,10 @@ namespace TrumpTile.GameMain.Data
             FirstLoginDate = DateTimeOffset.FromUnixTimeSeconds(seconds).LocalDateTime;
             MaxStreakLoginCount = (int)Convert.ToInt64(loginData["maxStreakLoginCount"]);
 
-            NickName = PlayerPrefs.GetString("NickName");
-            ProfileImageIndex = PlayerPrefs.GetInt("ProfileImageIndex");
-            ProfileFrameIndex = PlayerPrefs.GetInt("ProfileFrameIndex");
+            UID = dataDictionary["uid"]?.ToString();
+            TermsAndConditionVersion = dataDictionary["termsAndConditionVersion"]?.ToString();
+
+            ReadLocalData();
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
@@ -84,6 +93,19 @@ namespace TrumpTile.GameMain.Data
         public void SetUserDataOnPurchaseProduct(Dictionary<object, object> dataDictionary)
         {
 
+        }
+        /// <summary>
+        /// 로컬에 저장한 데이터 읽어오기
+        /// </summary>
+        private void ReadLocalData()
+        {
+            NickName = PlayerPrefs.GetString("NickName", "USER");
+            ProfileImageIndex = PlayerPrefs.GetInt("ProfileImageIndex", 0);
+            ProfileFrameIndex = PlayerPrefs.GetInt("ProfileFrameIndex", 0);
+            BGMOn = PlayerPrefs.GetFloat("BGMVolume", 0.5f) > 0;
+            SFXOn = PlayerPrefs.GetFloat("SFXVolume", 1f) > 0;
+            HapticOn = PlayerPrefs.GetInt("Haptic", 1) == 1;
+            LocaleIndex = PlayerPrefs.GetInt("LocaleIndex", 0);
         }
     }
 }
