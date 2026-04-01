@@ -29,17 +29,20 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, (obj) => RefreshLocalData());
 
             Refresh();
+            //로컬 데이터(프로필 이미지, 프레임 등) 연결 되면 주석 해제
             //RefreshLocalData();
 
-            SetTMP_TextIsRTL();
+            //로칼리이제이션 테이블 작성 되면 주석 해제
+            //SetTMP_TextIsRTL();
+            //EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_LANGUAGE, (obj) => SetTMP_TextIsRTL());
         }
 
-        protected virtual void Show()
+        public virtual void Show()
         {
             gameObject.SetActive(true);
         }
 
-        protected virtual void Hide()
+        public virtual void Hide()
         {
             gameObject.SetActive(false);
         }

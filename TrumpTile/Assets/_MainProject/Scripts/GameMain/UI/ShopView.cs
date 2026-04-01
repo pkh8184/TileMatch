@@ -31,7 +31,7 @@ namespace TrumpTile.GameMain.UI
             mTimerText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Timer);
             mBombText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Bomb);
         }
-        protected override void Show()
+        public override void Show()
         {
             base.Show();
 

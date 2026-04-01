@@ -55,7 +55,7 @@ namespace TrumpTile.GameMain.UI
             mConfirmButton.onClick.AddListener(ConfirmImage);
         }
 
-        protected override void Show()
+        public override void Show()
         {
             RefreshLocalData();
             base.Show();
@@ -63,10 +63,10 @@ namespace TrumpTile.GameMain.UI
 
         protected override void RefreshLocalData()
         {
-            mImageIndex = PlayerDataManager.Inst.UserData.ProfileImageIndex;
-            mFrameIndex = PlayerDataManager.Inst.UserData.ProfileFrameIndex;
+            mImageIndex = PlayerDataManager.Inst.GetProfileImageIndex();
+            mFrameIndex = PlayerDataManager.Inst.GetProfileFrameIndex();
 
-            mNickName.text = PlayerDataManager.Inst.UserData.NickName;
+            mNickName.text = PlayerDataManager.Inst.GetNickname();
             mProfileImage.sprite = PlayerDataManager.Inst.GetProfileImage();
             mProfileFrame.sprite = PlayerDataManager.Inst.GetProfileFrame();
         }

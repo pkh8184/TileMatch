@@ -29,7 +29,10 @@ namespace TrumpTile.GameMain.Data
         CompletedChapterCount,
         //로그인
         MaxStreakLoginCount,
-        FirstLoginDate
+        FirstLoginDate,
+        //UID(Firebase UID 아니고 커스텀 UID임)
+        UID,
+        TermsAndConditionVersion
     }
 
     public class PlayerDataManager : Singleton_GameObject<PlayerDataManager>
@@ -41,7 +44,7 @@ namespace TrumpTile.GameMain.Data
         private List<Sprite> mProfileImageSpriteList = new List<Sprite>();
         private List<Sprite> mProfileFrameSpriteList = new List<Sprite>();
 
-        private UserData mUserData;
+        private UserData mUserData = null;
         public UserData UserData { get => mUserData; }
 
         private void Awake()
@@ -62,24 +65,132 @@ namespace TrumpTile.GameMain.Data
             //    mProfileFrameSpriteList.Add(sprite);
             //});
         }
-        public void SetProfileImageIndex(int index)
+        #region Getters
+        public (bool BGMOn,bool SFXOn,bool HapticOn) GetUserSoundSettingDatas()
         {
-            mUserData.ProfileImageIndex = index;
+            if (mUserData == null)
+            {
+                return (false, false, false);
+            }
+            return (mUserData.BGMOn, mUserData.SFXOn, mUserData.HapticOn);
         }
-        public void SetProfileFrameIndex(int index)
+        public int GetProfileImageIndex()
         {
-            mUserData.ProfileFrameIndex = index;
+            if (mUserData == null)
+            {
+                return 0;
+            }
+            return mUserData.ProfileImageIndex;
+        }
+        public int GetProfileFrameIndex()
+        {
+            if (mUserData == null)
+            {
+                return 0;
+            }
+            return mUserData.ProfileFrameIndex;
         }
         public Sprite GetProfileImage()
         {
+            if (mUserData == null)
+            {
+                return null;
+            }
             return mProfileImageSpriteList[mUserData.ProfileImageIndex];
         }
         public Sprite GetProfileFrame()
         {
+            if (mUserData == null)
+            {
+                return null;
+            }
             return mProfileFrameSpriteList[mUserData.ProfileFrameIndex];
         }
+        public string GetNickname()
+        {
+            if (mUserData == null)
+            {
+                return string.Empty;
+            }
+            return mUserData.NickName;
+        }
+        public int GetLocaleIndex()
+        {
+            if (mUserData == null)
+            {
+                return 0;
+            }
+            return mUserData.LocaleIndex;
+        }
+        #endregion
+
+        #region setters
+        public void SetProfileImageIndex(int index)
+        {
+            if (mUserData == null)
+            {
+                return;
+            }
+            mUserData.ProfileImageIndex = index;
+            PlayerPrefs.SetInt("ProfileImageIndex", index);
+        }
+        public void SetProfileFrameIndex(int index)
+        {
+            if (mUserData == null)
+            {
+                return;
+            }
+            mUserData.ProfileFrameIndex = index;
+            PlayerPrefs.SetInt("ProfileFrameIndex", index);
+        }
+        public void SetBGMOn(bool isOn)
+        {
+            if (mUserData == null)
+            {
+                return;
+            }
+            mUserData.BGMOn = isOn;
+            PlayerPrefs.SetFloat("BGMVolume", isOn ? 0.5f : 0);        
+        }
+        public void SetSFXOn(bool isOn)
+        {
+            if (mUserData == null)
+            {
+                return;
+            }
+            mUserData.SFXOn = isOn;
+            PlayerPrefs.SetFloat("SFXVolume", isOn ? 1f : 0);
+        }
+        public void SetHapticOn(bool isOn)
+        {
+            if (mUserData == null)
+            {
+                return;
+            }
+            mUserData.HapticOn = isOn;
+            PlayerPrefs.SetInt("Haptic", isOn ? 1 : 0);
+        }
+        /// <summary>
+        /// 현재 언어 설정 저장
+        /// </summary>
+        /// <param name="index">0 = ko, 1 = en, 2 = ja, 3 = zh, 4 = vi, 5 = hi, 6 = ar</param>
+        public void SetLocaleIndex(int index)
+        {
+            if (mUserData == null)
+            {
+                return;
+            }
+            mUserData.LocaleIndex = index;
+            PlayerPrefs.SetInt("LocaleIndex", index);
+        }
+        #endregion
+
         public string GetDataToString(EPlayerDataType ePlayerDataType)
         {
+            if(mUserData == null)
+            {
+                return string.Empty;
+            }
             string data = null;
             switch (ePlayerDataType)
             {
@@ -128,6 +239,12 @@ namespace TrumpTile.GameMain.Data
                 case EPlayerDataType.FirstLoginDate:
                     string date = mUserData.FirstLoginDate.ToString().Substring(0, 10);
                     data = "플레이 시작 시점 : " + date;
+                    break;
+                case EPlayerDataType.UID:
+                    data = mUserData.UID;
+                    break;
+                case EPlayerDataType.TermsAndConditionVersion:
+                    data = mUserData.TermsAndConditionVersion.ToString();
                     break;
                 default:
                     break;

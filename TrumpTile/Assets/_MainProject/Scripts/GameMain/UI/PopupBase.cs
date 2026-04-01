@@ -10,37 +10,30 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private float mShowDuration = 1f;
         [SerializeField] private float mHideDuration = 1f;
 
-        [Header("Popup 뒷배경 오브젝트")]
-        [SerializeField] private GameObject background;
-        protected override void Show()
+        [Header("Show / Hide 애니메이션을 적용할 실제 팝업창")]
+        [SerializeField] private GameObject mPopupObj;
+        public override void Show()
         {
             base.Show();
 
-            StartCoroutine(Co_PlayShowAnim());
+            PlayShowAnim();
         }
-        protected override void Hide()
+        public override void Hide()
         {
-            StartCoroutine(Co_PlayHideAnim());
+            PlayHideAnim();
         }
 
-        private IEnumerator Co_PlayShowAnim()
+        private void PlayShowAnim()
         {
-            background.SetActive(true);
+            mPopupObj.transform.localScale = Vector2.zero;
 
-            transform.localScale = Vector2.zero;
-
-            transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack);
-            yield return new WaitForSeconds(mShowDuration);
-
+            mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack);
         }
-        private IEnumerator Co_PlayHideAnim()
+        private void PlayHideAnim()
         {
-            transform.DOScale(0, mHideDuration).SetEase(Ease.InBack);
-
-            yield return new WaitForSeconds(mHideDuration);
-
-            gameObject.SetActive(false);
-            background.SetActive(false);
+            Sequence seq = DOTween.Sequence();
+            seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
+            seq.OnComplete(() => gameObject.SetActive(false));
         }
     }
 }
