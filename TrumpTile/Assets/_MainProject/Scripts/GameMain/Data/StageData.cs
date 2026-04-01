@@ -33,10 +33,9 @@ namespace TrumpTile.GameMain.Data
 		public int matchCount;           // 매칭 필요 타일 수 (기본 3)
 		public float timeLimit;          // 제한 시간 (0이면 무제한)
 
-		[Header("별 획득 조건")]
-		public int star1Score;           // 별 1개 점수
-		public int star2Score;           // 별 2개 점수
-		public int star3Score;           // 별 3개 점수
+		[Header("별 판정 설정")]
+		[Tooltip("적정 클리어 시간(초). 0이면 타일 수 기반 자동 계산")]
+		public float targetClearTime;   // 0 = 자동계산
 
 		[Header("초기 아이템")]
 		public int initialShuffleCount;  // 시작 셔플 개수

@@ -14,6 +14,7 @@ namespace TrumpTile.GameMain.Data
         public int CurrentStage;
         public bool bIsClear;
         public int EndTimeToSecond;
+        public int StarCount;      // 획득 별 개수 (1~3). Star와 다름(Star는 하우징 재화)
 
         public int Gold;
         public int Star; // 하우징 재화
