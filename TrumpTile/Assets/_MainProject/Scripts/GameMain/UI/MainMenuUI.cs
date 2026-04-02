@@ -142,7 +142,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnSettingClick()
 		{
 			Debug.Log("[MainMenuUI] Setting clicked");
-			AudioManager.Inst?.PlayButtonClick();
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 
 			// 설정 팝업 열기
 			if (mSettingPopup != null)
@@ -154,7 +154,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnMapClick()
 		{
 			Debug.Log("[MainMenuUI] Map clicked");
-			AudioManager.Inst?.PlayButtonClick();
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 
 			// 지도(하우징) 팝업 열기
 			if (mMapPopup != null)
@@ -166,7 +166,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnShopClick()
 		{
 			Debug.Log("[MainMenuUI] Shop clicked");
-			AudioManager.Inst?.PlayButtonClick();
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 
 			// 상점 팝업 열기
 			if (mShopPopup != null)
@@ -178,7 +178,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnStageClick()
 		{
 			Debug.Log("[MainMenuUI] Stage clicked");
-			AudioManager.Inst?.PlayButtonClick();
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 
 			// 스테이지 선택 팝업 또는 바로 게임 시작
 			if (mStageSelectPopup != null)
@@ -195,7 +195,7 @@ namespace TrumpTile.GameMain.UI
 		private void OnProfileClick()
 		{
 			Debug.Log("[MainMenuUI] Profile clicked");
-			AudioManager.Inst?.PlayButtonClick();
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 
 			// 프로필 팝업 열기
 			if (mProfilePopup != null)

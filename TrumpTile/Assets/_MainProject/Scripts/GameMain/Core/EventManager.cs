@@ -9,6 +9,9 @@ namespace TrumpTile.GameMain.Core
 		//Event
 		private Dictionary<string, Action<object>> mEvents = new Dictionary<string, Action<object>>();
 
+		// 타입 안전 제네릭 이벤트
+		private Dictionary<string, Delegate> mTypedEvents = new Dictionary<string, Delegate>();
+
 		#region 초기화 & OnDestroy
 
 		private void Awake()
@@ -18,6 +21,7 @@ namespace TrumpTile.GameMain.Core
 		private void OnDestroy()
 		{
 			mEvents.Clear();
+			mTypedEvents.Clear();
 		}
 
 		#endregion
@@ -57,11 +61,13 @@ namespace TrumpTile.GameMain.Core
 			mEvents.Remove(eventKey);
 		}
 
-		//이벤트 있으면 실행
-		public void ActiveEvent<T>(string eventKey, T parameter)
+		//이벤트 있으면 실행 (기존 object 기반 - 하위 호환)
+		public void ActiveEvent(string eventKey, object parameter)
 		{
 			if (mEvents.ContainsKey(eventKey) == false)
+			{
 				return;
+			}
 
 			mEvents[eventKey].Invoke(parameter);
 		}
@@ -69,7 +75,52 @@ namespace TrumpTile.GameMain.Core
 		//파라미터 없는 이벤트 실행
 		public void ActiveEvent(string eventKey)
 		{
-			ActiveEvent<object>(eventKey, null);
+			ActiveEvent(eventKey, null);
+		}
+
+		#endregion
+
+		#region 제네릭 타입 안전 Event 처리
+
+		public void AddEvent<T>(string eventKey, Action<T> action)
+		{
+			if (mTypedEvents.ContainsKey(eventKey))
+			{
+				mTypedEvents[eventKey] = Delegate.Remove(mTypedEvents[eventKey], action);
+				mTypedEvents[eventKey] = Delegate.Combine(mTypedEvents[eventKey], action);
+			}
+			else
+			{
+				mTypedEvents.Add(eventKey, action);
+			}
+		}
+
+		public void RemoveEvent<T>(string eventKey, Action<T> action)
+		{
+			if (mTypedEvents.ContainsKey(eventKey) == false)
+			{
+				return;
+			}
+
+			mTypedEvents[eventKey] = Delegate.Remove(mTypedEvents[eventKey], action);
+
+			if (mTypedEvents[eventKey] == null)
+			{
+				mTypedEvents.Remove(eventKey);
+			}
+		}
+
+		public void ActiveEvent<T>(string eventKey, T payload)
+		{
+			if (mTypedEvents.ContainsKey(eventKey) == false)
+			{
+				return;
+			}
+
+			if (mTypedEvents[eventKey] is Action<T> action)
+			{
+				action.Invoke(payload);
+			}
 		}
 
 		#endregion

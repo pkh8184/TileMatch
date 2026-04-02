@@ -37,11 +37,6 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private AnimationCurve mPopupCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 		[SerializeField] private float mStarAnimDelay = 0.2F;
 
-		[Header("Audio")]
-		[SerializeField] private AudioClip mClearSound;
-		[SerializeField] private AudioClip mGameOverSound;
-		[SerializeField] private AudioClip mStarSound;
-		[SerializeField] private AudioClip mButtonSound;
 
 		private CanvasGroup mClearCanvasGroup;
 		private CanvasGroup mGameOverCanvasGroup;
@@ -189,7 +184,7 @@ namespace TrumpTile.GameMain.Core
 		private IEnumerator ShowClearPopupCoroutine(int starCount)
 		{
 			// 사운드 재생
-			AudioManager.Inst?.PlaySFX(mClearSound);
+			AudioEvent.Play(EAudioKey.SFX_GameClear);
 
 			// 팝업 표시 애니메이션
 			mClearPopup.SetActive(true);
@@ -203,7 +198,7 @@ namespace TrumpTile.GameMain.Core
 					yield return new WaitForSeconds(mStarAnimDelay);
 					if (mStars[i] != null)
 					{
-						AudioManager.Inst?.PlaySFX(mStarSound);
+						AudioEvent.Play(EAudioKey.SFX_Star);
 						StartCoroutine(AnimateStarIn(mStars[i].transform));
 					}
 				}
@@ -222,7 +217,7 @@ namespace TrumpTile.GameMain.Core
 				mGameOverLevelText.text = $"Level {level}";
 			}
 
-			AudioManager.Inst?.PlaySFX(mGameOverSound);
+			AudioEvent.Play(EAudioKey.SFX_GameOver);
 			StartCoroutine(ShowPopupCoroutine(mGameOverPopup, mGameOverCanvasGroup));
 		}
 
@@ -329,7 +324,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnNextLevel()
 		{
-			AudioManager.Inst?.PlaySFX(mButtonSound);
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 			StartCoroutine(HideAndAction(mClearPopup, mClearCanvasGroup, () =>
 			{
 				GameManager.Instance?.NextLevel();
@@ -338,7 +333,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnRetry()
 		{
-			AudioManager.Inst?.PlaySFX(mButtonSound);
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 
 			GameObject activePopup = null;
 			CanvasGroup activeCanvasGroup = null;
@@ -371,7 +366,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnHome()
 		{
-			AudioManager.Inst?.PlaySFX(mButtonSound);
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 
 			GameObject activePopup = null;
 			CanvasGroup activeCanvasGroup = null;
@@ -404,7 +399,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnResume()
 		{
-			AudioManager.Inst?.PlaySFX(mButtonSound);
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 			StartCoroutine(HideAndAction(mPausePopup, mPauseCanvasGroup, () =>
 			{
 				Time.timeScale = 1F;
