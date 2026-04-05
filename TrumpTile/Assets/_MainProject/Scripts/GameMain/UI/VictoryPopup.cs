@@ -33,9 +33,6 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private float mAnimationDuration = 0.4F;
 		[SerializeField] private Ease mShowEase = Ease.OutBack;
 
-		[Header("Audio")]
-		[SerializeField] private AudioClip mVictorySound;
-		[SerializeField] private AudioClip mButtonSound;
 
 		private CanvasGroup mCanvasGroup;
 		private RectTransform mPanelRect;
@@ -144,14 +141,7 @@ namespace TrumpTile.GameMain.UI
 			yield return new WaitForSeconds(mShowDelay);
 
 			// 사운드
-			if (mVictorySound != null)
-			{
-				AudioManager.Inst?.PlaySFX(mVictorySound);
-			}
-			else
-			{
-				AudioManager.Inst?.PlayGameClear();
-			}
+			AudioEvent.Play(EAudioKey.SFX_GameClear);
 
 			// 텍스트 설정
 			if (mTitleText != null)
@@ -310,14 +300,7 @@ namespace TrumpTile.GameMain.UI
 
 		private void PlayButtonSound()
 		{
-			if (mButtonSound != null)
-			{
-				AudioManager.Inst?.PlaySFX(mButtonSound);
-			}
-			else
-			{
-				AudioManager.Inst?.PlayButtonClick();
-			}
+			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
 		}
 
 		/// <summary>

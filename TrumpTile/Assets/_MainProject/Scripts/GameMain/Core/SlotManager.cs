@@ -232,7 +232,7 @@ namespace TrumpTile.GameMain.Core
 
 		private IEnumerator ProcessTileAddition(TileController newTile, int insertIndex)
 		{
-			AudioManager.Inst?.PlayTileSelect();
+			AudioEvent.Play(EAudioKey.SFX_TileSelect);
 
 			if (mSlotPositions != null && insertIndex < mSlotPositions.Length && mSlotPositions[insertIndex] != null)
 			{
@@ -415,7 +415,7 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			EffectManager.Instance?.PlayMatchEffect(center, suitIndex, 1);
-			AudioManager.Inst?.PlayMatchSound(1);
+			AudioEvent.Play(EAudioKey.SFX_TileMatch);
 
 			foreach (TileController tile in matched)
 			{
@@ -496,7 +496,7 @@ namespace TrumpTile.GameMain.Core
 			BoardManager.Instance?.ReturnTileToBoard(data.tile, data.originalGridX, data.originalGridY, data.originalLayer);
 
 			RearrangeSlots();
-			AudioManager.Inst?.PlayUndo();
+			AudioEvent.Play(EAudioKey.SFX_Undo);
 
 			return true;
 		}

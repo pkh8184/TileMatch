@@ -1,422 +1,249 @@
 using TrumpTile.FrameLibrary;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace TrumpTile.GameMain.Core
 {
 	/// <summary>
-	/// BGM 및 효과음 관리
+	/// 오디오 시스템 파사드
+	/// - EventManager의 AUDIO_* 이벤트를 구독해 BGMController / SFXController에 위임
+	/// - SettingsManager에서 직접 볼륨/활성화 설정 시 접근 가능한 공개 API 유지
 	/// </summary>
 	public class AudioManager : Singleton_GameObject<AudioManager>
 	{
+		[Header("Controllers")]
+		[SerializeField] private BGMController mBgmController;
+		[SerializeField] private SFXController mSfxController;
 
-		[Header("Audio Sources")]
+		[Header("Database")]
+		[SerializeField] private AudioDatabase mAudioDatabase;
+
+		[Header("BGM AudioSource")]
 		[SerializeField] private AudioSource mBgmSource;
-		[SerializeField] private AudioSource mSfxSource;
+
+		[Header("SFX Pool")]
 		[SerializeField] private int mSfxPoolSize = 10;
 
-		[Header("BGM")]
-		[SerializeField] private AudioClip mMainMenuBGM;
-		[SerializeField] private AudioClip mGamePlayBGM;
-		[SerializeField] private float mBgmVolume = 0.5F;
-		[SerializeField] private float mBgmFadeDuration = 1F;
-
-		[Header("SFX - Tile")]
-		[SerializeField] private AudioClip mTileSelectSound;
-		[SerializeField] private AudioClip mTileMoveSound;
-		[SerializeField] private AudioClip mTileMatchSound;
-		[SerializeField] private AudioClip[] mComboSounds; // 콤보별 다른 사운드
-
-		[Header("SFX - UI")]
-		[SerializeField] private AudioClip mButtonClickSound;
-		[SerializeField] private AudioClip mPopupOpenSound;
-		[SerializeField] private AudioClip mPopupCloseSound;
-
-		[Header("SFX - Game")]
-		[SerializeField] private AudioClip mGameClearSound;
-		[SerializeField] private AudioClip mGameOverSound;
-		[SerializeField] private AudioClip mStarSound;
-		[SerializeField] private AudioClip mItemUseSound;
-		[SerializeField] private AudioClip mShuffleSound;
-		[SerializeField] private AudioClip mUndoSound;
-		[SerializeField] private AudioClip mHintSound;
-
-		[Header("SFX - Special")]
-		[SerializeField] private AudioClip mWarningSound; // 슬롯 거의 찼을 때
-		[SerializeField] private AudioClip mErrorSound;   // 잘못된 동작
-
 		[Header("Volume Settings")]
+		[SerializeField] private float mBgmVolume = 0.5F;
 		[SerializeField] private float mSfxVolume = 1F;
-		[SerializeField] private float mPitchVariation = 0.1F;
 
-		// SFX 풀
-		private List<AudioSource> mSfxPool = new List<AudioSource>();
-		private int mCurrentSfxIndex = 0;
-
-		// 볼륨 설정 키
+		// PlayerPrefs 키
 		private const string BGM_VOLUME_KEY = "BGMVolume";
 		private const string SFX_VOLUME_KEY = "SFXVolume";
-		private const string MUTE_KEY = "AudioMuted";
+		private const string BGM_ENABLED_KEY = "BGMEnabled";
+		private const string SFX_ENABLED_KEY = "SFXEnabled";
 
-		private bool mIsMuted;
 		private bool mBBgmEnabled = true;
 		private bool mBSfxEnabled = true;
-		private Coroutine mBgmFadeCoroutine;
+		private bool mBIsMuted = false;
 
-		private void Awake()
-		{
-			DontDestroyOnLoad(gameObject);
-			InitializeAudio();
-		}
-
-		private void InitializeAudio()
-		{
-			// BGM Source 설정
-			if (mBgmSource == null)
-			{
-				mBgmSource = gameObject.AddComponent<AudioSource>();
-			}
-			mBgmSource.loop = true;
-			mBgmSource.playOnAwake = false;
-
-			// SFX Source 풀 생성
-			for (int i = 0; i < mSfxPoolSize; i++)
-			{
-				AudioSource source = gameObject.AddComponent<AudioSource>();
-				source.playOnAwake = false;
-				mSfxPool.Add(source);
-			}
-
-			// 저장된 볼륨 로드
-			LoadVolumeSettings();
-		}
-
-		#region Volume Control
-
-		/// <summary>
-		/// BGM 볼륨 설정
-		/// </summary>
-		public void SetBGMVolume(float volume)
-		{
-			mBgmVolume = Mathf.Clamp01(volume);
-			if (mBgmSource != null && !mIsMuted)
-			{
-				mBgmSource.volume = mBgmVolume;
-			}
-			PlayerPrefs.SetFloat(BGM_VOLUME_KEY, mBgmVolume);
-		}
-
-		/// <summary>
-		/// SFX 볼륨 설정
-		/// </summary>
-		public void SetSFXVolume(float volume)
-		{
-			mSfxVolume = Mathf.Clamp01(volume);
-			PlayerPrefs.SetFloat(SFX_VOLUME_KEY, mSfxVolume);
-		}
-
-		/// <summary>
-		/// 음소거 토글
-		/// </summary>
-		public void ToggleMute()
-		{
-			mIsMuted = !mIsMuted;
-			PlayerPrefs.SetInt(MUTE_KEY, mIsMuted ? 1 : 0);
-
-			if (mBgmSource != null)
-			{
-				mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
-			}
-		}
-
-		public bool IsMuted => mIsMuted;
 		public bool BGMEnabled => mBBgmEnabled;
 		public bool SFXEnabled => mBSfxEnabled;
 		public float BGMVolume => mBgmVolume;
 		public float SFXVolume => mSfxVolume;
 
-		/// <summary>
-		/// BGM On/Off 설정
-		/// </summary>
-		public void SetBGMEnabled(bool bEnabled)
+		private void Awake()
 		{
-			mBBgmEnabled = bEnabled;
-			if (mBgmSource != null)
+			DontDestroyOnLoad(gameObject);
+			InitializeControllers();
+			LoadSettings();
+			SubscribeEvents();
+		}
+
+		private void OnDestroy()
+		{
+			UnsubscribeEvents();
+		}
+
+		#region 초기화
+
+		private void InitializeControllers()
+		{
+			// BGMController
+			if (mBgmController == null)
 			{
-				mBgmSource.volume = (mBBgmEnabled && !mIsMuted) ? mBgmVolume : 0F;
+				mBgmController = gameObject.AddComponent<BGMController>();
+			}
+			if (mBgmSource == null)
+			{
+				mBgmSource = gameObject.AddComponent<AudioSource>();
+			}
+			mBgmController.Initialize(mBgmSource);
+
+			// SFXController
+			if (mSfxController == null)
+			{
+				mSfxController = gameObject.AddComponent<SFXController>();
+			}
+			mSfxController.Initialize(mSfxPoolSize);
+
+			// AudioDatabase
+			if (mAudioDatabase != null)
+			{
+				mAudioDatabase.Initialize();
 			}
 		}
 
-		/// <summary>
-		/// SFX On/Off 설정
-		/// </summary>
-		public void SetSFXEnabled(bool bEnabled)
-		{
-			mBSfxEnabled = bEnabled;
-		}
-
-		private void LoadVolumeSettings()
+		private void LoadSettings()
 		{
 			mBgmVolume = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 0.5F);
 			mSfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1F);
-			mIsMuted = PlayerPrefs.GetInt(MUTE_KEY, 0) == 1;
+			mBBgmEnabled = PlayerPrefs.GetInt(BGM_ENABLED_KEY, 1) == 1;
+			mBSfxEnabled = PlayerPrefs.GetInt(SFX_ENABLED_KEY, 1) == 1;
 
-			if (mBgmSource != null)
-			{
-				mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
-			}
+			ApplySettingsToControllers();
+		}
+
+		private void ApplySettingsToControllers()
+		{
+			mBgmController.SetVolume(mBgmVolume);
+			mBgmController.SetEnabled(mBBgmEnabled);
+			mBgmController.SetMuted(mBIsMuted);
+
+			mSfxController.SetVolume(mSfxVolume);
+			mSfxController.SetEnabled(mBSfxEnabled);
+			mSfxController.SetMuted(mBIsMuted);
 		}
 
 		#endregion
 
-		#region BGM
+		#region 이벤트 구독
 
-		/// <summary>
-		/// 메인 메뉴 BGM 재생
-		/// </summary>
-		public void PlayMainMenuBGM()
+		private void SubscribeEvents()
 		{
-			PlayBGM(mMainMenuBGM);
+			EventManager.Inst.AddEvent<AudioEventPayload>(EventKeys.AUDIO_PLAY, OnAudioPlay);
+			EventManager.Inst.AddEvent<AudioEventPayload>(EventKeys.AUDIO_PAUSE, OnAudioPause);
+			EventManager.Inst.AddEvent<AudioEventPayload>(EventKeys.AUDIO_STOP, OnAudioStop);
+			EventManager.Inst.AddEvent<AudioEventPayload>(EventKeys.AUDIO_RESUME, OnAudioResume);
 		}
 
-		/// <summary>
-		/// 게임 플레이 BGM 재생
-		/// </summary>
-		public void PlayGameBGM()
+		private void UnsubscribeEvents()
 		{
-			PlayBGM(mGamePlayBGM);
-		}
-
-		/// <summary>
-		/// BGM 재생 (페이드 인)
-		/// </summary>
-		public void PlayBGM(AudioClip clip, bool bFade = true)
-		{
-			if (clip == null || mBgmSource == null) return;
-			if (!mBBgmEnabled) return;
-
-			if (mBgmSource.clip == clip && mBgmSource.isPlaying) return;
-
-			if (bFade && mBgmSource.isPlaying)
+			if (EventManager.Inst == null)
 			{
-				if (mBgmFadeCoroutine != null)
-				{
-					StopCoroutine(mBgmFadeCoroutine);
-				}
-				mBgmFadeCoroutine = StartCoroutine(CrossFadeBGM(clip));
+				return;
+			}
+			EventManager.Inst.RemoveEvent<AudioEventPayload>(EventKeys.AUDIO_PLAY, OnAudioPlay);
+			EventManager.Inst.RemoveEvent<AudioEventPayload>(EventKeys.AUDIO_PAUSE, OnAudioPause);
+			EventManager.Inst.RemoveEvent<AudioEventPayload>(EventKeys.AUDIO_STOP, OnAudioStop);
+			EventManager.Inst.RemoveEvent<AudioEventPayload>(EventKeys.AUDIO_RESUME, OnAudioResume);
+		}
+
+		private void OnAudioPlay(AudioEventPayload payload)
+		{
+			bool bIsBgm = payload.Key == EAudioKey.BGM_MainMenu || payload.Key == EAudioKey.BGM_Gameplay;
+			if (bIsBgm)
+			{
+				AudioClip clip = GetClip(payload.Key);
+				mBgmController.Play(clip);
+			}
+			else if (payload.Key == EAudioKey.SFX_Combo)
+			{
+				PlayComboSFX(payload.ComboIndex);
 			}
 			else
 			{
-				mBgmSource.clip = clip;
-				mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
-				mBgmSource.Play();
+				AudioClip clip = GetClip(payload.Key);
+				bool bRandomPitch = payload.Key == EAudioKey.SFX_TileSelect
+					|| payload.Key == EAudioKey.SFX_TileMove
+					|| payload.Key == EAudioKey.SFX_Star;
+				mSfxController.Play(clip, 1F, bRandomPitch);
 			}
 		}
 
-		private IEnumerator CrossFadeBGM(AudioClip newClip)
+		private void OnAudioPause(AudioEventPayload payload)
 		{
-			// 페이드 아웃
-			float elapsed = 0F;
-			float startVolume = mBgmSource.volume;
-
-			while (elapsed < mBgmFadeDuration / 2F)
-			{
-				elapsed += Time.deltaTime;
-				mBgmSource.volume = Mathf.Lerp(startVolume, 0F, elapsed / (mBgmFadeDuration / 2F));
-				yield return null;
-			}
-
-			// 클립 변경
-			mBgmSource.Stop();
-			mBgmSource.clip = newClip;
-			mBgmSource.Play();
-
-			// 페이드 인
-			elapsed = 0F;
-			float targetVolume = mIsMuted ? 0F : mBgmVolume;
-
-			while (elapsed < mBgmFadeDuration / 2F)
-			{
-				elapsed += Time.deltaTime;
-				mBgmSource.volume = Mathf.Lerp(0F, targetVolume, elapsed / (mBgmFadeDuration / 2F));
-				yield return null;
-			}
-
-			mBgmSource.volume = targetVolume;
+			mBgmController.Pause();
 		}
 
-		/// <summary>
-		/// BGM 정지
-		/// </summary>
-		public void StopBGM(bool bFade = true)
+		private void OnAudioStop(AudioEventPayload payload)
 		{
-			if (mBgmSource == null) return;
-
-			if (bFade)
+			bool bIsBgm = payload.Key == EAudioKey.BGM_MainMenu || payload.Key == EAudioKey.BGM_Gameplay;
+			if (bIsBgm)
 			{
-				if (mBgmFadeCoroutine != null)
-				{
-					StopCoroutine(mBgmFadeCoroutine);
-				}
-				mBgmFadeCoroutine = StartCoroutine(FadeOutBGM());
+				mBgmController.Stop();
 			}
 			else
 			{
-				mBgmSource.Stop();
+				mSfxController.StopAll();
 			}
 		}
 
-		private IEnumerator FadeOutBGM()
+		private void OnAudioResume(AudioEventPayload payload)
 		{
-			float elapsed = 0F;
-			float startVolume = mBgmSource.volume;
-
-			while (elapsed < mBgmFadeDuration)
-			{
-				elapsed += Time.deltaTime;
-				mBgmSource.volume = Mathf.Lerp(startVolume, 0F, elapsed / mBgmFadeDuration);
-				yield return null;
-			}
-
-			mBgmSource.Stop();
-			mBgmSource.volume = mIsMuted ? 0F : mBgmVolume;
-		}
-
-		/// <summary>
-		/// BGM 일시정지
-		/// </summary>
-		public void PauseBGM()
-		{
-			if (mBgmSource != null)
-			{
-				mBgmSource.Pause();
-			}
-		}
-
-		/// <summary>
-		/// BGM 재개
-		/// </summary>
-		public void ResumeBGM()
-		{
-			if (mBgmSource != null)
-			{
-				mBgmSource.UnPause();
-			}
+			mBgmController.Resume();
 		}
 
 		#endregion
 
-		#region SFX
+		#region 설정 API (SettingsManager에서 직접 호출)
 
-		/// <summary>
-		/// 효과음 재생
-		/// </summary>
-		public void PlaySFX(AudioClip clip, float volumeMultiplier = 1F, bool bRandomPitch = false)
+		public void SetBGMEnabled(bool bEnabled)
 		{
-			if (clip == null || mIsMuted || !mBSfxEnabled) return;
-
-			AudioSource source = GetAvailableSFXSource();
-			source.clip = clip;
-			source.volume = mSfxVolume * volumeMultiplier;
-
-			if (bRandomPitch)
-			{
-				source.pitch = 1F + Random.Range(-mPitchVariation, mPitchVariation);
-			}
-			else
-			{
-				source.pitch = 1F;
-			}
-
-			source.Play();
+			mBBgmEnabled = bEnabled;
+			mBgmController.SetEnabled(bEnabled);
+			PlayerPrefs.SetInt(BGM_ENABLED_KEY, bEnabled ? 1 : 0);
 		}
 
-		private AudioSource GetAvailableSFXSource()
+		public void SetSFXEnabled(bool bEnabled)
 		{
-			AudioSource source = mSfxPool[mCurrentSfxIndex];
-			mCurrentSfxIndex = (mCurrentSfxIndex + 1) % mSfxPool.Count;
-			return source;
+			mBSfxEnabled = bEnabled;
+			mSfxController.SetEnabled(bEnabled);
+			PlayerPrefs.SetInt(SFX_ENABLED_KEY, bEnabled ? 1 : 0);
 		}
 
-		// 타일 사운드
-		public void PlayTileSelect() => PlaySFX(mTileSelectSound, 1F, true);
-		public void PlayTileMove() => PlaySFX(mTileMoveSound, 0.8F, true);
-
-		/// <summary>
-		/// 매칭 사운드 (콤보에 따라 다른 사운드)
-		/// </summary>
-		public void PlayMatchSound(int comboCount = 1)
+		public void SetBGMVolume(float volume)
 		{
-			if (mComboSounds != null && mComboSounds.Length > 0)
-			{
-				int index = Mathf.Clamp(comboCount - 1, 0, mComboSounds.Length - 1);
-				PlaySFX(mComboSounds[index], 1F, false);
-			}
-			else
-			{
-				PlaySFX(mTileMatchSound, 1F, false);
-			}
+			mBgmVolume = Mathf.Clamp01(volume);
+			mBgmController.SetVolume(mBgmVolume);
+			PlayerPrefs.SetFloat(BGM_VOLUME_KEY, mBgmVolume);
 		}
 
-		// UI 사운드
-		public void PlayButtonClick() => PlaySFX(mButtonClickSound);
-		public void PlayPopupOpen() => PlaySFX(mPopupOpenSound);
-		public void PlayPopupClose() => PlaySFX(mPopupCloseSound);
+		public void SetSFXVolume(float volume)
+		{
+			mSfxVolume = Mathf.Clamp01(volume);
+			mSfxController.SetVolume(mSfxVolume);
+			PlayerPrefs.SetFloat(SFX_VOLUME_KEY, mSfxVolume);
+		}
 
-		// 게임 사운드
-		public void PlayGameClear() => PlaySFX(mGameClearSound);
-		public void PlayGameOver() => PlaySFX(mGameOverSound);
-		public void PlayStar() => PlaySFX(mStarSound, 1F, true);
-		public void PlayItemUse() => PlaySFX(mItemUseSound);
-		public void PlayShuffle() => PlaySFX(mShuffleSound);
-		public void PlayUndo() => PlaySFX(mUndoSound);
-		public void PlayHint() => PlaySFX(mHintSound);
-
-		// 특수 사운드
-		public void PlayWarning() => PlaySFX(mWarningSound);
-		public void PlayError() => PlaySFX(mErrorSound);
+		public void ToggleMute()
+		{
+			mBIsMuted = !mBIsMuted;
+			mBgmController.SetMuted(mBIsMuted);
+			mSfxController.SetMuted(mBIsMuted);
+		}
 
 		#endregion
 
-		#region Utility
+		#region 동적 클립 직접 재생 (ComboSystem 등 AudioDatabase 밖의 클립용)
 
-		/// <summary>
-		/// 연속 사운드 재생 (슬롯 채워질 때 음계)
-		/// </summary>
-		public void PlaySequentialSound(AudioClip baseClip, int index, int total)
+		public void PlaySFX(AudioClip clip, float volumeMultiplier = 1F)
 		{
-			if (baseClip == null || mIsMuted) return;
+			mSfxController.Play(clip, volumeMultiplier);
+		}
 
-			AudioSource source = GetAvailableSFXSource();
-			source.clip = baseClip;
-			source.volume = mSfxVolume;
+		#endregion
 
-			// 음계 조절 (도레미파솔라시)
-			float[] pitches = { 1F, 1.122F, 1.26F, 1.335F, 1.498F, 1.682F, 1.888F };
-			int pitchIndex = index % pitches.Length;
-			source.pitch = pitches[pitchIndex];
+		#region 내부 유틸
 
-			source.Play();
+		private AudioClip GetClip(EAudioKey key)
+		{
+			if (mAudioDatabase == null)
+			{
+				return null;
+			}
+			return mAudioDatabase.GetClip(key);
 		}
 
 		/// <summary>
-		/// 모든 사운드 정지
+		/// 콤보 인덱스에 맞는 SFX 재생
+		/// AudioDatabase에서 SFX_Combo 클립을 가져오되,
+		/// 콤보별 다른 클립이 필요하면 EAudioKey를 확장하거나 AudioDatabase에 별도 항목 추가
 		/// </summary>
-		public void StopAllSounds()
+		private void PlayComboSFX(int comboIndex)
 		{
-			if (mBgmSource != null)
-			{
-				mBgmSource.Stop();
-			}
-
-			foreach (AudioSource source in mSfxPool)
-			{
-				if (source != null)
-				{
-					source.Stop();
-				}
-			}
+			AudioClip clip = GetClip(EAudioKey.SFX_Combo);
+			mSfxController.Play(clip);
 		}
 
 		#endregion
