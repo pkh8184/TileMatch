@@ -28,7 +28,7 @@ namespace TrumpTile.GameMain.UI
                 return;
             }
 
-           // mPurchasePopup?.Show();
+           mPurchasePopup?.Show();
         }
 
         /// <summary>

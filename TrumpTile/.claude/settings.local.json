@@ -9,7 +9,9 @@
       "Bash(git checkout:*)",
       "Bash(git push:*)",
       "Bash(git commit:*)",
-      "Bash(grep -E \"\\\\.\\(asset|json|csv\\)$\")"
+      "Bash(grep -E \"\\\\.\\(asset|json|csv\\)$\")",
+      "Bash(grep -r \"guid\" Assets/AddressableAssetsData/DataBuilders/*.meta)",
+      "Bash(xargs grep:*)"
     ]
   }
 }
