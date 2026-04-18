@@ -246,9 +246,10 @@ namespace TrumpTile.LevelEditor.Editor
 				mCurrentLevelClone.difficulty = (ELevelDifficulty)EditorGUILayout.EnumPopup("Difficulty", mCurrentLevelClone.difficulty);
 
 				EditorGUILayout.Space(5);
-				mCurrentLevelClone.boardWidth = EditorGUILayout.IntSlider("Width", mCurrentLevelClone.boardWidth, 4, 12);
-				mCurrentLevelClone.boardHeight = EditorGUILayout.IntSlider("Height", mCurrentLevelClone.boardHeight, 4, 12);
+				mCurrentLevelClone.boardWidth = EditorGUILayout.IntSlider("Width", mCurrentLevelClone.boardWidth, 4, 8);
+				mCurrentLevelClone.boardHeight = EditorGUILayout.IntSlider("Height", mCurrentLevelClone.boardHeight, 4, 8);
 				mCurrentLevelClone.maxLayers = EditorGUILayout.IntSlider("Layers", mCurrentLevelClone.maxLayers, 1, 999);
+
 
 				EditorGUILayout.Space(5);
 				mCurrentLevelClone.slotCount = EditorGUILayout.IntSlider("Slot Count", mCurrentLevelClone.slotCount, 5, 10);
@@ -322,9 +323,17 @@ namespace TrumpTile.LevelEditor.Editor
 				return;
 			}
 
-			DrawGrid(gridArea);
-			DrawTiles(gridArea);
-			HandleGridInput(gridArea);
+			//그리드 영역 클립핑
+            GUI.BeginClip(gridArea);
+
+			//클립핑된 영역 내의 로컬 좌표계에서 실제 그리드, 타일 그리기
+            Rect localArea = new Rect(0, 0, gridArea.width, gridArea.height);
+            DrawGrid(localArea);
+            DrawTiles(localArea);
+
+            GUI.EndClip();
+
+            HandleGridInput(gridArea);
 		}
 
 		private void DrawGrid(Rect area)
@@ -332,9 +341,37 @@ namespace TrumpTile.LevelEditor.Editor
 			if (mCurrentLevelClone == null) return;
 
 			float scaledCellSize = mCellSize * mZoomLevel;
-			float gridWidth = mCurrentLevelClone.boardWidth * scaledCellSize;
-			float gridHeight = mCurrentLevelClone.boardHeight * scaledCellSize;
 
+			float gridWidth = GetGridWidthByCurrentLayer(scaledCellSize);
+			float gridHeight = GetGridHeightByCurrentLayer(scaledCellSize);
+
+            int currentLayerWidth = 0;
+            int currentLayerHeight = 0;
+
+            if (mCurrentLayer % 2 == 0)
+			{
+				currentLayerWidth = mCurrentLevelClone.boardWidth;
+				currentLayerHeight = mCurrentLevelClone.boardHeight;
+            }
+			else
+			{
+				if (mCurrentLevelClone.boardWidth < 8)
+				{
+                    currentLayerWidth = mCurrentLevelClone.boardWidth + 1;
+                }
+				else
+				{
+                    currentLayerWidth = mCurrentLevelClone.boardWidth - 1;
+                }
+				if(mCurrentLevelClone.boardHeight < 8)
+				{
+					currentLayerHeight = mCurrentLevelClone.boardHeight + 1;
+                }
+				else
+				{
+					currentLayerHeight = mCurrentLevelClone.boardHeight - 1;
+                }
+            }
 			Vector2 gridOrigin = new Vector2(
 				area.x + (area.width - gridWidth) / 2 + mPanOffset.x,
 				area.y + (area.height - gridHeight) / 2 + mPanOffset.y
@@ -344,25 +381,48 @@ namespace TrumpTile.LevelEditor.Editor
 			Rect gridBounds = new Rect(gridOrigin.x, gridOrigin.y, gridWidth, gridHeight);
 			EditorGUI.DrawRect(gridBounds, new Color(0.25F, 0.25F, 0.28F));
 
-			// 셀 그리기
-			for (int x = 0; x < mCurrentLevelClone.boardWidth; x++)
+			if (mCurrentLayer % 2 == 0)
 			{
-				for (int y = 0; y < mCurrentLevelClone.boardHeight; y++)
+				for (int x = 0; x < currentLayerWidth; x++)
 				{
-					Rect cellRect = new Rect(
-						gridOrigin.x + x * scaledCellSize + mCellPadding,
-						gridOrigin.y + (mCurrentLevelClone.boardHeight - 1 - y) * scaledCellSize + mCellPadding,
-						scaledCellSize - mCellPadding * 2,
-						scaledCellSize - mCellPadding * 2
-					);
+					for (int y = 0; y < currentLayerHeight; y++)
+					{
+						Rect cellRect = new Rect(
+							gridOrigin.x + x * scaledCellSize + mCellPadding,
+							gridOrigin.y + (currentLayerHeight - 1 - y) * scaledCellSize + mCellPadding,
+							scaledCellSize - mCellPadding * 2,
+							scaledCellSize - mCellPadding * 2
+						);
 
-					Color cellColor = (x + y) % 2 == 0 ?
-						new Color(0.3F, 0.3F, 0.33F) :
-						new Color(0.28F, 0.28F, 0.31F);
+						Color cellColor = (x + y) % 2 == 0 ?
+							new Color(0.3F, 0.3F, 0.33F) :
+							new Color(0.28F, 0.28F, 0.31F);
 
-					EditorGUI.DrawRect(cellRect, cellColor);
+						EditorGUI.DrawRect(cellRect, cellColor);
+					}
 				}
 			}
+			else
+			{
+                for (int x = 0; x < currentLayerWidth; x++)
+                {
+                    for (int y = 0; y < currentLayerHeight; y++)
+                    {
+                        Rect cellRect = new Rect(
+                            gridOrigin.x + x * scaledCellSize + mCellPadding,
+                            gridOrigin.y + (currentLayerHeight - 1 - y) * scaledCellSize + mCellPadding,
+                            scaledCellSize - mCellPadding * 2,
+                            scaledCellSize - mCellPadding * 2
+                        );
+
+                        Color cellColor = (x + y) % 2 == 0 ?
+                            new Color(0.3F, 0.3F, 0.33F) :
+                            new Color(0.28F, 0.28F, 0.31F);
+
+                        EditorGUI.DrawRect(cellRect, cellColor);
+                    }
+                }
+            }
 		}
 
 		private void DrawTiles(Rect area)
@@ -388,7 +448,7 @@ namespace TrumpTile.LevelEditor.Editor
 		{
 			if (tile == null || mCurrentLevelClone == null) return;
 
-			float layerOffset = tile.layer * 3F * mZoomLevel;
+			float layerOffset = mCurrentLayer % 2 == 0? -1 : 0;
 
 			Rect tileRect = new Rect(
 				gridOrigin.x + tile.gridX * scaledCellSize + mCellPadding + layerOffset,
@@ -398,7 +458,7 @@ namespace TrumpTile.LevelEditor.Editor
 			);
 
 			// 레이어 색상
-			Color tileColor = new Color(1, 1, 1, alpha);
+			Color tileColor = new Color(0f, 0f, 0f, alpha);
 
 			// 선택 하이라이트
 			if (mSelectedTiles != null && mSelectedTiles.Contains(tile))
@@ -455,9 +515,9 @@ namespace TrumpTile.LevelEditor.Editor
 
 			float scaledCellSize = mCellSize * mZoomLevel;
 			float gridWidth = mCurrentLevelClone.boardWidth * scaledCellSize;
-			float gridHeight = mCurrentLevelClone.boardHeight * scaledCellSize;
+            float gridHeight = mCurrentLevelClone.boardHeight * scaledCellSize;
 
-			return new Vector2(
+            return new Vector2(
 				area.x + (area.width - gridWidth) / 2 + mPanOffset.x,
 				area.y + (area.height - gridHeight) / 2 + mPanOffset.y
 			);
@@ -507,8 +567,12 @@ namespace TrumpTile.LevelEditor.Editor
 
 			int x = Mathf.FloorToInt((mousePos.x - gridOrigin.x) / scaledCellSize);
 			int y = mCurrentLevelClone.boardHeight - 1 - Mathf.FloorToInt((mousePos.y - gridOrigin.y) / scaledCellSize);
-
-			return new Vector2Int(x, y);
+            if (mCurrentLayer % 2 == 1)
+            {
+				x -= 1;
+                y -= 1;
+            }
+            return new Vector2Int(x, y);
 		}
 
 		private bool IsValidGridPosition(Vector2Int pos)
@@ -552,12 +616,51 @@ namespace TrumpTile.LevelEditor.Editor
 			return mCurrentLevelClone.tilePlacements.FirstOrDefault(t =>
 				t != null && t.gridX == pos.x && t.gridY == pos.y && t.layer == layer);
 		}
+		private float GetGridWidthByCurrentLayer(float scaledCellSize)
+		{
+			float gridWidth = 0;
+            if (mCurrentLayer % 2 == 0)
+            {
+                gridWidth = mCurrentLevelClone.boardWidth * scaledCellSize;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardWidth < 8)
+                {
+                    gridWidth = (mCurrentLevelClone.boardWidth + 1) * scaledCellSize;
+                }
+                else
+                {
+                    gridWidth = (mCurrentLevelClone.boardWidth - 1) * scaledCellSize;
+                }
+            }
+			return gridWidth;
+        }
+        private float GetGridHeightByCurrentLayer(float scaledCellSize)
+        {
+            float gridHeight = 0;
+            if (mCurrentLayer % 2 == 0)
+            {
+                gridHeight = mCurrentLevelClone.boardHeight * scaledCellSize;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardHeight < 8)
+                {
+                    gridHeight = (mCurrentLevelClone.boardHeight + 1) * scaledCellSize;
+                }
+                else
+                {
+                    gridHeight = (mCurrentLevelClone.boardHeight - 1) * scaledCellSize;
+                }
+            }
+            return gridHeight;
+        }
+        #endregion
 
-		#endregion
+        #region Right Panel
 
-		#region Right Panel
-
-		private void DrawRightPanel()
+        private void DrawRightPanel()
 		{
 			mRightPanelScrollPos = EditorGUILayout.BeginScrollView(mRightPanelScrollPos, GUILayout.Width(200), GUILayout.Height(position.height));
 
