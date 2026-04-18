@@ -8,6 +8,7 @@ namespace TrumpTile.LevelEditor
 	/// <summary>
 	/// 레벨 데이터를 저장하는 ScriptableObject
 	/// </summary>
+	[System.Serializable]
 	[CreateAssetMenu(fileName = "Level_001", menuName = "TileMatch/Level Data")]
 	public class LevelData : ScriptableObject
 	{
@@ -19,7 +20,7 @@ namespace TrumpTile.LevelEditor
 		[Header("보드 설정")]
 		public int boardWidth = 8;
 		public int boardHeight = 8;
-		public int maxLayers = 4;
+		public int maxLayers = 999;
 
 		[Header("게임 규칙")]
 		public int slotCount = 7;
@@ -114,6 +115,13 @@ namespace TrumpTile.LevelEditor
 
 			return stats;
 		}
+		public LevelData Clone()
+		{
+            LevelData clone = ScriptableObject.CreateInstance<LevelData>();
+            string json = JsonUtility.ToJson(this);
+            JsonUtility.FromJsonOverwrite(json, clone);
+            return clone;
+        }
 	}
 
 	/// <summary>
