@@ -51,6 +51,8 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private bool mEnableDebugKeys = true;
 		[SerializeField] private float mSlowMotionScale = 0.2F;
 		private bool mIsSlowMotion = false;
+		[SerializeField] private bool mEnableTimerLog = false;
+		private float mTimerLogAccumulator = 0F;
 
 		// 게임 상태
 		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
@@ -134,6 +136,18 @@ namespace TrumpTile.GameMain.Core
 			if (CurrentState == EGameState.Playing)
 			{
 				mElapsedTime += Time.deltaTime;
+
+				if (mEnableTimerLog)
+				{
+					mTimerLogAccumulator += Time.deltaTime;
+					if (mTimerLogAccumulator >= 1F)
+					{
+						mTimerLogAccumulator -= 1F;
+						int minutes = Mathf.FloorToInt(mElapsedTime / 60F);
+						int seconds = Mathf.FloorToInt(mElapsedTime % 60F);
+						Debug.Log($"[GameManager] Timer: {minutes:D2}:{seconds:D2} ({mElapsedTime:F2}s) | Target: {mTargetClearTime:F1}s");
+					}
+				}
 			}
 
 			if (mEnableDebugKeys)

@@ -217,6 +217,11 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnMouseDown()
 		{
+			if (IsTouchBlockedByUI())
+			{
+				return;
+			}
+
 			if (mIsAnimating)
 			{
 				return;
@@ -286,6 +291,11 @@ namespace TrumpTile.GameMain.Core
 				}
 			}
 			AudioEvent.Play(EAudioKey.SFX_TileSelect);
+		}
+
+		private bool IsTouchBlockedByUI()
+		{
+			return TrumpTile.GameMain.UI.PopupBase.IsAnyPopupOpen;
 		}
 
 		#endregion
