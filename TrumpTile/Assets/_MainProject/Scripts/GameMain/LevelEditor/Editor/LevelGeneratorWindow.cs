@@ -22,7 +22,7 @@ namespace TrumpTile.LevelEditor.Editor
 		// 생성 설정
 		private int mStartLevelNumber = 1;
 		private int mEndLevelNumber = 300;
-		private string mOutputFolder = "Assets/Resources/Levels";
+		private string mOutputFolder = "Assets/_MainProject/SODatas/Levels";
 		private string mLevelPrefix = "Level_";
 
 		// 보드 설정
@@ -244,7 +244,7 @@ namespace TrumpTile.LevelEditor.Editor
 			mOutputFolder = EditorGUILayout.TextField("Output Folder", mOutputFolder);
 			if (GUILayout.Button("...", GUILayout.Width(30)))
 			{
-				string path = EditorUtility.OpenFolderPanel("Select Output Folder", "Assets", "");
+				string path = EditorUtility.OpenFolderPanel("Select Output Folder", "Assets/_MainProject/SODatas/Levels", "");
 				if (!string.IsNullOrEmpty(path) && path.StartsWith(Application.dataPath))
 				{
 					mOutputFolder = "Assets" + path.Substring(Application.dataPath.Length);

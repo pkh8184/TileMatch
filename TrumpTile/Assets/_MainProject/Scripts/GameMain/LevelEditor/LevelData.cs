@@ -16,6 +16,8 @@ namespace TrumpTile.LevelEditor
 		public int levelNumber = 1;
 		public string levelName = "New Level";
 		public ELevelDifficulty difficulty = ELevelDifficulty.Normal;
+		public float stageTimeLimit = 0f;
+		public float[] StarRatingTime = new float[3];
 
 		[Header("보드 설정")]
 		public int boardWidth = 8;

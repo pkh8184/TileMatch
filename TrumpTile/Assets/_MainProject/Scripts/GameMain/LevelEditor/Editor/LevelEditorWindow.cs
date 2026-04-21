@@ -881,7 +881,7 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void CreateNewLevel()
 		{
-			string path = EditorUtility.SaveFilePanelInProject("Create New Level", "Level_001", "asset", "Save level asset");
+			string path = EditorUtility.SaveFilePanelInProject("Create New Level", "Level_", "asset", "Save level asset", "Assets/_MainProject/SODatas/Levels");
 			if (string.IsNullOrEmpty(path)) return;
 
 			mCurrentLevel = ScriptableObject.CreateInstance<LevelData>();

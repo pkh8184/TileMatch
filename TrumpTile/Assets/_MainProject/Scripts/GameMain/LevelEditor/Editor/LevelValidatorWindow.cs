@@ -25,7 +25,7 @@ namespace TrumpTile.LevelEditor.Editor
         private bool mValidateClearability = true;
         private bool mValidateBoardBounds = true;
 
-        private string mLevelFolderPath = "Assets/Resources/Levels";
+        private string mLevelFolderPath = "Assets/_MainProject/SODatas/Levels";
         private bool mIsValidating = false;
 
         // 검증 결과 통계
@@ -75,7 +75,9 @@ namespace TrumpTile.LevelEditor.Editor
                 "• 레이어/Sorting 검증\n" +
                 "• 중복 타일 검증\n" +
                 "• 클리어 가능성 검증\n" +
-                "• 레벨 이름 검증",
+                "• 레벨 이름 검증\n" +
+                "• 제한 시간 검증" +
+                "• 별점 검증",
                 MessageType.Info);
 
             EditorGUILayout.Space(5);
