@@ -6,6 +6,9 @@ namespace TrumpTile.GameMain.UI
 {
     public class PopupBase : UIBase
     {
+        private static int mOpenPopupCount = 0;
+        public static bool IsAnyPopupOpen => mOpenPopupCount > 0;
+
         [Header("Popup 켜기, 끄기 애니메이션 길이(초)")]
         [SerializeField] private float mShowDuration = 1f;
         [SerializeField] private float mHideDuration = 1f;
@@ -15,7 +18,7 @@ namespace TrumpTile.GameMain.UI
         public override void Show()
         {
             base.Show();
-
+            mOpenPopupCount++;
             PlayShowAnim();
         }
         public override void Hide()
@@ -33,7 +36,11 @@ namespace TrumpTile.GameMain.UI
         {
             Sequence seq = DOTween.Sequence();
             seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
-            seq.OnComplete(() => gameObject.SetActive(false));
+            seq.OnComplete(() =>
+            {
+                mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+                gameObject.SetActive(false);
+            });
         }
     }
 }
