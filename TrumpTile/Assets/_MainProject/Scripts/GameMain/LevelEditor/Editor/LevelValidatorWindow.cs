@@ -24,6 +24,8 @@ namespace TrumpTile.LevelEditor.Editor
         private bool mValidateDuplicateTiles = true;
         private bool mValidateClearability = true;
         private bool mValidateBoardBounds = true;
+        private bool mValidateTimeLimit = true;
+        private bool mValidateStarThresholds = true;
 
         private string mLevelFolderPath = "Assets/_MainProject/SODatas/Levels";
         private bool mIsValidating = false;
@@ -76,7 +78,7 @@ namespace TrumpTile.LevelEditor.Editor
                 "• 중복 타일 검증\n" +
                 "• 클리어 가능성 검증\n" +
                 "• 레벨 이름 검증\n" +
-                "• 제한 시간 검증" +
+                "• 제한 시간 검증\n" +
                 "• 별점 검증",
                 MessageType.Info);
 
@@ -110,6 +112,8 @@ namespace TrumpTile.LevelEditor.Editor
             mValidateDuplicateTiles = EditorGUILayout.Toggle("중복 타일 검증 (같은 위치+레이어)", mValidateDuplicateTiles);
             mValidateClearability = EditorGUILayout.Toggle("클리어 가능성 검증", mValidateClearability);
             mValidateBoardBounds = EditorGUILayout.Toggle("보드 범위 검증", mValidateBoardBounds);
+            mValidateTimeLimit = EditorGUILayout.Toggle("제한 시간 검증 (10초 이상인지)", mValidateTimeLimit);
+            mValidateStarThresholds = EditorGUILayout.Toggle("별점 기준 검증", mValidateStarThresholds);
 
             EditorGUILayout.EndVertical();
         }
@@ -416,6 +420,16 @@ namespace TrumpTile.LevelEditor.Editor
             {
                 ValidateBoardBounds(level, result);
             }
+            // 8. 제한 시간 검증 (0 이상)
+            if(mValidateTimeLimit)
+            {
+                ValidateTimeLimit(level, result);
+            }
+            // 9. 별점 기준 검증
+            if (mValidateStarThresholds)
+            {
+                ValidateStarThreshold(level, result);
+            }
 
             // 최종 상태 결정
             if (result.issues.Any(i => i.severity == EIssueSeverity.Error))
@@ -654,7 +668,51 @@ namespace TrumpTile.LevelEditor.Editor
                 });
             }
         }
-
+        private void ValidateTimeLimit(LevelData level, ValidationResult result)
+        {
+            if(level.levelTimeLimit < 10f)
+            {
+                result.issues.Add(new ValidationIssue
+                {
+                    severity = EIssueSeverity.Error,
+                    category = "TimeLimit",
+                    message = $"제한 시간이 너무 짧습니다! 현재: {level.levelTimeLimit}초 (10초 이상 권장)"
+                });
+            }
+        }
+        private void ValidateStarThreshold(LevelData level, ValidationResult result)
+        {
+            if (level.starThreshold[0] == level.starThreshold[1])
+            {
+                result.issues.Add(new ValidationIssue
+                {
+                    severity = EIssueSeverity.Error,
+                    category = "StarThreshold",
+                    message = $"별 3점과 2점 임계값이 같습니다! (3점 > 2점 이어야 함)"
+                });
+            }
+            for (int i = 0; i < level.starThreshold.Length; i++)
+            {
+                if (level.starThreshold[i] <= 0)
+                {
+                    result.issues.Add(new ValidationIssue
+                    {
+                        severity = EIssueSeverity.Error,
+                        category = "StarThreshold",
+                        message = $"별 {3 - i}점 임계값이 잘못 설정되어 있습니다! 현재: {level.starThreshold[i]} (0보다 큰 값 권장)"
+                    });
+                }
+                if (level.starThreshold[i] >= level.levelTimeLimit)
+                {
+                    result.issues.Add(new ValidationIssue
+                    {
+                        severity = EIssueSeverity.Error,
+                        category = "StarThreshold",
+                        message = $"별 {3 - i}점 임계값이 제한 시간보다 크거나 같습니다! 현재: {level.starThreshold[i]}, 제한 시간: {level.levelTimeLimit}"
+                    });
+                }
+            }
+        }
         #endregion
 
         #region Utility Methods

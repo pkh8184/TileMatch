@@ -264,23 +264,23 @@ namespace TrumpTile.LevelEditor.Editor
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Width", GUILayout.Width(60));
-			mMinBoardWidth = EditorGUILayout.IntSlider(mMinBoardWidth, 4, 10);
+			mMinBoardWidth = EditorGUILayout.IntSlider(mMinBoardWidth, 4, 8);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			mMaxBoardWidth = EditorGUILayout.IntSlider(mMaxBoardWidth, 4, 12);
+			mMaxBoardWidth = EditorGUILayout.IntSlider(mMaxBoardWidth, 4, 8);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Height", GUILayout.Width(60));
-			mMinBoardHeight = EditorGUILayout.IntSlider(mMinBoardHeight, 4, 10);
+			mMinBoardHeight = EditorGUILayout.IntSlider(mMinBoardHeight, 4, 8);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			mMaxBoardHeight = EditorGUILayout.IntSlider(mMaxBoardHeight, 4, 12);
+			mMaxBoardHeight = EditorGUILayout.IntSlider(mMaxBoardHeight, 4, 8);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Layers", GUILayout.Width(60));
-			mMinLayers = EditorGUILayout.IntSlider(mMinLayers, 1, 3);
+			mMinLayers = EditorGUILayout.IntSlider(mMinLayers, 1, 7);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			mMaxLayers = EditorGUILayout.IntSlider(mMaxLayers, 1, 5);
+			mMaxLayers = EditorGUILayout.IntSlider(mMaxLayers, 1, 7);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.EndVertical();
@@ -398,7 +398,7 @@ namespace TrumpTile.LevelEditor.Editor
 			GUI.backgroundColor = Color.white;
 
 			EditorGUILayout.BeginHorizontal();
-			if (GUILayout.Button("Generate Single Level"))
+			if (GUILayout.Button("Generate Single Level By Preview"))
 			{
 				GenerateSingleLevel(mPreviewLevel);
 			}
@@ -449,7 +449,7 @@ namespace TrumpTile.LevelEditor.Editor
 			level.maxLayers = stats.layers;
 			level.slotCount = 7;
 			level.matchCount = mMatchCount;
-			level.targetScore = CalculateTargetScore(stats);
+			//level.targetScore = CalculateTargetScore(stats);
 
 			// 패턴 생성
 			if (mUseSymmetricPatterns)
@@ -477,8 +477,8 @@ namespace TrumpTile.LevelEditor.Editor
 			level.initialHintCount = stats.hintCount;
 
 			// 시간 제한
-			if (mEnableTimeLimit)
-				level.timeLimit = stats.timeLimit;
+			//if (mEnableTimeLimit)
+				//level.timeLimit = stats.timeLimit;
 
 			// 저장
 			string path = $"{mOutputFolder}/{mLevelPrefix}{levelNumber:D3}.asset";

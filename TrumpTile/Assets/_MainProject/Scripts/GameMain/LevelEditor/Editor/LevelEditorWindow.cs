@@ -254,8 +254,13 @@ namespace TrumpTile.LevelEditor.Editor
 				EditorGUILayout.Space(5);
 				mCurrentLevelClone.slotCount = EditorGUILayout.IntSlider("Slot Count", mCurrentLevelClone.slotCount, 5, 10);
 				mCurrentLevelClone.matchCount = EditorGUILayout.IntSlider("Match Count", mCurrentLevelClone.matchCount, 3, 4);
+                mCurrentLevelClone.levelTimeLimit = EditorGUILayout.FloatField("Time Limit", mCurrentLevelClone.levelTimeLimit);
+                for (int i = 0; i < mCurrentLevelClone.starThreshold.Length; i++)
+                {
+                    mCurrentLevelClone.starThreshold[i] = EditorGUILayout.FloatField($"Star {3 - i} Time", mCurrentLevelClone.starThreshold[i]);
+                }
 
-			}
+            }
 			else
 			{
 				EditorGUILayout.HelpBox("No level loaded.", MessageType.Info);
@@ -275,15 +280,15 @@ namespace TrumpTile.LevelEditor.Editor
 
 			EditorGUILayout.BeginVertical("box");
 
-			int totalTiles = mCurrentLevelClone.tilePlacements != null ? mCurrentLevelClone.tilePlacements.Count : 0;
+			int totalTiles = mCurrentLevelClone.layerList != null ? mCurrentLevelClone.GetTileCount() : 0;
 			EditorGUILayout.LabelField("Total Tiles:", totalTiles.ToString());
 
 			// 레이어별 타일 수
-			if (mCurrentLevelClone.tilePlacements != null)
+			if (mCurrentLevelClone.layerList != null)
 			{
 				for (int i = 0; i < mCurrentLevelClone.maxLayers; i++)
 				{
-					int count = mCurrentLevelClone.tilePlacements.Count(t => t != null && t.layer == i);
+					int count = mCurrentLevelClone.layerList[i].tilePlacementList.Count;
 					EditorGUILayout.LabelField($"  Layer {i}:", count.ToString());
 				}
 			}

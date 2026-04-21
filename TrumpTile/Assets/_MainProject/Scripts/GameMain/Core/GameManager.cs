@@ -84,6 +84,9 @@ namespace TrumpTile.GameMain.Core
 		// 아이템 사용 중 플래그
 		private bool mIsItemInProgress = false;
 
+		// 클리어 시간에 따른 별 임계값
+		private float[] mStarThreshold = new float[2];
+
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
 		public event System.Action<int> OnComboChanged;
@@ -225,9 +228,11 @@ namespace TrumpTile.GameMain.Core
 
 			// 타이머 초기화
 			mElapsedTime = 0F;
-			mTargetClearTime = mStarConfig != null
-				? mTotalTileCount * mStarConfig.TileTimeCoefficient
-				: mTotalTileCount * 2.0F;
+			mTargetClearTime = levelData.levelTimeLimit;
+			mStarThreshold = levelData.starThreshold;
+			//mTargetClearTime = mStarConfig != null
+			//	? mTotalTileCount * mStarConfig.TileTimeCoefficient
+			//	: mTotalTileCount * 2.0F;
 
 			Debug.Log($"[GameManager] TargetClearTime: {mTargetClearTime}s (tiles: {mTotalTileCount})");
 
@@ -421,11 +426,11 @@ namespace TrumpTile.GameMain.Core
 				return 1;
 			}
 
-			if (mElapsedTime <= mTargetClearTime)
+			if (mTargetClearTime - mElapsedTime >= mStarThreshold[0])
 			{
 				return 3;
 			}
-			else if (mElapsedTime <= mTargetClearTime * mStarConfig.Star2TimeRatio)
+			else if (mTargetClearTime - mElapsedTime >= mStarThreshold[1])
 			{
 				return 2;
 			}

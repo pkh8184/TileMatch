@@ -5,10 +5,15 @@ using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.LevelEditor
 {
-	/// <summary>
-	/// 레벨 데이터를 저장하는 ScriptableObject
-	/// </summary>
-	[System.Serializable]
+	[Serializable]
+	public class LayerDataWrapper
+	{
+		public List<TilePlacement> tilePlacementList = new List<TilePlacement>();
+    }
+    /// <summary>
+    /// 레벨 데이터를 저장하는 ScriptableObject
+    /// </summary>
+    [System.Serializable]
 	[CreateAssetMenu(fileName = "Level_001", menuName = "TileMatch/Level Data")]
 	public class LevelData : ScriptableObject
 	{
@@ -16,8 +21,7 @@ namespace TrumpTile.LevelEditor
 		public int levelNumber = 1;
 		public string levelName = "New Level";
 		public ELevelDifficulty difficulty = ELevelDifficulty.Normal;
-		public float stageTimeLimit = 0f;
-		public float[] StarRatingTime = new float[3];
+
 
 		[Header("보드 설정")]
 		public int boardWidth = 8;
@@ -27,10 +31,13 @@ namespace TrumpTile.LevelEditor
 		[Header("게임 규칙")]
 		public int slotCount = 7;
 		public int matchCount = 3;
-		public float timeLimit = 0; // 0 = 무제한
-		public int targetScore = 1000;
+        public float levelTimeLimit = 0f;
+        public float[] starThreshold = new float[2];
+        //public float timeLimit = 0; // 0 = 무제한
+        //public int targetScore = 1000;
 
-		[Header("타일 배치 데이터")]
+        [Header("타일 배치 데이터")]
+		public List<LayerDataWrapper> layerList = new List<LayerDataWrapper>();
 		public List<TilePlacement> tilePlacements = new();
 
 		[Header("사용 가능한 타일 타입")]
@@ -124,7 +131,16 @@ namespace TrumpTile.LevelEditor
             JsonUtility.FromJsonOverwrite(json, clone);
             return clone;
         }
-	}
+		public int GetTileCount()
+		{
+			int count = 0;
+			foreach (LayerDataWrapper layerWrapper in layerList)
+			{
+				count += layerWrapper.tilePlacementList.Count;
+			}
+			return count;
+		}
+    }
 
 	/// <summary>
 	/// 레벨 난이도
