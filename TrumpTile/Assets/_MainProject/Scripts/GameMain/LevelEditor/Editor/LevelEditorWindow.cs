@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor;
+using System.Runtime.CompilerServices;
 
 namespace TrumpTile.LevelEditor.Editor
 {
@@ -13,7 +14,7 @@ namespace TrumpTile.LevelEditor.Editor
 	public class LevelSnapshot
 	{
 		public string actionName;
-		public List<TilePlacement> tilePlacements = new List<TilePlacement>();
+		public List<LayerDataWrapper> layerListState;
 	}
 
 	public class LevelEditorWindow : EditorWindow
@@ -60,18 +61,19 @@ namespace TrumpTile.LevelEditor.Editor
 		// 타일 프리셋
 		private List<TileTypeConfig> mTileTypePresets;
 
-		// 색상
-		//private static readonly Color[] LayerColors = new Color[]
-		//{
-		//	new Color(0.2F, 0.6F, 1F, 1F),
-		//	new Color(0.2F, 0.8F, 0.4F, 1F),
-		//	new Color(1F, 0.8F, 0.2F, 1F),
-		//	new Color(1F, 0.4F, 0.4F, 1F),
-		//	new Color(0.8F, 0.4F, 1F, 1F),
-		//};
+        private List<int> indexListForBoardSizeUpdate = new List<int>();
+        // 색상
+        //private static readonly Color[] LayerColors = new Color[]
+        //{
+        //	new Color(0.2F, 0.6F, 1F, 1F),
+        //	new Color(0.2F, 0.8F, 0.4F, 1F),
+        //	new Color(1F, 0.8F, 0.2F, 1F),
+        //	new Color(1F, 0.4F, 0.4F, 1F),
+        //	new Color(0.8F, 0.4F, 1F, 1F),
+        //};
 
-		// 오른쪽 패널(타일 카테고리) 스크롤 위치
-		private Vector2 mRightPanelScrollPos;
+        // 오른쪽 패널(타일 카테고리) 스크롤 위치
+        private Vector2 mRightPanelScrollPos;
 
 		[MenuItem("Tools/Tile Match/Level Editor %#l")]
 		public static void OpenWindow()
@@ -190,13 +192,15 @@ namespace TrumpTile.LevelEditor.Editor
 
 			// 레이어 선택
 			GUILayout.Label("Layer:", GUILayout.Width(40));
-			int maxLayers = mCurrentLevelClone != null ? Mathf.Min(mCurrentLevelClone.maxLayers, 999) : 4;
-			for (int i = 0; i < maxLayers; i++)
+			if(mCurrentLevelClone != null && mCurrentLevelClone.layerList != null)
 			{
-				GUI.backgroundColor = mCurrentLayer == i ? Color.green : Color.white;
-				if (GUILayout.Button(i.ToString(), EditorStyles.toolbarButton, GUILayout.Width(25)))
-					mCurrentLayer = i;
-			}
+                for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
+                {
+                    GUI.backgroundColor = mCurrentLayer == i ? Color.green : Color.white;
+                    if (GUILayout.Button(i.ToString(), EditorStyles.toolbarButton, GUILayout.Width(25)))
+                        mCurrentLayer = i;
+                }
+            }
 			GUI.backgroundColor = Color.white;
 
             EditorGUILayout.LabelField("비고 : Layer 0 = 최하단, 오름차순");
@@ -246,12 +250,61 @@ namespace TrumpTile.LevelEditor.Editor
 				mCurrentLevelClone.difficulty = (ELevelDifficulty)EditorGUILayout.EnumPopup("Difficulty", mCurrentLevelClone.difficulty);
 
 				EditorGUILayout.Space(5);
-				mCurrentLevelClone.boardWidth = EditorGUILayout.IntSlider("Width", mCurrentLevelClone.boardWidth, 4, 8);
-				mCurrentLevelClone.boardHeight = EditorGUILayout.IntSlider("Height", mCurrentLevelClone.boardHeight, 4, 8);
-				mCurrentLevelClone.maxLayers = EditorGUILayout.IntSlider("Layers", mCurrentLevelClone.maxLayers, 1, 999);
+                EditorGUI.BeginChangeCheck();
+                mCurrentLevelClone.boardWidth = EditorGUILayout.IntSlider("Width", mCurrentLevelClone.boardWidth, 4, 8);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    for(int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
+					{
+						for(int j = 0; j < mCurrentLevelClone.layerList[i].tilePlacementList.Count; j++)
+						{
+							if(mCurrentLevelClone.layerList[i].tilePlacementList[j].gridX > GetMaxGridXIndexByLayer(i))
+							{
+								indexListForBoardSizeUpdate.Add(j);
+							}
+						}
+						for(int j = indexListForBoardSizeUpdate.Count - 1; j >= 0; j--)
+						{
+							mCurrentLevelClone.layerList[i].tilePlacementList.RemoveAt(indexListForBoardSizeUpdate[j]);
+                        }
+						indexListForBoardSizeUpdate.Clear();
+                    }
+				}
+
+				EditorGUI.BeginChangeCheck();
+                mCurrentLevelClone.boardHeight = EditorGUILayout.IntSlider("Height", mCurrentLevelClone.boardHeight, 4, 8);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
+                    {
+                        for (int j = 0; j < mCurrentLevelClone.layerList[i].tilePlacementList.Count; j++)
+                        {
+                            if (mCurrentLevelClone.layerList[i].tilePlacementList[j].gridY > GetMaxGridYIndexByLayer(i))
+                            {
+                                indexListForBoardSizeUpdate.Add(j);
+                            }
+                        }
+                        for (int j = indexListForBoardSizeUpdate.Count - 1; j >= 0; j--)
+                        {
+                            mCurrentLevelClone.layerList[i].tilePlacementList.RemoveAt(indexListForBoardSizeUpdate[j]);
+                        }
+                        indexListForBoardSizeUpdate.Clear();
+                    }
+                }
+
+                EditorGUI.BeginChangeCheck();
+                mCurrentLevelClone.maxLayers = EditorGUILayout.IntSlider("Layers", mCurrentLevelClone.maxLayers, 1, 999);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    while (mCurrentLevelClone.layerList.Count > mCurrentLevelClone.maxLayers)
+                        mCurrentLevelClone.layerList.RemoveAt(mCurrentLevelClone.layerList.Count - 1);
+
+                    while (mCurrentLevelClone.layerList.Count < mCurrentLevelClone.maxLayers)
+                        mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
+                }
 
 
-				EditorGUILayout.Space(5);
+                EditorGUILayout.Space(5);
 				mCurrentLevelClone.slotCount = EditorGUILayout.IntSlider("Slot Count", mCurrentLevelClone.slotCount, 5, 10);
 				mCurrentLevelClone.matchCount = EditorGUILayout.IntSlider("Match Count", mCurrentLevelClone.matchCount, 3, 4);
                 mCurrentLevelClone.levelTimeLimit = EditorGUILayout.FloatField("Time Limit", mCurrentLevelClone.levelTimeLimit);
@@ -286,8 +339,9 @@ namespace TrumpTile.LevelEditor.Editor
 			// 레이어별 타일 수
 			if (mCurrentLevelClone.layerList != null)
 			{
-				for (int i = 0; i < mCurrentLevelClone.maxLayers; i++)
+				for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
 				{
+					if(mCurrentLevelClone.layerList[i].tilePlacementList == null) continue;
 					int count = mCurrentLevelClone.layerList[i].tilePlacementList.Count;
 					EditorGUILayout.LabelField($"  Layer {i}:", count.ToString());
 				}
@@ -347,8 +401,8 @@ namespace TrumpTile.LevelEditor.Editor
 
 			float scaledCellSize = mCellSize * mZoomLevel;
 
-			float gridWidth = GetGridWidthByCurrentLayer(scaledCellSize);
-			float gridHeight = GetGridHeightByCurrentLayer(scaledCellSize);
+			float gridWidth = GetGridWidthByLayer(scaledCellSize, mCurrentLayer);
+			float gridHeight = GetGridHeightByLayer(scaledCellSize, mCurrentLayer);
 
             int currentLayerWidth = 0;
             int currentLayerHeight = 0;
@@ -432,32 +486,51 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void DrawTiles(Rect area)
 		{
-			if (mCurrentLevelClone == null || mCurrentLevelClone.tilePlacements == null) return;
+			//레이어별로 타일 그려주기
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
 
 			float scaledCellSize = mCellSize * mZoomLevel;
-			Vector2 gridOrigin = GetGridOrigin(area);
 
-			foreach (TilePlacement tile in mCurrentLevelClone.tilePlacements)
+			for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
 			{
-				if (tile == null) continue;
+				if (mCurrentLevelClone.layerList[i] == null) continue;
+				if (mCurrentLevelClone.layerList[i].tilePlacementList == null) continue;
 
-				if (!mShowAllLayers && tile.layer != mCurrentLayer)
-					continue;
+				float alpha = (mShowAllLayers && i != mCurrentLayer) ? mLayerOpacity : 1F;
 
-				float alpha = (mShowAllLayers && tile.layer != mCurrentLayer) ? mLayerOpacity : 1F;
-				DrawTile(tile, gridOrigin, scaledCellSize, alpha);
+				Vector2 gridOrigin = GetGridOrigin(area, i);
+
+                foreach (TilePlacement tile in mCurrentLevelClone.layerList[i].tilePlacementList)
+				{
+					DrawTile(tile, gridOrigin, scaledCellSize, alpha, i);
+				}
 			}
+			//foreach (TilePlacement tile in mCurrentLevelClone.tilePlacements)
+			//{
+			//	if (tile == null) continue;
+
+			//	if (!mShowAllLayers && tile.layer != mCurrentLayer)
+			//		continue;
+
+			//             Vector2 gridOrigin = GetGridOrigin(area, tile.layer);
+
+			//             float alpha = (mShowAllLayers && tile.layer != mCurrentLayer) ? mLayerOpacity : 1F;
+			//	DrawTile(tile, gridOrigin, scaledCellSize, alpha);
+			//}
 		}
 
-		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, float alpha)
+		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, float alpha, int layer)
 		{
 			if (tile == null || mCurrentLevelClone == null) return;
 
-			float layerOffset = mCurrentLayer % 2 == 0? -1 : 0;
+            int layerHeight = layer % 2 == 0
+							? mCurrentLevelClone.boardHeight
+							: (mCurrentLevelClone.boardHeight < 8 ? mCurrentLevelClone.boardHeight + 1 : mCurrentLevelClone.boardHeight - 1);
 
-			Rect tileRect = new Rect(
-				gridOrigin.x + tile.gridX * scaledCellSize + mCellPadding + layerOffset,
-				gridOrigin.y + (mCurrentLevelClone.boardHeight - 1 - tile.gridY) * scaledCellSize + mCellPadding - layerOffset,
+
+            Rect tileRect = new Rect(
+				gridOrigin.x + tile.gridX * scaledCellSize + mCellPadding,
+                gridOrigin.y + (layerHeight - 1 - tile.gridY) * scaledCellSize + mCellPadding,
 				scaledCellSize - mCellPadding * 2,
 				scaledCellSize - mCellPadding * 2
 			);
@@ -514,13 +587,13 @@ namespace TrumpTile.LevelEditor.Editor
 			return $"{r}\n{s}";
 		}
 
-		private Vector2 GetGridOrigin(Rect area)
+		private Vector2 GetGridOrigin(Rect area, int layer = 0)
 		{
 			if (mCurrentLevelClone == null) return Vector2.zero;
 
 			float scaledCellSize = mCellSize * mZoomLevel;
-			float gridWidth = mCurrentLevelClone.boardWidth * scaledCellSize;
-            float gridHeight = mCurrentLevelClone.boardHeight * scaledCellSize;
+			float gridWidth = GetGridWidthByLayer(scaledCellSize, layer);
+            float gridHeight = GetGridHeightByLayer(scaledCellSize, layer);
 
             return new Vector2(
 				area.x + (area.width - gridWidth) / 2 + mPanOffset.x,
@@ -535,7 +608,7 @@ namespace TrumpTile.LevelEditor.Editor
 
 			if (!area.Contains(e.mousePosition)) return;
 
-			Vector2Int gridPos = GetGridPosition(e.mousePosition, area);
+			Vector2 gridPos = GetGridPosition(e.mousePosition, area);
 
 			if (e.type == EventType.MouseDown && e.button == 0)
 			{
@@ -563,31 +636,27 @@ namespace TrumpTile.LevelEditor.Editor
 			}
 		}
 
-		private Vector2Int GetGridPosition(Vector2 mousePos, Rect area)
+		private Vector2 GetGridPosition(Vector2 mousePos, Rect area)
 		{
-			if (mCurrentLevelClone == null) return Vector2Int.zero;
+			if (mCurrentLevelClone == null) return Vector2.zero;
 
-			Vector2 gridOrigin = GetGridOrigin(area);
+			Vector2 gridOrigin = GetGridOrigin(area, mCurrentLayer);
 			float scaledCellSize = mCellSize * mZoomLevel;
 
-			int x = Mathf.FloorToInt((mousePos.x - gridOrigin.x) / scaledCellSize);
-			int y = mCurrentLevelClone.boardHeight - 1 - Mathf.FloorToInt((mousePos.y - gridOrigin.y) / scaledCellSize);
-            if (mCurrentLayer % 2 == 1)
-            {
-				x -= 1;
-                y -= 1;
-            }
-            return new Vector2Int(x, y);
+			float x = Mathf.FloorToInt((mousePos.x - gridOrigin.x) / scaledCellSize);
+			float y = Mathf.FloorToInt((GetGridHeightByLayer(scaledCellSize, mCurrentLayer) + gridOrigin.y - mousePos.y) / scaledCellSize);
+
+            return new Vector2(x, y);
 		}
 
-		private bool IsValidGridPosition(Vector2Int pos)
+		private bool IsValidGridPosition(Vector2 pos)
 		{
 			return mCurrentLevelClone != null &&
-				   pos.x >= 0 && pos.x < mCurrentLevelClone.boardWidth &&
-				   pos.y >= 0 && pos.y < mCurrentLevelClone.boardHeight;
+				   pos.x >= 0 && pos.x <= GetMaxGridXIndexByLayer(mCurrentLayer) &&
+				   pos.y >= 0 && pos.y <= GetMaxGridYIndexByLayer(mCurrentLayer);
 		}
 
-		private void HandleLeftClick(Vector2Int gridPos)
+		private void HandleLeftClick(Vector2 gridPos)
 		{
 			if (!IsValidGridPosition(gridPos)) return;
 
@@ -615,16 +684,17 @@ namespace TrumpTile.LevelEditor.Editor
 			Repaint();
 		}
 
-		private TilePlacement GetTileAt(Vector2Int pos, int layer)
+		private TilePlacement GetTileAt(Vector2 pos, int layer)
 		{
-			if (mCurrentLevelClone == null || mCurrentLevelClone.tilePlacements == null) return null;
-			return mCurrentLevelClone.tilePlacements.FirstOrDefault(t =>
-				t != null && t.gridX == pos.x && t.gridY == pos.y && t.layer == layer);
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return null;
+			if (mCurrentLevelClone.layerList[layer] == null || mCurrentLevelClone.layerList[layer].tilePlacementList == null) return null;
+			return mCurrentLevelClone.layerList[layer].tilePlacementList.FirstOrDefault(t =>
+				t != null && t.gridX == pos.x && t.gridY == pos.y);
 		}
-		private float GetGridWidthByCurrentLayer(float scaledCellSize)
+		private float GetGridWidthByLayer(float scaledCellSize, int layer = 0)
 		{
 			float gridWidth = 0;
-            if (mCurrentLayer % 2 == 0)
+            if (layer % 2 == 0)
             {
                 gridWidth = mCurrentLevelClone.boardWidth * scaledCellSize;
             }
@@ -641,10 +711,10 @@ namespace TrumpTile.LevelEditor.Editor
             }
 			return gridWidth;
         }
-        private float GetGridHeightByCurrentLayer(float scaledCellSize)
+        private float GetGridHeightByLayer(float scaledCellSize, int layer = 0)
         {
             float gridHeight = 0;
-            if (mCurrentLayer % 2 == 0)
+            if (layer % 2 == 0)
             {
                 gridHeight = mCurrentLevelClone.boardHeight * scaledCellSize;
             }
@@ -660,6 +730,42 @@ namespace TrumpTile.LevelEditor.Editor
                 }
             }
             return gridHeight;
+        }
+		private int GetMaxGridXIndexByLayer(int layer = 0)
+		{
+			if(layer % 2 ==0)
+			{
+				return mCurrentLevelClone.boardWidth - 1;
+            }
+			else
+			{
+				if (mCurrentLevelClone.boardWidth < 8)
+				{
+					return mCurrentLevelClone.boardWidth;
+				}
+				else
+				{
+					return mCurrentLevelClone.boardWidth - 1;
+                }
+            }
+		}
+        private int GetMaxGridYIndexByLayer(int layer = 0)
+        {
+            if (layer % 2 == 0)
+            {
+                return mCurrentLevelClone.boardHeight - 1;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardHeight < 8)
+                {
+                    return mCurrentLevelClone.boardHeight;
+                }
+                else
+                {
+                    return mCurrentLevelClone.boardHeight - 1;
+                }
+            }
         }
         #endregion
 
@@ -792,29 +898,29 @@ namespace TrumpTile.LevelEditor.Editor
 
 		#region Tile Operations
 
-		private void PaintTile(Vector2Int gridPos)
+		private void PaintTile(Vector2 gridPos)
 		{
 			if (!IsValidGridPosition(gridPos) || string.IsNullOrEmpty(mSelectedTileType)) return;
 			if (mCurrentLevelClone == null) return;
-			if (mCurrentLevelClone.tilePlacements == null)
-				mCurrentLevelClone.tilePlacements = new List<TilePlacement>();
+			if (mCurrentLevelClone.layerList == null)
+				mCurrentLevelClone.layerList = new List<LayerDataWrapper>();
 
 			TilePlacement existing = GetTileAt(gridPos, mCurrentLayer);
 			if (existing != null)
-				mCurrentLevelClone.tilePlacements.Remove(existing);
+				mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Remove(existing);
 
-			mCurrentLevelClone.tilePlacements.Add(new TilePlacement(gridPos.x, gridPos.y, mCurrentLayer, mSelectedTileType));
+			mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Add(new TilePlacement(gridPos.x, gridPos.y, mCurrentLayer, mSelectedTileType));
 		}
 
-		private void EraseTile(Vector2Int gridPos)
+		private void EraseTile(Vector2 gridPos)
 		{
 			if (!IsValidGridPosition(gridPos)) return;
-			if (mCurrentLevelClone == null || mCurrentLevelClone.tilePlacements == null) return;
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
 
 			TilePlacement tile = GetTileAt(gridPos, mCurrentLayer);
 			if (tile != null)
 			{
-				mCurrentLevelClone.tilePlacements.Remove(tile);
+				mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Remove(tile);
 				if (mSelectedTiles != null)
 					mSelectedTiles.Remove(tile);
 			}
@@ -824,10 +930,10 @@ namespace TrumpTile.LevelEditor.Editor
 		{
 			if (mCurrentLevelClone == null) return;
 			if (mTileTypePresets == null || mTileTypePresets.Count == 0) return;
-			if (mCurrentLevelClone.tilePlacements == null)
-				mCurrentLevelClone.tilePlacements = new List<TilePlacement>();
+			if (mCurrentLevelClone.layerList == null)
+				mCurrentLevelClone.layerList = new List<LayerDataWrapper>();
 
-			mCurrentLevelClone.tilePlacements.Clear();
+			mCurrentLevelClone.layerList.Clear();
 
 			int totalCells = mCurrentLevelClone.boardWidth * mCurrentLevelClone.boardHeight * mCurrentLevelClone.maxLayers / 2;
 			totalCells = (totalCells / mCurrentLevelClone.matchCount) * mCurrentLevelClone.matchCount;
@@ -856,7 +962,7 @@ namespace TrumpTile.LevelEditor.Editor
 					for (int y = margin; y < mCurrentLevelClone.boardHeight - margin && index < tilesToPlace.Count; y++)
 					{
 						if (layer > 0 && (x + y) % 2 != 0) continue;
-						mCurrentLevelClone.tilePlacements.Add(new TilePlacement(x, y, layer, tilesToPlace[index++]));
+						mCurrentLevelClone.layerList[layer].tilePlacementList.Add(new TilePlacement(x, y, layer, tilesToPlace[index++]));
 					}
 				}
 			}
@@ -866,16 +972,20 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void ClearLayer(int layer)
 		{
-			if (mCurrentLevelClone == null || mCurrentLevelClone.tilePlacements == null) return;
-			mCurrentLevelClone.tilePlacements.RemoveAll(t => t != null && t.layer == layer);
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
+			if (layer < 0 || layer >= mCurrentLevelClone.layerList.Count) return;
+			mCurrentLevelClone.layerList[layer].tilePlacementList.Clear();
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
 			Repaint();
 		}
 
 		private void ClearAllTiles()
 		{
-			if (mCurrentLevelClone == null || mCurrentLevelClone.tilePlacements == null) return;
-			mCurrentLevelClone.tilePlacements.Clear();
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
+			foreach (var layer in mCurrentLevelClone.layerList)
+			{
+				layer.tilePlacementList.Clear();
+			}
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
 			Repaint();
 		}
@@ -891,7 +1001,7 @@ namespace TrumpTile.LevelEditor.Editor
 
 			mCurrentLevel = ScriptableObject.CreateInstance<LevelData>();
 			mCurrentLevel.levelName = System.IO.Path.GetFileNameWithoutExtension(path);
-			mCurrentLevel.tilePlacements = new List<TilePlacement>();
+			mCurrentLevel.layerList = new List<LayerDataWrapper>();
 
 			AssetDatabase.CreateAsset(mCurrentLevel, path);
 			AssetDatabase.SaveAssets();
@@ -919,6 +1029,7 @@ namespace TrumpTile.LevelEditor.Editor
 		private void SaveCurrentLevel()
 		{
 			if (mCurrentLevelClone == null) return;
+
             JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(mCurrentLevelClone), mCurrentLevel);
             EditorUtility.SetDirty(mCurrentLevel);
 			AssetDatabase.SaveAssets();
@@ -945,22 +1056,24 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void RecordUndo(string actionName)
 		{
-			if (mCurrentLevelClone == null || mCurrentLevelClone.tilePlacements == null) return;
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
 			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
 			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
 
 			LevelSnapshot snapshot = new LevelSnapshot
 			{
 				actionName = actionName,
-				tilePlacements = mCurrentLevelClone.tilePlacements.Select(t => new TilePlacement
+				layerListState = mCurrentLevelClone.layerList.Select(layer => new LayerDataWrapper
 				{
-					gridX = t.gridX,
-					gridY = t.gridY,
-					layer = t.layer,
-					tileTypeId = t.tileTypeId,
-					isLocked = t.isLocked,
-					isFrozen = t.isFrozen,
-					frozenCount = t.frozenCount
+					tilePlacementList = layer.tilePlacementList.Select(t => new TilePlacement
+					{
+						gridX = t.gridX,
+						gridY = t.gridY,
+						tileTypeId = t.tileTypeId,
+						isLocked = t.isLocked,
+						isFrozen = t.isFrozen,
+						frozenCount = t.frozenCount
+					}).ToList()
 				}).ToList()
 			};
 
@@ -979,13 +1092,13 @@ namespace TrumpTile.LevelEditor.Editor
 			// Save current state to redo
 			mRedoHistory.Add(new LevelSnapshot
 			{
-				tilePlacements = new List<TilePlacement>(mCurrentLevelClone.tilePlacements ?? new List<TilePlacement>())
+				layerListState = new List<LayerDataWrapper>(mCurrentLevelClone.layerList ?? new List<LayerDataWrapper>())
 			});
 
 			LevelSnapshot prev = mUndoHistory[mUndoHistory.Count - 1];
 			mUndoHistory.RemoveAt(mUndoHistory.Count - 1);
 
-			mCurrentLevelClone.tilePlacements = new List<TilePlacement>(prev.tilePlacements);
+			mCurrentLevelClone.layerList = new List<LayerDataWrapper>(prev.layerListState);
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
 
 			Repaint();
@@ -999,13 +1112,13 @@ namespace TrumpTile.LevelEditor.Editor
 			// Save current state to undo
 			mUndoHistory.Add(new LevelSnapshot
 			{
-				tilePlacements = new List<TilePlacement>(mCurrentLevelClone.tilePlacements ?? new List<TilePlacement>())
+				layerListState = new List<LayerDataWrapper>(mCurrentLevelClone.layerList ?? new List<LayerDataWrapper>())
 			});
 
 			LevelSnapshot next = mRedoHistory[mRedoHistory.Count - 1];
 			mRedoHistory.RemoveAt(mRedoHistory.Count - 1);
 
-			mCurrentLevelClone.tilePlacements = new List<TilePlacement>(next.tilePlacements);
+			mCurrentLevelClone.layerList = new List<LayerDataWrapper>(next.layerListState);
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
 
 			Repaint();

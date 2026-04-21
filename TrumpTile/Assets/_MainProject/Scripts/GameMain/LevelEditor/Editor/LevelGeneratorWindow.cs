@@ -658,8 +658,8 @@ namespace TrumpTile.LevelEditor.Editor
 				{
 					// 기존 타일 근처에 추가
 					TilePlacement existing = level.tilePlacements[Random.Range(0, level.tilePlacements.Count)];
-					newX = Mathf.Clamp(existing.gridX + Random.Range(-1, 2), 0, level.boardWidth - 1);
-					newY = Mathf.Clamp(existing.gridY + Random.Range(-1, 2), 0, level.boardHeight - 1);
+					newX = (int)Mathf.Clamp(existing.gridX + Random.Range(-1, 2), 0, level.boardWidth - 1);
+					newY = (int)Mathf.Clamp(existing.gridY + Random.Range(-1, 2), 0, level.boardHeight - 1);
 					newLayer = existing.layer;
 				}
 				else
@@ -695,10 +695,10 @@ namespace TrumpTile.LevelEditor.Editor
 			if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
 
 			// 실제 사용된 범위 찾기
-			int minX = level.tilePlacements.Min(t => t.gridX);
-			int maxX = level.tilePlacements.Max(t => t.gridX);
-			int minY = level.tilePlacements.Min(t => t.gridY);
-			int maxY = level.tilePlacements.Max(t => t.gridY);
+			int minX = (int)level.tilePlacements.Min(t => t.gridX);
+			int maxX = (int)level.tilePlacements.Max(t => t.gridX);
+			int minY = (int)level.tilePlacements.Min(t => t.gridY);
+			int maxY = (int)level.tilePlacements.Max(t => t.gridY);
 
 			int usedWidth = maxX - minX + 1;
 			int usedHeight = maxY - minY + 1;

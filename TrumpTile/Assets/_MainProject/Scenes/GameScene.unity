@@ -12981,12 +12981,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mCellSize: 0.6
   mOverlapThreshold: 0.8
-  mLayerOffsets:
-  - {x: 0, y: 0}
-  - {x: 0.04, y: -0.04}
-  - {x: 0.08, y: -0.08}
-  - {x: 0.12, y: -0.12}
-  - {x: 0.16, y: -0.16}
   mTilePrefab: {fileID: 5319871722632711755, guid: 36972d1aa6e854d4ebd2dc91b52d84bd, type: 3}
   mAllTileTypes:
   - {fileID: 11400000, guid: a04baefd255237c48930ecac5b74c535, type: 2}
@@ -13043,6 +13037,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9e10659ec82d028478e3eb8383aa8bbc, type: 2}
   - {fileID: 11400000, guid: 4f92173805d581d408a787e08389cfd8, type: 2}
   mEnableDebugLog: 0
+  mbCreateTileByLayerList: 0
 --- !u!4 &1966883230
 Transform:
   m_ObjectHideFlags: 0

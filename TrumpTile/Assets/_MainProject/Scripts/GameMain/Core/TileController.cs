@@ -117,11 +117,11 @@ namespace TrumpTile.GameMain.Core
 			Initialize(data, 0, 0, layer);
 		}
 
-		public void Initialize(TileData data, int x, int y, int layer)
+		public void Initialize(TileData data, float x, float y, int layer)
 		{
 			mTileData = data;
-			mGridX = x;
-			mGridY = y;
+			mGridX = (int)x;
+			mGridY = (int)y;
 			mLayerIndex = layer;
 
 			mIsSelectable = true;
