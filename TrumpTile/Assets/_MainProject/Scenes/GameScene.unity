@@ -1424,12 +1424,19 @@ MonoBehaviour:
   mComboText: {fileID: 0}
   mTimerText: {fileID: 0}
   mTimerSlider: {fileID: 0}
-  mStrikeCountText: {fileID: 499882503}
-  mBlackHoleCountText: {fileID: 1119222977}
-  mBoomCountText: {fileID: 1464297978}
-  mStrikeButton: {fileID: 1442677958}
-  mBlackHoleButton: {fileID: 1895223458}
-  mBoomButton: {fileID: 785467446}
+  mItemButtonConfigs:
+  - itemId: 1005
+    button: {fileID: 1442677958}
+    countText: {fileID: 499882503}
+  - itemId: 1006
+    button: {fileID: 1895223458}
+    countText: {fileID: 1119222977}
+  - itemId: 1007
+    button: {fileID: 785467446}
+    countText: {fileID: 1464297978}
+  - itemId: 1008
+    button: {fileID: 638106113}
+    countText: {fileID: 388239078}
   mPauseButton: {fileID: 0}
   mLevelClearPanel: {fileID: 0}
   mPausePanel: {fileID: 0}
@@ -1609,6 +1616,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 189473402}
+  - {fileID: 1831195870}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &142890672
@@ -8172,9 +8180,6 @@ MonoBehaviour:
   mStarConfig: {fileID: 11400000, guid: 87ca16f56d0a7fa4ca3be7462ddb1874, type: 2}
   mBaseMatchScore: 100
   mComboMultiplier: 50
-  mInitialStrikeCount: 3
-  mInitialBlackHoleCount: 3
-  mInitialBoomCount: 3
   mEnableDebugKeys: 1
   mSlowMotionScale: 0.2
   mEnableTimerLog: 1
@@ -12009,6 +12014,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790865452}
   m_CullTransparentMesh: 1
+--- !u!1 &1831195869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1831195870}
+  - component: {fileID: 1831195871}
+  m_Layer: 0
+  m_Name: ItemManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1831195870
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831195869}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 129958512}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1831195871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831195869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45dbd4248f6aa554daae044928168092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mItemTable: {fileID: 11400000, guid: cfaa92d582dc4524ab42cc2847988629, type: 2}
 --- !u!1 &1850608927
 GameObject:
   m_ObjectHideFlags: 0

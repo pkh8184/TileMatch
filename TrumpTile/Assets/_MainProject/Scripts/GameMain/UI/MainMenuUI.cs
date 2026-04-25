@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -95,9 +96,9 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		public void UpdateGold()
 		{
-			if (mGoldText != null && UserDataManager.Instance != null)
+			if (mGoldText != null && PlayerDataManager.Inst != null)
 			{
-				int gold = UserDataManager.Instance.Gold;
+				int gold = PlayerDataManager.Inst.Gold;
 				mGoldText.text = FormatNumber(gold);
 			}
 		}
@@ -107,9 +108,9 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		public void UpdateStageLevel()
 		{
-			if (mStageLevelText != null && UserDataManager.Instance != null)
+			if (mStageLevelText != null && PlayerDataManager.Inst != null)
 			{
-				int currentStage = UserDataManager.Instance.CurrentStage;
+				int currentStage = PlayerDataManager.Inst.CurrentStage;
 				mStageLevelText.text = $"LEVEL {currentStage}";
 			}
 		}
@@ -119,10 +120,10 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		public void UpdateProfile()
 		{
-			if (mProfileImage != null && UserDataManager.Instance != null)
+			if (mProfileImage != null && PlayerDataManager.Inst != null)
 			{
 				// 프로필 이미지 로드 (나중에 구현)
-				// Sprite profileSprite = UserDataManager.Instance.GetProfileSprite();
+				// Sprite profileSprite = PlayerDataManager.Inst.GetProfileSprite();
 				// mProfileImage.sprite = profileSprite;
 			}
 		}
@@ -213,7 +214,7 @@ namespace TrumpTile.GameMain.UI
 		/// </summary>
 		public void StartGame()
 		{
-			int currentStage = UserDataManager.Instance?.CurrentStage ?? 1;
+			int currentStage = PlayerDataManager.Inst?.CurrentStage ?? 1;
 			StartGame(currentStage);
 		}
 
@@ -225,9 +226,9 @@ namespace TrumpTile.GameMain.UI
 			Debug.Log($"[MainMenuUI] Starting game - Stage {stageLevel}");
 
 			// 스테이지 정보 저장
-			if (UserDataManager.Instance != null)
+			if (PlayerDataManager.Inst != null)
 			{
-				UserDataManager.Instance.SetSelectedStage(stageLevel);
+				PlayerDataManager.Inst.SetSelectedStage(stageLevel);
 			}
 
 			// 씬 전환 (Blur 효과)
