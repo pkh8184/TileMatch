@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -50,9 +51,9 @@ namespace TrumpTile.GameMain.UI
                 mPriceText.text = $"{mExtraSlotGoldPrice:N0}G";
             }
 
-            if (mCurrentGoldText != null && UserDataManager.Instance != null)
+            if (mCurrentGoldText != null && PlayerDataManager.Inst != null)
             {
-                mCurrentGoldText.text = $"보유 골드: {UserDataManager.Instance.Gold:N0}G";
+                mCurrentGoldText.text = $"보유 골드: {PlayerDataManager.Inst.Gold:N0}G";
             }
 
             if (mNoticeText != null)
@@ -63,8 +64,8 @@ namespace TrumpTile.GameMain.UI
 
         private void OnConfirm()
         {
-            bool bSuccess = UserDataManager.Instance != null &&
-                            UserDataManager.Instance.PurchaseExtraSlot(mExtraSlotGoldPrice);
+            bool bSuccess = PlayerDataManager.Inst != null &&
+                            PlayerDataManager.Inst.PurchaseExtraSlot(mExtraSlotGoldPrice);
 
             if (bSuccess)
             {

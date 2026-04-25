@@ -33,10 +33,8 @@ namespace TrumpTile.GameMain.Data
         public ObscuredInt Gold;
         public ObscuredInt Star;
 
-        //아이템 데이터
-        public ObscuredInt Blackhole;
-        public ObscuredInt Timer;
-        public ObscuredInt Bomb;
+        //아이템 데이터 (key: ItemId, value: 보유 개수)
+        public Dictionary<int, ObscuredInt> ItemCounts;
 
         //하우징 데이터
         public ObscuredInt CurrentHousingChapter;
@@ -66,9 +64,14 @@ namespace TrumpTile.GameMain.Data
             Star = (int)Convert.ToInt64(currencyData["star"]);
 
             Dictionary<object, object> itemData = dataDictionary["item"] as Dictionary<object, object>;
-            Blackhole = (int)Convert.ToInt64(itemData["blackhole"]);
-            Timer = (int)Convert.ToInt64(itemData["timer"]);
-            Bomb = (int)Convert.ToInt64(itemData["bomb"]);
+            ItemCounts = new Dictionary<int, ObscuredInt>();
+            foreach (KeyValuePair<object, object> pair in itemData)
+            {
+                if (int.TryParse(pair.Key.ToString(), out int itemId))
+                {
+                    ItemCounts[itemId] = (int)Convert.ToInt64(pair.Value);
+                }
+            }
 
             Dictionary<object, object> housingData = dataDictionary["housingData"] as Dictionary<object, object>;
             CurrentHousingChapter = (int)Convert.ToInt64(housingData["currentChapter"]);
