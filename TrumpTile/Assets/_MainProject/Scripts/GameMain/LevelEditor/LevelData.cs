@@ -31,8 +31,6 @@ namespace TrumpTile.LevelEditor
 		[Header("게임 규칙")]
 		public int slotCount = 7;
 		public int matchCount = 3;
-        public float levelTimeLimit = 0f;
-        public float[] starThreshold = new float[2];
         //public float timeLimit = 0; // 0 = 무제한
         //public int targetScore = 1000;
 
