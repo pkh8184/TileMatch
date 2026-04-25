@@ -1,21 +1,22 @@
 #if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System.IO;
 using TrumpTile.GameMain.Core;
+using UnityEditor;
+using UnityEngine;
+using static PlasticPipe.Server.MonitorStats;
 
 namespace TrumpTile.LevelEditor.Editor
 {
 	public class TileDataGenerator : EditorWindow
 	{
-		private string mSpriteFolderPath = "Assets/Texture/Tile";
-		private string mOutputFolderPath = "Assets/Data/TileData";
+		private string mSpriteFolderPath = "Assets/_MainProject/Textures/SweetMyHome/Icon/UI_Tile_01";
+		private string mOutputFolderPath = "Assets/_MainProject/SODatas/TileData";
 
 		// 파일명 패턴 설정
-		private string mSpadeName = "Spade";
-		private string mHeartName = "Heart";
-		private string mDiamondName = "Diamond";
-		private string mClubName = "Clover"; // 파일명이 Clover로 되어있으므로
+		private string mDesertName = "Desert";
+		private string mFruitName = "Fruit";
+		private string mInteriorName = "Interior";
+		private string mToolsName = "Tools"; // 파일명이 Clover로 되어있으므로
 
 		[MenuItem("Tools/Tile Match/Generate Tile Data")]
 		public static void OpenWindow()
@@ -32,8 +33,8 @@ namespace TrumpTile.LevelEditor.Editor
 			EditorGUILayout.Space(10);
 
 			EditorGUILayout.HelpBox(
-				"스프라이트 폴더의 이미지를 기반으로 52개의 TileData를 자동 생성합니다.\n" +
-				"파일명 형식: Tile_[무늬]_[001-013]",
+				"스프라이트 폴더의 이미지를 기반으로 TileData를 자동 생성합니다.\n" +
+				"파일명 형식: Tile_[카테고리]_[넘버]",
 				MessageType.Info);
 
 			EditorGUILayout.Space(10);
@@ -69,25 +70,25 @@ namespace TrumpTile.LevelEditor.Editor
 
 			// 파일명 설정
 			EditorGUILayout.LabelField("📝 File Name Patterns", EditorStyles.boldLabel);
-			mSpadeName = EditorGUILayout.TextField("Spade (♠)", mSpadeName);
-			mHeartName = EditorGUILayout.TextField("Heart (♥)", mHeartName);
-			mDiamondName = EditorGUILayout.TextField("Diamond (♦)", mDiamondName);
-			mClubName = EditorGUILayout.TextField("Club (♣)", mClubName);
+			mDesertName = EditorGUILayout.TextField("Desert", mDesertName);
+			mFruitName = EditorGUILayout.TextField("Fruit", mFruitName);
+			mInteriorName = EditorGUILayout.TextField("Interior", mInteriorName);
+			mToolsName = EditorGUILayout.TextField("Tools", mToolsName);
 
 			EditorGUILayout.Space(5);
 			EditorGUILayout.HelpBox(
 				$"예상 파일명:\n" +
-				$"  Tile_{mSpadeName}_001.png ~ Tile_{mSpadeName}_013.png\n" +
-				$"  Tile_{mHeartName}_001.png ~ Tile_{mHeartName}_013.png\n" +
-				$"  Tile_{mDiamondName}_001.png ~ Tile_{mDiamondName}_013.png\n" +
-				$"  Tile_{mClubName}_001.png ~ Tile_{mClubName}_013.png",
+				$"  Tile_{mDesertName}_000.png\n" +
+				$"  Tile_{mFruitName}_000.png\n" +
+				$"  Tile_{mInteriorName}_000.png\n" +
+				$"  Tile_{mToolsName}_000.png",
 				MessageType.None);
 
 			EditorGUILayout.Space(20);
 
 			// 생성 버튼
 			GUI.backgroundColor = new Color(0.3F, 0.8F, 0.3F);
-			if (GUILayout.Button("🎴 Generate 52 Tile Data", GUILayout.Height(40)))
+			if (GUILayout.Button("Generate Tile Data", GUILayout.Height(40)))
 			{
 				GenerateTileData();
 			}
@@ -123,62 +124,43 @@ namespace TrumpTile.LevelEditor.Editor
 
 			int created = 0;
 			int failed = 0;
-
-			// 4개 무늬
-			(ECardSuit suit, string fileName)[] suits = new (ECardSuit suit, string fileName)[]
+			for(int i = 0; i < (int)ETileCartegory.Length; i++)
 			{
-				(ECardSuit.Spade, mSpadeName),
-				(ECardSuit.Heart, mHeartName),
-				(ECardSuit.Diamond, mDiamondName),
-				(ECardSuit.Club, mClubName)
-			};
+				string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { $"{mSpriteFolderPath}/{(ETileCartegory)i}" });
+				string outputPath = $"{mOutputFolderPath}/{(ETileCartegory)i}";
 
-			// 13개 숫자
-			ECardRank[] ranks = new ECardRank[]
-			{
-				ECardRank.Ace, ECardRank.Two, ECardRank.Three, ECardRank.Four,
-				ECardRank.Five, ECardRank.Six, ECardRank.Seven, ECardRank.Eight,
-				ECardRank.Nine, ECardRank.Ten, ECardRank.Jack, ECardRank.Queen, ECardRank.King
-			};
+                if (!AssetDatabase.IsValidFolder(outputPath))
+                {
+                    AssetDatabase.CreateFolder(mOutputFolderPath, $"{(ETileCartegory)i}");
+                }
 
-			foreach ((ECardSuit suit, string fileName) suitEntry in suits)
-			{
-				for (int i = 0; i < ranks.Length; i++)
+                int number = 1;
+
+                foreach (string guid in guids)
 				{
-					ECardRank rank = ranks[i];
-					int num = i + 1; // 001 ~ 013
+					string path = AssetDatabase.GUIDToAssetPath(guid);
+					Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
-					// 스프라이트 찾기
-					string spritePath = $"{mSpriteFolderPath}/Tile_{suitEntry.fileName}_{num:D3}.png";
-					Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
-
-					if (sprite == null)
+					if(sprite == null)
 					{
-						// .png 대신 다른 확장자 시도
-						spritePath = $"{mSpriteFolderPath}/Tile_{suitEntry.fileName}_{num:D3}.jpg";
-						sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
-					}
-
-					if (sprite == null)
-					{
-						Debug.LogWarning($"Sprite not found: Tile_{suitEntry.fileName}_{num:D3}");
 						failed++;
 						continue;
 					}
-
-					// TileData 생성
+                    
 					TileData tileData = ScriptableObject.CreateInstance<TileData>();
-					tileData.suit = suitEntry.suit;
-					tileData.rank = rank;
-					tileData.sprite = sprite;
 
-					// 저장
-					string assetPath = $"{mOutputFolderPath}/{suitEntry.suit}_{rank}.asset";
-					AssetDatabase.CreateAsset(tileData, assetPath);
-					created++;
-				}
+					tileData.tileTypeId = $"{(ETileCartegory)i}_{number}";
+					tileData.displayName = tileData.tileTypeId;
+					tileData.tileCartegory = (ETileCartegory)i;
+                    tileData.sprite = sprite;
+
+                    string assetPath = $"{outputPath}/{(ETileCartegory)i}_{number}.asset";
+                    AssetDatabase.CreateAsset(tileData, assetPath);
+                    created++;
+					number++;
+                }
+
 			}
-
 			AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();
 
@@ -201,7 +183,7 @@ namespace TrumpTile.LevelEditor.Editor
 			int found = 0;
 			int missing = 0;
 
-			string[] suitNames = { mSpadeName, mHeartName, mDiamondName, mClubName };
+			string[] suitNames = { mDesertName, mFruitName, mInteriorName, mToolsName };
 
 			foreach (string suitName in suitNames)
 			{

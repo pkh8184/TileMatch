@@ -59,7 +59,7 @@ namespace TrumpTile.LevelEditor.Editor
 		private const int MAX_HISTORY_SIZE = 50;
 
 		// 타일 프리셋
-		private List<TileTypeConfig> mTileTypePresets;
+		private List<TileData> mTileDataPresets;
 
         private List<int> indexListForBoardSizeUpdate = new List<int>();
         // 색상
@@ -94,21 +94,19 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void InitializeTilePresets()
 		{
-			mTileTypePresets = new List<TileTypeConfig>();
+			mTileDataPresets = new List<TileData>();
 
-			foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
-			{
-				foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
-				{
-					mTileTypePresets.Add(new TileTypeConfig
-					{
-						typeId = $"{suit}_{rank}",
-						suit = suit,
-						rank = rank,
-						weight = 1
-					});
-				}
-			}
+            for (int i = 0; i < (int)ETileCartegory.Length; i++)
+            {
+                string[] guids = AssetDatabase.FindAssets("", new[] { $"Assets/_MainProject/SODatas/TileData/{(ETileCartegory)i}" });
+                foreach (string guid in guids)
+                {
+                    string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                    TileData tileData = AssetDatabase.LoadAssetAtPath<TileData>(assetPath);
+					mTileDataPresets.Add(tileData);
+                }
+            }
 		}
 
 		private void OnGUI()
@@ -117,7 +115,7 @@ namespace TrumpTile.LevelEditor.Editor
 			if (mSelectedTiles == null) mSelectedTiles = new List<TilePlacement>();
 			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
 			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
-			if (mTileTypePresets == null) InitializeTilePresets();
+			if (mTileDataPresets == null) InitializeTilePresets();
 
 			EditorGUILayout.BeginVertical();
 
@@ -247,7 +245,6 @@ namespace TrumpTile.LevelEditor.Editor
 
 				mCurrentLevelClone.levelNumber = EditorGUILayout.IntField("Level Number", mCurrentLevelClone.levelNumber);
 				mCurrentLevelClone.levelName = EditorGUILayout.TextField("Level Name", mCurrentLevelClone.levelName);
-				mCurrentLevelClone.difficulty = (ELevelDifficulty)EditorGUILayout.EnumPopup("Difficulty", mCurrentLevelClone.difficulty);
 
 				EditorGUILayout.Space(5);
                 EditorGUI.BeginChangeCheck();
@@ -301,16 +298,6 @@ namespace TrumpTile.LevelEditor.Editor
 
                     while (mCurrentLevelClone.layerList.Count < mCurrentLevelClone.maxLayers)
                         mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
-                }
-
-
-                EditorGUILayout.Space(5);
-				mCurrentLevelClone.slotCount = EditorGUILayout.IntSlider("Slot Count", mCurrentLevelClone.slotCount, 5, 10);
-				mCurrentLevelClone.matchCount = EditorGUILayout.IntSlider("Match Count", mCurrentLevelClone.matchCount, 3, 4);
-                mCurrentLevelClone.levelTimeLimit = EditorGUILayout.FloatField("Time Limit", mCurrentLevelClone.levelTimeLimit);
-                for (int i = 0; i < mCurrentLevelClone.starThreshold.Length; i++)
-                {
-                    mCurrentLevelClone.starThreshold[i] = EditorGUILayout.FloatField($"Star {3 - i} Time", mCurrentLevelClone.starThreshold[i]);
                 }
 
             }
@@ -490,13 +477,14 @@ namespace TrumpTile.LevelEditor.Editor
 			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
 
 			float scaledCellSize = mCellSize * mZoomLevel;
-
-			for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
+        
+            for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
 			{
 				if (mCurrentLevelClone.layerList[i] == null) continue;
 				if (mCurrentLevelClone.layerList[i].tilePlacementList == null) continue;
+				if (i == mCurrentLayer) continue;
 
-				float alpha = (mShowAllLayers && i != mCurrentLayer) ? mLayerOpacity : 1F;
+				float alpha = mShowAllLayers ? mLayerOpacity + (i * 0.1f) : 1F;
 
 				Vector2 gridOrigin = GetGridOrigin(area, i);
 
@@ -505,19 +493,26 @@ namespace TrumpTile.LevelEditor.Editor
 					DrawTile(tile, gridOrigin, scaledCellSize, alpha, i);
 				}
 			}
-			//foreach (TilePlacement tile in mCurrentLevelClone.tilePlacements)
-			//{
-			//	if (tile == null) continue;
+			if (mCurrentLevelClone.layerList.Count == 0) return;
+            //if (mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList == null) return;
 
-			//	if (!mShowAllLayers && tile.layer != mCurrentLayer)
-			//		continue;
+            foreach (TilePlacement tile in mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList)
+            {
+                DrawTile(tile, GetGridOrigin(area, mCurrentLayer), scaledCellSize, 1, mCurrentLayer);
+            }
+            //foreach (TilePlacement tile in mCurrentLevelClone.tilePlacements)
+            //{
+            //	if (tile == null) continue;
 
-			//             Vector2 gridOrigin = GetGridOrigin(area, tile.layer);
+            //	if (!mShowAllLayers && tile.layer != mCurrentLayer)
+            //		continue;
 
-			//             float alpha = (mShowAllLayers && tile.layer != mCurrentLayer) ? mLayerOpacity : 1F;
-			//	DrawTile(tile, gridOrigin, scaledCellSize, alpha);
-			//}
-		}
+            //             Vector2 gridOrigin = GetGridOrigin(area, tile.layer);
+
+            //             float alpha = (mShowAllLayers && tile.layer != mCurrentLayer) ? mLayerOpacity : 1F;
+            //	DrawTile(tile, gridOrigin, scaledCellSize, alpha);
+            //}
+        }
 
 		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, float alpha, int layer)
 		{
@@ -536,7 +531,7 @@ namespace TrumpTile.LevelEditor.Editor
 			);
 
 			// 레이어 색상
-			Color tileColor = new Color(0f, 0f, 0f, alpha);
+			Color tileColor = new Color(1f, 1f, 1f, alpha);
 
 			// 선택 하이라이트
 			if (mSelectedTiles != null && mSelectedTiles.Contains(tile))
@@ -545,23 +540,30 @@ namespace TrumpTile.LevelEditor.Editor
 				EditorGUI.DrawRect(highlight, new Color(1F, 0.8F, 0.2F, alpha));
 			}
 
+			
+			Sprite sprite = mTileDataPresets.Find(x => x.tileTypeId == tile.tileTypeId).sprite;
+
 			EditorGUI.DrawRect(tileRect, tileColor);
+			Color origin = GUI.color;
+			GUI.color = tileColor;
+			GUI.DrawTexture(tileRect, sprite.texture);
+			GUI.color = origin;
 
 			// 타일 타입 표시
-			if (!string.IsNullOrEmpty(tile.tileTypeId))
-			{
-				string[] parts = tile.tileTypeId.Split('_');
-				if (parts.Length >= 2)
-				{
-					string display = GetShortDisplay(parts[0], parts[1]);
-					GUI.Label(tileRect, display, new GUIStyle(EditorStyles.boldLabel)
-					{
-						alignment = TextAnchor.MiddleCenter,
-						fontSize = Mathf.RoundToInt(10 * mZoomLevel),
-						normal = { textColor = new Color(1, 1, 1, alpha) }
-					});
-				}
-			}
+			//if (!string.IsNullOrEmpty(tile.tileTypeId))
+			//{
+			//	string[] parts = tile.tileTypeId.Split('_');
+			//	if (parts.Length >= 2)
+			//	{
+			//		string display = GetShortDisplay(parts[0], parts[1]);
+			//		GUI.Label(tileRect, display, new GUIStyle(EditorStyles.boldLabel)
+			//		{
+			//			alignment = TextAnchor.MiddleCenter,
+			//			fontSize = Mathf.RoundToInt(10 * mZoomLevel),
+			//			normal = { textColor = new Color(1, 1, 1, alpha) }
+			//		});
+			//	}
+			//}
 		}
 
 		private string GetShortDisplay(string suit, string rank)
@@ -767,6 +769,42 @@ namespace TrumpTile.LevelEditor.Editor
                 }
             }
         }
+		private int GetGridSizeXByLayer(int layer = 0)
+		{
+            if (layer % 2 == 0)
+            {
+                return mCurrentLevelClone.boardWidth;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardWidth < 8)
+                {
+                    return mCurrentLevelClone.boardWidth + 1;
+                }
+                else
+                {
+                    return mCurrentLevelClone.boardWidth - 1;
+                }
+            }
+        }
+        private int GetGridSizeYByLayer(int layer = 0)
+        {
+            if (layer % 2 == 0)
+            {
+                return mCurrentLevelClone.boardHeight;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardHeight < 8)
+                {
+                    return mCurrentLevelClone.boardHeight + 1;
+                }
+                else
+                {
+                    return mCurrentLevelClone.boardHeight - 1;
+                }
+            }
+        }
         #endregion
 
         #region Right Panel
@@ -792,7 +830,7 @@ namespace TrumpTile.LevelEditor.Editor
 
 			GUI.enabled = mCurrentLevelClone != null;
 
-			if (GUILayout.Button("Auto Fill Random"))
+			if (GUILayout.Button("Auto Fill Random Layer " + mCurrentLayer))
 			{
 				RecordUndo("Auto Fill");
 				AutoFillRandom();
@@ -819,60 +857,92 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void DrawTilePalette()
 		{
-			if (mTileTypePresets == null) return;
+			if (mTileDataPresets == null) return;
 
 			float buttonSize = 35F;
 			int columns = 4;
-
-			foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
+			List<int> duplicateIndexList = new List<int>();
+            for (int i = 0; i < mTileDataPresets.Count; i++)
 			{
-				string suitSymbol = suit switch
-				{
-					ECardSuit.Spade => "♠",
-					ECardSuit.Heart => "♥",
-					ECardSuit.Diamond => "♦",
-					ECardSuit.Club => "♣",
-					_ => "?"
-				};
-                EditorGUILayout.LabelField($"{suitSymbol} {suit}", EditorStyles.miniLabel);
+				duplicateIndexList.Add(i);
+			}
+            for (int i = 0; i < (int)ETileCartegory.Length; i++)
+			{
+                EditorGUILayout.LabelField($"{(ETileCartegory)i}", EditorStyles.miniLabel);
+                int count = 0;
+                EditorGUILayout.BeginHorizontal();
 
-				int count = 0;
-				EditorGUILayout.BeginHorizontal();
-
-				foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
+				for(int j = 0; j < duplicateIndexList.Count; j++)
 				{
-					if (count > 0 && count % columns == 0)
+                    if (count > 0 && count % columns == 0)
+                    {
+                        EditorGUILayout.EndHorizontal();
+                        EditorGUILayout.BeginHorizontal();
+                    }
+
+                    if (mTileDataPresets[duplicateIndexList[j]].tileCartegory == (ETileCartegory)i)
 					{
-						EditorGUILayout.EndHorizontal();
-						EditorGUILayout.BeginHorizontal();
-					}
+                        GUI.backgroundColor = mSelectedTileType == mTileDataPresets[duplicateIndexList[j]].tileTypeId ? Color.yellow : Color.white;
+                        if (GUILayout.Button(mTileDataPresets[duplicateIndexList[j]].sprite.texture, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
+                        {
+                            mSelectedTileType = mTileDataPresets[duplicateIndexList[j]].tileTypeId;
+                            mCurrentTool = EEditorTool.Paint;
+                        }
+                        count++;
+						duplicateIndexList.Remove(duplicateIndexList[j]);
+                    }
+                }
+
+                EditorGUILayout.EndHorizontal();
+                GUI.backgroundColor = Color.white;
+                EditorGUILayout.Space(5);
+            }
+			//foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
+			//{
+			//	string suitSymbol = suit switch
+			//	{
+			//		ECardSuit.Spade => "♠",
+			//		ECardSuit.Heart => "♥",
+			//		ECardSuit.Diamond => "♦",
+			//		ECardSuit.Club => "♣",
+			//		_ => "?"
+			//	};
+   //             EditorGUILayout.LabelField($"{suitSymbol} {suit}", EditorStyles.miniLabel);
+
+			//	int count = 0;
+			//	EditorGUILayout.BeginHorizontal();
+
+			//	foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
+			//	{
+			//		if (count > 0 && count % columns == 0)
+			//		{
+			//			EditorGUILayout.EndHorizontal();
+			//			EditorGUILayout.BeginHorizontal();
+			//		}
 
 				
-					string typeId = $"{suit}_{rank}";
-					string rankStr = rank switch
-					{
-						ECardRank.Ace => "A",
-						ECardRank.Jack => "J",
-						ECardRank.Queen => "Q",
-						ECardRank.King => "K",
-						_ => ((int)rank).ToString()
-					};
+			//		string typeId = $"{suit}_{rank}";
+			//		string rankStr = rank switch
+			//		{
+			//			ECardRank.Ace => "A",
+			//			ECardRank.Jack => "J",
+			//			ECardRank.Queen => "Q",
+			//			ECardRank.King => "K",
+			//			_ => ((int)rank).ToString()
+			//		};
 
-					GUI.backgroundColor = mSelectedTileType == typeId ? Color.yellow : Color.white;
-					if (GUILayout.Button(rankStr, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
-					{
-						mSelectedTileType = typeId;
-						mCurrentTool = EEditorTool.Paint;
-					}
+			//		GUI.backgroundColor = mSelectedTileType == typeId ? Color.yellow : Color.white;
+			//		if (GUILayout.Button(rankStr, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
+			//		{
+			//			mSelectedTileType = typeId;
+			//			mCurrentTool = EEditorTool.Paint;
+			//		}
 
-					count++;
-				}
-
-				EditorGUILayout.EndHorizontal();
-				GUI.backgroundColor = Color.white;
-				EditorGUILayout.Space(5);
-			}
+			//		count++;
+			//	}
 		}
+		
+
 
 		#endregion
 
@@ -929,21 +999,24 @@ namespace TrumpTile.LevelEditor.Editor
 		private void AutoFillRandom()
 		{
 			if (mCurrentLevelClone == null) return;
-			if (mTileTypePresets == null || mTileTypePresets.Count == 0) return;
+			if (mTileDataPresets == null || mTileDataPresets.Count == 0) return;
 			if (mCurrentLevelClone.layerList == null)
 				mCurrentLevelClone.layerList = new List<LayerDataWrapper>();
 
-			mCurrentLevelClone.layerList.Clear();
+			mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Clear();
 
-			int totalCells = mCurrentLevelClone.boardWidth * mCurrentLevelClone.boardHeight * mCurrentLevelClone.maxLayers / 2;
-			totalCells = (totalCells / mCurrentLevelClone.matchCount) * mCurrentLevelClone.matchCount;
+			int currentLayerX = GetGridSizeXByLayer(mCurrentLayer);
+			int currentLayerY = GetGridSizeYByLayer(mCurrentLayer);
+
+			int totalCells = currentLayerX * currentLayerY;
+			totalCells = (totalCells / mCurrentLevelClone.matchCount);
 
 			List<string> tilesToPlace = new List<string>();
-			for (int i = 0; i < totalCells / mCurrentLevelClone.matchCount; i++)
+			for (int i = 0; i < totalCells; i++)
 			{
-				TileTypeConfig randomType = mTileTypePresets[Random.Range(0, mTileTypePresets.Count)];
+				TileData randomType = mTileDataPresets[Random.Range(0, mTileDataPresets.Count)];
 				for (int j = 0; j < mCurrentLevelClone.matchCount; j++)
-					tilesToPlace.Add(randomType.typeId);
+					tilesToPlace.Add(randomType.tileTypeId);
 			}
 
 			// Shuffle
@@ -953,19 +1026,10 @@ namespace TrumpTile.LevelEditor.Editor
 				(tilesToPlace[i], tilesToPlace[j]) = (tilesToPlace[j], tilesToPlace[i]);
 			}
 
-			int index = 0;
-			for (int layer = 0; layer < mCurrentLevelClone.maxLayers && index < tilesToPlace.Count; layer++)
+			for (int i = 0; i < tilesToPlace.Count; i++)
 			{
-				int margin = layer;
-				for (int x = margin; x < mCurrentLevelClone.boardWidth - margin && index < tilesToPlace.Count; x++)
-				{
-					for (int y = margin; y < mCurrentLevelClone.boardHeight - margin && index < tilesToPlace.Count; y++)
-					{
-						if (layer > 0 && (x + y) % 2 != 0) continue;
-						mCurrentLevelClone.layerList[layer].tilePlacementList.Add(new TilePlacement(x, y, layer, tilesToPlace[index++]));
-					}
-				}
-			}
+				mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Add(new TilePlacement(i % currentLayerX, i / currentLayerX, mCurrentLayer, tilesToPlace[i]));
+            }
 
 			Repaint();
 		}
@@ -1006,6 +1070,7 @@ namespace TrumpTile.LevelEditor.Editor
 			AssetDatabase.CreateAsset(mCurrentLevel, path);
 			AssetDatabase.SaveAssets();
 			mCurrentLevelClone = mCurrentLevel.Clone();
+			mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
 
             if (mSelectedTiles != null) mSelectedTiles.Clear();
 			if (mUndoHistory != null) mUndoHistory.Clear();

@@ -201,6 +201,7 @@ namespace TrumpTile.LevelEditor
 		public string typeId;
 		public ECardSuit suit;
 		public ECardRank rank;
+		public ETileCartegory tileCartegoty;
 		public Sprite sprite;
 		public int weight = 1; // 출현 확률 가중치
 	}
@@ -212,8 +213,8 @@ namespace TrumpTile.LevelEditor
 	public class TileTypeData : ScriptableObject
 	{
 		public string typeId;
-		public ECardSuit suit;
 		public ECardRank rank;
+		public ECardSuit suit;
 		public Sprite sprite;
 		public int weight = 1;
 
@@ -222,8 +223,8 @@ namespace TrumpTile.LevelEditor
 			return new TileTypeConfig
 			{
 				typeId = typeId,
+				rank = rank,	
 				suit = suit,
-				rank = rank,
 				sprite = sprite,
 				weight = weight
 			};
