@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -238,12 +239,12 @@ namespace TrumpTile.GameMain.UI
 
 		private void RefreshUid()
 		{
-			if (mUidText == null || UserDataManager.Instance == null)
+			if (mUidText == null || PlayerDataManager.Inst == null)
 			{
 				return;
 			}
 
-			string uid = UserDataManager.Instance.UID;
+			string uid = PlayerDataManager.Inst.UID;
 			// 가독성을 위해 4자리씩 끊어서 표시
 			mUidText.text = FormatUID(uid);
 		}

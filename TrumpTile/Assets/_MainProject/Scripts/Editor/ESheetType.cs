@@ -6,5 +6,7 @@ namespace TrumpTile.Editor
 		// 파서 클래스명 규칙: {ESheetType값}Parser (예: TBStageParser)
 		[SheetName("TB_Stage")]
 		TBStage,
+		[SheetName("TB_Item")]
+		TBItem,
 	}
 }

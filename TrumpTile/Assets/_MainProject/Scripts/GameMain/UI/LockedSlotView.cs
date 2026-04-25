@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -14,7 +15,7 @@ namespace TrumpTile.GameMain.UI
 
         private void Start()
         {
-            bool bUnlocked = UserDataManager.Instance != null && UserDataManager.Instance.IsExtraSlotUnlocked;
+            bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsExtraSlotUnlocked;
             if (bUnlocked)
             {
                 gameObject.SetActive(false);

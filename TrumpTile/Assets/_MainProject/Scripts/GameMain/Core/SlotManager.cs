@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using TrumpTile.GameMain.UI;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -78,7 +78,7 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void Initialize()
 		{
-			bool bUnlocked = UserDataManager.Instance != null && UserDataManager.Instance.IsExtraSlotUnlocked;
+			bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsExtraSlotUnlocked;
 			SetSlotCount(bUnlocked ? 7 : 6);
 			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, ExtraSlotUnlocked: {bUnlocked}");
 		}

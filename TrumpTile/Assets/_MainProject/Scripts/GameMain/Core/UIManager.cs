@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 using System.Collections;
+using TrumpTile.GameMain.Item;
 namespace TrumpTile.GameMain.Core
 {
 	public class UIManager : MonoBehaviour
@@ -17,13 +19,16 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private Slider mTimerSlider;
 
 		[Header("Items")]
-		[SerializeField] private TextMeshProUGUI mStrikeCountText;
-		[SerializeField] private TextMeshProUGUI mBlackHoleCountText;
-		[SerializeField] private TextMeshProUGUI mBoomCountText;
-		[SerializeField] private Button mStrikeButton;
-		[SerializeField] private Button mBlackHoleButton;
-		[SerializeField] private Button mBoomButton;
+		[SerializeField] private ItemButtonConfig[] mItemButtonConfigs;
 		[SerializeField] private Button mPauseButton;
+
+		[Serializable]
+		private class ItemButtonConfig
+		{
+			public int itemId;
+			public Button button;
+			public TextMeshProUGUI countText;
+		}
 
 		[Header("Panels")]
 		[SerializeField] private GameObject mLevelClearPanel;
@@ -48,10 +53,6 @@ namespace TrumpTile.GameMain.Core
 		[Header("Animation")]
 		[SerializeField] private Animator mComboAnimator;
 
-		private int mStrikeCount;
-		private int mBlackHoleCount;
-		private int mBoomCount;
-
 		private void Awake()
 		{
 			Instance = this;
@@ -66,19 +67,17 @@ namespace TrumpTile.GameMain.Core
 
 		private void SetupButtons()
 		{
-			if (mStrikeButton != null)
+			if (mItemButtonConfigs != null)
 			{
-				mStrikeButton.onClick.AddListener(OnStrikeClick);
-			}
-
-			if (mBlackHoleButton != null)
-			{
-				mBlackHoleButton.onClick.AddListener(OnBlackHoleClick);
-			}
-
-			if (mBoomButton != null)
-			{
-				mBoomButton.onClick.AddListener(OnBoomClick);
+				foreach (ItemButtonConfig config in mItemButtonConfigs)
+				{
+					if (config.button == null)
+					{
+						continue;
+					}
+					int capturedId = config.itemId;
+					config.button.onClick.AddListener(() => OnItemButtonClick(capturedId));
+				}
 			}
 
 			if (mPauseButton != null)
@@ -123,9 +122,9 @@ namespace TrumpTile.GameMain.Core
 			{
 				GameManager.Instance.OnScoreChanged += UpdateScore;
 				GameManager.Instance.OnComboChanged += UpdateCombo;
-				GameManager.Instance.OnItemCountChanged += UpdateItems;
 				GameManager.Instance.OnProgressChanged += UpdateProgress;
 			}
+			ItemManager.Inst.OnItemCountChanged += UpdateItemCount;
 		}
 
 		private void OnDestroy()
@@ -134,41 +133,24 @@ namespace TrumpTile.GameMain.Core
 			{
 				GameManager.Instance.OnScoreChanged -= UpdateScore;
 				GameManager.Instance.OnComboChanged -= UpdateCombo;
-				GameManager.Instance.OnItemCountChanged -= UpdateItems;
 				GameManager.Instance.OnProgressChanged -= UpdateProgress;
+			}
+			if (ItemManager.Inst != null)
+			{
+				ItemManager.Inst.OnItemCountChanged -= UpdateItemCount;
 			}
 		}
 
 		#region Button Callbacks
 
-		private void OnStrikeClick()
+		private void OnItemButtonClick(int itemId)
 		{
 			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem())
 			{
 				return;
 			}
 			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
-			GameManager.Instance.UseStrike();
-		}
-
-		private void OnBlackHoleClick()
-		{
-			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem())
-			{
-				return;
-			}
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
-			GameManager.Instance.UseBlackHole();
-		}
-
-		private void OnBoomClick()
-		{
-			if (GameManager.Instance == null || !GameManager.Instance.CanUseItem())
-			{
-				return;
-			}
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
-			GameManager.Instance.UseBoom();
+			ItemManager.Inst.UseItem(itemId);
 		}
 
 		private void OnPauseClick()
@@ -319,71 +301,74 @@ namespace TrumpTile.GameMain.Core
 			}
 		}
 
-		public void UpdateItems(int strike, int blackHole, int boom)
+		// 특정 아이템 개수 변경 시 호출 (ItemManager.OnItemCountChanged)
+		public void UpdateItemCount(int itemId, int count)
 		{
-			mStrikeCount = strike;
-			mBlackHoleCount = blackHole;
-			mBoomCount = boom;
-
-			if (mStrikeCountText != null)
+			if (mItemButtonConfigs == null)
 			{
-				mStrikeCountText.text = strike.ToString();
+				return;
 			}
-
-			if (mBlackHoleCountText != null)
+			foreach (ItemButtonConfig config in mItemButtonConfigs)
 			{
-				mBlackHoleCountText.text = blackHole.ToString();
+				if (config.itemId != itemId)
+				{
+					continue;
+				}
+				if (config.countText != null)
+				{
+					config.countText.text = count.ToString();
+				}
+				if (config.button != null)
+				{
+					bool bCanUse = GameManager.Instance != null &&
+						GameManager.Instance.CurrentState == GameManager.EGameState.Playing;
+					config.button.interactable = bCanUse && count > 0;
+				}
+				break;
 			}
+		}
 
-			if (mBoomCountText != null)
+		// 레벨 시작 시 전체 아이템 UI 동기화
+		public void RefreshAllItemButtons()
+		{
+			if (mItemButtonConfigs == null)
 			{
-				mBoomCountText.text = boom.ToString();
+				return;
 			}
+			bool bCanUse = GameManager.Instance != null &&
+				GameManager.Instance.CurrentState == GameManager.EGameState.Playing;
 
-			UpdateItemButtonStates();
+			foreach (ItemButtonConfig config in mItemButtonConfigs)
+			{
+				int count = ItemManager.Inst.GetItemCount(config.itemId);
+				if (config.countText != null)
+				{
+					config.countText.text = count.ToString();
+				}
+				if (config.button != null)
+				{
+					config.button.interactable = bCanUse && count > 0;
+				}
+			}
 		}
 
 		public void UpdateItemButtonStates()
 		{
-			bool bCanUse = true;
-
-			if (GameManager.Instance != null)
-			{
-				GameManager.EGameState state = GameManager.Instance.CurrentState;
-				bCanUse = (state == GameManager.EGameState.Playing || state == GameManager.EGameState.Loading);
-			}
-
-			if (mStrikeButton != null)
-			{
-				mStrikeButton.interactable = bCanUse && mStrikeCount > 0;
-			}
-
-			if (mBlackHoleButton != null)
-			{
-				mBlackHoleButton.interactable = bCanUse && mBlackHoleCount > 0;
-			}
-
-			if (mBoomButton != null)
-			{
-				mBoomButton.interactable = bCanUse && mBoomCount > 0;
-			}
+			RefreshAllItemButtons();
 		}
 
 		public void DisableItemButtons()
 		{
-			if (mStrikeButton != null)
+			if (mItemButtonConfigs == null)
 			{
-				mStrikeButton.interactable = false;
+				return;
 			}
-
-			if (mBlackHoleButton != null)
+			foreach (ItemButtonConfig config in mItemButtonConfigs)
 			{
-				mBlackHoleButton.interactable = false;
-			}
-
-			if (mBoomButton != null)
-			{
-				mBoomButton.interactable = false;
+				if (config.button != null)
+				{
+					config.button.interactable = false;
+				}
 			}
 		}
 

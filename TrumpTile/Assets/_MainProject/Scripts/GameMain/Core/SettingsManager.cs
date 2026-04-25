@@ -238,12 +238,12 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void CopyUID()
 		{
-			if (UserDataManager.Instance == null)
+			if (PlayerDataManager.Inst == null)
 			{
 				return;
 			}
 
-			string uid = UserDataManager.Instance.UID;
+			string uid = PlayerDataManager.Inst.UID;
 			if (string.IsNullOrEmpty(uid))
 			{
 				return;
