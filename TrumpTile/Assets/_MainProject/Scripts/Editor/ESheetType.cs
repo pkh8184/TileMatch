@@ -8,5 +8,9 @@ namespace TrumpTile.Editor
 		TBStage,
 		[SheetName("TB_Item")]
 		TBItem,
+		[SheetName("TB_AlbumGroup")]
+		TBAlbumGroup,
+		[SheetName("TB_AlbumPicture")]
+		TBAlbumPicture,
 	}
 }

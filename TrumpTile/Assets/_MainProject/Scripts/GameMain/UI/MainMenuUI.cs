@@ -37,6 +37,10 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private GameObject mProfilePopup;
 		[SerializeField] private GameObject mStageSelectPopup;
 
+		[Header("앨범")]
+		[SerializeField] private GiftBoxPopup mGiftBoxPopup;
+		[SerializeField] private AlbumView    mAlbumView;
+
 		private void Awake()
 		{
 			Instance = this;
@@ -46,6 +50,7 @@ namespace TrumpTile.GameMain.UI
 		{
 			SetupButtons();
 			RefreshUI();
+			CheckAlbumReward();
 		}
 
 		private void SetupButtons()
@@ -202,6 +207,29 @@ namespace TrumpTile.GameMain.UI
 			if (mProfilePopup != null)
 			{
 				mProfilePopup.SetActive(true);
+			}
+		}
+
+		#endregion
+
+		#region Album
+
+		private void CheckAlbumReward()
+		{
+			if (mGiftBoxPopup == null || !AlbumManager.Inst.HasRecentlyUnlocked())
+			{
+				return;
+			}
+			mGiftBoxPopup.OnClosed += OpenAlbumView;
+			mGiftBoxPopup.Show(AlbumManager.Inst.GetRecentlyUnlocked());
+		}
+
+		private void OpenAlbumView()
+		{
+			mGiftBoxPopup.OnClosed -= OpenAlbumView;
+			if (mAlbumView != null)
+			{
+				mAlbumView.Show();
 			}
 		}
 

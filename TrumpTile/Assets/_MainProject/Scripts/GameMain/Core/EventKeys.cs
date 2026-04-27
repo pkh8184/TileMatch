@@ -16,5 +16,11 @@ namespace TrumpTile.GameMain.Core
 		public const string AUDIO_PAUSE  = "Audio_Pause";
 		public const string AUDIO_STOP   = "Audio_Stop";
 		public const string AUDIO_RESUME = "Audio_Resume";
+
+		// Album — 앨범 수집 이벤트
+		// ALBUM_PHOTO_UNLOCKED 페이로드: TBAlbumPictureData
+		public const string ALBUM_PHOTO_UNLOCKED   = "Album_Photo_Unlocked";
+		// ALBUM_CHAPTER_COMPLETE 페이로드: int (AlbumGroupId)
+		public const string ALBUM_CHAPTER_COMPLETE = "Album_Chapter_Complete";
 	}
 }

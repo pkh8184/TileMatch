@@ -380,6 +380,7 @@ namespace TrumpTile.GameMain.Core
 			int stars = CalculateStars();
 
 			SaveLevelProgress(CurrentLevel, stars);
+			AlbumManager.Inst.CheckAndUnlock(CurrentLevel);
 
 			yield return new WaitForSeconds(0.5F);
 
