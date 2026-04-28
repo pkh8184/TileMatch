@@ -5,9 +5,15 @@ using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.LevelEditor
 {
-	/// <summary>
-	/// 레벨 데이터를 저장하는 ScriptableObject
-	/// </summary>
+	[Serializable]
+	public class LayerDataWrapper
+	{
+		public List<TilePlacement> tilePlacementList = new List<TilePlacement>();
+    }
+    /// <summary>
+    /// 레벨 데이터를 저장하는 ScriptableObject
+    /// </summary>
+    [System.Serializable]
 	[CreateAssetMenu(fileName = "Level_001", menuName = "TileMatch/Level Data")]
 	public class LevelData : ScriptableObject
 	{
@@ -16,18 +22,20 @@ namespace TrumpTile.LevelEditor
 		public string levelName = "New Level";
 		public ELevelDifficulty difficulty = ELevelDifficulty.Normal;
 
+
 		[Header("보드 설정")]
 		public int boardWidth = 8;
 		public int boardHeight = 8;
-		public int maxLayers = 4;
+		public int maxLayers = 1;
 
 		[Header("게임 규칙")]
 		public int slotCount = 7;
 		public int matchCount = 3;
-		public float timeLimit = 0; // 0 = 무제한
-		public int targetScore = 1000;
+        //public float timeLimit = 0; // 0 = 무제한
+        //public int targetScore = 1000;
 
-		[Header("타일 배치 데이터")]
+        [Header("타일 배치 데이터")]
+		public List<LayerDataWrapper> layerList = new List<LayerDataWrapper>();
 		public List<TilePlacement> tilePlacements = new();
 
 		[Header("사용 가능한 타일 타입")]
@@ -50,23 +58,25 @@ namespace TrumpTile.LevelEditor
 			errorMessage = "";
 
 			// 타일 수가 matchCount의 배수인지 확인
-			if (tilePlacements.Count % matchCount != 0)
+			if (GetTileCount() % matchCount != 0)
 			{
-				errorMessage = $"타일 수({tilePlacements.Count})가 {matchCount}의 배수가 아닙니다.";
+				errorMessage = $"타일 수({GetTileCount()})가 {matchCount}의 배수가 아닙니다.";
 				return false;
 			}
 
 			// 각 타일 타입별로 matchCount의 배수인지 확인
 			Dictionary<string, int> typeCount = new Dictionary<string, int>();
-			foreach (TilePlacement placement in tilePlacements)
+			foreach (LayerDataWrapper layerWrapper in layerList)
 			{
-				if (!typeCount.ContainsKey(placement.tileTypeId))
+				foreach (TilePlacement placement in layerWrapper.tilePlacementList)
 				{
-					typeCount[placement.tileTypeId] = 0;
+					if (!typeCount.ContainsKey(placement.tileTypeId))
+					{
+						typeCount[placement.tileTypeId] = 0;
+					}
+					typeCount[placement.tileTypeId]++;
 				}
-				typeCount[placement.tileTypeId]++;
 			}
-
 			foreach (KeyValuePair<string, int> kvp in typeCount)
 			{
 				if (kvp.Value % matchCount != 0)
@@ -77,44 +87,70 @@ namespace TrumpTile.LevelEditor
 			}
 
 			// 타일이 보드 범위 내에 있는지 확인
-			foreach (TilePlacement placement in tilePlacements)
+			for(int i = 0; i < layerList.Count; i++)
 			{
-				if (placement.gridX < 0 || placement.gridX >= boardWidth ||
-					placement.gridY < 0 || placement.gridY >= boardHeight ||
-					placement.layer < 0 || placement.layer >= maxLayers)
-				{
-					errorMessage = $"타일이 보드 범위를 벗어났습니다: ({placement.gridX}, {placement.gridY}, Layer {placement.layer})";
-					return false;
-				}
+                foreach (TilePlacement placement in layerList[i].tilePlacementList)
+                {
+                    if (placement.gridX < 0 || placement.gridX > boardWidth ||
+                        placement.gridY < 0 || placement.gridY > boardHeight)
+                    {
+                        errorMessage = $"타일이 보드 범위를 벗어났습니다: ({placement.gridX}, {placement.gridY}, Layer {i})";
+                        return false;
+                    }
+                }
+            }
+				return true;
 			}
-
-			return true;
-		}
+		
 
 		/// <summary>
 		/// 레벨 통계 정보
 		/// </summary>
-		public LevelStatistics GetStatistics()
+		//public LevelStatistics GetStatistics()
+		//{
+		//	LevelStatistics stats = new()
+		//	{
+				
+		//		totalTiles = GetTileCount(),
+		//		uniqueTileTypes = new HashSet<string>(),
+		//		tilesPerLayer = new int[maxLayers]
+		//	};
+  //          for (int i = 0; i < layerList.Count; i++)
+  //          {
+
+  //          }
+  //          foreach (LayerDataWrapper layerWrapper in layerList)
+		//	{
+		//		foreach (TilePlacement placement in layerWrapper.tilePlacementList)
+		//		{
+		//			stats.uniqueTileTypes.Add(placement.tileTypeId);
+		//			if (placement.layer < maxLayers)
+		//			{
+		//				stats.tilesPerLayer[placement.layer]++;
+		//			}
+		//		}
+		//	}
+
+  //          return stats;
+  //      }
+	
+		public LevelData Clone()
 		{
-			LevelStatistics stats = new()
+            LevelData clone = ScriptableObject.CreateInstance<LevelData>();
+            string json = JsonUtility.ToJson(this);
+            JsonUtility.FromJsonOverwrite(json, clone);
+            return clone;
+        }
+		public int GetTileCount()
+		{
+			int count = 0;
+			foreach (LayerDataWrapper layerWrapper in layerList)
 			{
-				totalTiles = tilePlacements.Count,
-				uniqueTileTypes = new HashSet<string>(),
-				tilesPerLayer = new int[maxLayers]
-			};
-
-			foreach (TilePlacement placement in tilePlacements)
-			{
-				stats.uniqueTileTypes.Add(placement.tileTypeId);
-				if (placement.layer < maxLayers)
-				{
-					stats.tilesPerLayer[placement.layer]++;
-				}
+				count += layerWrapper.tilePlacementList.Count;
 			}
-
-			return stats;
+			return count;
 		}
-	}
+    }
 
 	/// <summary>
 	/// 레벨 난이도
@@ -134,8 +170,8 @@ namespace TrumpTile.LevelEditor
 	[Serializable]
 	public class TilePlacement
 	{
-		public int gridX;
-		public int gridY;
+		public float gridX;
+		public float gridY;
 		public int layer;
 		public string tileTypeId;
 		public bool isLocked;      // 잠금 타일 (특정 조건 후 해제)
@@ -144,15 +180,14 @@ namespace TrumpTile.LevelEditor
 
 		public TilePlacement() { }
 
-		public TilePlacement(int x, int y, int layer, string typeId)
+		public TilePlacement(float x, float y, int layer, string typeId)
 		{
 			this.gridX = x;
 			this.gridY = y;
-			this.layer = layer;
 			this.tileTypeId = typeId;
 		}
 
-		public Vector3Int GridPosition => new Vector3Int(gridX, gridY, layer);
+		public Vector3 GridPosition => new Vector3(gridX, gridY);
 	}
 
 	/// <summary>
@@ -164,6 +199,7 @@ namespace TrumpTile.LevelEditor
 		public string typeId;
 		public ECardSuit suit;
 		public ECardRank rank;
+		public ETileCartegory tileCartegoty;
 		public Sprite sprite;
 		public int weight = 1; // 출현 확률 가중치
 	}
@@ -175,8 +211,8 @@ namespace TrumpTile.LevelEditor
 	public class TileTypeData : ScriptableObject
 	{
 		public string typeId;
-		public ECardSuit suit;
 		public ECardRank rank;
+		public ECardSuit suit;
 		public Sprite sprite;
 		public int weight = 1;
 
@@ -185,8 +221,8 @@ namespace TrumpTile.LevelEditor
 			return new TileTypeConfig
 			{
 				typeId = typeId,
+				rank = rank,	
 				suit = suit,
-				rank = rank,
 				sprite = sprite,
 				weight = weight
 			};

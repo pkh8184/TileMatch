@@ -24,8 +24,10 @@ namespace TrumpTile.LevelEditor.Editor
         private bool mValidateDuplicateTiles = true;
         private bool mValidateClearability = true;
         private bool mValidateBoardBounds = true;
+        private bool mValidateTimeLimit = true;
+        private bool mValidateStarThresholds = true;
 
-        private string mLevelFolderPath = "Assets/Resources/Levels";
+        private string mLevelFolderPath = "Assets/_MainProject/SODatas/Levels";
         private bool mIsValidating = false;
 
         // 검증 결과 통계
@@ -74,7 +76,6 @@ namespace TrumpTile.LevelEditor.Editor
                 "• 타일 개수 검증 (matchCount 배수)\n" +
                 "• 레이어/Sorting 검증\n" +
                 "• 중복 타일 검증\n" +
-                "• 클리어 가능성 검증\n" +
                 "• 레벨 이름 검증",
                 MessageType.Info);
 
@@ -106,7 +107,6 @@ namespace TrumpTile.LevelEditor.Editor
             mValidateLevelNaming = EditorGUILayout.Toggle("레벨 이름/번호 일치", mValidateLevelNaming);
             mValidateLayerSorting = EditorGUILayout.Toggle("레이어/Sorting 검증", mValidateLayerSorting);
             mValidateDuplicateTiles = EditorGUILayout.Toggle("중복 타일 검증 (같은 위치+레이어)", mValidateDuplicateTiles);
-            mValidateClearability = EditorGUILayout.Toggle("클리어 가능성 검증", mValidateClearability);
             mValidateBoardBounds = EditorGUILayout.Toggle("보드 범위 검증", mValidateBoardBounds);
 
             EditorGUILayout.EndVertical();
@@ -403,13 +403,7 @@ namespace TrumpTile.LevelEditor.Editor
                 ValidateDuplicateTiles(level, result);
             }
 
-            // 6. 클리어 가능성 검증
-            if (mValidateClearability)
-            {
-                ValidateClearability(level, result);
-            }
-
-            // 7. 보드 범위 검증
+            // 6. 보드 범위 검증
             if (mValidateBoardBounds)
             {
                 ValidateBoardBounds(level, result);
@@ -432,7 +426,7 @@ namespace TrumpTile.LevelEditor.Editor
 
         private void ValidateTileCount(LevelData level, ValidationResult result)
         {
-            if (level.tilePlacements == null || level.tilePlacements.Count == 0)
+            if (level.layerList.Count == 0)
             {
                 result.issues.Add(new ValidationIssue
                 {
@@ -443,7 +437,7 @@ namespace TrumpTile.LevelEditor.Editor
                 return;
             }
 
-            int tileCount = level.tilePlacements.Count;
+            int tileCount = level.GetTileCount();
             int matchCount = level.matchCount > 0 ? level.matchCount : 3;
 
             if (tileCount % matchCount != 0)
@@ -459,12 +453,12 @@ namespace TrumpTile.LevelEditor.Editor
 
         private void ValidateMatchCount(LevelData level, ValidationResult result)
         {
-            if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
+            if (level.layerList.Count == 0) return;
 
             int matchCount = level.matchCount > 0 ? level.matchCount : 3;
 
             // 타일 타입별 개수
-            Dictionary<string, int> typeCounts = level.tilePlacements
+            Dictionary<string, int> typeCounts = level.layerList.SelectMany(x => x.tilePlacementList)
                 .Where(t => !string.IsNullOrEmpty(t.tileTypeId))
                 .GroupBy(t => t.tileTypeId)
                 .ToDictionary(g => g.Key, g => g.Count());
@@ -483,7 +477,7 @@ namespace TrumpTile.LevelEditor.Editor
             }
 
             // 빈 타일 타입 체크
-            int emptyTypeCount = level.tilePlacements.Count(t => string.IsNullOrEmpty(t.tileTypeId));
+            int emptyTypeCount = level.layerList.SelectMany(x => x.tilePlacementList).Count(t => string.IsNullOrEmpty(t.tileTypeId));
             if (emptyTypeCount > 0)
             {
                 result.issues.Add(new ValidationIssue
@@ -530,55 +524,26 @@ namespace TrumpTile.LevelEditor.Editor
 
         private void ValidateLayerSorting(LevelData level, ValidationResult result)
         {
-            if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
+            if (level.layerList.Count == 0) return;
 
-            // 레이어 범위 체크
-            int maxLayer = level.tilePlacements.Max(t => t.layer);
-            int minLayer = level.tilePlacements.Min(t => t.layer);
-
-            if (minLayer < 0)
+            if (level.layerList.Count > level.maxLayers)
             {
                 result.issues.Add(new ValidationIssue
                 {
                     severity = EIssueSeverity.Warning,
                     category = "Layer",
-                    message = $"음수 레이어({minLayer})가 존재합니다."
+                    message = $"레이어({level.layerList.Count})가 maxLayers({level.maxLayers})를 초과합니다."
                 });
-            }
-
-            if (maxLayer >= level.maxLayers)
-            {
-                result.issues.Add(new ValidationIssue
-                {
-                    severity = EIssueSeverity.Warning,
-                    category = "Layer",
-                    message = $"타일 레이어({maxLayer})가 maxLayers({level.maxLayers})를 초과합니다."
-                });
-            }
-
-            // 레이어 연속성 체크
-            List<int> usedLayers = level.tilePlacements.Select(t => t.layer).Distinct().OrderBy(l => l).ToList();
-            for (int i = 0; i < usedLayers.Count - 1; i++)
-            {
-                if (usedLayers[i + 1] - usedLayers[i] > 1)
-                {
-                    result.issues.Add(new ValidationIssue
-                    {
-                        severity = EIssueSeverity.Info,
-                        category = "Layer",
-                        message = $"레이어 {usedLayers[i]}와 {usedLayers[i + 1]} 사이에 빈 레이어가 있습니다."
-                    });
-                }
             }
         }
 
         private void ValidateDuplicateTiles(LevelData level, ValidationResult result)
         {
-            if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
+            if (level.layerList.Count == 0) return;
 
             // 같은 위치 + 같은 레이어에 중복 타일 체크
-            var duplicates = level.tilePlacements
-                .GroupBy(t => new { t.gridX, t.gridY, t.layer })
+            var duplicates = level.layerList.SelectMany((x, i) => x.tilePlacementList.Select(t => new {Tile = t, LayerIndex = i}))
+                .GroupBy(item => new { item.Tile.gridX, item.Tile.gridY, item.LayerIndex})
                 .Where(g => g.Count() > 1)
                 .ToList();
 
@@ -590,7 +555,7 @@ namespace TrumpTile.LevelEditor.Editor
                     {
                         severity = EIssueSeverity.Error,
                         category = "Duplicate",
-                        message = $"중복 타일: 위치({dup.Key.gridX}, {dup.Key.gridY}), 레이어 {dup.Key.layer}에 {dup.Count()}개 타일"
+                        message = $"중복 타일: 위치({dup.Key.gridX}, {dup.Key.gridY}), 레이어 {dup.Key.LayerIndex}에 {dup.Count()}개 타일"
                     });
                 }
             }
@@ -635,11 +600,11 @@ namespace TrumpTile.LevelEditor.Editor
 
         private void ValidateBoardBounds(LevelData level, ValidationResult result)
         {
-            if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
+            if (level.layerList.Count == 0) return;
 
-            List<TilePlacement> outOfBounds = level.tilePlacements.Where(t =>
-                t.gridX < 0 || t.gridX >= level.boardWidth ||
-                t.gridY < 0 || t.gridY >= level.boardHeight
+            List<TilePlacement> outOfBounds = level.layerList.SelectMany(x => x.tilePlacementList).Where(t =>
+                t.gridX < 0 || (level.boardWidth < 8 ? t.gridX > level.boardWidth : t.gridX >= level.boardWidth) ||
+                t.gridY < 0 || (level.boardHeight < 8 ? t.gridY > level.boardHeight : t.gridY >= level.boardHeight)
             ).ToList();
 
             if (outOfBounds.Count > 0)
@@ -652,7 +617,6 @@ namespace TrumpTile.LevelEditor.Editor
                 });
             }
         }
-
         #endregion
 
         #region Utility Methods
@@ -718,7 +682,7 @@ namespace TrumpTile.LevelEditor.Editor
                 // 중복 타일 제거
                 if (mValidateDuplicateTiles)
                 {
-                    var duplicateGroups = result.levelData.tilePlacements
+                    var duplicateGroups = result.levelData.layerList.SelectMany(x => x.tilePlacementList)
                         .GroupBy(t => new { t.gridX, t.gridY, t.layer })
                         .Where(g => g.Count() > 1)
                         .ToList();

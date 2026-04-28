@@ -1,13 +1,25 @@
 #if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
+using UnityEditor;
+using UnityEngine;
 
 namespace TrumpTile.LevelEditor.Editor
 {
+	public enum EDifficultyType
+	{
+		Tutorial = 0,
+		Easy_Normal,
+		Easy_Hard,
+		Easy_VeryHard,
+		Normal,
+		Hard,
+		VeryHard,
+		Length
+	}
 	/// <summary>
 	/// 강화된 레벨 자동 생성기 V2
 	/// - 보드 중앙 정렬
@@ -22,7 +34,7 @@ namespace TrumpTile.LevelEditor.Editor
 		// 생성 설정
 		private int mStartLevelNumber = 1;
 		private int mEndLevelNumber = 300;
-		private string mOutputFolder = "Assets/Resources/Levels";
+		private string mOutputFolder = "Assets/_MainProject/SODatas/Levels";
 		private string mLevelPrefix = "Level_";
 
 		// 보드 설정
@@ -71,6 +83,19 @@ namespace TrumpTile.LevelEditor.Editor
 		private bool mShowAdvancedSettings = false;
 		private bool mShowCurveSettings = false;
 		private bool mShowPreview = true;
+
+		// 규격 설정
+		private EDifficultyType[] mEDifficultyTypeArray = new EDifficultyType[10];
+		private int[] mDefaultTileCountArray = new int[10]; 
+		private int[] mDefaultLayerCountArray = new int[10]; 
+		private int[] mDefaultTileSetCountArray = new int[10]; 
+		private int[] mIncreaseTileCountLevelThresholdArray = new int[10];
+		private int[] mIncreaseLayerCountLevelThresholdArray = new int[10];
+		private int[] mIncreaseTileSetCountLevelThresholdArray = new int[10];
+        private int[] mIncreaseTileCountArray = new int[10];
+        private int[] mIncreaseLayerCountArray = new int[10];
+        private int[] mIncreaseTileSetCountArray = new int[10];
+        private bool mbShowDifficultySetting = false;
 
 		private int mPreviewLevel = 1;
 
@@ -169,7 +194,8 @@ namespace TrumpTile.LevelEditor.Editor
 
 			DrawHeader();
 			DrawBasicSettings();
-			DrawBoardSettings();
+            DrawStandardSettings();
+            DrawBoardSettings();
 			DrawTileSettings();
 			DrawPatternSettings();
 
@@ -224,7 +250,69 @@ namespace TrumpTile.LevelEditor.Editor
 
 			EditorGUILayout.Space(5);
 		}
+		private void DrawStandardSettings()
+		{
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Standard Settings (자동 생성 규격 설정)", EditorStyles.boldLabel);
 
+            mbShowDifficultySetting = EditorGUILayout.Foldout(mbShowDifficultySetting, "레벨 넘버 끝자리(0~9)별 난이도 및 레벨 진행도에 따른 증가값 설정", true);
+			if(mbShowDifficultySetting)
+			{
+                for (int i = 0; i < mEDifficultyTypeArray.Length; i++)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"Level_nn{i}", EditorStyles.label, GUILayout.Width(60));
+                    mEDifficultyTypeArray[i] = (EDifficultyType)EditorGUILayout.EnumPopup(mEDifficultyTypeArray[i]);
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("TileCount", EditorStyles.label, GUILayout.Width(60));
+                    int defaultValue = EditorGUILayout.IntField(mDefaultTileCountArray[i]);
+					mDefaultTileCountArray[i] = Mathf.RoundToInt(defaultValue / 3f) * 3;
+
+                    EditorGUILayout.LabelField("Level Increase Value", EditorStyles.label, GUILayout.Width(120));           
+                    int tile = EditorGUILayout.IntField(mIncreaseTileCountLevelThresholdArray[i]);
+                    mIncreaseTileCountLevelThresholdArray[i] = Mathf.RoundToInt(tile / 10f) * 10;
+
+                    EditorGUILayout.LabelField("Tile Increase Value", EditorStyles.label, GUILayout.Width(110));
+                    int increase = EditorGUILayout.IntField(mIncreaseTileCountArray[i]);
+					mIncreaseTileCountArray[i] = Mathf.RoundToInt(increase / 3f) * 3;
+
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("TileSetCount", EditorStyles.label, GUILayout.Width(80));
+                    int defaultSetValue = EditorGUILayout.IntField(mDefaultTileSetCountArray[i]);
+					mDefaultTileSetCountArray[i] = defaultSetValue > mDefaultTileCountArray[i] / 3 ? mDefaultTileCountArray[i] / 3 : defaultSetValue;
+
+                    EditorGUILayout.LabelField("Level Increase Value", EditorStyles.label, GUILayout.Width(120));
+                    int tileSet = EditorGUILayout.IntField(mIncreaseTileSetCountLevelThresholdArray[i]);
+                    mIncreaseTileSetCountLevelThresholdArray[i] = Mathf.RoundToInt(tileSet / 10f) * 10;
+
+                    EditorGUILayout.LabelField("TileSet Increase Value", EditorStyles.label, GUILayout.Width(130));
+                    mIncreaseTileSetCountArray[i] = EditorGUILayout.IntField(mIncreaseTileSetCountArray[i]);
+
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("LayerCount", EditorStyles.label, GUILayout.Width(70));
+                    mDefaultLayerCountArray[i] = EditorGUILayout.IntField(mDefaultLayerCountArray[i]);        
+
+                    EditorGUILayout.LabelField("Level Increase Value", EditorStyles.label, GUILayout.Width(120));
+                    int layer = EditorGUILayout.IntField(mIncreaseLayerCountLevelThresholdArray[i]);
+                    mIncreaseLayerCountLevelThresholdArray[i] = Mathf.RoundToInt(layer / 10f) * 10;
+
+                    EditorGUILayout.LabelField("Layer Increase Value", EditorStyles.label, GUILayout.Width(120));
+                    mIncreaseLayerCountArray[i] = EditorGUILayout.IntField(mIncreaseLayerCountArray[i]);
+
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.LabelField("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------", EditorStyles.boldLabel);
+                }
+            }
+
+            EditorGUILayout.EndVertical();
+        }
 		private void DrawBasicSettings()
 		{
 			EditorGUILayout.BeginVertical("box");
@@ -244,7 +332,7 @@ namespace TrumpTile.LevelEditor.Editor
 			mOutputFolder = EditorGUILayout.TextField("Output Folder", mOutputFolder);
 			if (GUILayout.Button("...", GUILayout.Width(30)))
 			{
-				string path = EditorUtility.OpenFolderPanel("Select Output Folder", "Assets", "");
+				string path = EditorUtility.OpenFolderPanel("Select Output Folder", "Assets/_MainProject/SODatas/Levels", "");
 				if (!string.IsNullOrEmpty(path) && path.StartsWith(Application.dataPath))
 				{
 					mOutputFolder = "Assets" + path.Substring(Application.dataPath.Length);
@@ -264,23 +352,23 @@ namespace TrumpTile.LevelEditor.Editor
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Width", GUILayout.Width(60));
-			mMinBoardWidth = EditorGUILayout.IntSlider(mMinBoardWidth, 4, 10);
+			mMinBoardWidth = EditorGUILayout.IntSlider(mMinBoardWidth, 4, 8);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			mMaxBoardWidth = EditorGUILayout.IntSlider(mMaxBoardWidth, 4, 12);
+			mMaxBoardWidth = EditorGUILayout.IntSlider(mMaxBoardWidth, 4, 8);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Height", GUILayout.Width(60));
-			mMinBoardHeight = EditorGUILayout.IntSlider(mMinBoardHeight, 4, 10);
+			mMinBoardHeight = EditorGUILayout.IntSlider(mMinBoardHeight, 4, 8);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			mMaxBoardHeight = EditorGUILayout.IntSlider(mMaxBoardHeight, 4, 12);
+			mMaxBoardHeight = EditorGUILayout.IntSlider(mMaxBoardHeight, 4, 8);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Layers", GUILayout.Width(60));
-			mMinLayers = EditorGUILayout.IntSlider(mMinLayers, 1, 3);
+			mMinLayers = EditorGUILayout.IntSlider(mMinLayers, 1, 7);
 			EditorGUILayout.LabelField("~", GUILayout.Width(20));
-			mMaxLayers = EditorGUILayout.IntSlider(mMaxLayers, 1, 5);
+			mMaxLayers = EditorGUILayout.IntSlider(mMaxLayers, 1, 7);
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.EndVertical();
@@ -398,7 +486,7 @@ namespace TrumpTile.LevelEditor.Editor
 			GUI.backgroundColor = Color.white;
 
 			EditorGUILayout.BeginHorizontal();
-			if (GUILayout.Button("Generate Single Level"))
+			if (GUILayout.Button("Generate Single Level By Preview"))
 			{
 				GenerateSingleLevel(mPreviewLevel);
 			}
@@ -449,7 +537,7 @@ namespace TrumpTile.LevelEditor.Editor
 			level.maxLayers = stats.layers;
 			level.slotCount = 7;
 			level.matchCount = mMatchCount;
-			level.targetScore = CalculateTargetScore(stats);
+			//level.targetScore = CalculateTargetScore(stats);
 
 			// 패턴 생성
 			if (mUseSymmetricPatterns)
@@ -477,8 +565,8 @@ namespace TrumpTile.LevelEditor.Editor
 			level.initialHintCount = stats.hintCount;
 
 			// 시간 제한
-			if (mEnableTimeLimit)
-				level.timeLimit = stats.timeLimit;
+			//if (mEnableTimeLimit)
+				//level.timeLimit = stats.timeLimit;
 
 			// 저장
 			string path = $"{mOutputFolder}/{mLevelPrefix}{levelNumber:D3}.asset";
@@ -658,8 +746,8 @@ namespace TrumpTile.LevelEditor.Editor
 				{
 					// 기존 타일 근처에 추가
 					TilePlacement existing = level.tilePlacements[Random.Range(0, level.tilePlacements.Count)];
-					newX = Mathf.Clamp(existing.gridX + Random.Range(-1, 2), 0, level.boardWidth - 1);
-					newY = Mathf.Clamp(existing.gridY + Random.Range(-1, 2), 0, level.boardHeight - 1);
+					newX = (int)Mathf.Clamp(existing.gridX + Random.Range(-1, 2), 0, level.boardWidth - 1);
+					newY = (int)Mathf.Clamp(existing.gridY + Random.Range(-1, 2), 0, level.boardHeight - 1);
 					newLayer = existing.layer;
 				}
 				else
@@ -695,10 +783,10 @@ namespace TrumpTile.LevelEditor.Editor
 			if (level.tilePlacements == null || level.tilePlacements.Count == 0) return;
 
 			// 실제 사용된 범위 찾기
-			int minX = level.tilePlacements.Min(t => t.gridX);
-			int maxX = level.tilePlacements.Max(t => t.gridX);
-			int minY = level.tilePlacements.Min(t => t.gridY);
-			int maxY = level.tilePlacements.Max(t => t.gridY);
+			int minX = (int)level.tilePlacements.Min(t => t.gridX);
+			int maxX = (int)level.tilePlacements.Max(t => t.gridX);
+			int minY = (int)level.tilePlacements.Min(t => t.gridY);
+			int maxY = (int)level.tilePlacements.Max(t => t.gridY);
 
 			int usedWidth = maxX - minX + 1;
 			int usedHeight = maxY - minY + 1;

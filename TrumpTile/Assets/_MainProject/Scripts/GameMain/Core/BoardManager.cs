@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TrumpTile.LevelEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -22,17 +23,6 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private float mCellSize = 1F;
 		[SerializeField] private float mOverlapThreshold = 0.8F;
 
-		[Header("Layer Position Offsets")]
-		[Tooltip("각 레이어별 X, Y 오프셋 설정 (Index = Layer)")]
-		[SerializeField]
-		private Vector2[] mLayerOffsets = new Vector2[]
-		{
-			new Vector2(0F, 0F),      // Layer 0 (맨 아래)
-			new Vector2(0.06F, 0.06F), // Layer 1
-			new Vector2(0.12F, 0.12F), // Layer 2
-			new Vector2(0.18F, 0.18F), // Layer 3
-			new Vector2(0.24F, 0.24F)  // Layer 4 (맨 위)
-		};
 
 		[Header("References")]
 		[SerializeField] private TileController mTilePrefab;
@@ -46,7 +36,7 @@ namespace TrumpTile.GameMain.Core
 		#region Private Fields
 
 		private List<TileController> mAllTiles = new List<TileController>();
-		private Dictionary<Vector3Int, TileController> mTileGridMap = new Dictionary<Vector3Int, TileController>();
+		private Dictionary<Vector3, TileController> mTileGridMap = new Dictionary<Vector3, TileController>();
 
 		private int mGridWidth;
 		private int mGridHeight;
@@ -54,6 +44,9 @@ namespace TrumpTile.GameMain.Core
 
 		private bool mIsShuffling = false;
 		private bool mIsLevelLoaded = false;
+
+		[Header("LayerList 기반으로 레벨 생성(기존 레벨들은 false로 해줘야 생성 가능)")]
+		[SerializeField] private bool mbCreateTileByLayerList = false;
 
 		// 마지막으로 배치된 타일 위치 저장
 		private Vector3 mLastPlacedTilePosition = Vector3.zero;
@@ -115,17 +108,36 @@ namespace TrumpTile.GameMain.Core
 			Dictionary<string, TileData> tileDataMap = CreateTileDataMap();
 
 			int createdCount = 0;
-			foreach (TilePlacement placement in levelData.tilePlacements)
+			if(mbCreateTileByLayerList)
 			{
-				if (!tileDataMap.TryGetValue(placement.tileTypeId, out TileData data))
-				{
-					Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
-					continue;
-				}
+                for (int i = 0; i < levelData.layerList.Count; i++)
+                {
+                    foreach (TilePlacement placement in levelData.layerList[i].tilePlacementList)
+                    {
+                        if (!tileDataMap.TryGetValue(placement.tileTypeId, out TileData data))
+                        {
+                            Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
+                            continue;
+                        }
+                        CreateTile(data, placement.gridX, placement.gridY, i);
+                        createdCount++;
+                    }
+                }
+            }
+			else
+			{
+                foreach (TilePlacement placement in levelData.tilePlacements)
+                {
+                    if (!tileDataMap.TryGetValue(placement.tileTypeId, out TileData data))
+                    {
+                        Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
+                        continue;
+                    }
 
-				CreateTile(data, placement.gridX, placement.gridY, placement.layer);
-				createdCount++;
-			}
+                    CreateTile(data, placement.gridX, placement.gridY, placement.layer);
+                    createdCount++;
+                }
+            }
 
 			UpdateAllBlockedStates();
 
@@ -154,7 +166,7 @@ namespace TrumpTile.GameMain.Core
 			return map;
 		}
 
-		private TileController CreateTile(TileData data, int x, int y, int layer)
+		private TileController CreateTile(TileData data, float x, float y, int layer)
 		{
 			if (mTilePrefab == null)
 			{
@@ -170,7 +182,7 @@ namespace TrumpTile.GameMain.Core
 
 			mAllTiles.Add(tile);
 
-			Vector3Int gridPos = new Vector3Int(x, y, layer);
+			Vector3 gridPos = new Vector3(x, y, layer);
 			mTileGridMap[gridPos] = tile;
 
 			return tile;
@@ -534,7 +546,7 @@ namespace TrumpTile.GameMain.Core
 
 		#region Utility
 
-		public Vector3 GridToWorldPosition(int x, int y, int layer)
+		public Vector3 GridToWorldPosition(float x, float y, int layer)
 		{
 			Vector3 boardOrigin = transform.position - new Vector3(
 				(mGridWidth - 1) * mCellSize / 2F,
@@ -557,15 +569,28 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		private Vector2 GetLayerOffset(int layer)
 		{
-			if (mLayerOffsets == null || mLayerOffsets.Length == 0)
+			float offsetX = 0;
+			float offsetY = 0;
+			if(layer % 2 == 1)
 			{
-				// 기본값: 레이어당 0.06씩 증가
-				return new Vector2(layer * 0.06F, layer * 0.06F);
+				if(mGridWidth < 8)
+				{
+					offsetX = -0.3f;
+				}
+				else
+				{
+					offsetX = 0.3f;
+                }
+				if(mGridHeight < 8)
+				{
+					offsetY = -0.3f;
+				}
+				else
+				{
+					offsetY = 0.3f;
+                }
 			}
-
-			// 배열 범위 내면 해당 값, 아니면 마지막 값 사용
-			int index = Mathf.Clamp(layer, 0, mLayerOffsets.Length - 1);
-			return mLayerOffsets[index];
+			return new Vector2(offsetX, offsetY);
 		}
 
 		private void ClearBoard()

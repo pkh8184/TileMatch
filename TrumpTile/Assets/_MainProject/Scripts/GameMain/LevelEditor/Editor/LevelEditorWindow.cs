@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor;
+using System.Runtime.CompilerServices;
 
 namespace TrumpTile.LevelEditor.Editor
 {
@@ -13,13 +14,18 @@ namespace TrumpTile.LevelEditor.Editor
 	public class LevelSnapshot
 	{
 		public string actionName;
-		public List<TilePlacement> tilePlacements = new List<TilePlacement>();
+		public List<LayerDataWrapper> layerListState;
 	}
 
 	public class LevelEditorWindow : EditorWindow
 	{
-		// 현재 편집 중인 레벨
+		// 현재 편집 중인 레벨 클론
+		private LevelData mCurrentLevelClone;
+		// 저장시에 사용할 본래 레벨 참조
 		private LevelData mCurrentLevel;
+
+		// 현재 복사된 레벨
+		private LevelData mCopiedLevel = null;
 
 		// 에디터 상태
 		private EEditorTool mCurrentTool = EEditorTool.Select;
@@ -53,17 +59,21 @@ namespace TrumpTile.LevelEditor.Editor
 		private const int MAX_HISTORY_SIZE = 50;
 
 		// 타일 프리셋
-		private List<TileTypeConfig> mTileTypePresets;
+		private List<TileData> mTileDataPresets;
 
-		// 색상
-		private static readonly Color[] LayerColors = new Color[]
-		{
-			new Color(0.2F, 0.6F, 1F, 1F),
-			new Color(0.2F, 0.8F, 0.4F, 1F),
-			new Color(1F, 0.8F, 0.2F, 1F),
-			new Color(1F, 0.4F, 0.4F, 1F),
-			new Color(0.8F, 0.4F, 1F, 1F),
-		};
+        private List<int> indexListForBoardSizeUpdate = new List<int>();
+        // 색상
+        //private static readonly Color[] LayerColors = new Color[]
+        //{
+        //	new Color(0.2F, 0.6F, 1F, 1F),
+        //	new Color(0.2F, 0.8F, 0.4F, 1F),
+        //	new Color(1F, 0.8F, 0.2F, 1F),
+        //	new Color(1F, 0.4F, 0.4F, 1F),
+        //	new Color(0.8F, 0.4F, 1F, 1F),
+        //};
+
+        // 오른쪽 패널(타일 카테고리) 스크롤 위치
+        private Vector2 mRightPanelScrollPos;
 
 		[MenuItem("Tools/Tile Match/Level Editor %#l")]
 		public static void OpenWindow()
@@ -84,21 +94,19 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void InitializeTilePresets()
 		{
-			mTileTypePresets = new List<TileTypeConfig>();
+			mTileDataPresets = new List<TileData>();
 
-			foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
-			{
-				foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
-				{
-					mTileTypePresets.Add(new TileTypeConfig
-					{
-						typeId = $"{suit}_{rank}",
-						suit = suit,
-						rank = rank,
-						weight = 1
-					});
-				}
-			}
+            for (int i = 0; i < (int)ETileCartegory.Length; i++)
+            {
+                string[] guids = AssetDatabase.FindAssets("", new[] { $"Assets/_MainProject/SODatas/TileData/{(ETileCartegory)i}" });
+                foreach (string guid in guids)
+                {
+                    string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                    TileData tileData = AssetDatabase.LoadAssetAtPath<TileData>(assetPath);
+					mTileDataPresets.Add(tileData);
+                }
+            }
 		}
 
 		private void OnGUI()
@@ -107,7 +115,7 @@ namespace TrumpTile.LevelEditor.Editor
 			if (mSelectedTiles == null) mSelectedTiles = new List<TilePlacement>();
 			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
 			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
-			if (mTileTypePresets == null) InitializeTilePresets();
+			if (mTileDataPresets == null) InitializeTilePresets();
 
 			EditorGUILayout.BeginVertical();
 
@@ -143,7 +151,16 @@ namespace TrumpTile.LevelEditor.Editor
 			if (GUILayout.Button("Save", EditorStyles.toolbarButton, GUILayout.Width(50)))
 				SaveCurrentLevel();
 
-			GUILayout.Space(20);
+			GUI.enabled = mCurrentLevelClone != null;
+            if (GUILayout.Button("Copy", EditorStyles.toolbarButton, GUILayout.Width(50)))
+				CopyLevel();
+
+			GUI.enabled = mCopiedLevel != null;
+            if (GUILayout.Button("Paste", EditorStyles.toolbarButton, GUILayout.Width(50)))
+				PasteLevel();
+
+
+                GUILayout.Space(20);
 
 			// Undo/Redo
 			GUI.enabled = mUndoHistory != null && mUndoHistory.Count > 0;
@@ -168,20 +185,25 @@ namespace TrumpTile.LevelEditor.Editor
 			if (GUILayout.Toggle(mCurrentTool == EEditorTool.Erase, "Erase", EditorStyles.toolbarButton, GUILayout.Width(50)))
 				mCurrentTool = EEditorTool.Erase;
 
-			GUILayout.Space(20);
+
+            GUILayout.Space(20);
 
 			// 레이어 선택
 			GUILayout.Label("Layer:", GUILayout.Width(40));
-			int maxLayers = mCurrentLevel != null ? Mathf.Min(mCurrentLevel.maxLayers, 5) : 4;
-			for (int i = 0; i < maxLayers; i++)
+			if(mCurrentLevelClone != null && mCurrentLevelClone.layerList != null)
 			{
-				GUI.backgroundColor = mCurrentLayer == i ? LayerColors[i] : Color.white;
-				if (GUILayout.Button(i.ToString(), EditorStyles.toolbarButton, GUILayout.Width(25)))
-					mCurrentLayer = i;
-			}
+                for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
+                {
+                    GUI.backgroundColor = mCurrentLayer == i ? Color.green : Color.white;
+                    if (GUILayout.Button(i.ToString(), EditorStyles.toolbarButton, GUILayout.Width(25)))
+                        mCurrentLayer = i;
+                }
+            }
 			GUI.backgroundColor = Color.white;
 
-			GUILayout.Space(10);
+            EditorGUILayout.LabelField("비고 : Layer 0 = 최하단, 오름차순");
+
+            GUILayout.Space(10);
 			mShowAllLayers = GUILayout.Toggle(mShowAllLayers, "Show All", EditorStyles.toolbarButton, GUILayout.Width(70));
 
 			GUILayout.FlexibleSpace();
@@ -217,28 +239,68 @@ namespace TrumpTile.LevelEditor.Editor
 
 			EditorGUILayout.BeginVertical("box");
 
-			if (mCurrentLevel != null)
+			if (mCurrentLevelClone != null)
 			{
 				EditorGUI.BeginChangeCheck();
 
-				mCurrentLevel.levelNumber = EditorGUILayout.IntField("Level Number", mCurrentLevel.levelNumber);
-				mCurrentLevel.levelName = EditorGUILayout.TextField("Level Name", mCurrentLevel.levelName);
-				mCurrentLevel.difficulty = (ELevelDifficulty)EditorGUILayout.EnumPopup("Difficulty", mCurrentLevel.difficulty);
+				mCurrentLevelClone.levelNumber = EditorGUILayout.IntField("Level Number", mCurrentLevelClone.levelNumber);
+				mCurrentLevelClone.levelName = EditorGUILayout.TextField("Level Name", mCurrentLevelClone.levelName);
 
 				EditorGUILayout.Space(5);
-				mCurrentLevel.boardWidth = EditorGUILayout.IntSlider("Width", mCurrentLevel.boardWidth, 4, 12);
-				mCurrentLevel.boardHeight = EditorGUILayout.IntSlider("Height", mCurrentLevel.boardHeight, 4, 12);
-				mCurrentLevel.maxLayers = EditorGUILayout.IntSlider("Layers", mCurrentLevel.maxLayers, 1, 5);
-
-				EditorGUILayout.Space(5);
-				mCurrentLevel.slotCount = EditorGUILayout.IntSlider("Slot Count", mCurrentLevel.slotCount, 5, 10);
-				mCurrentLevel.matchCount = EditorGUILayout.IntSlider("Match Count", mCurrentLevel.matchCount, 3, 4);
-
-				if (EditorGUI.EndChangeCheck())
-				{
-					EditorUtility.SetDirty(mCurrentLevel);
+                EditorGUI.BeginChangeCheck();
+                mCurrentLevelClone.boardWidth = EditorGUILayout.IntSlider("Width", mCurrentLevelClone.boardWidth, 4, 8);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    for(int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
+					{
+						for(int j = 0; j < mCurrentLevelClone.layerList[i].tilePlacementList.Count; j++)
+						{
+							if(mCurrentLevelClone.layerList[i].tilePlacementList[j].gridX > GetMaxGridXIndexByLayer(i))
+							{
+								indexListForBoardSizeUpdate.Add(j);
+							}
+						}
+						for(int j = indexListForBoardSizeUpdate.Count - 1; j >= 0; j--)
+						{
+							mCurrentLevelClone.layerList[i].tilePlacementList.RemoveAt(indexListForBoardSizeUpdate[j]);
+                        }
+						indexListForBoardSizeUpdate.Clear();
+                    }
 				}
-			}
+
+				EditorGUI.BeginChangeCheck();
+                mCurrentLevelClone.boardHeight = EditorGUILayout.IntSlider("Height", mCurrentLevelClone.boardHeight, 4, 8);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
+                    {
+                        for (int j = 0; j < mCurrentLevelClone.layerList[i].tilePlacementList.Count; j++)
+                        {
+                            if (mCurrentLevelClone.layerList[i].tilePlacementList[j].gridY > GetMaxGridYIndexByLayer(i))
+                            {
+                                indexListForBoardSizeUpdate.Add(j);
+                            }
+                        }
+                        for (int j = indexListForBoardSizeUpdate.Count - 1; j >= 0; j--)
+                        {
+                            mCurrentLevelClone.layerList[i].tilePlacementList.RemoveAt(indexListForBoardSizeUpdate[j]);
+                        }
+                        indexListForBoardSizeUpdate.Clear();
+                    }
+                }
+
+                EditorGUI.BeginChangeCheck();
+                mCurrentLevelClone.maxLayers = EditorGUILayout.IntSlider("Layers", mCurrentLevelClone.maxLayers, 1, 999);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    while (mCurrentLevelClone.layerList.Count > mCurrentLevelClone.maxLayers)
+                        mCurrentLevelClone.layerList.RemoveAt(mCurrentLevelClone.layerList.Count - 1);
+
+                    while (mCurrentLevelClone.layerList.Count < mCurrentLevelClone.maxLayers)
+                        mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
+                }
+
+            }
 			else
 			{
 				EditorGUILayout.HelpBox("No level loaded.", MessageType.Info);
@@ -251,22 +313,23 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void DrawStatistics()
 		{
-			if (mCurrentLevel == null) return;
+			if (mCurrentLevelClone == null) return;
 
 			mShowStatistics = EditorGUILayout.Foldout(mShowStatistics, "Statistics", true);
 			if (!mShowStatistics) return;
 
 			EditorGUILayout.BeginVertical("box");
 
-			int totalTiles = mCurrentLevel.tilePlacements != null ? mCurrentLevel.tilePlacements.Count : 0;
+			int totalTiles = mCurrentLevelClone.layerList != null ? mCurrentLevelClone.GetTileCount() : 0;
 			EditorGUILayout.LabelField("Total Tiles:", totalTiles.ToString());
 
 			// 레이어별 타일 수
-			if (mCurrentLevel.tilePlacements != null)
+			if (mCurrentLevelClone.layerList != null)
 			{
-				for (int i = 0; i < mCurrentLevel.maxLayers && i < LayerColors.Length; i++)
+				for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
 				{
-					int count = mCurrentLevel.tilePlacements.Count(t => t != null && t.layer == i);
+					if(mCurrentLevelClone.layerList[i].tilePlacementList == null) continue;
+					int count = mCurrentLevelClone.layerList[i].tilePlacementList.Count;
 					EditorGUILayout.LabelField($"  Layer {i}:", count.ToString());
 				}
 			}
@@ -274,7 +337,7 @@ namespace TrumpTile.LevelEditor.Editor
 			// 유효성 검사
 			EditorGUILayout.Space(5);
 			string errorMsg;
-			if (mCurrentLevel.Validate(out errorMsg))
+			if (mCurrentLevelClone.Validate(out errorMsg))
 			{
 				EditorGUILayout.HelpBox("Level is valid", MessageType.Info);
 			}
@@ -292,13 +355,12 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void DrawGridEditor()
 		{
-			Rect gridArea = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none,
-				GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+            Rect gridArea = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none,GUILayout.Width(position.width - 180 - 250 - 30),GUILayout.ExpandHeight(true));
 
-			// 배경
-			EditorGUI.DrawRect(gridArea, new Color(0.15F, 0.15F, 0.15F));
+            // 배경
+            EditorGUI.DrawRect(gridArea, new Color(0.15F, 0.15F, 0.15F));
 
-			if (mCurrentLevel == null)
+			if (mCurrentLevelClone == null)
 			{
 				GUI.Label(gridArea, "Create or Open a Level", new GUIStyle(EditorStyles.largeLabel)
 				{
@@ -307,19 +369,55 @@ namespace TrumpTile.LevelEditor.Editor
 				return;
 			}
 
-			DrawGrid(gridArea);
-			DrawTiles(gridArea);
-			HandleGridInput(gridArea);
+			//그리드 영역 클립핑
+            GUI.BeginClip(gridArea);
+
+			//클립핑된 영역 내의 로컬 좌표계에서 실제 그리드, 타일 그리기
+            Rect localArea = new Rect(0, 0, gridArea.width, gridArea.height);
+            DrawGrid(localArea);
+            DrawTiles(localArea);
+
+            GUI.EndClip();
+
+            HandleGridInput(gridArea);
 		}
 
 		private void DrawGrid(Rect area)
 		{
-			if (mCurrentLevel == null) return;
+			if (mCurrentLevelClone == null) return;
 
 			float scaledCellSize = mCellSize * mZoomLevel;
-			float gridWidth = mCurrentLevel.boardWidth * scaledCellSize;
-			float gridHeight = mCurrentLevel.boardHeight * scaledCellSize;
 
+			float gridWidth = GetGridWidthByLayer(scaledCellSize, mCurrentLayer);
+			float gridHeight = GetGridHeightByLayer(scaledCellSize, mCurrentLayer);
+
+            int currentLayerWidth = 0;
+            int currentLayerHeight = 0;
+
+            if (mCurrentLayer % 2 == 0)
+			{
+				currentLayerWidth = mCurrentLevelClone.boardWidth;
+				currentLayerHeight = mCurrentLevelClone.boardHeight;
+            }
+			else
+			{
+				if (mCurrentLevelClone.boardWidth < 8)
+				{
+                    currentLayerWidth = mCurrentLevelClone.boardWidth + 1;
+                }
+				else
+				{
+                    currentLayerWidth = mCurrentLevelClone.boardWidth - 1;
+                }
+				if(mCurrentLevelClone.boardHeight < 8)
+				{
+					currentLayerHeight = mCurrentLevelClone.boardHeight + 1;
+                }
+				else
+				{
+					currentLayerHeight = mCurrentLevelClone.boardHeight - 1;
+                }
+            }
 			Vector2 gridOrigin = new Vector2(
 				area.x + (area.width - gridWidth) / 2 + mPanOffset.x,
 				area.y + (area.height - gridHeight) / 2 + mPanOffset.y
@@ -329,63 +427,111 @@ namespace TrumpTile.LevelEditor.Editor
 			Rect gridBounds = new Rect(gridOrigin.x, gridOrigin.y, gridWidth, gridHeight);
 			EditorGUI.DrawRect(gridBounds, new Color(0.25F, 0.25F, 0.28F));
 
-			// 셀 그리기
-			for (int x = 0; x < mCurrentLevel.boardWidth; x++)
+			if (mCurrentLayer % 2 == 0)
 			{
-				for (int y = 0; y < mCurrentLevel.boardHeight; y++)
+				for (int x = 0; x < currentLayerWidth; x++)
 				{
-					Rect cellRect = new Rect(
-						gridOrigin.x + x * scaledCellSize + mCellPadding,
-						gridOrigin.y + (mCurrentLevel.boardHeight - 1 - y) * scaledCellSize + mCellPadding,
-						scaledCellSize - mCellPadding * 2,
-						scaledCellSize - mCellPadding * 2
-					);
+					for (int y = 0; y < currentLayerHeight; y++)
+					{
+						Rect cellRect = new Rect(
+							gridOrigin.x + x * scaledCellSize + mCellPadding,
+							gridOrigin.y + (currentLayerHeight - 1 - y) * scaledCellSize + mCellPadding,
+							scaledCellSize - mCellPadding * 2,
+							scaledCellSize - mCellPadding * 2
+						);
 
-					Color cellColor = (x + y) % 2 == 0 ?
-						new Color(0.3F, 0.3F, 0.33F) :
-						new Color(0.28F, 0.28F, 0.31F);
+						Color cellColor = (x + y) % 2 == 0 ?
+							new Color(0.3F, 0.3F, 0.33F) :
+							new Color(0.28F, 0.28F, 0.31F);
 
-					EditorGUI.DrawRect(cellRect, cellColor);
+						EditorGUI.DrawRect(cellRect, cellColor);
+					}
 				}
 			}
+			else
+			{
+                for (int x = 0; x < currentLayerWidth; x++)
+                {
+                    for (int y = 0; y < currentLayerHeight; y++)
+                    {
+                        Rect cellRect = new Rect(
+                            gridOrigin.x + x * scaledCellSize + mCellPadding,
+                            gridOrigin.y + (currentLayerHeight - 1 - y) * scaledCellSize + mCellPadding,
+                            scaledCellSize - mCellPadding * 2,
+                            scaledCellSize - mCellPadding * 2
+                        );
+
+                        Color cellColor = (x + y) % 2 == 0 ?
+                            new Color(0.3F, 0.3F, 0.33F) :
+                            new Color(0.28F, 0.28F, 0.31F);
+
+                        EditorGUI.DrawRect(cellRect, cellColor);
+                    }
+                }
+            }
 		}
 
 		private void DrawTiles(Rect area)
 		{
-			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
+			//레이어별로 타일 그려주기
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
 
 			float scaledCellSize = mCellSize * mZoomLevel;
-			Vector2 gridOrigin = GetGridOrigin(area);
-
-			foreach (TilePlacement tile in mCurrentLevel.tilePlacements)
+        
+            for (int i = 0; i < mCurrentLevelClone.layerList.Count; i++)
 			{
-				if (tile == null) continue;
+				if (mCurrentLevelClone.layerList[i] == null) continue;
+				if (mCurrentLevelClone.layerList[i].tilePlacementList == null) continue;
+				if (i == mCurrentLayer) continue;
 
-				if (!mShowAllLayers && tile.layer != mCurrentLayer)
-					continue;
+				float alpha = mShowAllLayers ? mLayerOpacity + (i * 0.1f) : 1F;
 
-				float alpha = (mShowAllLayers && tile.layer != mCurrentLayer) ? mLayerOpacity : 1F;
-				DrawTile(tile, gridOrigin, scaledCellSize, alpha);
+				Vector2 gridOrigin = GetGridOrigin(area, i);
+
+                foreach (TilePlacement tile in mCurrentLevelClone.layerList[i].tilePlacementList)
+				{
+					DrawTile(tile, gridOrigin, scaledCellSize, alpha, i);
+				}
 			}
-		}
+			if (mCurrentLevelClone.layerList.Count == 0) return;
+            //if (mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList == null) return;
 
-		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, float alpha)
+            foreach (TilePlacement tile in mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList)
+            {
+                DrawTile(tile, GetGridOrigin(area, mCurrentLayer), scaledCellSize, 1, mCurrentLayer);
+            }
+            //foreach (TilePlacement tile in mCurrentLevelClone.tilePlacements)
+            //{
+            //	if (tile == null) continue;
+
+            //	if (!mShowAllLayers && tile.layer != mCurrentLayer)
+            //		continue;
+
+            //             Vector2 gridOrigin = GetGridOrigin(area, tile.layer);
+
+            //             float alpha = (mShowAllLayers && tile.layer != mCurrentLayer) ? mLayerOpacity : 1F;
+            //	DrawTile(tile, gridOrigin, scaledCellSize, alpha);
+            //}
+        }
+
+		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, float alpha, int layer)
 		{
-			if (tile == null || mCurrentLevel == null) return;
+			if (tile == null || mCurrentLevelClone == null) return;
 
-			float layerOffset = tile.layer * 3F * mZoomLevel;
+            int layerHeight = layer % 2 == 0
+							? mCurrentLevelClone.boardHeight
+							: (mCurrentLevelClone.boardHeight < 8 ? mCurrentLevelClone.boardHeight + 1 : mCurrentLevelClone.boardHeight - 1);
 
-			Rect tileRect = new Rect(
-				gridOrigin.x + tile.gridX * scaledCellSize + mCellPadding + layerOffset,
-				gridOrigin.y + (mCurrentLevel.boardHeight - 1 - tile.gridY) * scaledCellSize + mCellPadding - layerOffset,
+
+            Rect tileRect = new Rect(
+				gridOrigin.x + tile.gridX * scaledCellSize + mCellPadding,
+                gridOrigin.y + (layerHeight - 1 - tile.gridY) * scaledCellSize + mCellPadding,
 				scaledCellSize - mCellPadding * 2,
 				scaledCellSize - mCellPadding * 2
 			);
 
 			// 레이어 색상
-			int colorIndex = Mathf.Clamp(tile.layer, 0, LayerColors.Length - 1);
-			Color tileColor = LayerColors[colorIndex];
-			tileColor.a = alpha;
+			Color tileColor = new Color(1f, 1f, 1f, alpha);
 
 			// 선택 하이라이트
 			if (mSelectedTiles != null && mSelectedTiles.Contains(tile))
@@ -394,23 +540,30 @@ namespace TrumpTile.LevelEditor.Editor
 				EditorGUI.DrawRect(highlight, new Color(1F, 0.8F, 0.2F, alpha));
 			}
 
+			
+			Sprite sprite = mTileDataPresets.Find(x => x.tileTypeId == tile.tileTypeId).sprite;
+
 			EditorGUI.DrawRect(tileRect, tileColor);
+			Color origin = GUI.color;
+			GUI.color = tileColor;
+			GUI.DrawTexture(tileRect, sprite.texture);
+			GUI.color = origin;
 
 			// 타일 타입 표시
-			if (!string.IsNullOrEmpty(tile.tileTypeId))
-			{
-				string[] parts = tile.tileTypeId.Split('_');
-				if (parts.Length >= 2)
-				{
-					string display = GetShortDisplay(parts[0], parts[1]);
-					GUI.Label(tileRect, display, new GUIStyle(EditorStyles.boldLabel)
-					{
-						alignment = TextAnchor.MiddleCenter,
-						fontSize = Mathf.RoundToInt(10 * mZoomLevel),
-						normal = { textColor = new Color(1, 1, 1, alpha) }
-					});
-				}
-			}
+			//if (!string.IsNullOrEmpty(tile.tileTypeId))
+			//{
+			//	string[] parts = tile.tileTypeId.Split('_');
+			//	if (parts.Length >= 2)
+			//	{
+			//		string display = GetShortDisplay(parts[0], parts[1]);
+			//		GUI.Label(tileRect, display, new GUIStyle(EditorStyles.boldLabel)
+			//		{
+			//			alignment = TextAnchor.MiddleCenter,
+			//			fontSize = Mathf.RoundToInt(10 * mZoomLevel),
+			//			normal = { textColor = new Color(1, 1, 1, alpha) }
+			//		});
+			//	}
+			//}
 		}
 
 		private string GetShortDisplay(string suit, string rank)
@@ -436,15 +589,15 @@ namespace TrumpTile.LevelEditor.Editor
 			return $"{r}\n{s}";
 		}
 
-		private Vector2 GetGridOrigin(Rect area)
+		private Vector2 GetGridOrigin(Rect area, int layer = 0)
 		{
-			if (mCurrentLevel == null) return Vector2.zero;
+			if (mCurrentLevelClone == null) return Vector2.zero;
 
 			float scaledCellSize = mCellSize * mZoomLevel;
-			float gridWidth = mCurrentLevel.boardWidth * scaledCellSize;
-			float gridHeight = mCurrentLevel.boardHeight * scaledCellSize;
+			float gridWidth = GetGridWidthByLayer(scaledCellSize, layer);
+            float gridHeight = GetGridHeightByLayer(scaledCellSize, layer);
 
-			return new Vector2(
+            return new Vector2(
 				area.x + (area.width - gridWidth) / 2 + mPanOffset.x,
 				area.y + (area.height - gridHeight) / 2 + mPanOffset.y
 			);
@@ -457,7 +610,7 @@ namespace TrumpTile.LevelEditor.Editor
 
 			if (!area.Contains(e.mousePosition)) return;
 
-			Vector2Int gridPos = GetGridPosition(e.mousePosition, area);
+			Vector2 gridPos = GetGridPosition(e.mousePosition, area);
 
 			if (e.type == EventType.MouseDown && e.button == 0)
 			{
@@ -485,27 +638,27 @@ namespace TrumpTile.LevelEditor.Editor
 			}
 		}
 
-		private Vector2Int GetGridPosition(Vector2 mousePos, Rect area)
+		private Vector2 GetGridPosition(Vector2 mousePos, Rect area)
 		{
-			if (mCurrentLevel == null) return Vector2Int.zero;
+			if (mCurrentLevelClone == null) return Vector2.zero;
 
-			Vector2 gridOrigin = GetGridOrigin(area);
+			Vector2 gridOrigin = GetGridOrigin(area, mCurrentLayer);
 			float scaledCellSize = mCellSize * mZoomLevel;
 
-			int x = Mathf.FloorToInt((mousePos.x - gridOrigin.x) / scaledCellSize);
-			int y = mCurrentLevel.boardHeight - 1 - Mathf.FloorToInt((mousePos.y - gridOrigin.y) / scaledCellSize);
+			float x = Mathf.FloorToInt((mousePos.x - gridOrigin.x) / scaledCellSize);
+			float y = Mathf.FloorToInt((GetGridHeightByLayer(scaledCellSize, mCurrentLayer) + gridOrigin.y - mousePos.y) / scaledCellSize);
 
-			return new Vector2Int(x, y);
+            return new Vector2(x, y);
 		}
 
-		private bool IsValidGridPosition(Vector2Int pos)
+		private bool IsValidGridPosition(Vector2 pos)
 		{
-			return mCurrentLevel != null &&
-				   pos.x >= 0 && pos.x < mCurrentLevel.boardWidth &&
-				   pos.y >= 0 && pos.y < mCurrentLevel.boardHeight;
+			return mCurrentLevelClone != null &&
+				   pos.x >= 0 && pos.x <= GetMaxGridXIndexByLayer(mCurrentLayer) &&
+				   pos.y >= 0 && pos.y <= GetMaxGridYIndexByLayer(mCurrentLayer);
 		}
 
-		private void HandleLeftClick(Vector2Int gridPos)
+		private void HandleLeftClick(Vector2 gridPos)
 		{
 			if (!IsValidGridPosition(gridPos)) return;
 
@@ -533,24 +686,138 @@ namespace TrumpTile.LevelEditor.Editor
 			Repaint();
 		}
 
-		private TilePlacement GetTileAt(Vector2Int pos, int layer)
+		private TilePlacement GetTileAt(Vector2 pos, int layer)
 		{
-			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return null;
-			return mCurrentLevel.tilePlacements.FirstOrDefault(t =>
-				t != null && t.gridX == pos.x && t.gridY == pos.y && t.layer == layer);
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return null;
+			if (mCurrentLevelClone.layerList[layer] == null || mCurrentLevelClone.layerList[layer].tilePlacementList == null) return null;
+			return mCurrentLevelClone.layerList[layer].tilePlacementList.FirstOrDefault(t =>
+				t != null && t.gridX == pos.x && t.gridY == pos.y);
 		}
-
-		#endregion
-
-		#region Right Panel
-
-		private void DrawRightPanel()
+		private float GetGridWidthByLayer(float scaledCellSize, int layer = 0)
 		{
-			EditorGUILayout.BeginVertical(GUILayout.Width(180));
+			float gridWidth = 0;
+            if (layer % 2 == 0)
+            {
+                gridWidth = mCurrentLevelClone.boardWidth * scaledCellSize;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardWidth < 8)
+                {
+                    gridWidth = (mCurrentLevelClone.boardWidth + 1) * scaledCellSize;
+                }
+                else
+                {
+                    gridWidth = (mCurrentLevelClone.boardWidth - 1) * scaledCellSize;
+                }
+            }
+			return gridWidth;
+        }
+        private float GetGridHeightByLayer(float scaledCellSize, int layer = 0)
+        {
+            float gridHeight = 0;
+            if (layer % 2 == 0)
+            {
+                gridHeight = mCurrentLevelClone.boardHeight * scaledCellSize;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardHeight < 8)
+                {
+                    gridHeight = (mCurrentLevelClone.boardHeight + 1) * scaledCellSize;
+                }
+                else
+                {
+                    gridHeight = (mCurrentLevelClone.boardHeight - 1) * scaledCellSize;
+                }
+            }
+            return gridHeight;
+        }
+		private int GetMaxGridXIndexByLayer(int layer = 0)
+		{
+			if(layer % 2 ==0)
+			{
+				return mCurrentLevelClone.boardWidth - 1;
+            }
+			else
+			{
+				if (mCurrentLevelClone.boardWidth < 8)
+				{
+					return mCurrentLevelClone.boardWidth;
+				}
+				else
+				{
+					return mCurrentLevelClone.boardWidth - 1;
+                }
+            }
+		}
+        private int GetMaxGridYIndexByLayer(int layer = 0)
+        {
+            if (layer % 2 == 0)
+            {
+                return mCurrentLevelClone.boardHeight - 1;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardHeight < 8)
+                {
+                    return mCurrentLevelClone.boardHeight;
+                }
+                else
+                {
+                    return mCurrentLevelClone.boardHeight - 1;
+                }
+            }
+        }
+		private int GetGridSizeXByLayer(int layer = 0)
+		{
+            if (layer % 2 == 0)
+            {
+                return mCurrentLevelClone.boardWidth;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardWidth < 8)
+                {
+                    return mCurrentLevelClone.boardWidth + 1;
+                }
+                else
+                {
+                    return mCurrentLevelClone.boardWidth - 1;
+                }
+            }
+        }
+        private int GetGridSizeYByLayer(int layer = 0)
+        {
+            if (layer % 2 == 0)
+            {
+                return mCurrentLevelClone.boardHeight;
+            }
+            else
+            {
+                if (mCurrentLevelClone.boardHeight < 8)
+                {
+                    return mCurrentLevelClone.boardHeight + 1;
+                }
+                else
+                {
+                    return mCurrentLevelClone.boardHeight - 1;
+                }
+            }
+        }
+        #endregion
+
+        #region Right Panel
+
+        private void DrawRightPanel()
+		{
+			mRightPanelScrollPos = EditorGUILayout.BeginScrollView(mRightPanelScrollPos, GUILayout.Width(200), GUILayout.Height(position.height));
+
+			EditorGUILayout.BeginVertical();
 
 			EditorGUILayout.LabelField("Tile Palette", EditorStyles.boldLabel);
 
-			mShowTileTypes = EditorGUILayout.Foldout(mShowTileTypes, "Card Tiles", true);
+			mShowTileTypes = EditorGUILayout.Foldout(mShowTileTypes, "Tile Category", true);
 			if (mShowTileTypes)
 			{
 				DrawTilePalette();
@@ -561,9 +828,9 @@ namespace TrumpTile.LevelEditor.Editor
 			// Quick Actions
 			EditorGUILayout.LabelField("Quick Actions", EditorStyles.boldLabel);
 
-			GUI.enabled = mCurrentLevel != null;
+			GUI.enabled = mCurrentLevelClone != null;
 
-			if (GUILayout.Button("Auto Fill Random"))
+			if (GUILayout.Button("Auto Fill Random Layer " + mCurrentLayer))
 			{
 				RecordUndo("Auto Fill");
 				AutoFillRandom();
@@ -584,64 +851,98 @@ namespace TrumpTile.LevelEditor.Editor
 			GUI.enabled = true;
 
 			EditorGUILayout.EndVertical();
+
+			EditorGUILayout.EndScrollView();
 		}
 
 		private void DrawTilePalette()
 		{
-			if (mTileTypePresets == null) return;
+			if (mTileDataPresets == null) return;
 
 			float buttonSize = 35F;
 			int columns = 4;
-
-			foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
+			List<int> duplicateIndexList = new List<int>();
+            for (int i = 0; i < mTileDataPresets.Count; i++)
 			{
-				string suitSymbol = suit switch
-				{
-					ECardSuit.Spade => "♠",
-					ECardSuit.Heart => "♥",
-					ECardSuit.Diamond => "♦",
-					ECardSuit.Club => "♣",
-					_ => "?"
-				};
-
-				EditorGUILayout.LabelField($"{suitSymbol} {suit}", EditorStyles.miniLabel);
-
-				int count = 0;
-				EditorGUILayout.BeginHorizontal();
-
-				foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
-				{
-					if (count > 0 && count % columns == 0)
-					{
-						EditorGUILayout.EndHorizontal();
-						EditorGUILayout.BeginHorizontal();
-					}
-
-					string typeId = $"{suit}_{rank}";
-					string rankStr = rank switch
-					{
-						ECardRank.Ace => "A",
-						ECardRank.Jack => "J",
-						ECardRank.Queen => "Q",
-						ECardRank.King => "K",
-						_ => ((int)rank).ToString()
-					};
-
-					GUI.backgroundColor = mSelectedTileType == typeId ? Color.yellow : Color.white;
-					if (GUILayout.Button(rankStr, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
-					{
-						mSelectedTileType = typeId;
-						mCurrentTool = EEditorTool.Paint;
-					}
-
-					count++;
-				}
-
-				EditorGUILayout.EndHorizontal();
-				GUI.backgroundColor = Color.white;
-				EditorGUILayout.Space(5);
+				duplicateIndexList.Add(i);
 			}
+            for (int i = 0; i < (int)ETileCartegory.Length; i++)
+			{
+                EditorGUILayout.LabelField($"{(ETileCartegory)i}", EditorStyles.miniLabel);
+                int count = 0;
+                EditorGUILayout.BeginHorizontal();
+
+				for(int j = 0; j < duplicateIndexList.Count; j++)
+				{
+                    if (count > 0 && count % columns == 0)
+                    {
+                        EditorGUILayout.EndHorizontal();
+                        EditorGUILayout.BeginHorizontal();
+                    }
+
+                    if (mTileDataPresets[duplicateIndexList[j]].tileCartegory == (ETileCartegory)i)
+					{
+                        GUI.backgroundColor = mSelectedTileType == mTileDataPresets[duplicateIndexList[j]].tileTypeId ? Color.yellow : Color.white;
+                        if (GUILayout.Button(mTileDataPresets[duplicateIndexList[j]].sprite.texture, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
+                        {
+                            mSelectedTileType = mTileDataPresets[duplicateIndexList[j]].tileTypeId;
+                            mCurrentTool = EEditorTool.Paint;
+                        }
+                        count++;
+						duplicateIndexList.Remove(duplicateIndexList[j]);
+                    }
+                }
+
+                EditorGUILayout.EndHorizontal();
+                GUI.backgroundColor = Color.white;
+                EditorGUILayout.Space(5);
+            }
+			//foreach (ECardSuit suit in System.Enum.GetValues(typeof(ECardSuit)))
+			//{
+			//	string suitSymbol = suit switch
+			//	{
+			//		ECardSuit.Spade => "♠",
+			//		ECardSuit.Heart => "♥",
+			//		ECardSuit.Diamond => "♦",
+			//		ECardSuit.Club => "♣",
+			//		_ => "?"
+			//	};
+   //             EditorGUILayout.LabelField($"{suitSymbol} {suit}", EditorStyles.miniLabel);
+
+			//	int count = 0;
+			//	EditorGUILayout.BeginHorizontal();
+
+			//	foreach (ECardRank rank in System.Enum.GetValues(typeof(ECardRank)))
+			//	{
+			//		if (count > 0 && count % columns == 0)
+			//		{
+			//			EditorGUILayout.EndHorizontal();
+			//			EditorGUILayout.BeginHorizontal();
+			//		}
+
+				
+			//		string typeId = $"{suit}_{rank}";
+			//		string rankStr = rank switch
+			//		{
+			//			ECardRank.Ace => "A",
+			//			ECardRank.Jack => "J",
+			//			ECardRank.Queen => "Q",
+			//			ECardRank.King => "K",
+			//			_ => ((int)rank).ToString()
+			//		};
+
+			//		GUI.backgroundColor = mSelectedTileType == typeId ? Color.yellow : Color.white;
+			//		if (GUILayout.Button(rankStr, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
+			//		{
+			//			mSelectedTileType = typeId;
+			//			mCurrentTool = EEditorTool.Paint;
+			//		}
+
+			//		count++;
+			//	}
 		}
+		
+
 
 		#endregion
 
@@ -667,54 +968,55 @@ namespace TrumpTile.LevelEditor.Editor
 
 		#region Tile Operations
 
-		private void PaintTile(Vector2Int gridPos)
+		private void PaintTile(Vector2 gridPos)
 		{
 			if (!IsValidGridPosition(gridPos) || string.IsNullOrEmpty(mSelectedTileType)) return;
-			if (mCurrentLevel == null) return;
-			if (mCurrentLevel.tilePlacements == null)
-				mCurrentLevel.tilePlacements = new List<TilePlacement>();
+			if (mCurrentLevelClone == null) return;
+			if (mCurrentLevelClone.layerList == null)
+				mCurrentLevelClone.layerList = new List<LayerDataWrapper>();
 
 			TilePlacement existing = GetTileAt(gridPos, mCurrentLayer);
 			if (existing != null)
-				mCurrentLevel.tilePlacements.Remove(existing);
+				mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Remove(existing);
 
-			mCurrentLevel.tilePlacements.Add(new TilePlacement(gridPos.x, gridPos.y, mCurrentLayer, mSelectedTileType));
-			EditorUtility.SetDirty(mCurrentLevel);
+			mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Add(new TilePlacement(gridPos.x, gridPos.y, mCurrentLayer, mSelectedTileType));
 		}
 
-		private void EraseTile(Vector2Int gridPos)
+		private void EraseTile(Vector2 gridPos)
 		{
 			if (!IsValidGridPosition(gridPos)) return;
-			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
 
 			TilePlacement tile = GetTileAt(gridPos, mCurrentLayer);
 			if (tile != null)
 			{
-				mCurrentLevel.tilePlacements.Remove(tile);
+				mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Remove(tile);
 				if (mSelectedTiles != null)
 					mSelectedTiles.Remove(tile);
-				EditorUtility.SetDirty(mCurrentLevel);
 			}
 		}
 
 		private void AutoFillRandom()
 		{
-			if (mCurrentLevel == null) return;
-			if (mTileTypePresets == null || mTileTypePresets.Count == 0) return;
-			if (mCurrentLevel.tilePlacements == null)
-				mCurrentLevel.tilePlacements = new List<TilePlacement>();
+			if (mCurrentLevelClone == null) return;
+			if (mTileDataPresets == null || mTileDataPresets.Count == 0) return;
+			if (mCurrentLevelClone.layerList == null)
+				mCurrentLevelClone.layerList = new List<LayerDataWrapper>();
 
-			mCurrentLevel.tilePlacements.Clear();
+			mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Clear();
 
-			int totalCells = mCurrentLevel.boardWidth * mCurrentLevel.boardHeight * mCurrentLevel.maxLayers / 2;
-			totalCells = (totalCells / mCurrentLevel.matchCount) * mCurrentLevel.matchCount;
+			int currentLayerX = GetGridSizeXByLayer(mCurrentLayer);
+			int currentLayerY = GetGridSizeYByLayer(mCurrentLayer);
+
+			int totalCells = currentLayerX * currentLayerY;
+			totalCells = (totalCells / mCurrentLevelClone.matchCount);
 
 			List<string> tilesToPlace = new List<string>();
-			for (int i = 0; i < totalCells / mCurrentLevel.matchCount; i++)
+			for (int i = 0; i < totalCells; i++)
 			{
-				TileTypeConfig randomType = mTileTypePresets[Random.Range(0, mTileTypePresets.Count)];
-				for (int j = 0; j < mCurrentLevel.matchCount; j++)
-					tilesToPlace.Add(randomType.typeId);
+				TileData randomType = mTileDataPresets[Random.Range(0, mTileDataPresets.Count)];
+				for (int j = 0; j < mCurrentLevelClone.matchCount; j++)
+					tilesToPlace.Add(randomType.tileTypeId);
 			}
 
 			// Shuffle
@@ -724,39 +1026,31 @@ namespace TrumpTile.LevelEditor.Editor
 				(tilesToPlace[i], tilesToPlace[j]) = (tilesToPlace[j], tilesToPlace[i]);
 			}
 
-			int index = 0;
-			for (int layer = 0; layer < mCurrentLevel.maxLayers && index < tilesToPlace.Count; layer++)
+			for (int i = 0; i < tilesToPlace.Count; i++)
 			{
-				int margin = layer;
-				for (int x = margin; x < mCurrentLevel.boardWidth - margin && index < tilesToPlace.Count; x++)
-				{
-					for (int y = margin; y < mCurrentLevel.boardHeight - margin && index < tilesToPlace.Count; y++)
-					{
-						if (layer > 0 && (x + y) % 2 != 0) continue;
-						mCurrentLevel.tilePlacements.Add(new TilePlacement(x, y, layer, tilesToPlace[index++]));
-					}
-				}
-			}
+				mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList.Add(new TilePlacement(i % currentLayerX, i / currentLayerX, mCurrentLayer, tilesToPlace[i]));
+            }
 
-			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
 		private void ClearLayer(int layer)
 		{
-			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
-			mCurrentLevel.tilePlacements.RemoveAll(t => t != null && t.layer == layer);
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
+			if (layer < 0 || layer >= mCurrentLevelClone.layerList.Count) return;
+			mCurrentLevelClone.layerList[layer].tilePlacementList.Clear();
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
-			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
 		private void ClearAllTiles()
 		{
-			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
-			mCurrentLevel.tilePlacements.Clear();
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
+			foreach (var layer in mCurrentLevelClone.layerList)
+			{
+				layer.tilePlacementList.Clear();
+			}
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
-			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
@@ -766,63 +1060,85 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void CreateNewLevel()
 		{
-			string path = EditorUtility.SaveFilePanelInProject("Create New Level", "Level_001", "asset", "Save level asset");
+			string path = EditorUtility.SaveFilePanelInProject("Create New Level", "Level_", "asset", "Save level asset", "Assets/_MainProject/SODatas/Levels");
 			if (string.IsNullOrEmpty(path)) return;
 
 			mCurrentLevel = ScriptableObject.CreateInstance<LevelData>();
 			mCurrentLevel.levelName = System.IO.Path.GetFileNameWithoutExtension(path);
-			mCurrentLevel.tilePlacements = new List<TilePlacement>();
+			mCurrentLevel.layerList = new List<LayerDataWrapper>();
 
 			AssetDatabase.CreateAsset(mCurrentLevel, path);
 			AssetDatabase.SaveAssets();
+			mCurrentLevelClone = mCurrentLevel.Clone();
+			mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
 
-			if (mSelectedTiles != null) mSelectedTiles.Clear();
+            if (mSelectedTiles != null) mSelectedTiles.Clear();
 			if (mUndoHistory != null) mUndoHistory.Clear();
 			if (mRedoHistory != null) mRedoHistory.Clear();
 		}
 
 		private void OpenLevel()
 		{
-			string path = EditorUtility.OpenFilePanel("Open Level", "Assets", "asset");
+			string path = EditorUtility.OpenFilePanel("Open Level", "Assets/_MainProject/SODatas/Levels", "asset");
 			if (string.IsNullOrEmpty(path)) return;
 
 			path = "Assets" + path.Substring(Application.dataPath.Length);
 			mCurrentLevel = AssetDatabase.LoadAssetAtPath<LevelData>(path);
+            mCurrentLevelClone = mCurrentLevel.Clone();
 
-			if (mSelectedTiles != null) mSelectedTiles.Clear();
+            if (mSelectedTiles != null) mSelectedTiles.Clear();
 			if (mUndoHistory != null) mUndoHistory.Clear();
 			if (mRedoHistory != null) mRedoHistory.Clear();
 		}
 
 		private void SaveCurrentLevel()
 		{
-			if (mCurrentLevel == null) return;
-			EditorUtility.SetDirty(mCurrentLevel);
+			if (mCurrentLevelClone == null) return;
+
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(mCurrentLevelClone), mCurrentLevel);
+            EditorUtility.SetDirty(mCurrentLevel);
 			AssetDatabase.SaveAssets();
 		}
+		private void CopyLevel()
+		{
+			if (mCurrentLevelClone == null) return;
 
+			mCopiedLevel = mCurrentLevelClone;
+        }
+		private void PasteLevel()
+		{
+			if(mCopiedLevel == null) return;
+
+			mCurrentLevelClone = mCopiedLevel;
+
+            if (mSelectedTiles != null) mSelectedTiles.Clear();
+            if (mUndoHistory != null) mUndoHistory.Clear();
+            if (mRedoHistory != null) mRedoHistory.Clear();
+        }
 		#endregion
 
 		#region Undo/Redo
 
 		private void RecordUndo(string actionName)
 		{
-			if (mCurrentLevel == null || mCurrentLevel.tilePlacements == null) return;
+			if (mCurrentLevelClone == null || mCurrentLevelClone.layerList == null) return;
 			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
 			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
 
 			LevelSnapshot snapshot = new LevelSnapshot
 			{
 				actionName = actionName,
-				tilePlacements = mCurrentLevel.tilePlacements.Select(t => new TilePlacement
+				layerListState = mCurrentLevelClone.layerList.Select(layer => new LayerDataWrapper
 				{
-					gridX = t.gridX,
-					gridY = t.gridY,
-					layer = t.layer,
-					tileTypeId = t.tileTypeId,
-					isLocked = t.isLocked,
-					isFrozen = t.isFrozen,
-					frozenCount = t.frozenCount
+					tilePlacementList = layer.tilePlacementList.Select(t => new TilePlacement
+					{
+						gridX = t.gridX,
+						gridY = t.gridY,
+						tileTypeId = t.tileTypeId,
+						isLocked = t.isLocked,
+						isFrozen = t.isFrozen,
+						frozenCount = t.frozenCount
+					}).ToList()
 				}).ToList()
 			};
 
@@ -835,43 +1151,41 @@ namespace TrumpTile.LevelEditor.Editor
 
 		private void Undo()
 		{
-			if (mUndoHistory == null || mUndoHistory.Count == 0 || mCurrentLevel == null) return;
+			if (mUndoHistory == null || mUndoHistory.Count == 0 || mCurrentLevelClone == null) return;
 			if (mRedoHistory == null) mRedoHistory = new List<LevelSnapshot>();
 
 			// Save current state to redo
 			mRedoHistory.Add(new LevelSnapshot
 			{
-				tilePlacements = new List<TilePlacement>(mCurrentLevel.tilePlacements ?? new List<TilePlacement>())
+				layerListState = new List<LayerDataWrapper>(mCurrentLevelClone.layerList ?? new List<LayerDataWrapper>())
 			});
 
 			LevelSnapshot prev = mUndoHistory[mUndoHistory.Count - 1];
 			mUndoHistory.RemoveAt(mUndoHistory.Count - 1);
 
-			mCurrentLevel.tilePlacements = new List<TilePlacement>(prev.tilePlacements);
+			mCurrentLevelClone.layerList = new List<LayerDataWrapper>(prev.layerListState);
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
 
-			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
 		private void Redo()
 		{
-			if (mRedoHistory == null || mRedoHistory.Count == 0 || mCurrentLevel == null) return;
+			if (mRedoHistory == null || mRedoHistory.Count == 0 || mCurrentLevelClone == null) return;
 			if (mUndoHistory == null) mUndoHistory = new List<LevelSnapshot>();
 
 			// Save current state to undo
 			mUndoHistory.Add(new LevelSnapshot
 			{
-				tilePlacements = new List<TilePlacement>(mCurrentLevel.tilePlacements ?? new List<TilePlacement>())
+				layerListState = new List<LayerDataWrapper>(mCurrentLevelClone.layerList ?? new List<LayerDataWrapper>())
 			});
 
 			LevelSnapshot next = mRedoHistory[mRedoHistory.Count - 1];
 			mRedoHistory.RemoveAt(mRedoHistory.Count - 1);
 
-			mCurrentLevel.tilePlacements = new List<TilePlacement>(next.tilePlacements);
+			mCurrentLevelClone.layerList = new List<LayerDataWrapper>(next.layerListState);
 			if (mSelectedTiles != null) mSelectedTiles.Clear();
 
-			EditorUtility.SetDirty(mCurrentLevel);
 			Repaint();
 		}
 
@@ -902,8 +1216,18 @@ namespace TrumpTile.LevelEditor.Editor
 			else if (e.keyCode >= KeyCode.Alpha1 && e.keyCode <= KeyCode.Alpha5)
 			{
 				int layer = e.keyCode - KeyCode.Alpha1;
-				if (mCurrentLevel == null || layer < mCurrentLevel.maxLayers)
+				if (mCurrentLevelClone == null || layer < mCurrentLevelClone.maxLayers)
 					mCurrentLayer = layer;
+				e.Use();
+			}
+			else if (e.keyCode == KeyCode.C && (e.control || e.command))
+			{
+				CopyLevel();
+				e.Use();
+			}
+			else if (e.keyCode == KeyCode.V && (e.control || e.command))
+			{
+				PasteLevel();
 				e.Use();
 			}
 		}
