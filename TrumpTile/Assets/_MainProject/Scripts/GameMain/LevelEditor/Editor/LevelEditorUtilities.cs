@@ -431,10 +431,10 @@ namespace TrumpTile.LevelEditor.Editor
             GUILayout.Label(level.levelName, GUILayout.Width(150));
 
             // 난이도 (색상 표시)
-            Color diffColor = GetDifficultyColor(level.difficulty);
-            GUI.backgroundColor = diffColor;
-            GUILayout.Label(level.difficulty.ToString(), "box", GUILayout.Width(70));
-            GUI.backgroundColor = Color.white;
+            //Color diffColor = GetDifficultyColor(level.difficulty);
+            //GUI.backgroundColor = diffColor;
+            //GUILayout.Label(level.difficulty.ToString(), "box", GUILayout.Width(70));
+            //GUI.backgroundColor = Color.white;
 
             // 크기
             GUILayout.Label($"{level.boardWidth}x{level.boardHeight}", GUILayout.Width(50));
@@ -485,10 +485,10 @@ namespace TrumpTile.LevelEditor.Editor
             }
 
             // 난이도 필터
-            if (mDifficultyFilter.HasValue)
-            {
-                filtered = filtered.Where(l => l.difficulty == mDifficultyFilter.Value);
-            }
+            //if (mDifficultyFilter.HasValue)
+            //{
+            //    filtered = filtered.Where(l => l.difficulty == mDifficultyFilter.Value);
+            //}
 
             return filtered.ToList();
         }
@@ -540,6 +540,7 @@ namespace TrumpTile.LevelEditor.Editor
     [InitializeOnLoad]
     public static class LevelDataProjectIcon
     {
+
         static LevelDataProjectIcon()
         {
             EditorApplication.projectWindowItemOnGUI += OnProjectWindowItemGUI;
@@ -561,20 +562,22 @@ namespace TrumpTile.LevelEditor.Editor
             if (selectionRect.height <= 20) // 리스트 뷰
             {
                 Rect iconRect = new Rect(selectionRect.xMax - 50, selectionRect.y, 50, selectionRect.height);
-
+                Color[] difficultyColors = {
+    new Color(135/255f, 206/255f, 235/255f), // Tutorial
+    new Color(100/255f, 220/255f, 180/255f), // Easy_Normal
+    new Color( 50/255f, 200/255f,  80/255f), // Easy_Hard
+    new Color(150/255f, 210/255f,  30/255f), // Easy_VeryHard
+    new Color(255/255f, 220/255f,   0/255f), // Normal
+    new Color(255/255f, 100/255f,   0/255f), // Hard
+    new Color(255/255f,   0/255f,   0/255f), // VeryHard
+};
                 // 난이도 색상 표시
-                Color diffColor = level.difficulty switch
-                {
-                    ELevelDifficulty.Tutorial => new Color(0.5F, 0.8F, 1F, 0.5F),
-                    ELevelDifficulty.Easy => new Color(0.5F, 1F, 0.5F, 0.5F),
-                    ELevelDifficulty.Normal => new Color(1F, 1F, 0.5F, 0.5F),
-                    ELevelDifficulty.Hard => new Color(1F, 0.7F, 0.4F, 0.5F),
-                    ELevelDifficulty.Expert => new Color(1F, 0.4F, 0.4F, 0.5F),
-                    _ => Color.clear
-                };
+                Color diffColor = difficultyColors[(int)level.difficulty]; 
 
                 EditorGUI.DrawRect(iconRect, diffColor);
 
+                Color origin = GUI.color;
+                GUI.color = Color.black;
                 // 레벨 번호
                 GUIStyle style = new GUIStyle(EditorStyles.miniLabel)
                 {
@@ -582,6 +585,7 @@ namespace TrumpTile.LevelEditor.Editor
                     fontSize = 9
                 };
                 GUI.Label(iconRect, $"L{level.levelNumber}", style);
+                GUI.color = origin;
             }
         }
     }

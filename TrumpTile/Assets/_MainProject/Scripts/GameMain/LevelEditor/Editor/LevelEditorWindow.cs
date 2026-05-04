@@ -350,10 +350,6 @@ namespace TrumpTile.LevelEditor.Editor
 				EditorGUILayout.HelpBox(errorMsg, MessageType.Warning);
 			}
 
-			foreach(string s in mNotValidateTileTypeIdList)
-			{
-				Debug.Log(s);
-			}
 
 			EditorGUILayout.EndVertical();
 		}
@@ -439,6 +435,7 @@ namespace TrumpTile.LevelEditor.Editor
                     mCurrentLevelClone = prevLevel.Clone();
                     Repaint();
                 }
+				mCurrentLayer = 0;
             }
             if (GUI.Button(rightBtnRect, "▶"))
             {
@@ -470,7 +467,7 @@ namespace TrumpTile.LevelEditor.Editor
                     mCurrentLevelClone = nextLevel.Clone();
                     Repaint();
                 }
-
+                mCurrentLayer = 0;
             }
         }		
 		private void DrawGrid(Rect area)

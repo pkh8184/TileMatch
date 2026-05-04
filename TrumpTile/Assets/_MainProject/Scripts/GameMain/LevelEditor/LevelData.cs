@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Core;
 using Codice.Client.BaseCommands.Merge;
+using TrumpTile.LevelEditor.Editor;
 
 namespace TrumpTile.LevelEditor
 {
@@ -21,7 +22,7 @@ namespace TrumpTile.LevelEditor
 		[Header("레벨 기본 정보")]
 		public int levelNumber = 1;
 		public string levelName = "New Level";
-		public ELevelDifficulty difficulty = ELevelDifficulty.Normal;
+		public EDifficultyType difficulty = EDifficultyType.Easy_Normal;
 
 
 		[Header("보드 설정")]
