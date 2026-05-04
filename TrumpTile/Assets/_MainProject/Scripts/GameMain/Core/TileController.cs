@@ -20,6 +20,7 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private TileData mTileData;
 
 		[Header("Visual")]
+		[SerializeField] private SpriteRenderer mBackgroundRenderer;
 		[SerializeField] private SpriteRenderer mSpriteRenderer;
 		[SerializeField] private SpriteRenderer mHighlightRenderer;
 		[SerializeField] private GameObject mBlockedOverlay;
@@ -95,9 +96,9 @@ namespace TrumpTile.GameMain.Core
 		{
 			if (mSpriteRenderer == null)
 			{
-				mSpriteRenderer = GetComponent<SpriteRenderer>();
+				mSpriteRenderer = transform.Find("Icon").GetComponent<SpriteRenderer>();
 			}
-
+			mBackgroundRenderer = GetComponent<SpriteRenderer>();
 			mBoxCollider = GetComponent<BoxCollider2D>();
 			mOriginalScale = transform.localScale;
 		}
@@ -185,12 +186,12 @@ namespace TrumpTile.GameMain.Core
 				mCurrentSortingOrder = BASE_SORTING_ORDER + (mLayerIndex * SORTING_STEP);
 			}
 
-			mSpriteRenderer.sortingOrder = mCurrentSortingOrder;
+			mBackgroundRenderer.sortingOrder = mCurrentSortingOrder;
 
 			SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
 			foreach (SpriteRenderer sr in childRenderers)
 			{
-				if (sr != mSpriteRenderer)
+				if (sr != mBackgroundRenderer)
 				{
 					sr.sortingOrder = mCurrentSortingOrder + 1;
 				}

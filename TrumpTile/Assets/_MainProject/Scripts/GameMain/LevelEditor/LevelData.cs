@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Core;
+using Codice.Client.BaseCommands.Merge;
+using TrumpTile.LevelEditor.Editor;
 
 namespace TrumpTile.LevelEditor
 {
@@ -20,7 +22,7 @@ namespace TrumpTile.LevelEditor
 		[Header("레벨 기본 정보")]
 		public int levelNumber = 1;
 		public string levelName = "New Level";
-		public ELevelDifficulty difficulty = ELevelDifficulty.Normal;
+		public EDifficultyType difficulty = EDifficultyType.Easy_Normal;
 
 
 		[Header("보드 설정")]
@@ -53,15 +55,18 @@ namespace TrumpTile.LevelEditor
 		/// <summary>
 		/// 레벨이 유효한지 검증
 		/// </summary>
-		public bool Validate(out string errorMessage)
+		public bool Validate(out string errorMessage, out List<string> idList)
 		{
 			errorMessage = "";
+			idList = new List<string>();
 
-			// 타일 수가 matchCount의 배수인지 확인
-			if (GetTileCount() % matchCount != 0)
+            bool isValidate = true;
+
+            // 타일 수가 matchCount의 배수인지 확인
+            if (GetTileCount() % matchCount != 0)
 			{
-				errorMessage = $"타일 수({GetTileCount()})가 {matchCount}의 배수가 아닙니다.";
-				return false;
+				errorMessage = $"총 타일 수({GetTileCount()})가 {matchCount}의 배수가 아닙니다.\n";
+				isValidate = false;
 			}
 
 			// 각 타일 타입별로 matchCount의 배수인지 확인
@@ -81,8 +86,9 @@ namespace TrumpTile.LevelEditor
 			{
 				if (kvp.Value % matchCount != 0)
 				{
-					errorMessage = $"타일 '{kvp.Key}'의 개수({kvp.Value})가 {matchCount}의 배수가 아닙니다.";
-					return false;
+					errorMessage += $"타일 '{kvp.Key}'의 개수({kvp.Value})가 {matchCount}의 배수가 아닙니다.\n";
+					idList.Add(kvp.Key);
+					isValidate = false;
 				}
 			}
 
@@ -94,12 +100,12 @@ namespace TrumpTile.LevelEditor
                     if (placement.gridX < 0 || placement.gridX > boardWidth ||
                         placement.gridY < 0 || placement.gridY > boardHeight)
                     {
-                        errorMessage = $"타일이 보드 범위를 벗어났습니다: ({placement.gridX}, {placement.gridY}, Layer {i})";
-                        return false;
+                        errorMessage += $"타일이 보드 범위를 벗어났습니다: ({placement.gridX}, {placement.gridY}, Layer {i})\n";
+						isValidate = false;
                     }
                 }
             }
-				return true;
+				return isValidate;
 			}
 		
 
