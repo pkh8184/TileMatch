@@ -77,7 +77,8 @@ namespace TrumpTile.LevelEditor.Editor
                 if (level != null)
                 {
                     string errorMessage;
-                    if (level.Validate(out errorMessage))
+                    List<string> idList;
+                    if (level.Validate(out errorMessage, out idList))
                     {
                         valid++;
                     }
@@ -443,7 +444,8 @@ namespace TrumpTile.LevelEditor.Editor
 
             // 유효성
             string errorMsg;
-            bool bIsValid = level.Validate(out errorMsg);
+            List<string> idList;
+            bool bIsValid = level.Validate(out errorMsg, out idList);
             GUILayout.Label(bIsValid ? "✓" : "✗", GUILayout.Width(20));
 
             GUILayout.FlexibleSpace();

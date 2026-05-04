@@ -195,9 +195,9 @@ namespace TrumpTile.LevelEditor.Editor
 			DrawHeader();
 			DrawBasicSettings();
             DrawStandardSettings();
-            DrawBoardSettings();
-			DrawTileSettings();
-			DrawPatternSettings();
+           // DrawBoardSettings();
+			//DrawTileSettings();
+			//DrawPatternSettings();
 
 			EditorGUILayout.Space(5);
 			mShowAdvancedSettings = EditorGUILayout.Foldout(mShowAdvancedSettings, "🔧 Advanced Settings", true);
