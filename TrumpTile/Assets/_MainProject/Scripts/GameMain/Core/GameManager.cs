@@ -87,7 +87,21 @@ namespace TrumpTile.GameMain.Core
 				Destroy(gameObject);
 				return;
 			}
-		}
+
+            UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
+
+            if (uiBaseArray != null)
+            {
+                foreach (UIBase uiBase in uiBaseArray)
+                {
+                    uiBase.Initialize();
+                }
+            }
+            else
+            {
+                Debug.Log("UIBase를 찾지 못했습니다.");
+            }
+        }
 
 		private async void Start()
 		{
@@ -219,6 +233,9 @@ namespace TrumpTile.GameMain.Core
 			UIManager.Instance?.RefreshAllItemButtons();
 			OnScoreChanged?.Invoke(mCurrentScore);
 			OnComboChanged?.Invoke(0);
+
+			//임시
+			EventManager.Inst.ActiveEvent("IngameLoadingComplete");
 
 			CurrentState = EGameState.Playing;
 		}

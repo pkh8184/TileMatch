@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.UI;
+using DG.Tweening;
+using System.Collections;
 using TMPro;
 using TrumpTile.GameMain.Data;
-using System.Collections;
-using DG.Tweening;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -26,6 +27,8 @@ namespace TrumpTile.GameMain.UI
             base.Initialize();
 
             StartCoroutine(Co_FadeInAnim());
+
+            mStageStartButton.onClick.AddListener(OnStageButtonClick);
         }
 
         protected override void Refresh()
@@ -37,6 +40,16 @@ namespace TrumpTile.GameMain.UI
         {
             mProfileFrame.sprite = PlayerDataManager.Inst?.GetProfileFrame();
             mProfileImage.sprite = PlayerDataManager.Inst?.GetProfileImage();
+        }
+        private void OnStageButtonClick()
+        {
+            StartCoroutine(Co_StartStage());
+        }
+        private IEnumerator Co_StartStage()
+        {
+            yield return StartCoroutine(Co_FadeOutAnim());
+
+            SceneManager.LoadScene("GameScene");
         }
     }
 }
