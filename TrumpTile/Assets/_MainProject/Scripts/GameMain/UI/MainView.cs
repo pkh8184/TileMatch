@@ -16,11 +16,6 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private TMP_Text mGoldText;
         [SerializeField] private TMP_Text mCurrentStageText;
 
-        [Header("씬 전환 시 Fade 이미지")]
-        [SerializeField] private Image mFadeImage;
-        [Header("씬 전환 시 Fade 애니메이션 시간")]
-        [SerializeField] private float mFadeDuration;
-
         //플레이어의 로컬 데이터 -> 따로 로컬데이터매니저에서 관리하는 게 좋을듯 (03/18)
         private Image mProfileFrame;
         private Image mProfileImage;
@@ -30,7 +25,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();
 
-            StartCoroutine(Co_PlayFadeInAnim());
+            StartCoroutine(Co_FadeInAnim());
         }
 
         protected override void Refresh()
@@ -42,17 +37,6 @@ namespace TrumpTile.GameMain.UI
         {
             mProfileFrame.sprite = PlayerDataManager.Inst?.GetProfileFrame();
             mProfileImage.sprite = PlayerDataManager.Inst?.GetProfileImage();
-        }
-
-        private IEnumerator Co_PlayFadeInAnim()
-        {
-            mFadeImage.gameObject.SetActive(true);
-
-            Sequence seq = DOTween.Sequence();
-            seq.Append(mFadeImage.DOFade(0, mFadeDuration));
-            seq.OnComplete(() => mFadeImage.gameObject.SetActive(false));
-
-            yield return seq.WaitForCompletion();
         }
     }
 }
