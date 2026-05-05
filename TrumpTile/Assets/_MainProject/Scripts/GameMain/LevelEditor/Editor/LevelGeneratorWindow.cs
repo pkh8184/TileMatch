@@ -271,11 +271,9 @@ namespace TrumpTile.LevelEditor.Editor
 			EditorGUILayout.LabelField("🎲 Level Generator V2", headerStyle);
 
 			EditorGUILayout.HelpBox(
-				"✨ 개선된 기능:\n" +
-				"• 보드 중앙 정렬 - 타일이 항상 화면 중앙에 배치\n" +
-				"• 대칭 패턴 - 보기 좋은 좌우/상하 대칭 레이아웃\n" +
-				"• 끝자리 난이도 - 레벨 번호 끝자리로 난이도 결정\n" +
-				"• 클리어 보장 - 항상 3개씩 매칭 가능한 타일 구성",
+				"기능:\n" +
+                "• 규격에 맞게 레벨 생성\n" +
+				"• 프리뷰로 생성될 레벨 정보 미리보기 가능",
 				MessageType.Info);
 
 			EditorGUILayout.Space(5);
