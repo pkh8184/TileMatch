@@ -11,7 +11,11 @@
       "Bash(git commit:*)",
       "Bash(grep -E \"\\\\.\\(asset|json|csv\\)$\")",
       "Bash(grep -r \"guid\" Assets/AddressableAssetsData/DataBuilders/*.meta)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\MyWork\\\\TileMatch\\\\TrumpTile\\\\Assets\\\\_MainProject\\\\Scripts\\\\GameMain\\\\Data\" -File | Select-Object Name | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\MyWork\\\\TileMatch\\\\TrumpTile\\\\Assets\\\\_MainProject\\\\Scripts\\\\GameMain\\\\UI\" -File | Select-Object Name | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\MyWork\\\\TileMatch\\\\TrumpTile\\\\Assets\\\\_MainProject\\\\Scripts\\\\GameMain\\\\Core\" -File | Select-Object Name | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\MyWork\\\\TileMatch\\\\TrumpTile\\\\Assets\\\\_MainProject\\\\SODatas\" -Recurse -File | Select-Object FullName | ForEach-Object { $_.FullName })"
     ]
   }
 }
