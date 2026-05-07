@@ -1,10 +1,11 @@
+using DG.Tweening;
 using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using TrumpTile.GameMain.Core;
 using UnityEngine;
-using DG.Tweening;
-using TMPro;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
@@ -23,24 +24,44 @@ namespace TrumpTile.GameMain.UI
             mLevelNameCanvasGroup.alpha = 0;
             //임시
             EventManager.Inst.AddEvent("IngameLoadingComplete", PlayFadeInAfterLoadLevel);
+            EventManager.Inst.AddEvent("ExitGameScene", PlayFadeOutWhenExit);
         }
         private void PlayFadeInAfterLoadLevel(object obj)
         {
-            Action onComplete = obj as Action;
-            
             mLevelNameBackground.gameObject.SetActive(true);
 
-            StartCoroutine(Co_PlayFadeInAnimAfterLoadLevel(onComplete));
+            StartCoroutine(Co_PlayFadeInAnimAfterLoadLevel());
         }
-        private IEnumerator Co_PlayFadeInAnimAfterLoadLevel(Action onComplete)
+        private void PlayFadeOutWhenExit(object obj)
+        {
+            StartCoroutine(Co_PlayFadeOutAnimWhenExit());
+        }
+        private IEnumerator Co_PlayFadeInAnimAfterLoadLevel()
         {
             yield return StartCoroutine(Co_FadeInAnim());
-
-            onComplete?.Invoke();
 
             mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
             StartCoroutine(Co_PlayLevelNameAnim());
             
+        }
+        private IEnumerator Co_PlayFadeOutAnimWhenExit()
+        {
+            yield return StartCoroutine(Co_FadeOutAnim());
+
+            AsyncOperation op = SceneManager.LoadSceneAsync("MainScene");
+            op.allowSceneActivation = false;
+
+            while (!op.isDone)
+            {
+                if (op.progress >= 0.9f)
+                {
+                    break;
+                }
+                yield return null;
+            }
+            Debug.Log("[IngameView] 메인 씬 로딩 성공");
+
+            op.allowSceneActivation = true;
         }
         private IEnumerator Co_PlayLevelNameAnim()
         {
@@ -59,7 +80,9 @@ namespace TrumpTile.GameMain.UI
             sq.Append(mTopLevelNameRect.DOAnchorPosX(0, 0.15f).SetEase(Ease.OutQuad));
             sq.OnComplete(() => GameManager.Instance.LoadingAnimComplete = true);
 
-            yield return sq.WaitForCompletion();          
+            yield return sq.WaitForCompletion();
+
+            mLevelNameBackground.gameObject.SetActive(false);
         }
     }
     
