@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using TMPro;
+using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -49,7 +50,20 @@ namespace TrumpTile.GameMain.UI
         {
             yield return StartCoroutine(Co_FadeOutAnim());
 
-            SceneManager.LoadScene("GameScene");
+            AsyncOperation op = SceneManager.LoadSceneAsync("GameScene");
+            op.allowSceneActivation = false;
+
+            while (!op.isDone)
+            {
+                if (op.progress >= 0.9f)
+                {
+                    break;
+                }
+                yield return null;
+            }
+            Debug.Log("[MainView] 게임 씬 로딩 성공");
+
+            op.allowSceneActivation = true;
         }
     }
 }

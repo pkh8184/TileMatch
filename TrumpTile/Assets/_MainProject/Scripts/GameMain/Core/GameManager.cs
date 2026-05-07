@@ -8,6 +8,7 @@ using TrumpTile.GameMain.UI;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
 using TrumpTile.LevelEditor;
+using System;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -49,6 +50,9 @@ namespace TrumpTile.GameMain.Core
 		// 게임 상태
 		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
 		public EGameState CurrentState { get; private set; }
+
+		//로딩 애니메이션 완료 체크
+		public bool LoadingAnimComplete { get; set; }
 
 		// Public 프로퍼티
 		public int MatchCount => mMatchCount;
@@ -117,7 +121,8 @@ namespace TrumpTile.GameMain.Core
 
 			Debug.Log($"[GameManager] Starting level: {mStartLevel}");
 			await StartLevelAsync(mStartLevel);
-		}
+
+        }
 
 		private void OnDestroy()
 		{
@@ -228,22 +233,30 @@ namespace TrumpTile.GameMain.Core
 
 			Debug.Log($"[GameManager] TargetClearTime: {mTargetClearTime}s (tiles: {mTotalTileCount})");
 
-			UIManager.Instance?.UpdateLevel(CurrentLevel);
+            UIManager.Instance?.UpdateLevel(CurrentLevel);
 			UIManager.Instance?.UpdateScore(mCurrentScore);
 			UIManager.Instance?.RefreshAllItemButtons();
 			OnScoreChanged?.Invoke(mCurrentScore);
 			OnComboChanged?.Invoke(0);
 
-			//임시
-			EventManager.Inst.ActiveEvent("IngameLoadingComplete");
+            //임시
+            EventManager.Inst.ActiveEvent("IngameLoadingComplete");
 
-			CurrentState = EGameState.Playing;
+            await WaitUntill(() => LoadingAnimComplete);
+
+            CurrentState = EGameState.Playing;
 		}
-
 		public void RestartLevel()
 		{
 			Debug.Log($"[GameManager] RestartLevel - Level {CurrentLevel}");
 			StartLevel(CurrentLevel);
+		}
+		private async Task WaitUntill(Func<bool> condition)
+		{
+			while(!condition())
+			{
+				await Task.Yield();
+			}
 		}
 
 		/// <summary>
