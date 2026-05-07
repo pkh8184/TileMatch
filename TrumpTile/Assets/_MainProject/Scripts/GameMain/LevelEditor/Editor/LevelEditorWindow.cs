@@ -1,11 +1,12 @@
 #if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor;
-using System.Runtime.CompilerServices;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace TrumpTile.LevelEditor.Editor
 {
@@ -62,6 +63,16 @@ namespace TrumpTile.LevelEditor.Editor
 		private List<TileData> mTileDataPresets;
 		private int[] mTileTypeCountArray;
 
+		// 배경 요소 컨테이너
+		private List<Sprite> mLevelBackgroundSpriteList;
+		private List<Sprite> mTileBackgroundSpriteList;
+
+		// 배경 요소 관리를 위한 에디터 변수
+		private List<string> mLevelBackgroundSpriteNameList;
+		private List<string> mTileBackgroundSpriteNameList;
+		private int mCurrentLevelBackgroundIndex;
+		private int mCurrentTileBackgroundIndex;
+
         private List<int> indexListForBoardSizeUpdate = new List<int>();
         // 색상
         //private static readonly Color[] LayerColors = new Color[]
@@ -93,6 +104,7 @@ namespace TrumpTile.LevelEditor.Editor
 			mUndoHistory = new List<LevelSnapshot>();
 			mRedoHistory = new List<LevelSnapshot>();
 			InitializeTilePresets();
+			InitializeBackgroundSpriteList();
 		}
 
 		private void InitializeTilePresets()
@@ -112,7 +124,37 @@ namespace TrumpTile.LevelEditor.Editor
                 }
             }
 		}
+		private void InitializeBackgroundSpriteList()
+		{
+			mLevelBackgroundSpriteList = new List<Sprite>();
+			mTileBackgroundSpriteList = new List<Sprite>();
+			mLevelBackgroundSpriteNameList = new List<string>();
+			mTileBackgroundSpriteNameList = new List<string>();
 
+			string[] pathArray = { "Assets/_MainProject/Textures/UI/Background/Ingame", "Assets/_MainProject/Textures/UI/Background/Tile"};
+
+            for (int i = 0; i < 2; i++)
+			{
+                string[] guids = AssetDatabase.FindAssets("", new[] { pathArray[i] });
+                foreach (var item in guids)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(item);
+
+                    Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+					if(i == 0)
+					{
+                        mLevelBackgroundSpriteList.Add(sprite);
+						mLevelBackgroundSpriteNameList.Add(sprite.name);
+                    }
+					else
+					{
+						mTileBackgroundSpriteList.Add(sprite);
+                        mTileBackgroundSpriteNameList.Add(sprite.name);
+                    }
+                }
+            }
+        }
 		private void OnGUI()
 		{
 			// 리스트 null 체크
@@ -302,6 +344,17 @@ namespace TrumpTile.LevelEditor.Editor
 
                     while (mCurrentLevelClone.layerList.Count < mCurrentLevelClone.maxLayers)
                         mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
+                }
+
+				if (mLevelBackgroundSpriteList.Count > 0)
+				{
+					mCurrentLevelBackgroundIndex = EditorGUILayout.Popup(new GUIContent("Level Background"), mCurrentLevelBackgroundIndex, mLevelBackgroundSpriteNameList.ToArray());
+					mCurrentLevelClone.levelBackgroundSprite = mLevelBackgroundSpriteList[mCurrentLevelBackgroundIndex];
+				}
+				if(mTileBackgroundSpriteList.Count > 0)
+				{
+                    mCurrentTileBackgroundIndex = EditorGUILayout.Popup(new GUIContent("Tile Background"), mCurrentTileBackgroundIndex, mTileBackgroundSpriteNameList.ToArray());
+                    mCurrentLevelClone.tileBackgroundSprite = mTileBackgroundSpriteList[mCurrentTileBackgroundIndex];
                 }
 
             }

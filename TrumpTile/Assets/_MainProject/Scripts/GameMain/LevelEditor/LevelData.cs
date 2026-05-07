@@ -43,6 +43,10 @@ namespace TrumpTile.LevelEditor
 		[Header("사용 가능한 타일 타입")]
 		public List<TileTypeConfig> availableTileTypes = new();
 
+		[Header("레벨에 적용될 배경 데이터")]
+		public Sprite levelBackgroundSprite;
+		public Sprite tileBackgroundSprite;
+
 		[Header("아이템 설정")]
 		public int initialShuffleCount = 3;
 		public int initialUndoCount = 3;
