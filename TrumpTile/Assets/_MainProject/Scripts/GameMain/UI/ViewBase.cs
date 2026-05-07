@@ -8,7 +8,7 @@ namespace TrumpTile.GameMain.UI
     public class ViewBase : UIBase
     {
         [Header("씬 전환 오브젝트")]
-        [SerializeField] private GameObject mSceneTransister;
+        [SerializeField] protected GameObject mSceneTransister;
         //광고 관리 클래스에서 배너 광고 로드 완료 OnCall 이벤트에 연결
         public void AdjustForBanner(float bannerHeightPixel)
         {

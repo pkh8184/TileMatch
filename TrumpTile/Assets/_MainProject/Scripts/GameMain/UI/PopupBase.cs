@@ -14,7 +14,7 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private float mHideDuration = 1f;
 
         [Header("Show / Hide 애니메이션을 적용할 실제 팝업창")]
-        [SerializeField] private GameObject mPopupObj;
+        [SerializeField] protected GameObject mPopupObj;
         public override void Show()
         {
             base.Show();
@@ -26,13 +26,13 @@ namespace TrumpTile.GameMain.UI
             PlayHideAnim();
         }
 
-        private void PlayShowAnim()
+        protected virtual void PlayShowAnim()
         {
             mPopupObj.transform.localScale = Vector2.zero;
 
             mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack);
         }
-        private void PlayHideAnim()
+        protected virtual void PlayHideAnim()
         {
             Sequence seq = DOTween.Sequence();
             seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
