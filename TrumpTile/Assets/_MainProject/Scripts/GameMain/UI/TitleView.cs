@@ -12,14 +12,10 @@ namespace TrumpTile.GameMain.UI
     public class TitleView : ViewBase
     {
         [Header("스튜디오 로고 이미지")]
-        [SerializeField] private Image mStudioLogo;
+        [SerializeField] private Image mStudioLogoUp;
+        [SerializeField] private Image mStudioLogoDown;
         [Header("로고 이미지 페이드 인 & 아웃 시간")]
         [SerializeField] private float mLogoFadeDuration;
-
-        [Header("가이드 메세지")]
-        [SerializeField] private TMP_Text mGuideText;
-        [Header("가이드 메세지 내용 목록")]
-        [SerializeField] private string[] mGuideArray;
 
         [Header("로딩 바")]
         [SerializeField] private Slider mLoadingSlider;
@@ -27,19 +23,12 @@ namespace TrumpTile.GameMain.UI
         [Header("버전 체크 팝업")]
         [SerializeField] private PublicPopup mVersionCheckPopup;
 
-        [Header("씬 이동 시 Fade Out 이미지")]
-        [SerializeField] private Image mFadeImage;
-        [Header("씬 전환 시 Fade 애니메이션 시간")]
-        [SerializeField] private float mFadeDuration;
-
         private TitleManager titleManager;
         public override void Initialize()
         {
             base.Initialize();
 
             StartCoroutine(Co_PlayStudioLogoFadeAnim());
-            string guide = mGuideArray[UnityEngine.Random.Range(0, mGuideArray.Length)];
-            mGuideText.text = GetStringLineBreaked(guide);
 
             titleManager = FindObjectOfType<TitleManager>();
             EventManager.Inst.AddEvent(RequestEventKeys.LOADING_COMPLETE, PlayFadeOutAnimOnSceneChange);
@@ -54,23 +43,25 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_PlayFadeOutAnimOnSceneChange(Action onComplete)
         {
-            mFadeImage.gameObject.SetActive(true);
-
-            mFadeImage.DOFade(1, mFadeDuration);
-            yield return new WaitForSeconds(mFadeDuration);
+            yield return StartCoroutine(Co_FadeOutAnim());
 
             onComplete?.Invoke();
         }
         private IEnumerator Co_PlayStudioLogoFadeAnim()
         {
-            mStudioLogo.transform.parent.gameObject.SetActive(true);
-
             Sequence seq = DOTween.Sequence();
-            seq.Append(mStudioLogo.DOFade(1, mLogoFadeDuration));
-            seq.Append(mStudioLogo.DOFade(0, mLogoFadeDuration));
-            seq.OnComplete(() => mStudioLogo.transform.parent.gameObject.SetActive(false));
-
+            seq.Append(mStudioLogoUp.DOFade(1, mLogoFadeDuration));
+            seq.Join(mStudioLogoDown.DOFade(1, mLogoFadeDuration));
+            seq.OnComplete(() => mStudioLogoUp.GetComponent<Animator>().SetTrigger("LogoAnim"));
             yield return seq.WaitForCompletion();
+
+            yield return new WaitForSeconds(2);
+
+            Sequence seq2 = DOTween.Sequence();
+            seq2.Append(mStudioLogoUp.DOFade(0, mLogoFadeDuration));
+            seq2.Join(mStudioLogoDown.DOFade(0, mLogoFadeDuration));
+            seq2.OnComplete(() => mStudioLogoUp.transform.parent.gameObject.SetActive(false));
+            yield return seq2.WaitForCompletion();
 
             StartCoroutine(Co_PlayLoadingSliderAnim());
         }
@@ -108,22 +99,6 @@ namespace TrumpTile.GameMain.UI
             }
 
             Application.Quit();
-        }
-        private string GetStringLineBreaked(string s)
-        {
-            StringBuilder sb = new StringBuilder(s);
-            int count = 0;
-
-            for (int i = 0; i < sb.Length; i++)
-            {
-                count++;
-                if (count >= 15 && sb[i] == ' ')
-                {
-                    sb[i] = '\n';
-                    count = 0;
-                }
-            }
-            return sb.ToString();
         }
     }
 }

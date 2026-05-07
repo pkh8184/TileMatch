@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -24,11 +23,6 @@ namespace TrumpTile.GameMain.Core
             {
                 Debug.Log("UIBase를 찾지 못했습니다.");
             }
-        }
-
-        public void ForTest_BtnEvt_SceneTransition()
-        {
-            SceneManager.LoadScene("GameScene");
         }
     }
 }

@@ -18,6 +18,8 @@ namespace TrumpTile.GameMain.Core
         [SerializeField] private float mLoadingDuration;
         [Header("구간 도착 후 다음 구간까지 지연시간")]
         [SerializeField] private float mHoldSecond;
+        [Header("테스트용 플래그(Firebase 에뮬레이터 없이 타이틀씬 사용 시 체크)")]
+        [SerializeField] private bool mbWhitoutFirebase;
 
         private float mLoadingProgress = 0;
         public float LoadingProgress { get => mLoadingProgress; }
@@ -35,9 +37,35 @@ namespace TrumpTile.GameMain.Core
         {
             WaitUntil wait = new WaitUntil(() => !GameObject.Find("StudioLogo"));
             yield return wait;
-            Debug.Log("로고 송출 완료, 파이어베이스 참조 초기화 및 로그인 실행");
+            Debug.Log("[TitleManager] 로고 송출 완료, 파이어베이스 참조 초기화 및 로그인 실행");
 
             StartCoroutine(Co_IncreaseLoadingProgress());
+
+            if(mbWhitoutFirebase)
+            {
+                Debug.Log("[TitleManager] 파이어베이스 없이 테스트, 로딩 시작");
+
+                AsyncOperation _op = SceneManager.LoadSceneAsync("MainScene");
+
+                _op.allowSceneActivation = false;
+
+                while (!_op.isDone)
+                {
+                    if (_op.progress >= 0.9f)
+                    {
+                        break;
+                    }
+                    yield return null;
+                }
+                Debug.Log("로딩 성공");
+
+                yield return new WaitUntil(() => mLoadingProgress >= 100);
+
+                Debug.Log("씬 전환 이벤트 호출");
+                EventManager.Inst.ActiveEvent(RequestEventKeys.LOADING_COMPLETE, (object)(Action)(() => _op.allowSceneActivation = true));
+
+                yield break;
+            }
 
             Task task = InitFirebaseService();
             yield return new WaitUntil(() => task.IsCompleted);
@@ -64,7 +92,7 @@ namespace TrumpTile.GameMain.Core
         {
             int holdIndex = 0;
             WaitForSeconds wait = new WaitForSeconds(mHoldSecond);
-            while (LoadingProgress < 100)
+            while (mLoadingProgress < 100)
             {
                 float startProgress = mLoadingProgress;
                 float elapsed = 0f;    

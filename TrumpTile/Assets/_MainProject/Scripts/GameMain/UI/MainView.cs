@@ -1,9 +1,11 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using TrumpTile.GameMain.Data;
-using System.Collections;
 using DG.Tweening;
+using System.Collections;
+using TMPro;
+using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -16,11 +18,6 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private TMP_Text mGoldText;
         [SerializeField] private TMP_Text mCurrentStageText;
 
-        [Header("씬 전환 시 Fade 이미지")]
-        [SerializeField] private Image mFadeImage;
-        [Header("씬 전환 시 Fade 애니메이션 시간")]
-        [SerializeField] private float mFadeDuration;
-
         //플레이어의 로컬 데이터 -> 따로 로컬데이터매니저에서 관리하는 게 좋을듯 (03/18)
         private Image mProfileFrame;
         private Image mProfileImage;
@@ -30,7 +27,9 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();
 
-            StartCoroutine(Co_PlayFadeInAnim());
+            StartCoroutine(Co_FadeInAnim());
+
+            mStageStartButton.onClick.AddListener(OnStageButtonClick);
         }
 
         protected override void Refresh()
@@ -43,16 +42,28 @@ namespace TrumpTile.GameMain.UI
             mProfileFrame.sprite = PlayerDataManager.Inst?.GetProfileFrame();
             mProfileImage.sprite = PlayerDataManager.Inst?.GetProfileImage();
         }
-
-        private IEnumerator Co_PlayFadeInAnim()
+        private void OnStageButtonClick()
         {
-            mFadeImage.gameObject.SetActive(true);
+            StartCoroutine(Co_StartStage());
+        }
+        private IEnumerator Co_StartStage()
+        {
+            yield return StartCoroutine(Co_FadeOutAnim());
 
-            Sequence seq = DOTween.Sequence();
-            seq.Append(mFadeImage.DOFade(0, mFadeDuration));
-            seq.OnComplete(() => mFadeImage.gameObject.SetActive(false));
+            AsyncOperation op = SceneManager.LoadSceneAsync("GameScene");
+            op.allowSceneActivation = false;
 
-            yield return seq.WaitForCompletion();
+            while (!op.isDone)
+            {
+                if (op.progress >= 0.9f)
+                {
+                    break;
+                }
+                yield return null;
+            }
+            Debug.Log("[MainView] 게임 씬 로딩 성공");
+
+            op.allowSceneActivation = true;
         }
     }
 }
