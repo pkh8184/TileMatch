@@ -240,7 +240,7 @@ namespace TrumpTile.GameMain.Core
 			OnComboChanged?.Invoke(0);
 
             //임시
-            EventManager.Inst.ActiveEvent("IngameLoadingComplete");
+            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)levelData.levelBackgroundSprite);
 
             await WaitUntill(() => LoadingAnimComplete);
 
