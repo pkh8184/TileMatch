@@ -16,7 +16,10 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Image mLevelNameBackground;
         [SerializeField] private CanvasGroup mLevelNameCanvasGroup;
         [SerializeField] private RectTransform mTopLevelNameRect;
-        
+
+        [Header("레벨 배경 관련")]
+        [SerializeField] private Image mBackgroundImage;
+        [SerializeField] private Sprite mDefaultBackgroundSprite;
         public override void Initialize()
         {
             base.Initialize();
@@ -28,6 +31,9 @@ namespace TrumpTile.GameMain.UI
         }
         private void PlayFadeInAfterLoadLevel(object obj)
         {
+            Sprite background = (Sprite)obj ? (Sprite)obj : mDefaultBackgroundSprite;
+            mBackgroundImage.sprite = background;
+
             mLevelNameBackground.gameObject.SetActive(true);
 
             StartCoroutine(Co_PlayFadeInAnimAfterLoadLevel());

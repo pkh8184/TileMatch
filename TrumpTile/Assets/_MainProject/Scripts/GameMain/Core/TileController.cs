@@ -113,12 +113,12 @@ namespace TrumpTile.GameMain.Core
 
 		#region Initialize
 
-		public void Initialize(TileData data, int layer)
-		{
-			Initialize(data, 0, 0, layer);
-		}
+		//public void Initialize(TileData data, int layer)
+		//{
+		//	Initialize(data, 0, 0, layer);
+		//}
 
-		public void Initialize(TileData data, float x, float y, int layer)
+		public void Initialize(TileData data, float x, float y, int layer, Sprite tileBackground)
 		{
 			mTileData = data;
 			mGridX = (int)x;
@@ -133,16 +133,17 @@ namespace TrumpTile.GameMain.Core
 			mIsLocked = false;
 			mIsAnimating = false;
 
-			SetupVisual();
+			SetupVisual(tileBackground);
 			UpdateSortingOrder();
 			SetOverlaysActive(false);
 			EnableCollider(true);
 		}
 
-		private void SetupVisual()
+		private void SetupVisual(Sprite tileBackground)
 		{
 			if (mSpriteRenderer != null && mTileData != null)
 			{
+				mBackgroundRenderer.sprite = tileBackground;
 				mSpriteRenderer.sprite = mTileData.sprite;
 				mSpriteRenderer.color = Color.white;
 			}

@@ -27,6 +27,7 @@ namespace TrumpTile.GameMain.Core
 		[Header("References")]
 		[SerializeField] private TileController mTilePrefab;
 		[SerializeField] private List<TileData> mAllTileTypes;
+		[SerializeField] private Sprite mDefaultTileBackground;
 
 		[Header("Debug")]
 		[SerializeField] private bool mEnableDebugLog = false;
@@ -103,6 +104,8 @@ namespace TrumpTile.GameMain.Core
 			mGridHeight = levelData.boardHeight;
 			mMaxLayers = levelData.maxLayers;
 
+			Sprite tileBackground = levelData.tileBackgroundSprite ? levelData.tileBackgroundSprite : mDefaultTileBackground;
+
 			SortingManager.SetMaxGridY(mGridHeight);
 
 			Dictionary<string, TileData> tileDataMap = CreateTileDataMap();
@@ -119,7 +122,7 @@ namespace TrumpTile.GameMain.Core
                             Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
                             continue;
                         }
-                        CreateTile(data, placement.gridX, placement.gridY, i);
+                        CreateTile(data, placement.gridX, placement.gridY, i, tileBackground);
                         createdCount++;
                     }
                 }
@@ -134,7 +137,7 @@ namespace TrumpTile.GameMain.Core
                         continue;
                     }
 
-                    CreateTile(data, placement.gridX, placement.gridY, placement.layer);
+                    CreateTile(data, placement.gridX, placement.gridY, placement.layer, tileBackground);
                     createdCount++;
                 }
             }
@@ -166,7 +169,7 @@ namespace TrumpTile.GameMain.Core
 			return map;
 		}
 
-		private TileController CreateTile(TileData data, float x, float y, int layer)
+		private TileController CreateTile(TileData data, float x, float y, int layer, Sprite tileBackground)
 		{
 			if (mTilePrefab == null)
 			{
@@ -178,7 +181,7 @@ namespace TrumpTile.GameMain.Core
 			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
 
 			// Initialize에서 Sorting Order도 설정됨
-			tile.Initialize(data, x, y, layer);
+			tile.Initialize(data, x, y, layer, tileBackground);
 
 			mAllTiles.Add(tile);
 
