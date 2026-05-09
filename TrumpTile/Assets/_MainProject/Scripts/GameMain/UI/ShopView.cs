@@ -5,17 +5,12 @@ using UnityEngine.UI;
 using TMPro;
 using TrumpTile.GameMain.Data;
 using DG.Tweening;
+using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.GameMain.UI
 {
     public class ShopView : ViewBase
     {
-        [Header("ShopView 텍스트")]
-        [SerializeField] private TMP_Text mGoldText;
-        [SerializeField] private TMP_Text mBlackholeText;
-        [SerializeField] private TMP_Text mTimerText;
-        [SerializeField] private TMP_Text mBombText;
-
         [Header("목록에 맞는 제품 생성을 위한 프리팹")]
         [SerializeField] private GameObject mBundlePrefab;
         [SerializeField] private GameObject mSinglePrefab;
@@ -24,19 +19,36 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private RectTransform mUIContainerTransform;
         [SerializeField] private float mAnimDuration = 0.5f;
 
-        protected override void Refresh()
-        {
-            mGoldText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Gold);
-            mBlackholeText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.BlackHole);
-            mTimerText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Timer);
-            mBombText.text = PlayerDataManager.Inst.GetDataToString(EPlayerDataType.Bomb);
-        }
         public override void Show()
         {
             base.Show();
 
-            mUIContainerTransform.anchoredPosition = new Vector2(mUIContainerTransform.anchoredPosition.x, Screen.height * 2);
-            mUIContainerTransform.DOAnchorPos(Vector3.zero, mAnimDuration);
+            AdManager.Inst.HideBannerAd();
+            StartCoroutine(Co_PlayPackageShowAnim());
+        }
+        public override void Hide()
+        {
+            base.Hide();
+
+            AdManager.Inst.ShowBannerAd();
+        }
+        private IEnumerator Co_PlayPackageShowAnim()
+        {
+            VerticalLayoutGroup layoutGroup = mUIContainerTransform.GetComponent<VerticalLayoutGroup>();
+
+            layoutGroup.enabled = false;
+
+            Sequence sequence = DOTween.Sequence();
+            for (int i = 0; i < mUIContainerTransform.childCount; i++)
+            {
+                RectTransform rect = mUIContainerTransform.GetChild(i).GetComponent<RectTransform>();
+
+                rect.anchoredPosition = new Vector2(rect.anchoredPosition.x + Screen.width, rect.anchoredPosition.y);
+                sequence.Insert(i * 0.1f, rect.DOAnchorPosX(rect.anchoredPosition.x - Screen.width, 0.3f).SetEase(Ease.OutQuad));
+            }
+            sequence.OnComplete(() => layoutGroup.enabled = true);
+
+            yield return sequence.WaitForCompletion();
         }
         /// <summary>
         /// 제품 목록에 존재하는 제품들의 UI를 종류에 맞게 생성합니다.
