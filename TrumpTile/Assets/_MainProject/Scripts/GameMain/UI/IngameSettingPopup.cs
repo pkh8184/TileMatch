@@ -1,7 +1,9 @@
+using DG.Tweening;
 using Google.MiniJSON;
 using System.Collections;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,49 +18,79 @@ namespace TrumpTile.GameMain.UI
 
         [Header("나가기 버튼")]
         [SerializeField] private Button mExitButton;
+        [Header("세팅 아이콘 렉트 참조")]
+        [SerializeField] private RectTransform mSettingIconRect;
 
-        private Image mBGMImage;
-        private Image mSFXImage;
-        private Image mVibrationImage;
+        private Sequence mShowAnimSequence;
 
-        [Header("토글 스프라이트")]
-        [SerializeField] private Sprite mBGMToggleOnSprite;
-        [SerializeField] private Sprite mBGMToggleOffSprite;
-        [SerializeField] private Sprite mSFXToggleOnSprite;
-        [SerializeField] private Sprite mSFXToggleOffSprite;
-        [SerializeField] private Sprite mVibrationToggleOnSprite;
-        [SerializeField] private Sprite mVibrationToggleOffSprite;
-        private Animator mAnimator;
+        private List<RectTransform> mAnimRectList = new List<RectTransform>();
         public override void Initialize()
         {
             base.Initialize();
 
-            mAnimator = GetComponentInChildren<Animator>();
             //로컬 세팅 저장값 적용
-            //mBGMToggle.isOn = true;
-            //mSFXToggle.isOn = true;
-            //mVibrationToggle.isOn = true;
-            mBGMImage = mBGMToggle.GetComponent<Image>();
-            mSFXImage = mSFXToggle.GetComponent<Image>();
-            mVibrationImage = mVibrationToggle.GetComponent<Image>();
+            (bool BGMOn, bool SFXOn, bool HapticOn) soundSetting = PlayerDataManager.Inst.GetUserSoundSettingDatas();
+            mBGMToggle.isOn = soundSetting.BGMOn;
+            mSFXToggle.isOn = soundSetting.SFXOn;
+            mVibrationToggle.isOn = soundSetting.HapticOn;
 
-            mBGMImage.sprite = mBGMToggle.isOn ? mBGMToggleOnSprite : mBGMToggleOffSprite;
-            mSFXImage.sprite = mSFXToggle.isOn ? mSFXToggleOnSprite : mSFXToggleOffSprite;
-            mVibrationImage.sprite = mVibrationToggle.isOn ? mVibrationToggleOnSprite : mVibrationToggleOffSprite;
+            mBGMToggle.onValueChanged.AddListener((isOn) =>
+            {
+                SetBGMToggle(isOn);
+            });
+            mSFXToggle.onValueChanged.AddListener((isOn) =>
+            {
+                SetSFXToggle(isOn);
+            });
+            mVibrationToggle.onValueChanged.AddListener((isOn) =>
+            {
+                PlayerDataManager.Inst?.SetHapticOn(isOn);
+            });
 
-            mBGMToggle.onValueChanged.AddListener((isOn) => mBGMImage.sprite = isOn? mBGMToggleOnSprite : mBGMToggleOffSprite);
-            mSFXToggle.onValueChanged.AddListener((isOn) => mSFXImage.sprite = isOn? mSFXToggleOnSprite : mSFXToggleOffSprite);
-            mVibrationToggle.onValueChanged.AddListener((isOn) => mVibrationImage.sprite = isOn? mVibrationToggleOnSprite : mVibrationToggleOffSprite);
             mExitButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("ExitGameScene"));
+
+            mAnimRectList.Add(mBGMToggle.GetComponent<RectTransform>());
+            mAnimRectList.Add(mSFXToggle.GetComponent<RectTransform>());
+            mAnimRectList.Add(mVibrationToggle.GetComponent<RectTransform>());
+            mAnimRectList.Add(mExitButton.GetComponent<RectTransform>());
         }
         protected override void PlayShowAnim()
         {
             mPopupObj.SetActive(true);
-            mAnimator.SetTrigger("Show");
+            GameManager.Instance.PauseGame();
+            StartCoroutine(Co_PlayShowAnim());  
+        }
+        private IEnumerator Co_PlayShowAnim()
+        {
+            mShowAnimSequence?.Kill();
+            mShowAnimSequence = DOTween.Sequence();
+            mShowAnimSequence.SetUpdate(true);
+            mShowAnimSequence.Insert(0, mSettingIconRect.DORotate(new Vector3(0,0,360), 0.4f, RotateMode.FastBeyond360));
+
+            for (int i = 0; i < mAnimRectList.Count; i++)
+            {
+                RectTransform rect = mAnimRectList[i];
+
+                rect.anchoredPosition = new Vector2(300, rect.anchoredPosition.y);
+                mShowAnimSequence.Insert(i * 0.05f, rect.DOAnchorPosX(0, 0.1f).SetEase(Ease.OutQuad));
+            }
+
+            yield return mShowAnimSequence.WaitForCompletion();
         }
         protected override void PlayHideAnim()
         {
             mPopupObj.SetActive(false);
+            GameManager.Instance.ResumeGame();
+        }
+        private void SetBGMToggle(bool isOn)
+        {
+            AudioManager.Inst?.SetBGMEnabled(isOn);
+            PlayerDataManager.Inst?.SetBGMOn(isOn);
+        }
+        private void SetSFXToggle(bool isOn)
+        {
+            AudioManager.Inst?.SetSFXEnabled(isOn);
+            PlayerDataManager.Inst?.SetSFXOn(isOn);
         }
     }
 }

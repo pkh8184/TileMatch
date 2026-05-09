@@ -66,6 +66,8 @@ namespace TrumpTile.GameMain.Core
 		private float mElapsedTime;
 		private float mTargetClearTime;
 		private bool mIsTimerFrozen = false;
+		private string mTimerString;
+		private float mCurrentTime;
 
 		// 점수 및 통계
 		private int mCurrentScore;
@@ -77,6 +79,8 @@ namespace TrumpTile.GameMain.Core
 		public event System.Action<int> OnScoreChanged;
 		public event System.Action<int> OnComboChanged;
 		public event System.Action<int, int> OnProgressChanged;
+
+
 
 		#region Unity Lifecycle
 
@@ -149,9 +153,15 @@ namespace TrumpTile.GameMain.Core
 						int minutes = Mathf.FloorToInt(mElapsedTime / 60F);
 						int seconds = Mathf.FloorToInt(mElapsedTime % 60F);
 						Debug.Log($"[GameManager] Timer: {minutes:D2}:{seconds:D2} ({mElapsedTime:F2}s) | Target: {mTargetClearTime:F1}s");
-					}
+
+                        int limitMinutes = Mathf.FloorToInt(mCurrentTime / 60F);
+                        int limitSeconds = Mathf.FloorToInt(mCurrentTime % 60F);
+
+                        mTimerString = $"{limitMinutes:D1}:{limitSeconds:D2}";
+                    }
 				}
-			}
+                mCurrentTime = mTargetClearTime - mElapsedTime;
+            }
 
 			if (mEnableDebugKeys)
 			{
@@ -232,6 +242,12 @@ namespace TrumpTile.GameMain.Core
 				: mTotalTileCount * 2.0F;
 
 			Debug.Log($"[GameManager] TargetClearTime: {mTargetClearTime}s (tiles: {mTotalTileCount})");
+
+            int limitMinutes = Mathf.FloorToInt(mTargetClearTime / 60F);
+            int limitSeconds = Mathf.FloorToInt(mTargetClearTime % 60F);
+
+            mTimerString = $"{limitMinutes:D1}:{limitSeconds:D2}";
+			mCurrentTime = mTargetClearTime;
 
             UIManager.Instance?.UpdateLevel(CurrentLevel);
 			UIManager.Instance?.UpdateScore(mCurrentScore);
@@ -349,7 +365,14 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Game State
-
+		public string GetCurrentTimeString()
+		{
+			return mTimerString;
+        }
+		public float GetCurrentTimeClamped()
+		{
+			return mCurrentTime / mTargetClearTime;
+		}
 		public void OnGameOver()
 		{
 			if (CurrentState == EGameState.GameOver)
