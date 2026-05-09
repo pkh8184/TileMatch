@@ -7,7 +7,6 @@ using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 namespace TrumpTile.GameMain.UI
 {
     public class _SettingPopup : PopupBase
@@ -17,22 +16,20 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Toggle mSFXToggle;
         [SerializeField] private Toggle mHapticToggle;
 
-        [Header("UID 관련")]
-        [SerializeField] private TMP_Text mUidText;
-        [SerializeField] private Button mUidCopyButton;
+        [Header("이용약관 버튼")]
+        [SerializeField] private Button mTermsButton;
+        [SerializeField] private Button mPolicyButton;
 
-        [Header("이용약관 관련")]
-        [SerializeField] private TMP_Text mTermsAndConditionsVerText;
-        [SerializeField] private Button mTermsAndConditionsURLButton;
-
-        [Header("SNS 버튼")]
-        [SerializeField] private Button mInstagramButton;
-
-        [Header("확인 버튼")]
-        [SerializeField] private Button mConfirmButton;
+        [Header("공유 버튼")]
+        [SerializeField] private Button mShareButton;
 
         [Header("앱 버전 텍스트")]
         [SerializeField] private TMP_Text mAppVersionText;
+
+        [Header("공유 텍스트 및 URL")]
+        [SerializeField] private string mShareText;
+        [SerializeField] private string mShareURL = "https://";
+
         public override void Initialize()
         {
             base.Initialize();
@@ -56,35 +53,44 @@ namespace TrumpTile.GameMain.UI
                 PlayerDataManager.Inst?.SetHapticOn(isOn);
             });
 
-            //UID 관련 UI 초기화
-            mUidText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.UID);
-            mUidCopyButton.onClick.AddListener(() =>
-            {
-                GUIUtility.systemCopyBuffer = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.UID);
-            });
-
-            //이용약관 관련 UI 초기화
-            mTermsAndConditionsVerText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.TermsAndConditionVersion);
-            mTermsAndConditionsURLButton.onClick.AddListener(() =>
+            mTermsButton.onClick.AddListener(() =>
             {
                 //Application.OpenURL("이용약관 URL");
             });
 
-            //SNS 버튼 초기화
-            mInstagramButton.onClick.AddListener(() =>
+            mPolicyButton.onClick.AddListener(() =>
             {
-                //Application.OpenURL("인스타그램 URL");
+                //Application.OpenURL("이용약관 URL");
             });
 
-            //확인 버튼 초기화
-            mConfirmButton.onClick.AddListener(() =>
+            mShareButton.onClick.AddListener(() =>
             {
-                Hide();
+#if UNITY_ANDROID
+                ShareURL();
+#else
+                Debug.Log($"{mShareText}\n{mShareURL}");
+#endif
             });
-
             mAppVersionText.text = Application.version;
         }
+#if UNITY_ANDROID
+        private void ShareURL()
+        {
+            string shareContent = $"{mShareText}\n{mShareURL}";
+            AndroidJavaClass intentClass = new AndroidJavaClass("android.content.Intent");
+            AndroidJavaObject intentObject = new AndroidJavaObject("android.content.Intent");
 
+            intentObject.Call<AndroidJavaObject>("setAction", intentClass.GetStatic<string>("ACTION_SEND"));
+            intentObject.Call<AndroidJavaObject>("setType", "text/plain");
+            intentObject.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_TEXT"), shareContent);
+
+            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+            AndroidJavaObject chooser = intentClass.CallStatic<AndroidJavaObject>("createChooser", intentObject, "공유하기");
+            currentActivity.Call("startActivity", chooser);
+        }
+#endif
         private void SetBGMToggle(bool isOn)
         {
             AudioManager.Inst?.SetBGMEnabled(isOn);

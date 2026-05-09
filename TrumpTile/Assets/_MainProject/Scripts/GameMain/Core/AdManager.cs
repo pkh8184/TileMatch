@@ -57,9 +57,14 @@ namespace TrumpTile.GameMain.Core
 
 			mBannerView.LoadAd(new AdRequest());
 			Debug.Log("[AdManager] 배너 광고 로드 요청");
-		}
 
-		public void ShowBannerAd()
+		//	mBannerView.Hide();
+
+           // EventManager.Inst.ActiveEvent("CompleteLoadAd");
+
+        }
+
+        public void ShowBannerAd()
 		{
 			if (mBannerView == null)
 			{
@@ -96,7 +101,10 @@ namespace TrumpTile.GameMain.Core
 			mBannerView = null;
 			Debug.Log("[AdManager] 배너 광고 제거");
 		}
-
+		public float GetBannerHeightForAdjustView()
+		{
+			return mBannerView.GetHeightInPixels();
+		}
 		#endregion
 
 		#region Banner Callbacks
@@ -104,7 +112,7 @@ namespace TrumpTile.GameMain.Core
 		private void OnBannerAdLoaded()
 		{
 			Debug.Log("[AdManager] 배너 광고 로드 성공");
-		}
+        }
 
 		private void OnBannerAdLoadFailed(LoadAdError error)
 		{

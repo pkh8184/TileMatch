@@ -13,20 +13,14 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Button[] mLanguageButtonArray;
         private string[] mLocaleHeaderStringArray = { "ko", "en", "ja", "zh", "vi", "hi", "ar" };
 
-        [Header("현재 언어 선택 표시 오브젝트")]
-        [SerializeField] private GameObject mCurrentLanguageObj;
-        private RectTransform mCurrentLanguageObjRectTransform;
+        [Header("선택된 언어 표시를 위한 스프라이트")]
+        [SerializeField] private Sprite mCurrentLangaugeSprite;
+        [SerializeField] private Sprite mDefaultLangaugeSprite;
 
-        [Header("언어 변경 시 로딩 표시 오브젝트")]
-        [SerializeField] private GameObject mChangeLoadingObj;
-
-        [Header("확인 버튼")]
-        [SerializeField] private Button mConfirmButton;
+        private int currentIndex = 0;
         public override void Initialize()
         {
             base.Initialize();
-
-            mCurrentLanguageObjRectTransform = mCurrentLanguageObj.GetComponent<RectTransform>();
 
             for (int i = 0; i < mLanguageButtonArray.Length; i++)
             {
@@ -36,19 +30,9 @@ namespace TrumpTile.GameMain.UI
 
             int index = PlayerDataManager.Inst.GetLocaleIndex();
 
-            RefreshCurrentLangaugeObjTransform(index);
+            currentIndex = index;
 
-            mConfirmButton.onClick.AddListener(Hide);
-        }
-        private void RefreshCurrentLangaugeObjTransform(int index)
-        {
-            mCurrentLanguageObj.SetActive(false);
-
-            mCurrentLanguageObj.transform.SetParent(mLanguageButtonArray[index].transform);
-            mCurrentLanguageObjRectTransform.offsetMin = Vector2.zero;
-            mCurrentLanguageObjRectTransform.offsetMax = Vector2.zero;
-
-            mCurrentLanguageObj.SetActive(true);
+            mLanguageButtonArray[index].image.sprite = mCurrentLangaugeSprite;
         }
         private void OnLanguageButtonClicked(string locale)
         {
@@ -56,17 +40,18 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_ChangeLocale(string locale)
         {
-            mChangeLoadingObj.SetActive(true);
-
             int index = GetLocaleHeaderIndex(locale);
 
             PlayerDataManager.Inst?.SetLocaleIndex(index);
             //LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.GetLocale(locale);
             yield return null;
 
-            mChangeLoadingObj.SetActive(false);
+            mLanguageButtonArray[currentIndex].image.sprite = mDefaultLangaugeSprite;
 
-            RefreshCurrentLangaugeObjTransform(index);
+            currentIndex = index;
+
+            mLanguageButtonArray[index].image.sprite = mCurrentLangaugeSprite;
+            
         }
         private int GetLocaleHeaderIndex(string locale)
         {
