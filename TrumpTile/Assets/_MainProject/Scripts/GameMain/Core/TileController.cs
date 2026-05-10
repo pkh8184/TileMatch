@@ -493,7 +493,7 @@ namespace TrumpTile.GameMain.Core
 			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.1F, 0.25F);
 
 			float rotationAmount = UnityEngine.Random.Range(0, 2) == 0 ? mFlyRotation : -mFlyRotation;
-			float arcHeight = distance * mFlyArcHeight;
+			float arcHeight = Mathf.Min(distance * mFlyArcHeight, 0.5F);
 
 			float elapsed = 0F;
 
@@ -702,6 +702,11 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Utility
+
+		public void StopAnimation()
+		{
+			StopCurrentAnimation();
+		}
 
 		private void StopCurrentAnimation()
 		{

@@ -346,7 +346,7 @@ namespace TrumpTile.GameMain.Core
 
 				RearrangeSlots();
 
-				yield return new WaitForSeconds(0.05F);
+				yield return new WaitForSeconds(0.15F);
 			}
 
 			mIsProcessingMatch = false;
@@ -376,6 +376,21 @@ namespace TrumpTile.GameMain.Core
 			if (matched == null || matched.Count == 0)
 			{
 				yield break;
+			}
+
+			// 진행 중인 애니메이션 중단 및 슬롯 위치로 스냅
+			foreach (TileController tile in matched)
+			{
+				if (tile == null)
+				{
+					continue;
+				}
+				tile.StopAnimation();
+				int slotIdx = tile.SlotIndex;
+				if (mSlotPositions != null && slotIdx >= 0 && slotIdx < mSlotPositions.Length && mSlotPositions[slotIdx] != null)
+				{
+					tile.transform.position = mSlotPositions[slotIdx].position;
+				}
 			}
 
 			Vector3 center = Vector3.zero;
