@@ -201,10 +201,20 @@ namespace TrumpTile.GameMain.Core
 
 		private void SetMovingToSlotSorting()
 		{
-			if (mSpriteRenderer != null)
+			mCurrentSortingOrder = MOVING_SORTING_ORDER;
+
+			if (mBackgroundRenderer != null)
 			{
-				mCurrentSortingOrder = MOVING_SORTING_ORDER;
-				mSpriteRenderer.sortingOrder = mCurrentSortingOrder;
+				mBackgroundRenderer.sortingOrder = mCurrentSortingOrder;
+			}
+
+			SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
+			foreach (SpriteRenderer sr in childRenderers)
+			{
+				if (sr != mBackgroundRenderer)
+				{
+					sr.sortingOrder = mCurrentSortingOrder + 1;
+				}
 			}
 		}
 
@@ -261,10 +271,26 @@ namespace TrumpTile.GameMain.Core
 
 		private void HandleTileSelected()
 		{
-			BoardManager.Instance?.RemoveTileFromBoard(this);
+			EnableCollider(false);
 
-			SlotManager.Instance?.AddTile(this);
-            
+			int savedX = mGridX;
+			int savedY = mGridY;
+			int savedLayer = mLayerIndex;
+
+			if (BoardManager.Instance != null)
+			{
+				BoardManager.Instance.RemoveTileFromBoard(this);
+			}
+
+			bool bAdded = SlotManager.Instance != null && SlotManager.Instance.AddTile(this);
+			if (!bAdded)
+			{
+				if (BoardManager.Instance != null)
+				{
+					BoardManager.Instance.ReturnTileToBoard(this, savedX, savedY, savedLayer);
+				}
+				EnableCollider(true);
+			}
 		}
 
 		private void OnMouseEnter()
@@ -478,7 +504,7 @@ namespace TrumpTile.GameMain.Core
 				float easedT = t * t;
 
 				Vector3 currentPos = Vector3.Lerp(startPos, targetPosition, easedT);
-				float arc = Mathf.Sin(t * Mathf.PI) * arcHeight;
+				float arc = Mathf.Sin(easedT * Mathf.PI) * arcHeight;
 				currentPos.y += arc;
 				transform.position = currentPos;
 
