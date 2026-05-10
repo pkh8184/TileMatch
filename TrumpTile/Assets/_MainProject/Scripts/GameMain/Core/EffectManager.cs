@@ -551,7 +551,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log($"[EffectManager] BlackHole Effect - Start at {mBlackHolePosition}");
 
-			PlaySpineEffect(mMagicHatSpineEffectPrefab, mBlackHolePosition);
+			PlaySpineEffectWithCallback(mMagicHatSpineEffectPrefab, mBlackHolePosition, null);
 
 			// 원본 위치/스케일 저장
 			List<Vector3> originalPositions = new List<Vector3>();
@@ -746,7 +746,7 @@ namespace TrumpTile.GameMain.Core
 					AutoDestroyEffect(explodeEffect, mBombExplodeDuration + 1F);
 				}
 
-				PlaySpineEffect(mBombSpineEffectPrefab, pos);
+				PlaySpineEffectWithCallback(mBombSpineEffectPrefab, pos, null);
 
 				yield return new WaitForSeconds(mBombExplodeDelay);
 			}
@@ -772,23 +772,65 @@ namespace TrumpTile.GameMain.Core
 
 		#region Spine Item Effects
 
-		// HammerItem에서 호출 — 슬롯 타일 위치
-		public void PlayHammerSpineEffect(Vector3 position)
+		// Spine action point 시점에 파티클도 함께 재생
+		public void PlayHammerSpineEffect(Vector3 position, Action onActionPoint = null)
 		{
-			PlaySpineEffect(mHammerSpineEffectPrefab, position);
-		}
-
-		// MagicWandItem에서 호출 — Inspector 설정 위치
-		public void PlayMagicWandSpineEffect()
-		{
-			PlaySpineEffect(mMagicWandSpineEffectPrefab, mMagicWandEffectPosition);
-		}
-
-		private void PlaySpineEffect(GameObject prefab, Vector3 position)
-		{
-			if (prefab != null)
+			PlaySpineEffectWithCallback(mHammerSpineEffectPrefab, position, () =>
 			{
-				Instantiate(prefab, position, Quaternion.identity);
+				PlayStrikePopEffect(position);
+				onActionPoint?.Invoke();
+			});
+		}
+
+		public void PlayMagicWandSpineEffect(Action onActionPoint = null)
+		{
+			PlaySpineEffectWithCallback(mMagicWandSpineEffectPrefab, mMagicWandEffectPosition, onActionPoint);
+		}
+
+		public void PlayMagicHatSpineEffect(Action onActionPoint = null)
+		{
+			PlaySpineEffectWithCallback(mMagicHatSpineEffectPrefab, mBlackHolePosition, onActionPoint);
+		}
+
+		public void PlayBombSpineEffect(Vector3 position, Action onActionPoint = null)
+		{
+			PlaySpineEffectWithCallback(mBombSpineEffectPrefab, position, () =>
+			{
+				PlayBombExplodeEffect(position);
+				onActionPoint?.Invoke();
+			});
+		}
+
+		public void PlayBombExplodeEffect(Vector3 position)
+		{
+			if (mBombExplodeEffectPrefab != null)
+			{
+				GameObject effect = Instantiate(mBombExplodeEffectPrefab, position, Quaternion.identity);
+				AutoDestroyEffect(effect, mBombExplodeDuration + 1F);
+			}
+		}
+
+		private void PlaySpineEffectWithCallback(GameObject prefab, Vector3 position, Action onActionPoint)
+		{
+			if (prefab == null)
+			{
+				onActionPoint?.Invoke();
+				return;
+			}
+
+			GameObject instance = Instantiate(prefab, position, Quaternion.identity);
+			SpineEffectController controller = instance.GetComponent<SpineEffectController>();
+
+			if (controller != null)
+			{
+				if (onActionPoint != null)
+				{
+					controller.OnActionPoint += onActionPoint;
+				}
+			}
+			else
+			{
+				onActionPoint?.Invoke();
 			}
 		}
 

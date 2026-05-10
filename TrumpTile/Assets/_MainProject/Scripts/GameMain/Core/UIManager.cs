@@ -447,9 +447,9 @@ namespace TrumpTile.GameMain.Core
 		{
 			float duration = 1F;
 			float elapsed = 0F;
-			Vector3 startPos = obj.transform.position;
 
 			TextMeshProUGUI tmp = obj.GetComponentInChildren<TextMeshProUGUI>();
+			CanvasGroup canvasGroup = obj.GetComponent<CanvasGroup>();
 			Color startColor = tmp != null ? tmp.color : Color.white;
 
 			while (elapsed < duration)
@@ -457,13 +457,12 @@ namespace TrumpTile.GameMain.Core
 				elapsed += Time.deltaTime;
 				float t = elapsed / duration;
 
-				obj.transform.position = startPos + Vector3.up * t * 1F;
-
-				if (tmp != null)
+				if (canvasGroup != null)
 				{
 					Color newColor = startColor;
-					newColor.a = 1F - t;
+					newColor.a = 1f - t;
 					tmp.color = newColor;
+                    canvasGroup.alpha = newColor.a;
 				}
 
 				yield return null;

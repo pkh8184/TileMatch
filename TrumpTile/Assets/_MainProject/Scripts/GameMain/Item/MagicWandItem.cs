@@ -28,13 +28,25 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
+			AudioEvent.Play(EAudioKey.SFX_ItemUse);
+
+			bool bActionDone = false;
+
 			if (mEffectManager != null)
 			{
-				mEffectManager.PlayMagicWandSpineEffect();
+				mEffectManager.PlayMagicWandSpineEffect(() =>
+				{
+					mTimerControllable.FreezeTimer(FREEZE_DURATION);
+					bActionDone = true;
+				});
 			}
-			AudioEvent.Play(EAudioKey.SFX_ItemUse);
-			mTimerControllable.FreezeTimer(FREEZE_DURATION);
+			else
+			{
+				mTimerControllable.FreezeTimer(FREEZE_DURATION);
+				bActionDone = true;
+			}
 
+			yield return new WaitUntil(() => bActionDone);
 			yield return new WaitForSeconds(0.3f);
 
 			onComplete?.Invoke();

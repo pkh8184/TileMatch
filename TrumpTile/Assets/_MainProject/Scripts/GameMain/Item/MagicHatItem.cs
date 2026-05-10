@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using TrumpTile.GameMain.Core;
 
@@ -28,33 +26,26 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
-			List<TileController> boardTiles = mBoardManager.GetBoardTiles();
-			List<Transform> tileTransforms = boardTiles
-				.Where(t => t != null)
-				.Select(t => t.transform)
-				.ToList();
+			AudioEvent.Play(EAudioKey.SFX_ItemUse);
 
-			bool bEffectComplete = false;
-			mEffectManager?.PlayBlackHoleEffect(
-				tileTransforms,
-				() => { },
-				() =>
-				{
-					// BoardManager 자신이 코루틴 실행자로 동작
-					mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
-					bEffectComplete = true;
-				}
-			);
+			bool bActionDone = false;
 
-			float elapsed = 0f;
-			const float TIMEOUT = 5f;
-			while (!bEffectComplete && elapsed < TIMEOUT)
+			if (mEffectManager != null)
 			{
-				elapsed += Time.deltaTime;
-				yield return null;
+				mEffectManager.PlayMagicHatSpineEffect(() =>
+				{
+					mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
+					bActionDone = true;
+				});
+			}
+			else
+			{
+				mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
+				bActionDone = true;
 			}
 
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitUntil(() => bActionDone);
+			yield return new WaitForSeconds(0.5f);
 
 			onComplete?.Invoke();
 		}

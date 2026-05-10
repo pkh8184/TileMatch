@@ -28,30 +28,37 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
-			Vector3 popPosition = mSlotManager.GetLastTilePosition();
-			if (mEffectManager != null)
-			{
-				mEffectManager.PlayStrikePopEffect(popPosition);
-				mEffectManager.PlayHammerSpineEffect(popPosition);
-			}
 			AudioEvent.Play(EAudioKey.SFX_ItemUse);
 
-			yield return new WaitForSeconds(0.3f);
+			Vector3 popPosition = mSlotManager.GetLastTilePosition();
 
-			Vector3 landPosition;
-			bool bSuccess = mSlotManager.RemoveOneTileToBoard(out landPosition);
-			if (bSuccess)
+			bool bActionDone = false;
+
+			if (mEffectManager != null)
 			{
-				Vector3 actualLandPosition = mBoardManager != null
-					? mBoardManager.GetLastPlacedTilePosition()
-					: landPosition;
-				if (mEffectManager != null)
+				mEffectManager.PlayHammerSpineEffect(popPosition, () =>
 				{
-					mEffectManager.PlayStrikeLandEffect(actualLandPosition);
-				}
+					Vector3 landPosition;
+					bool bSuccess = mSlotManager.RemoveOneTileToBoard(out landPosition);
+					if (bSuccess)
+					{
+						Vector3 actualLandPos = mBoardManager != null
+							? mBoardManager.GetLastPlacedTilePosition()
+							: landPosition;
+						mEffectManager.PlayStrikeLandEffect(actualLandPos);
+					}
+					bActionDone = true;
+				});
+			}
+			else
+			{
+				Vector3 landPosition;
+				mSlotManager.RemoveOneTileToBoard(out landPosition);
+				bActionDone = true;
 			}
 
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitUntil(() => bActionDone);
+			yield return new WaitForSeconds(0.3f);
 
 			onComplete?.Invoke();
 		}

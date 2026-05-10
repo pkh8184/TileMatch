@@ -12,6 +12,9 @@ namespace TrumpTile.GameMain.Item
 	{
 		public int ItemId => 1008;
 
+		private const float BOMB_SET_DELAY = 0.15f;
+		private const float TIMEOUT = 3f;
+
 		private BoardManager mBoardManager;
 		private EffectManager mEffectManager;
 		private int mMatchCount;
@@ -49,49 +52,75 @@ namespace TrumpTile.GameMain.Item
 				yield break;
 			}
 
+			AudioEvent.Play(EAudioKey.SFX_ItemUse);
+
 			int setsToRemove = Mathf.Min(3, groups.Count);
-			List<Vector3> allPositions = new List<Vector3>();
-			List<TileController> allTilesToRemove = new List<TileController>();
+			int pendingCount = setsToRemove;
 
 			for (int i = 0; i < setsToRemove; i++)
 			{
-				foreach (TileController tile in groups[i].Take(mMatchCount))
+				List<TileController> setTiles = groups[i].Take(mMatchCount).ToList();
+				Vector3 center = ComputeCenter(setTiles);
+
+				List<TileController> capturedTiles = setTiles;
+
+				if (mEffectManager != null)
 				{
-					if (tile != null)
+					mEffectManager.PlayBombSpineEffect(center, () =>
 					{
-						allPositions.Add(tile.transform.position);
-						allTilesToRemove.Add(tile);
-					}
+						foreach (TileController tile in capturedTiles)
+						{
+							if (tile != null)
+							{
+								mBoardManager.RemoveTile(tile);
+								tile.Remove();
+							}
+						}
+						pendingCount--;
+					});
 				}
-			}
-
-			AudioEvent.Play(EAudioKey.SFX_ItemUse);
-
-			bool bEffectComplete = false;
-			mEffectManager?.PlayBoomEffect(allPositions, () => { bEffectComplete = true; });
-
-			foreach (TileController tile in allTilesToRemove)
-			{
-				if (tile != null)
+				else
 				{
-					mBoardManager.RemoveTile(tile);
-					tile.Remove();
+					foreach (TileController tile in capturedTiles)
+					{
+						if (tile != null)
+						{
+							mBoardManager.RemoveTile(tile);
+							tile.Remove();
+						}
+					}
+					pendingCount--;
 				}
+
+				yield return new WaitForSeconds(BOMB_SET_DELAY);
 			}
 
 			float elapsed = 0f;
-			const float TIMEOUT = 2f;
-			while (!bEffectComplete && elapsed < TIMEOUT)
+			while (pendingCount > 0 && elapsed < TIMEOUT)
 			{
 				elapsed += Time.deltaTime;
 				yield return null;
 			}
 
 			mBoardManager.UpdateAllBlockedStates();
-
 			yield return new WaitForSeconds(0.3f);
 
 			onComplete?.Invoke();
+		}
+
+		private Vector3 ComputeCenter(List<TileController> tiles)
+		{
+			Vector3 sum = Vector3.zero;
+			int count = 0;
+			foreach (TileController tile in tiles)
+			{
+				if (tile != null)
+				{
+					sum += tile.transform.position;
+					count++;
+				}
+			}
+			return count > 0 ? sum / count : Vector3.zero;
 		}
 	}
 }
