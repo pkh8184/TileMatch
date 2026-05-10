@@ -10,6 +10,16 @@ namespace TrumpTile.GameMain.Core
 	/// 1. Sorting Order 로직 수정 - 레이어 기반으로 통일
 	/// 2. 레이어 높을수록 앞에 표시 (Layer 4 = 500, Layer 0 = 420)
 	/// </summary>
+	public enum ESpawnAnimType
+	{
+		PopIn,
+		FadeIn,
+		DropDown,
+		FlipIn,
+		BounceIn,
+		Random
+	}
+
 	[RequireComponent(typeof(SpriteRenderer))]
 	[RequireComponent(typeof(BoxCollider2D))]
 	public class TileController : MonoBehaviour
@@ -34,6 +44,9 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private float mFlyArcHeight = 0.3F;
 		[SerializeField] private float mFlyRotation = 360F;
 
+		[Header("Spawn Animation")]
+		[SerializeField] private float mSpawnDuration = 0.25F;
+
 		[Header("Debug Info")]
 		[SerializeField] private int mGridX;
 		[SerializeField] private int mGridY;
@@ -56,6 +69,7 @@ namespace TrumpTile.GameMain.Core
 		private const int SLOT_BASE_SORTING = 1000;
 		private const int SLOT_SORTING_STEP = 10;
 		private const int MOVING_SORTING_ORDER = 1099;
+		public const int SPAWN_ANIM_COUNT = 5;
 
 		#endregion
 
@@ -64,6 +78,7 @@ namespace TrumpTile.GameMain.Core
 		private Coroutine mCurrentAnimation;
 		private BoxCollider2D mBoxCollider;
 		private Vector3 mOriginalScale = Vector3.one;
+		private Vector3 mSpawnTargetPos;
 
 		#endregion
 
@@ -580,14 +595,20 @@ namespace TrumpTile.GameMain.Core
 			transform.position = originalPos;
 		}
 
-		public void PlaySpawnAnimation(float delay = 0F)
+		public void PlaySpawnAnimation(float delay = 0F, ESpawnAnimType animType = ESpawnAnimType.Random)
 		{
-			StartCoroutine(SpawnCoroutine(delay));
+			StartCoroutine(SpawnDispatchCoroutine(delay, animType));
 		}
 
-		private IEnumerator SpawnCoroutine(float delay)
+		private IEnumerator SpawnDispatchCoroutine(float delay, ESpawnAnimType animType)
 		{
-			transform.localScale = Vector3.zero;
+			ESpawnAnimType selectedType = animType;
+			if (selectedType == ESpawnAnimType.Random)
+			{
+				selectedType = (ESpawnAnimType)UnityEngine.Random.Range(0, SPAWN_ANIM_COUNT);
+			}
+
+			PrepareSpawnVisual(selectedType);
 
 			if (delay > 0F)
 			{
@@ -595,25 +616,169 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			mIsAnimating = true;
-			float duration = 0.2F;
+
+			switch (selectedType)
+			{
+				case ESpawnAnimType.PopIn:
+					yield return PopInCoroutine();
+					break;
+				case ESpawnAnimType.FadeIn:
+					yield return FadeInCoroutine();
+					break;
+				case ESpawnAnimType.DropDown:
+					yield return DropDownCoroutine();
+					break;
+				case ESpawnAnimType.FlipIn:
+					yield return FlipInCoroutine();
+					break;
+				case ESpawnAnimType.BounceIn:
+					yield return BounceInCoroutine();
+					break;
+			}
+
+			mIsAnimating = false;
+		}
+
+		private void PrepareSpawnVisual(ESpawnAnimType animType)
+		{
+			switch (animType)
+			{
+				case ESpawnAnimType.PopIn:
+				case ESpawnAnimType.BounceIn:
+					transform.localScale = Vector3.zero;
+					break;
+				case ESpawnAnimType.FadeIn:
+					SetRenderersAlpha(0F);
+					break;
+				case ESpawnAnimType.DropDown:
+					mSpawnTargetPos = transform.position;
+					transform.position = mSpawnTargetPos + Vector3.up * 2F;
+					SetRenderersAlpha(0F);
+					break;
+				case ESpawnAnimType.FlipIn:
+					transform.localScale = new Vector3(0F, mOriginalScale.y, mOriginalScale.z);
+					break;
+			}
+		}
+
+		private void SetRenderersAlpha(float alpha)
+		{
+			if (mBackgroundRenderer != null)
+			{
+				Color c = mBackgroundRenderer.color;
+				c.a = alpha;
+				mBackgroundRenderer.color = c;
+			}
+			if (mSpriteRenderer != null)
+			{
+				Color c = mSpriteRenderer.color;
+				c.a = alpha;
+				mSpriteRenderer.color = c;
+			}
+		}
+
+		private IEnumerator PopInCoroutine()
+		{
+			float elapsed = 0F;
+
+			while (elapsed < mSpawnDuration)
+			{
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / mSpawnDuration);
+				float scale = t < 0.7F
+					? Mathf.Sin(t / 0.7F * Mathf.PI * 0.5F) * 1.1F
+					: Mathf.Lerp(1.1F, 1.0F, (t - 0.7F) / 0.3F);
+				transform.localScale = mOriginalScale * scale;
+				yield return null;
+			}
+
+			transform.localScale = mOriginalScale;
+		}
+
+		private IEnumerator FadeInCoroutine()
+		{
+			float elapsed = 0F;
+
+			while (elapsed < mSpawnDuration)
+			{
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / mSpawnDuration);
+				SetRenderersAlpha(Mathf.Sin(t * Mathf.PI * 0.5F));
+				yield return null;
+			}
+
+			SetRenderersAlpha(1F);
+		}
+
+		private IEnumerator DropDownCoroutine()
+		{
+			Vector3 startPos = transform.position;
+			float duration = mSpawnDuration * 1.2F;
 			float elapsed = 0F;
 
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
-				float t = elapsed / duration;
-				float scale = Mathf.Sin(t * Mathf.PI * 0.5F) * 1.1F;
-				if (t > 0.7F)
-				{
-					scale = Mathf.Lerp(1.1F, 1F, (t - 0.7F) / 0.3F);
-				}
+				float t = Mathf.Clamp01(elapsed / duration);
+				float easedT = 1F - Mathf.Pow(1F - t, 3F);
 
-				transform.localScale = mOriginalScale * Mathf.Clamp01(scale);
+				transform.position = Vector3.Lerp(startPos, mSpawnTargetPos, easedT);
+				SetRenderersAlpha(Mathf.Min(t * 4F, 1F));
+				yield return null;
+			}
+
+			transform.position = mSpawnTargetPos;
+			SetRenderersAlpha(1F);
+		}
+
+		private IEnumerator FlipInCoroutine()
+		{
+			float elapsed = 0F;
+
+			while (elapsed < mSpawnDuration)
+			{
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / mSpawnDuration);
+				float scaleX = Mathf.Sin(t * Mathf.PI * 0.5F) * mOriginalScale.x;
+				transform.localScale = new Vector3(scaleX, mOriginalScale.y, mOriginalScale.z);
 				yield return null;
 			}
 
 			transform.localScale = mOriginalScale;
-			mIsAnimating = false;
+		}
+
+		private IEnumerator BounceInCoroutine()
+		{
+			float elapsed = 0F;
+
+			while (elapsed < mSpawnDuration)
+			{
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / mSpawnDuration);
+				float scale;
+
+				if (t < 0.6F)
+				{
+					scale = Mathf.Sin(t / 0.6F * Mathf.PI * 0.5F) * 1.3F;
+				}
+				else if (t < 0.8F)
+				{
+					scale = Mathf.Lerp(1.3F, 0.85F, (t - 0.6F) / 0.2F);
+				}
+				else if (t < 0.9F)
+				{
+					scale = Mathf.Lerp(0.85F, 1.05F, (t - 0.8F) / 0.1F);
+				}
+				else
+				{
+					scale = Mathf.Lerp(1.05F, 1.0F, (t - 0.9F) / 0.1F);
+				}
+
+				transform.localScale = mOriginalScale * scale;
+				yield return null;
+			}
+
+			transform.localScale = mOriginalScale;
 		}
 
 		public void PlayMatchAnimation(Action onComplete = null)
