@@ -464,7 +464,7 @@ namespace TrumpTile.GameMain.Core
 
 			ShuffleList(dataList);
 
-			yield return StartCoroutine(ShuffleAnimation(boardTiles));
+			yield return null;
 
 			for (int i = 0; i < boardTiles.Count && i < dataList.Count; i++)
 			{

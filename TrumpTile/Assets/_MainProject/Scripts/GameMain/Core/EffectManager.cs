@@ -87,6 +87,8 @@ namespace TrumpTile.GameMain.Core
 		[Tooltip("각 타일의 도착 시간 랜덤 범위 (최대)")]
 		[SerializeField] private float mBlackHoleScatterRandomMax = 0.15F;
 		[SerializeField] private Vector3 mBlackHolePosition = Vector3.zero;
+		[Tooltip("흡수/분산 시 타일 회전량 (도). 0이면 회전 없음")]
+		[SerializeField] private float mTileSuckRotation = 360F;
 
 		[Header("Boom Effect")]
 		[Tooltip("Fx_Bomb_001 - 폭탄 폭발 이펙트")]
@@ -553,21 +555,26 @@ namespace TrumpTile.GameMain.Core
 
 			PlaySpineEffectWithCallback(mMagicHatSpineEffectPrefab, mBlackHolePosition, null);
 
-			// 원본 위치/스케일 저장
+			// 원본 위치/스케일/회전 저장 + 타일별 랜덤 회전 방향
 			List<Vector3> originalPositions = new List<Vector3>();
 			List<Vector3> originalScales = new List<Vector3>();
+			List<Quaternion> originalRotations = new List<Quaternion>();
+			List<float> spinDirs = new List<float>();
 			foreach (Transform tile in tiles)
 			{
 				if (tile != null)
 				{
 					originalPositions.Add(tile.position);
 					originalScales.Add(tile.localScale);
+					originalRotations.Add(tile.rotation);
 				}
 				else
 				{
 					originalPositions.Add(Vector3.zero);
 					originalScales.Add(Vector3.one);
+					originalRotations.Add(Quaternion.identity);
 				}
+				spinDirs.Add(UnityEngine.Random.value > 0.5F ? 1F : -1F);
 			}
 
 			// 1. 블랙홀 등장 이펙트 (스케일 0 → 1)
@@ -622,18 +629,20 @@ namespace TrumpTile.GameMain.Core
 
 							tiles[i].position = Vector3.Lerp(originalPositions[i], mBlackHolePosition, easeT);
 							tiles[i].localScale = Vector3.Lerp(originalScales[i], Vector3.one * 0.1F, easeT);
+							tiles[i].rotation = originalRotations[i] * Quaternion.Euler(0F, 0F, spinDirs[i] * mTileSuckRotation * easeT);
 						}
 					}
 					yield return null;
 				}
 
 				// 모든 타일을 블랙홀 중심으로 확실히 이동
-				foreach (Transform tile in tiles)
+				for (int i = 0; i < tiles.Count; i++)
 				{
-					if (tile != null)
+					if (tiles[i] != null)
 					{
-						tile.position = mBlackHolePosition;
-						tile.localScale = Vector3.one * 0.1F;
+						tiles[i].position = mBlackHolePosition;
+						tiles[i].localScale = Vector3.one * 0.1F;
+						tiles[i].rotation = originalRotations[i] * Quaternion.Euler(0F, 0F, spinDirs[i] * mTileSuckRotation);
 					}
 				}
 			}
@@ -689,18 +698,20 @@ namespace TrumpTile.GameMain.Core
 
 							tiles[i].position = Vector3.Lerp(mBlackHolePosition, originalPositions[i], easeT);
 							tiles[i].localScale = Vector3.Lerp(Vector3.one * 0.1F, originalScales[i], easeT);
+							tiles[i].rotation = originalRotations[i] * Quaternion.Euler(0F, 0F, spinDirs[i] * mTileSuckRotation * (1F - easeT));
 						}
 					}
 					yield return null;
 				}
 
-				// 최종 위치/스케일 확정
+				// 최종 위치/스케일/회전 확정
 				for (int i = 0; i < tiles.Count; i++)
 				{
 					if (tiles[i] != null)
 					{
 						tiles[i].position = originalPositions[i];
 						tiles[i].localScale = originalScales[i];
+						tiles[i].rotation = originalRotations[i];
 					}
 				}
 			}

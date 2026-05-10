@@ -46,10 +46,13 @@ namespace TrumpTile.GameMain.Item
 				// Spine 이펙트는 BlackHoleEffectCoroutine 내부에서 함께 재생됨
 				mEffectManager.PlayBlackHoleEffect(
 					tileTransforms,
-					() => { },
 					() =>
 					{
+						// 타일이 중앙에 모인 순간 TileData 교환 (위치는 그대로, 카드 face만 셔플)
 						mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
+					},
+					() =>
+					{
 						bEffectComplete = true;
 					}
 				);
