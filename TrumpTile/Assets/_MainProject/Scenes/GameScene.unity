@@ -160,7 +160,6 @@ MonoBehaviour:
   - {fileID: 178703930}
   - {fileID: 570797761}
   - {fileID: 526890969}
-  mTileMoveDuration: 0.15
   mTileMergeTime: 0.15
 --- !u!4 &10376035
 Transform:
@@ -5701,17 +5700,17 @@ RectTransform:
   m_GameObject: {fileID: 78011182}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 386239097}
-  - {fileID: 1267538386}
-  m_Father: {fileID: 609923110}
+  - {fileID: 998721711}
+  m_Father: {fileID: 680795684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.43055555, y: 0.4609375}
   m_AnchorMax: {x: 0.5694444, y: 0.5390625}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.000022888184, y: 0}
+  m_SizeDelta: {x: -50.00003, y: -50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &78011184
 Animator:
@@ -6019,7 +6018,7 @@ MonoBehaviour:
   mResumeButton: {fileID: 0}
   mPauseRestartButton: {fileID: 0}
   mPauseMainMenuButton: {fileID: 0}
-  mFloatingTextPrefab: {fileID: 1267538385}
+  mFloatingTextPrefab: {fileID: 998721710}
   mFloatingTextParent: {fileID: 386239097}
   mComboAnimator: {fileID: 0}
 --- !u!4 &106049956
@@ -8730,7 +8729,6 @@ RectTransform:
   - {fileID: 1101965593}
   - {fileID: 1156912915}
   - {fileID: 1519852527}
-  - {fileID: 78011183}
   - {fileID: 652190475}
   m_Father: {fileID: 361807537}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9257,6 +9255,7 @@ RectTransform:
   - {fileID: 225975895}
   - {fileID: 946809741}
   - {fileID: 1136240133}
+  - {fileID: 78011183}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -10759,7 +10758,7 @@ GameObject:
   - component: {fileID: 998721713}
   - component: {fileID: 998721712}
   m_Layer: 5
-  m_Name: Background
+  m_Name: ComboBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10772,16 +10771,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 998721710}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1267538386}
+  m_Children:
+  - {fileID: 1267538386}
+  m_Father: {fileID: 78011183}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -930.99976, y: 535}
   m_SizeDelta: {x: 640, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &998721712
@@ -16865,14 +16865,13 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 998721711}
-  m_Father: {fileID: 78011183}
+  m_Children: []
+  m_Father: {fileID: 998721711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: -9.81, y: 5.6}
   m_AnchorMax: {x: -7.81, y: 6.1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 5958.4004, y: -321}
+  m_SizeDelta: {x: -1080.0005, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1267538387
 MonoBehaviour:
