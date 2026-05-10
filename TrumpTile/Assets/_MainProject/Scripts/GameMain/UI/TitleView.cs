@@ -12,8 +12,8 @@ namespace TrumpTile.GameMain.UI
     public class TitleView : ViewBase
     {
         [Header("스튜디오 로고 이미지")]
-        [SerializeField] private Image mStudioLogoUp;
-        [SerializeField] private Image mStudioLogoDown;
+        [SerializeField] private Image mStudioLogo;
+
         [Header("로고 이미지 페이드 인 & 아웃 시간")]
         [SerializeField] private float mLogoFadeDuration;
 
@@ -22,11 +22,15 @@ namespace TrumpTile.GameMain.UI
 
         [Header("버전 체크 팝업")]
         [SerializeField] private PublicPopup mVersionCheckPopup;
+        [Header("버전 텍스트")]
+        [SerializeField] private TMP_Text mVersionText;
 
         private TitleManager titleManager;
         public override void Initialize()
         {
             base.Initialize();
+
+            mVersionText.text = Application.version;
 
             StartCoroutine(Co_PlayStudioLogoFadeAnim());
 
@@ -38,18 +42,13 @@ namespace TrumpTile.GameMain.UI
         private IEnumerator Co_PlayStudioLogoFadeAnim()
         {
             Sequence seq = DOTween.Sequence();
-            seq.Append(mStudioLogoUp.DOFade(1, mLogoFadeDuration));
-            seq.Join(mStudioLogoDown.DOFade(1, mLogoFadeDuration));
-            seq.OnComplete(() => mStudioLogoUp.GetComponent<Animator>().SetTrigger("LogoAnim"));
+
+            mStudioLogo.fillAmount = 0;
+            seq.Append(mStudioLogo.DOFillAmount(1, 0.5f));
+            seq.AppendInterval(0.5f);
+            seq.OnComplete(() => mStudioLogo.transform.parent.gameObject.SetActive(false));
+
             yield return seq.WaitForCompletion();
-
-            yield return new WaitForSeconds(2);
-
-            Sequence seq2 = DOTween.Sequence();
-            seq2.Append(mStudioLogoUp.DOFade(0, mLogoFadeDuration));
-            seq2.Join(mStudioLogoDown.DOFade(0, mLogoFadeDuration));
-            seq2.OnComplete(() => mStudioLogoUp.transform.parent.gameObject.SetActive(false));
-            yield return seq2.WaitForCompletion();
 
             StartCoroutine(Co_PlayLoadingSliderAnim());
         }

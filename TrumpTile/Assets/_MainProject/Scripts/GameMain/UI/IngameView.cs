@@ -58,6 +58,7 @@ namespace TrumpTile.GameMain.UI
         {
             yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());
 
+            Debug.Log("레벨 애님 호출");
             Sequence sq = DOTween.Sequence();
 
             sq.Append(mLevelNameCanvasGroup.DOFade(1, 0.5f));

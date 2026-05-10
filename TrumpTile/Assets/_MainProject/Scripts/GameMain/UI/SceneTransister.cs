@@ -54,7 +54,7 @@ namespace TrumpTile.GameMain.UI
             mSceneTransister.SetActive(true);
             mTransisterAnimator.SetTrigger("FadeIn");
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSecondsRealtime(1f);
 
             mSceneTransister.SetActive(false);
         }
@@ -63,7 +63,7 @@ namespace TrumpTile.GameMain.UI
             mSceneTransister.SetActive(true);
             mTransisterAnimator.SetTrigger("FadeOut");
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSecondsRealtime(1f);
         }
     }
 }

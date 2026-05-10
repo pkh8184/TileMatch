@@ -47,7 +47,7 @@ namespace TrumpTile.GameMain.UI
                 PlayerDataManager.Inst?.SetHapticOn(isOn);
             });
 
-            mExitButton.onClick.AddListener(() => SceneTransister.Inst.TransistScene("MainScene"));
+            mExitButton.onClick.AddListener(() => OnExitButtonClick());
 
             mAnimRectList.Add(mBGMToggle.GetComponent<RectTransform>());
             mAnimRectList.Add(mSFXToggle.GetComponent<RectTransform>());
@@ -59,6 +59,11 @@ namespace TrumpTile.GameMain.UI
             mPopupObj.SetActive(true);
             GameManager.Instance.PauseGame();
             StartCoroutine(Co_PlayShowAnim());  
+        }
+        private void OnExitButtonClick()
+        {
+            Time.timeScale = 1;
+            GameManager.Instance.GoToMainMenu();
         }
         private IEnumerator Co_PlayShowAnim()
         {
