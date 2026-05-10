@@ -23,6 +23,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.Show();
 
+            GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 1;
             AdManager.Inst.HideBannerAd();
             StartCoroutine(Co_PlayPackageShowAnim());
         }

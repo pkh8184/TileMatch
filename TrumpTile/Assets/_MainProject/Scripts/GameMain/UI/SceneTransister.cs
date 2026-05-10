@@ -51,6 +51,8 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_FadeInAnim()
         {
+            if (mSceneTransister == null || mTransisterAnimator == null) yield break;
+
             mSceneTransister.SetActive(true);
             mTransisterAnimator.SetTrigger("FadeIn");
 
@@ -60,6 +62,8 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_FadeOutAnim()
         {
+            if (mSceneTransister == null || mTransisterAnimator == null) yield break;
+
             mSceneTransister.SetActive(true);
             mTransisterAnimator.SetTrigger("FadeOut");
 
