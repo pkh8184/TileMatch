@@ -96,6 +96,18 @@ namespace TrumpTile.GameMain.Core
 		[Tooltip("폭발 후 타일 사라지기까지 딜레이")]
 		[SerializeField] private float mBombRemoveDelay = 0.1F;
 
+		[Header("=== Spine Item Effects ===")]
+		[Tooltip("ItemHamer_SkeletonData 기반 프리팹")]
+		[SerializeField] private GameObject mHammerSpineEffectPrefab;
+		[Tooltip("ItemMagicStick_SkeletonData 기반 프리팹")]
+		[SerializeField] private GameObject mMagicWandSpineEffectPrefab;
+		[Tooltip("마법봉 이펙트 재생 위치 (화면 중앙 기준 조정)")]
+		[SerializeField] private Vector3 mMagicWandEffectPosition = Vector3.zero;
+		[Tooltip("ItemMagicHat_SkeletonData 기반 프리팹")]
+		[SerializeField] private GameObject mMagicHatSpineEffectPrefab;
+		[Tooltip("ItemBomb_SkeletonData 기반 프리팹")]
+		[SerializeField] private GameObject mBombSpineEffectPrefab;
+
 		#endregion
 
 		#region Private Fields
@@ -539,6 +551,8 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log($"[EffectManager] BlackHole Effect - Start at {mBlackHolePosition}");
 
+			PlaySpineEffect(mMagicHatSpineEffectPrefab, mBlackHolePosition);
+
 			// 원본 위치/스케일 저장
 			List<Vector3> originalPositions = new List<Vector3>();
 			List<Vector3> originalScales = new List<Vector3>();
@@ -732,6 +746,8 @@ namespace TrumpTile.GameMain.Core
 					AutoDestroyEffect(explodeEffect, mBombExplodeDuration + 1F);
 				}
 
+				PlaySpineEffect(mBombSpineEffectPrefab, pos);
+
 				yield return new WaitForSeconds(mBombExplodeDelay);
 			}
 
@@ -754,7 +770,31 @@ namespace TrumpTile.GameMain.Core
 
 		#endregion
 
-		#region Utility
+		#region Spine Item Effects
+
+		// HammerItem에서 호출 — 슬롯 타일 위치
+		public void PlayHammerSpineEffect(Vector3 position)
+		{
+			PlaySpineEffect(mHammerSpineEffectPrefab, position);
+		}
+
+		// MagicWandItem에서 호출 — Inspector 설정 위치
+		public void PlayMagicWandSpineEffect()
+		{
+			PlaySpineEffect(mMagicWandSpineEffectPrefab, mMagicWandEffectPosition);
+		}
+
+		private void PlaySpineEffect(GameObject prefab, Vector3 position)
+		{
+			if (prefab != null)
+			{
+				Instantiate(prefab, position, Quaternion.identity);
+			}
+		}
+
+		#endregion
+
+	#region Utility
 
 		private void AutoDestroyEffect(GameObject effectObj, float defaultDuration)
 		{
