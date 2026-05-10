@@ -47,7 +47,7 @@ namespace TrumpTile.GameMain.UI
                 PlayerDataManager.Inst?.SetHapticOn(isOn);
             });
 
-            mExitButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("ExitGameScene"));
+            mExitButton.onClick.AddListener(() => SceneTransister.Inst.TransistScene("MainScene"));
 
             mAnimRectList.Add(mBGMToggle.GetComponent<RectTransform>());
             mAnimRectList.Add(mSFXToggle.GetComponent<RectTransform>());

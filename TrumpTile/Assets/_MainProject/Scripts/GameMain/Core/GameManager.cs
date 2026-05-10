@@ -161,6 +161,7 @@ namespace TrumpTile.GameMain.Core
                     }
 				}
                 mCurrentTime = mTargetClearTime - mElapsedTime;
+				if (mCurrentTime <= 0) OnGameOver();
             }
 
 			if (mEnableDebugKeys)
@@ -215,6 +216,8 @@ namespace TrumpTile.GameMain.Core
 				: levelNumber - 1;
 
 			CurrentState = EGameState.Loading;
+
+			LoadingAnimComplete = false;
 
 			LevelData levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
 			if (levelData == null)
@@ -323,7 +326,7 @@ namespace TrumpTile.GameMain.Core
 			}
 			else
 			{
-				SceneManager.LoadScene("MainScene");
+				SceneTransister.Inst.TransistScene("MainScene");
 			}
 		}
 

@@ -45,24 +45,10 @@ namespace TrumpTile.GameMain.Core
             {
                 Debug.Log("[TitleManager] 파이어베이스 없이 테스트, 로딩 시작");
 
-                AsyncOperation _op = SceneManager.LoadSceneAsync("MainScene");
-
-                _op.allowSceneActivation = false;
-
-                while (!_op.isDone)
-                {
-                    if (_op.progress >= 0.9f)
-                    {
-                        break;
-                    }
-                    yield return null;
-                }
-                Debug.Log("로딩 성공");
-
                 yield return new WaitUntil(() => mLoadingProgress >= 100);
 
                 Debug.Log("씬 전환 이벤트 호출");
-                EventManager.Inst.ActiveEvent(RequestEventKeys.LOADING_COMPLETE, (object)(Action)(() => _op.allowSceneActivation = true));
+                SceneTransister.Inst.TransistScene("MainScene");
 
                 yield break;
             }

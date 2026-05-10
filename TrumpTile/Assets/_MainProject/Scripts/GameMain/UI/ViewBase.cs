@@ -8,9 +8,6 @@ namespace TrumpTile.GameMain.UI
 {
     public class ViewBase : UIBase
     {
-        [Header("씬 전환 오브젝트")]
-        [SerializeField] protected GameObject mSceneTransister;
-
         public override void Initialize()
         {
             base.Initialize();
@@ -31,22 +28,6 @@ namespace TrumpTile.GameMain.UI
             contentRect.offsetMin = new Vector2(contentRect.offsetMin.x, bannerHeightUI);
 
             AdManager.Inst.ShowBannerAd();
-        }
-        protected IEnumerator Co_FadeInAnim()
-        {
-            mSceneTransister.gameObject.SetActive(true);
-            mSceneTransister.GetComponent<Animator>().SetTrigger("FadeIn");
-
-            yield return new WaitForSeconds(1f);
-
-            mSceneTransister.gameObject.SetActive(false);
-        }
-        protected IEnumerator Co_FadeOutAnim()
-        {
-            mSceneTransister.gameObject.SetActive(true);
-            mSceneTransister.GetComponent<Animator>().SetTrigger("FadeOut");
-
-            yield return new WaitForSeconds(1f);
         }
     }
 }

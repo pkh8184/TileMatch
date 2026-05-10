@@ -284,7 +284,7 @@ namespace TrumpTile.GameMain.UI
 			}
 
 			// 팝업 숨기기
-			Hide();
+			//Hide();
 
 			// 메인 메뉴로 이동
 			if (GameManager.Instance != null)

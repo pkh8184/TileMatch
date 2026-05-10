@@ -24,6 +24,10 @@ namespace TrumpTile.GameMain.Core
                 Debug.Log("UIBase를 찾지 못했습니다.");
             }
         }
+        private void Start()
+        {
+            SceneTransister.Inst.PlayFadeInAnim();
+        }
     }
 }
 

@@ -31,21 +31,9 @@ namespace TrumpTile.GameMain.UI
             StartCoroutine(Co_PlayStudioLogoFadeAnim());
 
             titleManager = FindObjectOfType<TitleManager>();
-            EventManager.Inst.AddEvent(RequestEventKeys.LOADING_COMPLETE, PlayFadeOutAnimOnSceneChange);
             EventManager.Inst.AddEvent(RequestEventKeys.REQUIRED_VERSION_UPDATE, (obj) => mVersionCheckPopup.ShowWithOutButton());
             mVersionCheckPopup.AddActionToConfirmButton(GoToPlayStoreForUpdate);
             
-        }
-        private void PlayFadeOutAnimOnSceneChange(object obj)
-        {
-            Action onComplete = obj as Action;
-            StartCoroutine(Co_PlayFadeOutAnimOnSceneChange(onComplete));
-        }
-        private IEnumerator Co_PlayFadeOutAnimOnSceneChange(Action onComplete)
-        {
-            yield return StartCoroutine(Co_FadeOutAnim());
-
-            onComplete?.Invoke();
         }
         private IEnumerator Co_PlayStudioLogoFadeAnim()
         {

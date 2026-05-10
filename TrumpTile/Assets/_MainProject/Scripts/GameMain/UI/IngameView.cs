@@ -29,12 +29,10 @@ namespace TrumpTile.GameMain.UI
         public override void Initialize()
         {
             base.Initialize();
-            mSceneTransister.gameObject.SetActive(true);
             mLevelNameCanvasGroup.alpha = 0;
 
             //임시
             EventManager.Inst.AddEvent("IngameLoadingComplete", RefreshUIOnLoadLevel);
-            EventManager.Inst.AddEvent("ExitGameScene", PlayFadeOutWhenExit);
 
             mTopLevelNameRect.localScale = Vector3.zero;
         }
@@ -44,49 +42,28 @@ namespace TrumpTile.GameMain.UI
             mBackgroundImage.sprite = background;    
 
             mLevelNameBackground.gameObject.SetActive(true);
+            
+            mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
+
+            mTopLevelNameRect.localScale = Vector3.zero;
 
             StartCoroutine(Co_TimerTextProgress());
-            StartCoroutine(Co_TimerSliderProgress());
-
-            StartCoroutine(Co_PlayFadeInAnimAfterLoadLevel());
-        }
-        private void PlayFadeOutWhenExit(object obj)
-        {
-            StartCoroutine(Co_PlayFadeOutAnimWhenExit());
-        }
-        private IEnumerator Co_PlayFadeInAnimAfterLoadLevel()
-        {
-            yield return StartCoroutine(Co_FadeInAnim());
+            StartCoroutine(Co_TimerSliderProgress());   
 
             mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
             StartCoroutine(Co_PlayLevelNameAnim());
-            
         }
-        private IEnumerator Co_PlayFadeOutAnimWhenExit()
-        {
-            yield return StartCoroutine(Co_FadeOutAnim());
 
-            AsyncOperation op = SceneManager.LoadSceneAsync("MainScene");
-            op.allowSceneActivation = false;
-
-            while (!op.isDone)
-            {
-                if (op.progress >= 0.9f)
-                {
-                    break;
-                }
-                yield return null;
-            }
-            Debug.Log("[IngameView] 메인 씬 로딩 성공");
-
-            op.allowSceneActivation = true;
-        }
         private IEnumerator Co_PlayLevelNameAnim()
         {
+            yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());
+
             Sequence sq = DOTween.Sequence();
 
             sq.Append(mLevelNameCanvasGroup.DOFade(1, 0.5f));
             RectTransform rt = mLevelNameCanvasGroup.transform.GetComponent<RectTransform>();
+
+            rt.anchoredPosition = Vector2.zero;
             sq.Append(rt.DOPunchScale(Vector3.one * 0.1f, 0.4f, 5, 0.5f));
             sq.AppendInterval(0.5f);
 

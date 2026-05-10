@@ -22,12 +22,9 @@ namespace TrumpTile.GameMain.UI
         private Image mProfileFrame;
         private Image mProfileImage;
 
-
         public override void Initialize()
         {
             base.Initialize();
-
-            StartCoroutine(Co_FadeInAnim());
 
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
         }
@@ -44,26 +41,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnStageButtonClick()
         {
-            StartCoroutine(Co_StartStage());
-        }
-        private IEnumerator Co_StartStage()
-        {
-            yield return StartCoroutine(Co_FadeOutAnim());
-
-            AsyncOperation op = SceneManager.LoadSceneAsync("GameScene");
-            op.allowSceneActivation = false;
-
-            while (!op.isDone)
-            {
-                if (op.progress >= 0.9f)
-                {
-                    break;
-                }
-                yield return null;
-            }
-            Debug.Log("[MainView] 게임 씬 로딩 성공");
-
-            op.allowSceneActivation = true;
+            SceneTransister.Inst.TransistScene("GameScene");
         }
     }
 }
