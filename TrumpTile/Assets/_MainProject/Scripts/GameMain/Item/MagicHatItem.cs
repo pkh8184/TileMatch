@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TrumpTile.GameMain.Core;
 
@@ -9,6 +11,8 @@ namespace TrumpTile.GameMain.Item
 	public class MagicHatItem : IItem
 	{
 		public int ItemId => 1007;
+
+		private const float TIMEOUT = 5f;
 
 		private BoardManager mBoardManager;
 		private EffectManager mEffectManager;
@@ -28,24 +32,42 @@ namespace TrumpTile.GameMain.Item
 		{
 			AudioEvent.Play(EAudioKey.SFX_ItemUse);
 
-			bool bActionDone = false;
+			List<TileController> boardTiles = mBoardManager.GetBoardTiles();
+			List<Transform> tileTransforms = boardTiles
+				.Where(t => t != null)
+				.Select(t => t.transform)
+				.ToList();
+
+			bool bEffectComplete = false;
 
 			if (mEffectManager != null)
 			{
-				mEffectManager.PlayMagicHatSpineEffect(() =>
-				{
-					mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
-					bActionDone = true;
-				});
+				// BlackHoleEffect: 타일 흡수 → 셔플 → 분산 애니메이션
+				// Spine 이펙트는 BlackHoleEffectCoroutine 내부에서 함께 재생됨
+				mEffectManager.PlayBlackHoleEffect(
+					tileTransforms,
+					() => { },
+					() =>
+					{
+						mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
+						bEffectComplete = true;
+					}
+				);
 			}
 			else
 			{
 				mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
-				bActionDone = true;
+				bEffectComplete = true;
 			}
 
-			yield return new WaitUntil(() => bActionDone);
-			yield return new WaitForSeconds(0.5f);
+			float elapsed = 0f;
+			while (!bEffectComplete && elapsed < TIMEOUT)
+			{
+				elapsed += Time.deltaTime;
+				yield return null;
+			}
+
+			yield return new WaitForSeconds(0.2f);
 
 			onComplete?.Invoke();
 		}
