@@ -433,7 +433,7 @@ namespace TrumpTile.GameMain.Core
 			Transform parent = mFloatingTextParent != null ? mFloatingTextParent : transform;
 			GameObject floatingObj = Instantiate(mFloatingTextPrefab, position, Quaternion.identity, parent);
 
-			TextMeshProUGUI tmp = floatingObj.GetComponent<TextMeshProUGUI>();
+			TextMeshProUGUI tmp = floatingObj.GetComponentInChildren<TextMeshProUGUI>();
 			if (tmp != null)
 			{
 				tmp.text = text;
@@ -449,7 +449,7 @@ namespace TrumpTile.GameMain.Core
 			float elapsed = 0F;
 			Vector3 startPos = obj.transform.position;
 
-			TextMeshProUGUI tmp = obj.GetComponent<TextMeshProUGUI>();
+			TextMeshProUGUI tmp = obj.GetComponentInChildren<TextMeshProUGUI>();
 			Color startColor = tmp != null ? tmp.color : Color.white;
 
 			while (elapsed < duration)
