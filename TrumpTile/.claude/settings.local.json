@@ -15,7 +15,8 @@
       "Bash(python3 -c ' *)",
       "Bash(Select-String -Path \"c:/MyWork/TileMatch/TrumpTile/Assets/_MainProject/Textures/Spine/Hamer/ItemHamer.json\" -Pattern '\"events\"')",
       "Bash(Select-Object -First 3)",
-      "Bash(Select-String -Path \"c:/MyWork/TileMatch/TrumpTile/Assets/_MainProject/Textures/Spine/Bomb/ItemBomb.json\" -Pattern '\"events\"')"
+      "Bash(Select-String -Path \"c:/MyWork/TileMatch/TrumpTile/Assets/_MainProject/Textures/Spine/Bomb/ItemBomb.json\" -Pattern '\"events\"')",
+      "Bash(powershell -Command \"ls 'c:\\\\MyWork\\\\TileMatch\\\\TrumpTile\\\\Assets\\\\_MainProject\\\\Scripts\\\\' | Select-Object Name | head -50\")"
     ]
   }
 }

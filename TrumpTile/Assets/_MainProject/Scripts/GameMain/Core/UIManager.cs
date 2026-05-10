@@ -423,7 +423,7 @@ namespace TrumpTile.GameMain.Core
 
 		#region Floating Text
 
-		public void ShowFloatingText(Vector3 position, string text, Color color)
+		public void ShowFloatingText(Vector3 position, string text, Color textColor, Color backgroundColor)
 		{
 			if (mFloatingTextPrefab == null)
 			{
@@ -437,7 +437,11 @@ namespace TrumpTile.GameMain.Core
 			if (tmp != null)
 			{
 				tmp.text = text;
-				tmp.color = color;
+				tmp.color = textColor;
+			}
+			if (floatingObj.TryGetComponent<RawImage>(out var rawImage))
+			{
+				rawImage.color = backgroundColor;
 			}
 
 			StartCoroutine(AnimateFloatingText(floatingObj));
@@ -450,7 +454,10 @@ namespace TrumpTile.GameMain.Core
 
 			TextMeshProUGUI tmp = obj.GetComponentInChildren<TextMeshProUGUI>();
 			CanvasGroup canvasGroup = obj.GetComponent<CanvasGroup>();
+			RawImage rawImage = obj.GetComponent<RawImage>();
+
 			Color startColor = tmp != null ? tmp.color : Color.white;
+			Color backgroundStartColor = rawImage != null ? rawImage.color : Color.white;
 
 			while (elapsed < duration)
 			{
@@ -460,8 +467,13 @@ namespace TrumpTile.GameMain.Core
 				if (canvasGroup != null)
 				{
 					Color newColor = startColor;
+					Color newBackgroundColor = backgroundStartColor;
+
 					newColor.a = 1f - t;
+					newBackgroundColor.a = 1f - t;
+					
 					tmp.color = newColor;
+					rawImage.color = newBackgroundColor;
                     canvasGroup.alpha = newColor.a;
 				}
 
@@ -471,15 +483,15 @@ namespace TrumpTile.GameMain.Core
 			Destroy(obj);
 		}
 
-		public void ShowScorePopup(Vector3 position, int score)
-		{
-			ShowFloatingText(position, $"+{score}", Color.yellow);
-		}
+		// public void ShowScorePopup(Vector3 position, int score)
+		// {
+		// 	ShowFloatingText(position, $"+{score}", Color.yellow);
+		// }
 
-		public void ShowComboPopup(Vector3 position, int combo)
-		{
-			ShowFloatingText(position, $"x{combo} Combo!", Color.cyan);
-		}
+		// public void ShowComboPopup(Vector3 position, int combo)
+		// {
+		// 	ShowFloatingText(position, $"x{combo} Combo!", Color.cyan);
+		// }
 
 		#endregion
 	}

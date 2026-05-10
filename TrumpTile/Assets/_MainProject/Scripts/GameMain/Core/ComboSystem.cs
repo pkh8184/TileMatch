@@ -195,7 +195,7 @@ namespace TrumpTile.GameMain.Core
 				AudioManager.Inst?.PlaySFX(entry.audioClip);
 			}
 
-			UIManager.Instance.ShowFloatingText(GetDisplayPosition(), entry.label + "!", entry.labelColor);
+			UIManager.Instance.ShowFloatingText(GetDisplayPosition(), entry.label + "!", entry.labelColor, entry.backgroundColor);
 
 			ComboTriggeredPayload payload = new ComboTriggeredPayload()
 			{

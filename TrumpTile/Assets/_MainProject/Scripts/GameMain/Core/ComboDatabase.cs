@@ -29,6 +29,9 @@ namespace TrumpTile.GameMain.Core
 
 		[Tooltip("화면에 표시될 레이블 색상")]
 		public Color labelColor = Color.yellow;
+
+		[Tooltip("배경에 표현될 색상")]
+		public Color backgroundColor = Color.white;
 	}
 
 	/// <summary>
