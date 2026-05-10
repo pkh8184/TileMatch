@@ -29,6 +29,10 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private List<TileData> mAllTileTypes;
 		[SerializeField] private Sprite mDefaultTileBackground;
 
+		[Header("Spawn Animation")]
+		[SerializeField] private float mSpawnDelayPerTile = 0.02F;
+		[SerializeField] private float mMaxSpawnDelay = 0.6F;
+
 		[Header("Debug")]
 		[SerializeField] private bool mEnableDebugLog = false;
 
@@ -110,6 +114,8 @@ namespace TrumpTile.GameMain.Core
 
 			Dictionary<string, TileData> tileDataMap = CreateTileDataMap();
 
+			ESpawnAnimType spawnAnimType = (ESpawnAnimType)Random.Range(0, TileController.SPAWN_ANIM_COUNT);
+
 			int createdCount = 0;
 			if(mbCreateTileByLayerList)
 			{
@@ -122,7 +128,7 @@ namespace TrumpTile.GameMain.Core
                             Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
                             continue;
                         }
-                        CreateTile(data, placement.gridX, placement.gridY, i, tileBackground);
+                        CreateTile(data, placement.gridX, placement.gridY, i, tileBackground, createdCount, spawnAnimType);
                         createdCount++;
                     }
                 }
@@ -137,7 +143,7 @@ namespace TrumpTile.GameMain.Core
                         continue;
                     }
 
-                    CreateTile(data, placement.gridX, placement.gridY, placement.layer, tileBackground);
+                    CreateTile(data, placement.gridX, placement.gridY, placement.layer, tileBackground, createdCount, spawnAnimType);
                     createdCount++;
                 }
             }
@@ -169,7 +175,7 @@ namespace TrumpTile.GameMain.Core
 			return map;
 		}
 
-		private TileController CreateTile(TileData data, float x, float y, int layer, Sprite tileBackground)
+		private TileController CreateTile(TileData data, float x, float y, int layer, Sprite tileBackground, int spawnIndex = 0, ESpawnAnimType animType = ESpawnAnimType.Random)
 		{
 			if (mTilePrefab == null)
 			{
@@ -180,8 +186,10 @@ namespace TrumpTile.GameMain.Core
 			Vector3 position = GridToWorldPosition(x, y, layer);
 			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
 
-			// Initialize에서 Sorting Order도 설정됨
 			tile.Initialize(data, x, y, layer, tileBackground);
+
+			float spawnDelay = Mathf.Min(spawnIndex * mSpawnDelayPerTile, mMaxSpawnDelay);
+			tile.PlaySpawnAnimation(spawnDelay, animType);
 
 			mAllTiles.Add(tile);
 
