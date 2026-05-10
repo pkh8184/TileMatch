@@ -446,7 +446,7 @@ namespace TrumpTile.GameMain.Core
 			OnMatchFound?.Invoke(matched.Count);
 			if (EventManager.Inst != null)
 			{
-				EventManager.Inst.ActiveEvent(EventKeys.MATCH_OCCURRED, matched.Count);
+				EventManager.Inst.ActiveEvent(EventKeys.MATCH_OCCURRED, (object)matched.Count);
 			}
 		}
 
