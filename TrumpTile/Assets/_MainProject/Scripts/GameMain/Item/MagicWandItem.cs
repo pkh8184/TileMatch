@@ -28,6 +28,10 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
+			if (mEffectManager != null)
+			{
+				mEffectManager.PlayMagicWandSpineEffect();
+			}
 			AudioEvent.Play(EAudioKey.SFX_ItemUse);
 			mTimerControllable.FreezeTimer(FREEZE_DURATION);
 

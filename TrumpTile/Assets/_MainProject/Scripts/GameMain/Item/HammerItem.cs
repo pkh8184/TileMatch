@@ -29,7 +29,11 @@ namespace TrumpTile.GameMain.Item
 		public IEnumerator Execute(Action onComplete)
 		{
 			Vector3 popPosition = mSlotManager.GetLastTilePosition();
-			mEffectManager?.PlayStrikePopEffect(popPosition);
+			if (mEffectManager != null)
+			{
+				mEffectManager.PlayStrikePopEffect(popPosition);
+				mEffectManager.PlayHammerSpineEffect(popPosition);
+			}
 			AudioEvent.Play(EAudioKey.SFX_ItemUse);
 
 			yield return new WaitForSeconds(0.3f);
@@ -38,8 +42,13 @@ namespace TrumpTile.GameMain.Item
 			bool bSuccess = mSlotManager.RemoveOneTileToBoard(out landPosition);
 			if (bSuccess)
 			{
-				Vector3 actualLandPosition = mBoardManager?.GetLastPlacedTilePosition() ?? landPosition;
-				mEffectManager?.PlayStrikeLandEffect(actualLandPosition);
+				Vector3 actualLandPosition = mBoardManager != null
+					? mBoardManager.GetLastPlacedTilePosition()
+					: landPosition;
+				if (mEffectManager != null)
+				{
+					mEffectManager.PlayStrikeLandEffect(actualLandPosition);
+				}
 			}
 
 			yield return new WaitForSeconds(0.2f);
