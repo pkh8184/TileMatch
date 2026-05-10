@@ -34,9 +34,6 @@ namespace TrumpTile.GameMain.Data
 
 	public class PlayerDataManager : Singleton_GameObject<PlayerDataManager>
 	{
-		private List<Sprite> mProfileImageSpriteList = new List<Sprite>();
-		private List<Sprite> mProfileFrameSpriteList = new List<Sprite>();
-
 		private UserData mUserData = null;
 		public UserData UserData { get => mUserData; }
 
@@ -56,6 +53,10 @@ namespace TrumpTile.GameMain.Data
 			mUserData = new UserData(dictionary);
 		}
 
+		public void Initialize()
+		{
+			mUserData = new UserData();
+		}
 		#region 프로퍼티
 
 		public int Gold => mUserData != null ? mUserData.Gold.Value : 0;
@@ -221,24 +222,6 @@ namespace TrumpTile.GameMain.Data
 			return mUserData.ProfileFrameIndex;
 		}
 
-		public Sprite GetProfileImage()
-		{
-			if (mUserData == null)
-			{
-				return null;
-			}
-			return mProfileImageSpriteList[mUserData.ProfileImageIndex];
-		}
-
-		public Sprite GetProfileFrame()
-		{
-			if (mUserData == null)
-			{
-				return null;
-			}
-			return mProfileFrameSpriteList[mUserData.ProfileFrameIndex];
-		}
-
 		public string GetNickname()
 		{
 			if (mUserData == null)
@@ -389,5 +372,14 @@ namespace TrumpTile.GameMain.Data
 			}
 			return data;
 		}
+		public void SetNickName(string nickName)
+		{
+            if (mUserData == null)
+            {
+				return;
+            }
+			mUserData.NickName = nickName;
+            PlayerPrefs.SetString("NickName", nickName);
+        }
 	}
 }

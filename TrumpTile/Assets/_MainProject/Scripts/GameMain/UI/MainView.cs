@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
@@ -11,6 +12,9 @@ namespace TrumpTile.GameMain.UI
 {
     public class MainView : ViewBase
     {
+        [Header("로컬 데이터 테스트용 플래그")]
+        [SerializeField] private bool mbLocalDataTestFlag = false;
+
         [Header("MainView 버튼")]
         [SerializeField] private Button mStageStartButton;
 
@@ -18,15 +22,29 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private TMP_Text mGoldText;
         [SerializeField] private TMP_Text mCurrentStageText;
 
-        //플레이어의 로컬 데이터 -> 따로 로컬데이터매니저에서 관리하는 게 좋을듯 (03/18)
-        private Image mProfileFrame;
-        private Image mProfileImage;
+        [Header("하위 팝업 참조")]
+        [SerializeField] private ProfilePopup mProfilePopup;
+
+        [Header("프로필 이미지")]
+        [SerializeField] private Image mProfileFrame;
+        [SerializeField] private Image mProfileImage;
+
+        [Header("프로필 아바타 및 프레임 스프라이트 리스트")]
+        [SerializeField] private List<Sprite> mAvataSpriteList;
+        [SerializeField] private List<Sprite> mFrameSpriteList;
 
         public override void Initialize()
         {
             base.Initialize();
 
+            if(mbLocalDataTestFlag)
+            {
+                PlayerDataManager.Inst.Initialize();
+                RefreshLocalData();
+            }
+            
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
+            mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
         }
 
         protected override void Refresh()
@@ -36,8 +54,13 @@ namespace TrumpTile.GameMain.UI
         }
         protected override void RefreshLocalData()
         {
-            mProfileFrame.sprite = PlayerDataManager.Inst?.GetProfileFrame();
-            mProfileImage.sprite = PlayerDataManager.Inst?.GetProfileImage();
+            int index = PlayerDataManager.Inst.GetProfileImageIndex();
+            mProfileImage.sprite = mAvataSpriteList[index];
+
+            index = PlayerDataManager.Inst.GetProfileFrameIndex();
+            mProfileFrame.sprite = mFrameSpriteList[index];
+
+            Debug.Log($"[{name}] Refresh Local Data");
         }
         private void OnStageButtonClick()
         {

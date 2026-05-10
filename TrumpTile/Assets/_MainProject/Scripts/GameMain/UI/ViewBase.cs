@@ -8,13 +8,6 @@ namespace TrumpTile.GameMain.UI
 {
     public class ViewBase : UIBase
     {
-        public override void Initialize()
-        {
-            base.Initialize();
-
-           // EventManager.Inst.AddEvent("CompleteLoadAd", AdjustBannerAd);
-        }
-
         //광고 관리 클래스에서 배너 광고 로드 완료 OnCall 이벤트에 연결
         protected virtual void AdjustBannerAd(object obj)
         {
