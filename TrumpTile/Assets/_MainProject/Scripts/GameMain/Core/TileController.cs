@@ -201,10 +201,20 @@ namespace TrumpTile.GameMain.Core
 
 		private void SetMovingToSlotSorting()
 		{
-			if (mSpriteRenderer != null)
+			mCurrentSortingOrder = MOVING_SORTING_ORDER;
+
+			if (mBackgroundRenderer != null)
 			{
-				mCurrentSortingOrder = MOVING_SORTING_ORDER;
-				mSpriteRenderer.sortingOrder = mCurrentSortingOrder;
+				mBackgroundRenderer.sortingOrder = mCurrentSortingOrder;
+			}
+
+			SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
+			foreach (SpriteRenderer sr in childRenderers)
+			{
+				if (sr != mBackgroundRenderer)
+				{
+					sr.sortingOrder = mCurrentSortingOrder + 1;
+				}
 			}
 		}
 
@@ -261,10 +271,26 @@ namespace TrumpTile.GameMain.Core
 
 		private void HandleTileSelected()
 		{
-			BoardManager.Instance?.RemoveTileFromBoard(this);
+			EnableCollider(false);
 
-			SlotManager.Instance?.AddTile(this);
-            
+			int savedX = mGridX;
+			int savedY = mGridY;
+			int savedLayer = mLayerIndex;
+
+			if (BoardManager.Instance != null)
+			{
+				BoardManager.Instance.RemoveTileFromBoard(this);
+			}
+
+			bool bAdded = SlotManager.Instance != null && SlotManager.Instance.AddTile(this);
+			if (!bAdded)
+			{
+				if (BoardManager.Instance != null)
+				{
+					BoardManager.Instance.ReturnTileToBoard(this, savedX, savedY, savedLayer);
+				}
+				EnableCollider(true);
+			}
 		}
 
 		private void OnMouseEnter()
@@ -467,7 +493,7 @@ namespace TrumpTile.GameMain.Core
 			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.1F, 0.25F);
 
 			float rotationAmount = UnityEngine.Random.Range(0, 2) == 0 ? mFlyRotation : -mFlyRotation;
-			float arcHeight = distance * mFlyArcHeight;
+			float arcHeight = Mathf.Min(distance * mFlyArcHeight, 0.5F);
 
 			float elapsed = 0F;
 
@@ -478,7 +504,7 @@ namespace TrumpTile.GameMain.Core
 				float easedT = t * t;
 
 				Vector3 currentPos = Vector3.Lerp(startPos, targetPosition, easedT);
-				float arc = Mathf.Sin(t * Mathf.PI) * arcHeight;
+				float arc = Mathf.Sin(easedT * Mathf.PI) * arcHeight;
 				currentPos.y += arc;
 				transform.position = currentPos;
 
@@ -676,6 +702,11 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Utility
+
+		public void StopAnimation()
+		{
+			StopCurrentAnimation();
+		}
 
 		private void StopCurrentAnimation()
 		{

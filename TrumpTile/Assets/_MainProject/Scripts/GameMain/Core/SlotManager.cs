@@ -23,7 +23,6 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private Transform[] mSlotPositions;
 
 		[Header("Animation")]
-		[SerializeField] private float mTileMoveDuration = 0.15F;
 		[SerializeField] private float mTileMergeTime = 0.15F;
 
 		// 이벤트
@@ -170,7 +169,7 @@ namespace TrumpTile.GameMain.Core
 
 			Debug.Log($"[SlotManager] Tile added: {tile.Data?.TileID}, Index: {insertIndex}, Total: {mSlotTiles.Count}");
 
-			StartCoroutine(ProcessTileAddition(tile, insertIndex));
+			ProcessTileAddition(tile, insertIndex);
 
 			return true;
 		}
@@ -230,24 +229,28 @@ namespace TrumpTile.GameMain.Core
 
 		#region Tile Processing
 
-		private IEnumerator ProcessTileAddition(TileController newTile, int insertIndex)
+		private void ProcessTileAddition(TileController newTile, int insertIndex)
 		{
 			AudioEvent.Play(EAudioKey.SFX_TileSelect);
 
+			Action onMoveComplete = () =>
+			{
+				if (!mIsProcessingMatch && !mIsGameEnded)
+				{
+					StartCoroutine(CheckAndProcessAllMatches());
+				}
+			};
+
 			if (mSlotPositions != null && insertIndex < mSlotPositions.Length && mSlotPositions[insertIndex] != null)
 			{
-				newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex);
+				newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex, onMoveComplete);
 			}
-
-			RearrangeSlots();
-
-			yield return new WaitForSeconds(mTileMoveDuration);
-
-			// 매칭 체크 (다른 매칭 처리 중이 아닐 때만)
-			if (!mIsProcessingMatch && !mIsGameEnded)
+			else
 			{
-				StartCoroutine(CheckAndProcessAllMatches());
+				onMoveComplete();
 			}
+
+			RearrangeSlots(newTile);
 		}
 
 		private int FindInsertIndex(TileController newTile)
@@ -271,7 +274,7 @@ namespace TrumpTile.GameMain.Core
 			return mSlotTiles.Count;
 		}
 
-		private void RearrangeSlots()
+		private void RearrangeSlots(TileController skipTile = null)
 		{
 			if (mSlotPositions == null)
 			{
@@ -281,7 +284,7 @@ namespace TrumpTile.GameMain.Core
 			for (int i = 0; i < mSlotTiles.Count && i < mSlotPositions.Length; i++)
 			{
 				TileController tile = mSlotTiles[i];
-				if (tile == null || mSlotPositions[i] == null)
+				if (tile == null || mSlotPositions[i] == null || tile == skipTile)
 				{
 					continue;
 				}
@@ -292,11 +295,9 @@ namespace TrumpTile.GameMain.Core
 				{
 					tile.AdjustSlotPosition(targetPos, i);
 				}
-
-				SpriteRenderer sr = tile.GetComponentInChildren<SpriteRenderer>();
-				if (sr != null)
+				else
 				{
-					sr.sortingOrder = SortingManager.GetSlotTileSortingOrder(i);
+					tile.UpdateSortingOrder();
 				}
 			}
 		}
@@ -345,7 +346,7 @@ namespace TrumpTile.GameMain.Core
 
 				RearrangeSlots();
 
-				yield return new WaitForSeconds(0.05F);
+				yield return new WaitForSeconds(0.15F);
 			}
 
 			mIsProcessingMatch = false;
@@ -375,6 +376,21 @@ namespace TrumpTile.GameMain.Core
 			if (matched == null || matched.Count == 0)
 			{
 				yield break;
+			}
+
+			// 진행 중인 애니메이션 중단 및 슬롯 위치로 스냅
+			foreach (TileController tile in matched)
+			{
+				if (tile == null)
+				{
+					continue;
+				}
+				tile.StopAnimation();
+				int slotIdx = tile.SlotIndex;
+				if (mSlotPositions != null && slotIdx >= 0 && slotIdx < mSlotPositions.Length && mSlotPositions[slotIdx] != null)
+				{
+					tile.transform.position = mSlotPositions[slotIdx].position;
+				}
 			}
 
 			Vector3 center = Vector3.zero;
