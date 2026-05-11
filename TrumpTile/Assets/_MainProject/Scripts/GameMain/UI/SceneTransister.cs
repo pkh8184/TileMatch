@@ -12,6 +12,8 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private GameObject mSceneTransister;
         [SerializeField] private Animator mTransisterAnimator;
         private string targetSceneName;
+
+        private bool mbSceneTransitionProgressing = false;
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -26,6 +28,10 @@ namespace TrumpTile.GameMain.UI
         }
         public void TransistScene(string sceneName)
         {
+            if (mbSceneTransitionProgressing) return;
+
+            mbSceneTransitionProgressing = true;
+
             targetSceneName = sceneName;
 
             StartCoroutine(Co_SecneTransitionProgress());
@@ -48,6 +54,8 @@ namespace TrumpTile.GameMain.UI
             Debug.Log("[IngameView] 메인 씬 로딩 성공");
 
             op.allowSceneActivation = true;
+
+            mbSceneTransitionProgressing = false;
         }
         private IEnumerator Co_FadeInAnim()
         {
