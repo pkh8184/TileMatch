@@ -45,6 +45,7 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private float mSlowMotionScale = 0.2F;
 		private bool mIsSlowMotion = false;
 		[SerializeField] private bool mEnableTimerLog = false;
+		[SerializeField] private bool mbLevelTestMode = false;
 		private float mTimerLogAccumulator = 0F;
 
 		// 게임 상태
@@ -142,33 +143,36 @@ namespace TrumpTile.GameMain.Core
 		{
 			if (CurrentState == EGameState.Playing && !mIsTimerFrozen)
 			{
-				mElapsedTime += Time.deltaTime;
-
-				if (mEnableTimerLog)
+				if(!mbLevelTestMode)
 				{
-					mTimerLogAccumulator += Time.deltaTime;
-					if (mTimerLogAccumulator >= 1F)
-					{
-						mTimerLogAccumulator -= 1F;
-						int minutes = Mathf.FloorToInt(mElapsedTime / 60F);
-						int seconds = Mathf.FloorToInt(mElapsedTime % 60F);
-						Debug.Log($"[GameManager] Timer: {minutes:D2}:{seconds:D2} ({mElapsedTime:F2}s) | Target: {mTargetClearTime:F1}s");
+                    mElapsedTime += Time.deltaTime;
 
-                        int limitMinutes = Mathf.FloorToInt(mCurrentTime / 60F);
-                        int limitSeconds = Mathf.FloorToInt(mCurrentTime % 60F);
+                    if (mEnableTimerLog)
+                    {
+                        mTimerLogAccumulator += Time.deltaTime;
+                        if (mTimerLogAccumulator >= 1F)
+                        {
+                            mTimerLogAccumulator -= 1F;
+                            int minutes = Mathf.FloorToInt(mElapsedTime / 60F);
+                            int seconds = Mathf.FloorToInt(mElapsedTime % 60F);
+                            Debug.Log($"[GameManager] Timer: {minutes:D2}:{seconds:D2} ({mElapsedTime:F2}s) | Target: {mTargetClearTime:F1}s");
 
-                        mTimerString = $"{limitMinutes:D1}:{limitSeconds:D2}";
+                            int limitMinutes = Mathf.FloorToInt(mCurrentTime / 60F);
+                            int limitSeconds = Mathf.FloorToInt(mCurrentTime % 60F);
+
+                            mTimerString = $"{limitMinutes:D1}:{limitSeconds:D2}";
+                        }
                     }
-				}
-                mCurrentTime = mTargetClearTime - mElapsedTime;
-				if (mCurrentTime <= 0) OnGameOver();
+                    mCurrentTime = mTargetClearTime - mElapsedTime;
+                    if (mCurrentTime <= 0) OnGameOver();
+                }		
             }
 
 			if (mEnableDebugKeys)
 			{
 				HandleDebugKeys();
 			}
-		}
+        }
 
 		private void HandleDebugKeys()
 		{
@@ -233,18 +237,24 @@ namespace TrumpTile.GameMain.Core
 			mMatchedTileCount = 0;
 
 			mSlotManager?.Initialize();  // 반드시 ResetSlots() 이전
-		mSlotManager?.ResetSlots();
-			mBoardManager?.LoadLevel(levelData);
+			mSlotManager?.ResetSlots();
 
-			mTotalTileCount = mBoardManager?.TotalTileCount ?? 0;
+            //임시
+            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)levelData.levelBackgroundSprite);
+
+            mBoardManager?.LoadLevel(levelData);
+
+            mTotalTileCount = mBoardManager?.TotalTileCount ?? 0;
 
 			// 타이머 초기화
 			mElapsedTime = 0F;
+			
 			mTargetClearTime = mStarConfig != null
 				? mTotalTileCount * mStarConfig.TileTimeCoefficient
 				: mTotalTileCount * 2.0F;
 
-			Debug.Log($"[GameManager] TargetClearTime: {mTargetClearTime}s (tiles: {mTotalTileCount})");
+
+            Debug.Log($"[GameManager] TargetClearTime: {mTargetClearTime}s (tiles: {mTotalTileCount})");
 
             int limitMinutes = Mathf.FloorToInt(mTargetClearTime / 60F);
             int limitSeconds = Mathf.FloorToInt(mTargetClearTime % 60F);
@@ -252,14 +262,15 @@ namespace TrumpTile.GameMain.Core
             mTimerString = $"{limitMinutes:D1}:{limitSeconds:D2}";
 			mCurrentTime = mTargetClearTime;
 
+            //임시
+            EventManager.Inst.ActiveEvent("TimerSettingComplete");
+
             UIManager.Instance?.UpdateLevel(CurrentLevel);
 			UIManager.Instance?.UpdateScore(mCurrentScore);
 			UIManager.Instance?.RefreshAllItemButtons();
 			OnScoreChanged?.Invoke(mCurrentScore);
 			OnComboChanged?.Invoke(0);
 
-            //임시
-            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)levelData.levelBackgroundSprite);
 
             await WaitUntill(() => LoadingAnimComplete);
 
@@ -430,7 +441,7 @@ namespace TrumpTile.GameMain.Core
 
 			yield return new WaitForSeconds(0.5F);
 
-			EffectManager.Instance?.PlayClearEffect();
+			//EffectManager.Instance?.PlayClearEffect();
 			AudioEvent.Play(EAudioKey.SFX_GameClear);
 
 			int stars = CalculateStars();

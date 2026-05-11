@@ -32,11 +32,12 @@ namespace TrumpTile.GameMain.UI
             mLevelNameCanvasGroup.alpha = 0;
 
             //임시
-            EventManager.Inst.AddEvent("IngameLoadingComplete", RefreshUIOnLoadLevel);
+            EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
+            EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
 
             mTopLevelNameRect.localScale = Vector3.zero;
         }
-        private void RefreshUIOnLoadLevel(object obj)
+        private void OnLoadLevelComplete(object obj)
         {
             Sprite background = (Sprite)obj ? (Sprite)obj : mDefaultBackgroundSprite;
             mBackgroundImage.sprite = background;    
@@ -45,20 +46,20 @@ namespace TrumpTile.GameMain.UI
             
             mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
 
-            mTopLevelNameRect.localScale = Vector3.zero;
-
-            StartCoroutine(Co_TimerTextProgress());
-            StartCoroutine(Co_TimerSliderProgress());   
+            mTopLevelNameRect.localScale = Vector3.zero;  
 
             mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
             StartCoroutine(Co_PlayLevelNameAnim());
         }
-
+        private void OnTimerSettingComplete(object obj)
+        {
+            StartCoroutine(Co_TimerTextProgress());
+            StartCoroutine(Co_TimerSliderProgress());
+        }
         private IEnumerator Co_PlayLevelNameAnim()
         {
             yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());
 
-            Debug.Log("레벨 애님 호출");
             Sequence sq = DOTween.Sequence();
 
             sq.Append(mLevelNameCanvasGroup.DOFade(1, 0.5f));
@@ -101,6 +102,15 @@ namespace TrumpTile.GameMain.UI
                     {
                         timerShakeStart = true;
                         mTimerIconRect.DOShakeAnchorPos(0.1f, 2.5f, 20).SetLoops(-1, LoopType.Restart);
+                    }
+                }
+                else
+                {
+                    if(timerShakeStart == true)
+                    {
+                        timerShakeStart = false;
+                        mTimerIconRect.DOKill();
+                        mTimerIconRect.anchoredPosition = Vector2.zero;
                     }
                 }
 

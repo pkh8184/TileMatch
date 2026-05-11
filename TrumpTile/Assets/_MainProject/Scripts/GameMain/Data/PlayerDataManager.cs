@@ -43,6 +43,8 @@ namespace TrumpTile.GameMain.Data
 		public event Action<int> OnGoldChanged;
 		public event Action<int> OnStageChanged;
 
+		private bool localDataTestFlag = false;
+
 		private void Awake()
 		{
 			DontDestroyOnLoad(gameObject);
@@ -56,6 +58,7 @@ namespace TrumpTile.GameMain.Data
 		public void Initialize()
 		{
 			mUserData = new UserData();
+			localDataTestFlag = true;
 		}
 		#region 프로퍼티
 
@@ -313,6 +316,9 @@ namespace TrumpTile.GameMain.Data
 				return string.Empty;
 			}
 			string data = null;
+
+			if (localDataTestFlag) return data;
+			
 			switch (ePlayerDataType)
 			{
 				case EPlayerDataType.Gold:
