@@ -306,7 +306,7 @@ namespace TrumpTile.GameMain.Core
 			PlaceTileOnEmptySpot(tile);
 		}
 
-		public bool PlaceTileOnEmptySpot(TileController tile)
+		public bool PlaceTileOnEmptySpot(TileController tile, bool bWithSpin = false)
 		{
 			if (tile == null)
 			{
@@ -318,14 +318,14 @@ namespace TrumpTile.GameMain.Core
 				Vector2Int? emptyPos = FindEmptyPositionOnLayer(layer);
 				if (emptyPos.HasValue)
 				{
-					PlaceTileAt(tile, emptyPos.Value.x, emptyPos.Value.y, layer);
+					PlaceTileAt(tile, emptyPos.Value.x, emptyPos.Value.y, layer, bWithSpin);
 					Log($"Tile placed at empty spot: ({emptyPos.Value.x}, {emptyPos.Value.y}, L{layer})");
 					return true;
 				}
 			}
 
 			int newX = mGridWidth;
-			PlaceTileAt(tile, newX, 0, 0);
+			PlaceTileAt(tile, newX, 0, 0, bWithSpin);
 			Log($"Tile placed at extended position: ({newX}, 0, L0)");
 			return true;
 		}
@@ -391,11 +391,18 @@ namespace TrumpTile.GameMain.Core
 			return null;
 		}
 
-		private void PlaceTileAt(TileController tile, int x, int y, int layer)
+		private void PlaceTileAt(TileController tile, int x, int y, int layer, bool bWithSpin = false)
 		{
 			Vector3 position = GridToWorldPosition(x, y, layer);
 
-			tile.ReturnToBoard(position, x, y, layer);
+			if (bWithSpin)
+			{
+				tile.FlyToBoard(position, x, y, layer);
+			}
+			else
+			{
+				tile.ReturnToBoard(position, x, y, layer);
+			}
 
 			if (!mAllTiles.Contains(tile))
 			{
@@ -405,7 +412,6 @@ namespace TrumpTile.GameMain.Core
 			Vector3Int gridPos = new Vector3Int(x, y, layer);
 			mTileGridMap[gridPos] = tile;
 
-			// 마지막 배치 위치 저장
 			mLastPlacedTilePosition = position;
 
 			UpdateAllBlockedStates();
