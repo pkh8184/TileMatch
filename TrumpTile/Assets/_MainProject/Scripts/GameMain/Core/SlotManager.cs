@@ -207,7 +207,7 @@ namespace TrumpTile.GameMain.Core
 
 			mSlotTiles.Remove(tile);
 
-			bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile) ?? false;
+			bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile, bWithSpin: true) ?? false;
 
 			if (!bPlaced)
 			{
