@@ -10,295 +10,2130 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55b110187722484ea47ac0ed3d64bcb, type: 3}
-  m_Name: Level_069
+  m_Name: 
   m_EditorClassIdentifier: 
   levelNumber: 69
   levelName: Level 69
   difficulty: 0
-  boardWidth: 6
-  boardHeight: 7
-  maxLayers: 2
+  boardWidth: 7
+  boardHeight: 8
+  maxLayers: 7
   slotCount: 7
   matchCount: 3
-  timeLimit: 0
-  targetScore: 1400
-  tilePlacements:
-  - gridX: 0
-    gridY: 0
-    layer: 0
-    tileTypeId: Spade_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 5
-    gridY: 0
-    layer: 0
-    tileTypeId: Spade_Six
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 0
-    gridY: 3
-    layer: 0
-    tileTypeId: Spade_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 5
-    gridY: 3
-    layer: 0
-    tileTypeId: Club_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 0
-    gridY: 4
-    layer: 0
-    tileTypeId: Diamond_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 5
-    gridY: 4
-    layer: 0
-    tileTypeId: Spade_Six
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 0
-    gridY: 5
-    layer: 0
-    tileTypeId: Diamond_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 5
-    gridY: 5
-    layer: 0
-    tileTypeId: Heart_Ten
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 0
-    gridY: 6
-    layer: 0
-    tileTypeId: Spade_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 5
-    gridY: 6
-    layer: 0
-    tileTypeId: Diamond_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 0
-    layer: 0
-    tileTypeId: Spade_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 1
-    layer: 0
-    tileTypeId: Spade_Eight
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 1
-    gridY: 2
-    layer: 0
-    tileTypeId: Spade_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 2
-    layer: 0
-    tileTypeId: Spade_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 1
-    gridY: 4
-    layer: 0
-    tileTypeId: Heart_Ten
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 1
-    gridY: 5
-    layer: 0
-    tileTypeId: Club_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 5
-    layer: 0
-    tileTypeId: Diamond_Queen
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 1
-    gridY: 6
-    layer: 0
-    tileTypeId: Heart_Four
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 6
-    layer: 0
-    tileTypeId: Spade_Eight
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 2
-    gridY: 1
-    layer: 0
-    tileTypeId: Spade_Six
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 3
-    gridY: 1
-    layer: 0
-    tileTypeId: Diamond_Eight
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 2
-    gridY: 2
-    layer: 0
-    tileTypeId: Diamond_Ace
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 3
-    gridY: 2
-    layer: 0
-    tileTypeId: Diamond_Eight
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 2
-    gridY: 3
-    layer: 0
-    tileTypeId: Diamond_Queen
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 3
-    gridY: 3
-    layer: 0
-    tileTypeId: Club_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 2
-    gridY: 4
-    layer: 0
-    tileTypeId: Diamond_Queen
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 3
-    gridY: 4
-    layer: 0
-    tileTypeId: Heart_Four
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 2
-    gridY: 5
-    layer: 0
-    tileTypeId: Spade_Eight
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 3
-    gridY: 5
-    layer: 0
-    tileTypeId: Diamond_Ace
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 2
-    gridY: 6
-    layer: 0
-    tileTypeId: Heart_Ten
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 3
-    gridY: 6
-    layer: 0
-    tileTypeId: Club_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 1
-    gridY: 1
-    layer: 1
-    tileTypeId: Spade_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 1
-    layer: 1
-    tileTypeId: Diamond_Ace
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 1
-    gridY: 3
-    layer: 1
-    tileTypeId: Heart_Four
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 3
-    layer: 1
-    tileTypeId: Spade_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 1
-    gridY: 5
-    layer: 1
-    tileTypeId: Club_King
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 4
-    gridY: 5
-    layer: 1
-    tileTypeId: Spade_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 2
-    gridY: 2
-    layer: 1
-    tileTypeId: Club_Two
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
-  - gridX: 3
-    gridY: 2
-    layer: 1
-    tileTypeId: Diamond_Eight
-    isLocked: 0
-    isFrozen: 0
-    frozenCount: 0
+  layerList:
+  - tilePlacementList:
+    - gridX: 3
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 2
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 7
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 3
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 7
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 7
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 0
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 6
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 1
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 6
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_1
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 3
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 2
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 7
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 7
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 7
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 7
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 7
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 6
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 3
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 7
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 7
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 3
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 5
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_35
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 6
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 5
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 6
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 1
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 5
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 4
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 4
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 4
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 5
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 7
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 5
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 7
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 7
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 6
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 6
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 7
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Interior_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 5
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_31
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_37
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Fruit_32
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 3
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_26
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 2
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 4
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 0
+      layer: 0
+      tileTypeId: Tools_51
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_7
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 1
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 2
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Interior_25
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 6
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 5
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Fruit_10
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 6
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Tools_69
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 0
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 4
+      layer: 0
+      tileTypeId: Desert_16
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  tilePlacements: []
   availableTileTypes: []
-  initialShuffleCount: 4
-  initialUndoCount: 4
-  initialHintCount: 4
+  levelBackgroundSprite: {fileID: 0}
+  tileBackgroundSprite: {fileID: 0}
+  initialShuffleCount: 3
+  initialUndoCount: 3
+  initialHintCount: 3
   specialTiles: []
   obstacles: []
