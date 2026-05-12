@@ -15347,7 +15347,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &921556518
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15419,7 +15419,6 @@ GameObject:
   - component: {fileID: 933781443}
   - component: {fileID: 914469541}
   - component: {fileID: 916452199}
-  - component: {fileID: 2588149181943530555}
   m_Layer: 0
   m_Name: Puzzle_SnowMedium
   m_TagString: Untagged
@@ -16006,7 +16005,7 @@ MonoBehaviour:
   mSlotManager: {fileID: 10376034}
   mGameOverPopup: {fileID: 396594452}
   mVictoryPopup: {fileID: 225975896}
-  mStartLevel: 999
+  mStartLevel: 3
   mMatchCount: 3
   mMaxSlots: 7
   mStarConfig: {fileID: 11400000, guid: 87ca16f56d0a7fa4ca3be7462ddb1874, type: 2}
@@ -16015,7 +16014,7 @@ MonoBehaviour:
   mEnableDebugKeys: 1
   mSlowMotionScale: 0.2
   mEnableTimerLog: 1
-  mbLevelTestMode: 1
+  mbLevelTestMode: 0
 --- !u!1 &1020229145
 GameObject:
   m_ObjectHideFlags: 0
@@ -16401,7 +16400,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.10648149, y: 0.7604167}
   m_AnchorMax: {x: 0.8935185, y: 0.8645833}
-  m_AnchoredPosition: {x: 0.0010070801, y: 0.00024414062}
+  m_AnchoredPosition: {x: 0.0009765625, y: 0.00024414062}
   m_SizeDelta: {x: 0, y: 0.0005188}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1101965594
@@ -28349,7 +28348,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.84705883, y: 0.175}
   m_AnchorMax: {x: 1, y: 0.825}
-  m_AnchoredPosition: {x: 8.790009, y: 0}
+  m_AnchoredPosition: {x: 8.790039, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1459412327
@@ -41007,7 +41006,6 @@ GameObject:
   - component: {fileID: 2053172400}
   - component: {fileID: 2068382166}
   - component: {fileID: 2069315604}
-  - component: {fileID: 2588149180924884808}
   m_Layer: 0
   m_Name: Puzzle_SnowMedium(2)
   m_TagString: Untagged
@@ -69227,30 +69225,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1721980316749240716}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2588149180924884808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2053506912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2588149181943530555
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 934196243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
