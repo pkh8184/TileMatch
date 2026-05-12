@@ -444,7 +444,7 @@ namespace TrumpTile.GameMain.Core
 			}
 			else
 			{
-				mCurrentAnimation = StartCoroutine(FlyToSlotCoroutine(slotPosition, () =>
+				mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(slotPosition, () =>
 				{
 					UpdateSortingOrder();
 					onComplete?.Invoke();
@@ -512,51 +512,14 @@ namespace TrumpTile.GameMain.Core
 			UpdateSortingOrder();
 
 			StopCurrentAnimation();
-			mCurrentAnimation = StartCoroutine(FlyToBoardCoroutine(boardPosition, null));
+			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(boardPosition, null));
 		}
 
 		#endregion
 
 		#region Animation Coroutines
 
-		private IEnumerator FlyToSlotCoroutine(Vector3 targetPosition, Action onComplete)
-		{
-			mIsAnimating = true;
-
-			Vector3 startPos = transform.position;
-			float distance = Vector3.Distance(startPos, targetPosition);
-			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.1F, 0.25F);
-
-			float rotationAmount = UnityEngine.Random.Range(0, 2) == 0 ? mFlyRotation : -mFlyRotation;
-			float arcHeight = Mathf.Min(distance * mFlyArcHeight, 0.5F);
-
-			float elapsed = 0F;
-
-			while (elapsed < duration)
-			{
-				elapsed += Time.deltaTime;
-				float t = elapsed / duration;
-				float easedT = t * t;
-
-				Vector3 currentPos = Vector3.Lerp(startPos, targetPosition, easedT);
-				float arc = Mathf.Sin(easedT * Mathf.PI) * arcHeight;
-				currentPos.y += arc;
-				transform.position = currentPos;
-
-				float currentRotation = Mathf.Lerp(0F, rotationAmount, easedT);
-				transform.rotation = Quaternion.Euler(0F, 0F, currentRotation);
-
-				yield return null;
-			}
-
-			transform.position = targetPosition;
-			transform.rotation = Quaternion.identity;
-			mIsAnimating = false;
-
-			onComplete?.Invoke();
-		}
-
-		private IEnumerator FlyToBoardCoroutine(Vector3 targetPosition, Action onComplete)
+		private IEnumerator ArcSpinCoroutine(Vector3 targetPosition, Action onComplete)
 		{
 			mIsAnimating = true;
 
