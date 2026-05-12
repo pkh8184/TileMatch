@@ -303,7 +303,7 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
-			PlaceTileOnEmptySpot(tile);
+			PlaceTileOnEmptySpot(tile, bWithSpin: false);
 		}
 
 		public bool PlaceTileOnEmptySpot(TileController tile, bool bWithSpin = false)

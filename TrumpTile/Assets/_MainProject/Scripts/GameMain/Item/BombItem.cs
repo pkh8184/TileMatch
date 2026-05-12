@@ -12,8 +12,8 @@ namespace TrumpTile.GameMain.Item
 	{
 		public int ItemId => 1008;
 
-		private const float BOMB_SET_DELAY = 0.15f;
-		private const float TIMEOUT = 3f;
+		private const float BOMB_SET_DELAY = 0.15F;
+		private const float TIMEOUT = 3F;
 
 		private BoardManager mBoardManager;
 		private EffectManager mEffectManager;
@@ -95,7 +95,7 @@ namespace TrumpTile.GameMain.Item
 				yield return new WaitForSeconds(BOMB_SET_DELAY);
 			}
 
-			float elapsed = 0f;
+			float elapsed = 0F;
 			while (pendingCount > 0 && elapsed < TIMEOUT)
 			{
 				elapsed += Time.deltaTime;
@@ -103,7 +103,7 @@ namespace TrumpTile.GameMain.Item
 			}
 
 			mBoardManager.UpdateAllBlockedStates();
-			yield return new WaitForSeconds(0.3f);
+			yield return new WaitForSeconds(0.3F);
 
 			onComplete?.Invoke();
 		}

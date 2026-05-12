@@ -470,7 +470,7 @@ namespace TrumpTile.GameMain.Core
 
 		#region Movement - To Board
 
-		private void ReturnToBoard(Vector3 boardPosition)
+		private void InitBoardReturn()
 		{
 			mIsInSlot = false;
 			mSlotIndex = -1;
@@ -481,8 +481,12 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			UpdateSortingOrder();
-
 			StopCurrentAnimation();
+		}
+
+		private void ReturnToBoard(Vector3 boardPosition)
+		{
+			InitBoardReturn();
 			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(boardPosition, null));
 		}
 
@@ -495,24 +499,14 @@ namespace TrumpTile.GameMain.Core
 			ReturnToBoard(boardPosition);
 		}
 
-		public void FlyToBoard(Vector3 boardPosition, int x, int y, int layer)
+		public void FlyToBoard(Vector3 boardPosition, int x, int y, int layer, Action onComplete = null)
 		{
 			mGridX = x;
 			mGridY = y;
 			mLayerIndex = layer;
 
-			mIsInSlot = false;
-			mSlotIndex = -1;
-
-			if (mBlockedOverlay != null)
-			{
-				mBlockedOverlay.SetActive(false);
-			}
-
-			UpdateSortingOrder();
-
-			StopCurrentAnimation();
-			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(boardPosition, null));
+			InitBoardReturn();
+			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(boardPosition, onComplete));
 		}
 
 		#endregion
