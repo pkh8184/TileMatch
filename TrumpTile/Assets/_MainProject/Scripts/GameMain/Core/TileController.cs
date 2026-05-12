@@ -470,7 +470,7 @@ namespace TrumpTile.GameMain.Core
 
 		#region Movement - To Board
 
-		public void ReturnToBoard(Vector3 boardPosition)
+		private void ReturnToBoard(Vector3 boardPosition)
 		{
 			mIsInSlot = false;
 			mSlotIndex = -1;
@@ -495,11 +495,68 @@ namespace TrumpTile.GameMain.Core
 			ReturnToBoard(boardPosition);
 		}
 
+		public void FlyToBoard(Vector3 boardPosition, int x, int y, int layer)
+		{
+			mGridX = x;
+			mGridY = y;
+			mLayerIndex = layer;
+
+			mIsInSlot = false;
+			mSlotIndex = -1;
+
+			if (mBlockedOverlay != null)
+			{
+				mBlockedOverlay.SetActive(false);
+			}
+
+			UpdateSortingOrder();
+
+			StopCurrentAnimation();
+			mCurrentAnimation = StartCoroutine(FlyToBoardCoroutine(boardPosition, null));
+		}
+
 		#endregion
 
 		#region Animation Coroutines
 
 		private IEnumerator FlyToSlotCoroutine(Vector3 targetPosition, Action onComplete)
+		{
+			mIsAnimating = true;
+
+			Vector3 startPos = transform.position;
+			float distance = Vector3.Distance(startPos, targetPosition);
+			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.1F, 0.25F);
+
+			float rotationAmount = UnityEngine.Random.Range(0, 2) == 0 ? mFlyRotation : -mFlyRotation;
+			float arcHeight = Mathf.Min(distance * mFlyArcHeight, 0.5F);
+
+			float elapsed = 0F;
+
+			while (elapsed < duration)
+			{
+				elapsed += Time.deltaTime;
+				float t = elapsed / duration;
+				float easedT = t * t;
+
+				Vector3 currentPos = Vector3.Lerp(startPos, targetPosition, easedT);
+				float arc = Mathf.Sin(easedT * Mathf.PI) * arcHeight;
+				currentPos.y += arc;
+				transform.position = currentPos;
+
+				float currentRotation = Mathf.Lerp(0F, rotationAmount, easedT);
+				transform.rotation = Quaternion.Euler(0F, 0F, currentRotation);
+
+				yield return null;
+			}
+
+			transform.position = targetPosition;
+			transform.rotation = Quaternion.identity;
+			mIsAnimating = false;
+
+			onComplete?.Invoke();
+		}
+
+		private IEnumerator FlyToBoardCoroutine(Vector3 targetPosition, Action onComplete)
 		{
 			mIsAnimating = true;
 
