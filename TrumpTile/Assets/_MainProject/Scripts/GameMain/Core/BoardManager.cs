@@ -411,11 +411,6 @@ namespace TrumpTile.GameMain.Core
 			UpdateAllBlockedStates();
 		}
 
-		public bool PlaceTileOnBoard(TileController tile)
-		{
-			return PlaceTileOnEmptySpot(tile);
-		}
-
 		/// <summary>
 		/// 마지막으로 배치된 타일의 위치 반환
 		/// </summary>
