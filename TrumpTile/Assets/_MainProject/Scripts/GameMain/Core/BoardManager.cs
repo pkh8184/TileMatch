@@ -262,7 +262,7 @@ namespace TrumpTile.GameMain.Core
 
 		#region Remove Tile
 
-		public void RemoveTileFromBoard(TileController tile)
+		public void RemoveTileFromBoard(TileController tile, bool bProcessBonus = true)
 		{
 			if (tile == null)
 			{
@@ -278,22 +278,10 @@ namespace TrumpTile.GameMain.Core
 
 			Log($"Tile removed from board: {tile.TileTypeId}");
 
-			ProcessBonusTile(tile);
-        }
-
-		public void RemoveTile(TileController tile)
-		{
-			if (tile == null)
+			if (bProcessBonus)
 			{
-				return;
+				ProcessBonusTile(tile);
 			}
-
-			mAllTiles.Remove(tile);
-
-			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
-			mTileGridMap.Remove(gridPos);
-
-			UpdateAllBlockedStates();
 		}
 
 		#endregion
@@ -542,7 +530,7 @@ namespace TrumpTile.GameMain.Core
 
 				foreach (TileController tile in tilesToRemove)
 				{
-					RemoveTile(tile);
+					RemoveTileFromBoard(tile, bProcessBonus: false);
 					tile.Remove();
 				}
 

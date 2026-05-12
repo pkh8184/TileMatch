@@ -72,7 +72,7 @@ namespace TrumpTile.GameMain.Item
 						{
 							if (tile != null)
 							{
-								mBoardManager.RemoveTile(tile);
+								mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
 								tile.Remove();
 							}
 						}
@@ -85,7 +85,7 @@ namespace TrumpTile.GameMain.Item
 					{
 						if (tile != null)
 						{
-							mBoardManager.RemoveTile(tile);
+							mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
 							tile.Remove();
 						}
 					}
