@@ -437,7 +437,6 @@ namespace TrumpTile.GameMain.Core
 			yield return new WaitForSeconds(0.5F);
 
 			//EffectManager.Instance?.PlayClearEffect();
-			AudioEvent.Play(EAudioKey.SFX_StageClear);
 
 			int stars = CalculateStars();
 
