@@ -209,7 +209,7 @@ namespace TrumpTile.GameMain.Core
 
 		#endregion
 
-		#region 동적 클립 직접 재생 (ComboSystem 등 AudioDatabase 밖의 클립용)
+		#region 동적 클립 직접 재생 (AudioDatabase 밖의 클립용)
 
 		public void PlaySFX(AudioClip clip, float volumeMultiplier = 1F)
 		{
