@@ -1,10 +1,11 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using TrumpTile.GameMain.Data;
-using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -121,6 +122,17 @@ namespace TrumpTile.GameMain.UI
                 mMakerRect.transform.SetParent(mFrameButtonList[mCurrentFrameIndex].transform);
             }
             mMakerRect.anchoredPosition = Vector2.zero;
+        }
+        protected override void PlayShowAnim()
+        {
+            mPopupObj.transform.localScale = Vector2.zero;
+            Sequence sq = DOTween.Sequence();
+
+            ScrollRect scroll = mAvataListObject.GetComponent<ScrollRect>();
+            scroll.enabled = false;
+
+            sq.Append(mPopupObj.transform.DOScale(1f, mShowDuration).SetEase(Ease.OutBack));
+            sq.OnComplete(() => scroll.enabled = true);
         }
     }
 }

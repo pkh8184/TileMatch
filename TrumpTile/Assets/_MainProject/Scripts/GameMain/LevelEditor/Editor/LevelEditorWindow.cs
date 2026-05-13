@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -1224,9 +1226,9 @@ namespace TrumpTile.LevelEditor.Editor
 			mCurrentLevel.levelName = System.IO.Path.GetFileNameWithoutExtension(path);
 			mCurrentLevel.layerList = new List<LayerDataWrapper>();
 
-			AssetDatabase.CreateAsset(mCurrentLevel, path);
-			AssetDatabase.SaveAssets();
-			mCurrentLevelClone = mCurrentLevel.Clone();
+			LevelEditorUtilities.CreateLevelDataAsset(mCurrentLevel, path);
+
+            mCurrentLevelClone = mCurrentLevel.Clone();
 			mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
 			mCurrentLevelClone.levelNumber = int.Parse(mCurrentLevelClone.levelName.Split('_')[1]);
 

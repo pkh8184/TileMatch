@@ -650,7 +650,7 @@ namespace TrumpTile.LevelEditor.Editor
 			}
 			else
 			{
-				AssetDatabase.CreateAsset(level, path);
+				LevelEditorUtilities.CreateLevelDataAsset(level, path);
 			}
 		}
 		private void CreateTile(LevelData level, LevelStats stats)

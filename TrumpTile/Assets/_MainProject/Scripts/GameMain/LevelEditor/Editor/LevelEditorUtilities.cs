@@ -1,11 +1,13 @@
 #if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor;
+using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEngine;
 
 namespace TrumpTile.LevelEditor.Editor
 {
@@ -14,6 +16,7 @@ namespace TrumpTile.LevelEditor.Editor
     /// </summary>
     public static class LevelEditorMenus
     {
+       
         [MenuItem("Tools/Tile Match/Create Card Tile Assets")]
         public static void CreateCardTileAssets()
         {
@@ -587,6 +590,19 @@ namespace TrumpTile.LevelEditor.Editor
                 GUI.Label(iconRect, $"L{level.levelNumber}", style);
                 GUI.color = origin;
             }
+        }
+    }
+    public static class LevelEditorUtilities
+    {
+        public static void CreateLevelDataAsset(LevelData mCurrentLevel, string path)
+        {
+            AssetDatabase.CreateAsset(mCurrentLevel, path);
+            AssetDatabase.SaveAssets();
+
+            AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+            AddressableAssetGroup group = settings.FindGroup("Levels");
+            string guid = AssetDatabase.AssetPathToGUID(path);
+            settings.CreateOrMoveEntry(guid, group).address = mCurrentLevel.levelName;
         }
     }
 }

@@ -10,8 +10,8 @@ namespace TrumpTile.GameMain.UI
         public static bool IsAnyPopupOpen => mOpenPopupCount > 0;
 
         [Header("Popup 켜기, 끄기 애니메이션 길이(초)")]
-        [SerializeField] private float mShowDuration = 1f;
-        [SerializeField] private float mHideDuration = 1f;
+        [SerializeField] protected float mShowDuration = 1f;
+        [SerializeField] protected float mHideDuration = 1f;
 
         [Header("Show / Hide 애니메이션을 적용할 실제 팝업창")]
         [SerializeField] protected GameObject mPopupObj;
