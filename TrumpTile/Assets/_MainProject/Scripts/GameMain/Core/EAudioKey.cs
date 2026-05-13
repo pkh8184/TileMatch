@@ -1,5 +1,8 @@
 namespace TrumpTile.GameMain.Core
 {
+	/// <summary>
+	/// 오디오 식별 키 — AudioDatabase에서 클립을 조회할 때 사용
+	/// </summary>
 	public enum EAudioKey
 	{
 		// BGM
