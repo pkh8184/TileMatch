@@ -23,9 +23,12 @@ namespace TrumpTile.GameMain.UI
         {
             base.Show();
 
-            GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 1;
+            ScrollRect scroll = GetComponentInChildren<ScrollRect>();
+            scroll.verticalNormalizedPosition = 1f;
+            scroll.enabled = false;
+
             AdManager.Inst.HideBannerAd();
-            StartCoroutine(Co_PlayPackageShowAnim());
+            StartCoroutine(Co_PlayPackageShowAnim(scroll));
         }
         public override void Hide()
         {
@@ -33,7 +36,7 @@ namespace TrumpTile.GameMain.UI
 
             AdManager.Inst.ShowBannerAd();
         }
-        private IEnumerator Co_PlayPackageShowAnim()
+        private IEnumerator Co_PlayPackageShowAnim(ScrollRect scroll)
         {
             VerticalLayoutGroup layoutGroup = mUIContainerTransform.GetComponent<VerticalLayoutGroup>();
 
@@ -50,6 +53,8 @@ namespace TrumpTile.GameMain.UI
             sequence.OnComplete(() => layoutGroup.enabled = true);
 
             yield return sequence.WaitForCompletion();
+
+            scroll.enabled = true;
         }
         /// <summary>
         /// 제품 목록에 존재하는 제품들의 UI를 종류에 맞게 생성합니다.

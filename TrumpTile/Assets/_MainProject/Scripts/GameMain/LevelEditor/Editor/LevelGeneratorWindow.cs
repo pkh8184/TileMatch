@@ -139,6 +139,10 @@ namespace TrumpTile.LevelEditor.Editor
                 {
                     string assetPath = AssetDatabase.GUIDToAssetPath(guid);
                     TileData tileData = AssetDatabase.LoadAssetAtPath<TileData>(assetPath);
+					if (tileData.tileTypeId.Contains("Random"))
+					{
+						continue;
+					}
 					mAllTileList.Add(tileData);
                 }
             }
@@ -650,7 +654,7 @@ namespace TrumpTile.LevelEditor.Editor
 			}
 			else
 			{
-				AssetDatabase.CreateAsset(level, path);
+				LevelEditorUtilities.CreateLevelDataAsset(level, path);
 			}
 		}
 		private void CreateTile(LevelData level, LevelStats stats)
@@ -711,9 +715,9 @@ namespace TrumpTile.LevelEditor.Editor
 						currentHeight = level.boardHeight + 1;
 					}
 				}
-				for (int j = 0; j < currentHeight; j++)
+				for (int j = 0; j < currentWidth; j++)
 				{
-					for(int k = 0; k < currentWidth; k++)
+					for(int k = 0; k < currentHeight; k++)
 					{
 						vector[i].Add(new Vector2(j, k));
 					}

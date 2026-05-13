@@ -91,6 +91,10 @@ namespace TrumpTile.GameMain.Data
         }
         public UserData()
         {
+            //ReadLocalData();
+        }
+        public void InitOnlyLoacalData()
+        {
             ReadLocalData();
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)

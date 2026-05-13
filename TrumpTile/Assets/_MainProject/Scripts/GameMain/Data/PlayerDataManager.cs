@@ -58,6 +58,7 @@ namespace TrumpTile.GameMain.Data
 		public void Initialize()
 		{
 			mUserData = new UserData();
+			mUserData.InitOnlyLoacalData();
 			localDataTestFlag = true;
 		}
 		#region 프로퍼티
