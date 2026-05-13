@@ -333,7 +333,7 @@ namespace TrumpTile.GameMain.Core
 					mFrozenOverlay.SetActive(false);
 				}
 			}
-			AudioEvent.Play(EAudioKey.SFX_TileSelect);
+			AudioEvent.Play(EAudioKey.SFX_TileMove);
 		}
 
 		private bool IsTouchBlockedByUI()
@@ -444,7 +444,7 @@ namespace TrumpTile.GameMain.Core
 			}
 			else
 			{
-				mCurrentAnimation = StartCoroutine(FlyToSlotCoroutine(slotPosition, () =>
+				mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(slotPosition, () =>
 				{
 					UpdateSortingOrder();
 					onComplete?.Invoke();
@@ -470,7 +470,7 @@ namespace TrumpTile.GameMain.Core
 
 		#region Movement - To Board
 
-		public void ReturnToBoard(Vector3 boardPosition)
+		private void InitBoardReturn()
 		{
 			mIsInSlot = false;
 			mSlotIndex = -1;
@@ -481,8 +481,12 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			UpdateSortingOrder();
-
 			StopCurrentAnimation();
+		}
+
+		private void ReturnToBoard(Vector3 boardPosition)
+		{
+			InitBoardReturn();
 			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(boardPosition, null));
 		}
 
@@ -495,11 +499,24 @@ namespace TrumpTile.GameMain.Core
 			ReturnToBoard(boardPosition);
 		}
 
+		public void FlyToBoard(Vector3 boardPosition, int x, int y, int layer, Action onComplete = null)
+		{
+			mGridX = x;
+			mGridY = y;
+			mLayerIndex = layer;
+
+			InitBoardReturn();
+			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(boardPosition, () =>
+			{
+				mCurrentAnimation = StartCoroutine(BounceOnLandCoroutine(onComplete));
+			}));
+		}
+
 		#endregion
 
 		#region Animation Coroutines
 
-		private IEnumerator FlyToSlotCoroutine(Vector3 targetPosition, Action onComplete)
+		private IEnumerator ArcSpinCoroutine(Vector3 targetPosition, Action onComplete)
 		{
 			mIsAnimating = true;
 
@@ -531,6 +548,36 @@ namespace TrumpTile.GameMain.Core
 
 			transform.position = targetPosition;
 			transform.rotation = Quaternion.identity;
+			mIsAnimating = false;
+
+			onComplete?.Invoke();
+		}
+
+		private IEnumerator BounceOnLandCoroutine(Action onComplete = null)
+		{
+			mIsAnimating = true;
+
+			float duration = 0.3F;
+			float elapsed = 0F;
+
+			while (elapsed < duration)
+			{
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / duration);
+				float scale;
+
+				if (t < 0.3F)
+					scale = Mathf.Lerp(1.0F, 1.3F, t / 0.3F);
+				else if (t < 0.7F)
+					scale = Mathf.Lerp(1.3F, 0.9F, (t - 0.3F) / 0.4F);
+				else
+					scale = Mathf.Lerp(0.9F, 1.0F, (t - 0.7F) / 0.3F);
+
+				transform.localScale = mOriginalScale * scale;
+				yield return null;
+			}
+
+			transform.localScale = mOriginalScale;
 			mIsAnimating = false;
 
 			onComplete?.Invoke();

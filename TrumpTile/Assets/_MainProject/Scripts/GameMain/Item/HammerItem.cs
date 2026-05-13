@@ -11,13 +11,11 @@ namespace TrumpTile.GameMain.Item
 		public int ItemId => 1005;
 
 		private SlotManager mSlotManager;
-		private BoardManager mBoardManager;
 		private EffectManager mEffectManager;
 
-		public HammerItem(SlotManager slotManager, BoardManager boardManager, EffectManager effectManager)
+		public HammerItem(SlotManager slotManager, EffectManager effectManager)
 		{
 			mSlotManager = slotManager;
-			mBoardManager = boardManager;
 			mEffectManager = effectManager;
 		}
 
@@ -28,7 +26,7 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
-			AudioEvent.Play(EAudioKey.SFX_ItemUse);
+			AudioEvent.Play(EAudioKey.SFX_Hammer);
 
 			Vector3 popPosition = mSlotManager.GetLastTilePosition();
 
@@ -39,13 +37,10 @@ namespace TrumpTile.GameMain.Item
 				mEffectManager.PlayHammerSpineEffect(popPosition, () =>
 				{
 					Vector3 landPosition;
-					bool bSuccess = mSlotManager.RemoveOneTileToBoard(out landPosition);
+					bool bSuccess = mSlotManager.RemoveOneTileToBoard(out landPosition, bWithSpin: true);
 					if (bSuccess)
 					{
-						Vector3 actualLandPos = mBoardManager != null
-							? mBoardManager.GetLastPlacedTilePosition()
-							: landPosition;
-						mEffectManager.PlayStrikeLandEffect(actualLandPos);
+						mEffectManager.PlayStrikeLandEffect(landPosition);
 					}
 					bActionDone = true;
 				});
@@ -53,12 +48,12 @@ namespace TrumpTile.GameMain.Item
 			else
 			{
 				Vector3 landPosition;
-				mSlotManager.RemoveOneTileToBoard(out landPosition);
+				mSlotManager.RemoveOneTileToBoard(out landPosition, bWithSpin: true);
 				bActionDone = true;
 			}
 
 			yield return new WaitUntil(() => bActionDone);
-			yield return new WaitForSeconds(0.3f);
+			yield return new WaitForSeconds(0.3F);
 
 			onComplete?.Invoke();
 		}

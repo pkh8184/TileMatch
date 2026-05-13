@@ -62,6 +62,7 @@ namespace TrumpTile.GameMain.UI
 
             Sequence sq = DOTween.Sequence();
 
+            AudioEvent.Play(EAudioKey.SFX_LevelName_01);
             sq.Append(mLevelNameCanvasGroup.DOFade(1, 0.5f));
             RectTransform rt = mLevelNameCanvasGroup.transform.GetComponent<RectTransform>();
 
@@ -70,6 +71,7 @@ namespace TrumpTile.GameMain.UI
             sq.AppendInterval(0.5f);
 
             float targetX = -(Screen.width / 2f + rt.rect.width);
+            sq.AppendCallback(() => AudioEvent.Play(EAudioKey.SFX_LevelName_02));
             sq.Append(rt.DOAnchorPosX(targetX, 0.5f).SetEase(Ease.InQuad));
             sq.Append(mLevelNameBackground.DOFade(0, 0.3f));
 

@@ -1,36 +1,34 @@
 namespace TrumpTile.GameMain.Core
 {
 	/// <summary>
-	/// 오디오 식별 키 - AudioDatabase에서 클립을 조회할 때 사용
+	/// 오디오 식별 키 — AudioDatabase에서 클립을 조회할 때 사용
 	/// </summary>
 	public enum EAudioKey
 	{
 		// BGM
-		BGM_MainMenu,
-		BGM_Gameplay,
+		BGM_Main,
+		BGM_Ingame,
 
 		// SFX - Tile
-		SFX_TileSelect,
 		SFX_TileMove,
 		SFX_TileMatch,
-		SFX_Combo,
+
+		// SFX - Item
+		SFX_Clock,
+		SFX_Hammer,
+		SFX_Bomb,
+		SFX_MagicHat_01,
+		SFX_MagicHat_02,
 
 		// SFX - UI
-		SFX_ButtonClick,
-		SFX_PopupOpen,
-		SFX_PopupClose,
+		SFX_BtnClick,
+		SFX_LevelName_01,
+		SFX_LevelName_02,
 
 		// SFX - Game
-		SFX_GameClear,
-		SFX_GameOver,
-		SFX_Star,
-		SFX_ItemUse,
-		SFX_Shuffle,
-		SFX_Undo,
-		SFX_Hint,
-
-		// SFX - Special
-		SFX_Warning,
-		SFX_Error,
+		SFX_StageClear,
+		SFX_StageLosed,
+		SFX_StageLosed_02,
+		SFX_StageFail,
 	}
 }

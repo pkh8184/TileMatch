@@ -8,16 +8,10 @@ namespace TrumpTile.GameMain.Core
 		public EAudioCommand Command;
 		public EAudioKey Key;
 
-		/// <summary>
-		/// 콤보 사운드처럼 인덱스가 필요한 경우 사용 (기본값 0)
-		/// </summary>
-		public int ComboIndex;
-
-		public AudioEventPayload(EAudioCommand command, EAudioKey key, int comboIndex = 0)
+		public AudioEventPayload(EAudioCommand command, EAudioKey key)
 		{
 			Command = command;
 			Key = key;
-			ComboIndex = comboIndex;
 		}
 	}
 }

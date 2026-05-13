@@ -149,27 +149,27 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			ItemManager.Inst.UseItem(itemId);
 		}
 
 		private void OnPauseClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			GameManager.Instance?.PauseGame();
 			ShowPausePanel();
 		}
 
 		private void OnResumeClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			HideAllPanels();
 			GameManager.Instance?.ResumeGame();
 		}
 
 		private void OnRestartClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			HideAllPanels();
 			Time.timeScale = 1F;
 			GameManager.Instance?.RestartLevel();
@@ -177,14 +177,14 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnNextLevelClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			HideAllPanels();
 			GameManager.Instance?.NextLevel();
 		}
 
 		private void OnMainMenuClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			HideAllPanels();
 			Time.timeScale = 1F;
 			GameManager.Instance?.GoToMainMenu();

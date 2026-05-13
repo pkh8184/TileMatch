@@ -184,7 +184,7 @@ namespace TrumpTile.GameMain.Core
 		private IEnumerator ShowClearPopupCoroutine(int starCount)
 		{
 			// 사운드 재생
-			AudioEvent.Play(EAudioKey.SFX_GameClear);
+			AudioEvent.Play(EAudioKey.SFX_StageClear);
 
 			// 팝업 표시 애니메이션
 			mClearPopup.SetActive(true);
@@ -198,7 +198,6 @@ namespace TrumpTile.GameMain.Core
 					yield return new WaitForSeconds(mStarAnimDelay);
 					if (mStars[i] != null)
 					{
-						AudioEvent.Play(EAudioKey.SFX_Star);
 						StartCoroutine(AnimateStarIn(mStars[i].transform));
 					}
 				}
@@ -217,7 +216,7 @@ namespace TrumpTile.GameMain.Core
 				mGameOverLevelText.text = $"Level {level}";
 			}
 
-			AudioEvent.Play(EAudioKey.SFX_GameOver);
+			AudioEvent.Play(EAudioKey.SFX_StageFail);
 			StartCoroutine(ShowPopupCoroutine(mGameOverPopup, mGameOverCanvasGroup));
 		}
 
@@ -324,7 +323,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnNextLevel()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			StartCoroutine(HideAndAction(mClearPopup, mClearCanvasGroup, () =>
 			{
 				GameManager.Instance?.NextLevel();
@@ -333,7 +332,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnRetry()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 
 			GameObject activePopup = null;
 			CanvasGroup activeCanvasGroup = null;
@@ -366,7 +365,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnHome()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 
 			GameObject activePopup = null;
 			CanvasGroup activeCanvasGroup = null;
@@ -399,7 +398,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnResume()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			StartCoroutine(HideAndAction(mPausePopup, mPauseCanvasGroup, () =>
 			{
 				Time.timeScale = 1F;
