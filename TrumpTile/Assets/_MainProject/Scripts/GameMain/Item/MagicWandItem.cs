@@ -28,13 +28,14 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
-			AudioEvent.Play(EAudioKey.SFX_ItemUse);
+			AudioEvent.Play(EAudioKey.SFX_Clock);
 
 			bool bActionDone = false;
 
 			if (mEffectManager != null)
 			{
-				mEffectManager.PlayMagicWandSpineEffect(() =>
+				mEffectManager.PlayMagicWandSpineEffect();
+				mEffectManager.PlayClockItemEffect(FREEZE_DURATION, () =>
 				{
 					mTimerControllable.FreezeTimer(FREEZE_DURATION);
 					bActionDone = true;

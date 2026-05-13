@@ -26,7 +26,7 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
-			AudioEvent.Play(EAudioKey.SFX_ItemUse);
+			AudioEvent.Play(EAudioKey.SFX_Hammer);
 
 			Vector3 popPosition = mSlotManager.GetLastTilePosition();
 

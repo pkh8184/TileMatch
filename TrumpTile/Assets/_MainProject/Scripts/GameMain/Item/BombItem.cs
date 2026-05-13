@@ -52,8 +52,6 @@ namespace TrumpTile.GameMain.Item
 				yield break;
 			}
 
-			AudioEvent.Play(EAudioKey.SFX_ItemUse);
-
 			int setsToRemove = Mathf.Min(3, groups.Count);
 			int pendingCount = setsToRemove;
 
