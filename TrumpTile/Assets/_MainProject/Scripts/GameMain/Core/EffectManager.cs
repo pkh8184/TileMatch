@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Spine.Unity;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -90,6 +91,16 @@ namespace TrumpTile.GameMain.Core
 		[Tooltip("흡수/분산 시 타일 회전량 (도). 0이면 회전 없음")]
 		[SerializeField] private float mTileSuckRotation = 360F;
 
+		[Header("Bomb Flight")]
+		[Tooltip("폭탄 비행 시간 (초)")]
+		[SerializeField] private float mBombFlightDuration = 0.4F;
+		[Tooltip("비행 호 높이 (월드 유닛)")]
+		[SerializeField] private float mBombFlightArcHeight = 1.5F;
+		[Tooltip("화면 엣지에서 스폰 추가 오프셋 (월드 유닛)")]
+		[SerializeField] private float mBombSpawnOffsetX = 1F;
+		[Tooltip("true = 우측에서 날아옴, false = 좌측에서 날아옴")]
+		[SerializeField] private bool mBombSpawnFromRight = true;
+
 		[Header("Boom Effect")]
 		[Tooltip("Fx_Bomb_001 - 폭탄 폭발 이펙트")]
 		[SerializeField] private GameObject mBombExplodeEffectPrefab;
@@ -109,6 +120,16 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private GameObject mMagicHatSpineEffectPrefab;
 		[Tooltip("ItemBomb_SkeletonData 기반 프리팹")]
 		[SerializeField] private GameObject mBombSpineEffectPrefab;
+
+		[Header("=== Clock Item Effect ===")]
+		[Tooltip("ClockItemEffect UI 프리팹")]
+		[SerializeField] private GameObject mClockItemEffectPrefab;
+		[Tooltip("ClockItemEffect를 붙일 Canvas 또는 UI 부모 Transform")]
+		[SerializeField] private Transform mClockEffectParent;
+		[Tooltip("Clock_Padein 애니메이션 길이 (초)")]
+		[SerializeField] private float mClockFadeInDuration = 2F;
+		[Tooltip("Clock_PadeOut 애니메이션 길이 (초)")]
+		[SerializeField] private float mClockFadeOutDuration = 1F;
 
 		#endregion
 
@@ -798,6 +819,41 @@ namespace TrumpTile.GameMain.Core
 			PlaySpineEffectWithCallback(mMagicWandSpineEffectPrefab, mMagicWandEffectPosition, onActionPoint);
 		}
 
+		public void PlayClockItemEffect(float freezeDuration, Action onActionPoint)
+		{
+			StartCoroutine(ClockItemEffectCoroutine(freezeDuration, onActionPoint));
+		}
+
+		private IEnumerator ClockItemEffectCoroutine(float freezeDuration, Action onActionPoint)
+		{
+			if (mClockItemEffectPrefab == null)
+			{
+				onActionPoint?.Invoke();
+				yield break;
+			}
+
+			GameObject clockObj = Instantiate(mClockItemEffectPrefab, mClockEffectParent);
+			Animator animator = clockObj.GetComponent<Animator>();
+
+			// Clock_Padein 재생 (기본 상태)
+			yield return new WaitForSeconds(mClockFadeInDuration);
+
+			// 타이머 동결 시작 콜백
+			onActionPoint?.Invoke();
+
+			// 동결 시간 대기
+			yield return new WaitForSeconds(freezeDuration);
+
+			// Clock_PadeOut 재생
+			if (animator != null)
+			{
+				animator.Play("Clock_PadeOut");
+			}
+			yield return new WaitForSeconds(mClockFadeOutDuration);
+
+			Destroy(clockObj);
+		}
+
 		public void PlayMagicHatSpineEffect(Action onActionPoint = null)
 		{
 			PlaySpineEffectWithCallback(mMagicHatSpineEffectPrefab, mBlackHolePosition, onActionPoint);
@@ -805,11 +861,89 @@ namespace TrumpTile.GameMain.Core
 
 		public void PlayBombSpineEffect(Vector3 position, Action onActionPoint = null)
 		{
-			PlaySpineEffectWithCallback(mBombSpineEffectPrefab, position, () =>
+			StartCoroutine(BombFlyCoroutine(position, onActionPoint));
+		}
+
+		private IEnumerator BombFlyCoroutine(Vector3 targetPos, Action onActionPoint)
+		{
+			if (mBombSpineEffectPrefab == null)
 			{
-				PlayBombExplodeEffect(position);
+				PlayBombExplodeEffect(targetPos);
 				onActionPoint?.Invoke();
-			});
+				yield break;
+			}
+
+			Camera cam = Camera.main;
+			float cameraZ = cam != null ? -cam.transform.position.z : 10F;
+			float spawnEdgeX;
+			if (mBombSpawnFromRight)
+			{
+				float rightEdgeX = cam != null
+					? cam.ViewportToWorldPoint(new Vector3(1F, 0.5F, cameraZ)).x
+					: 6F;
+				spawnEdgeX = rightEdgeX + mBombSpawnOffsetX;
+			}
+			else
+			{
+				float leftEdgeX = cam != null
+					? cam.ViewportToWorldPoint(new Vector3(0F, 0.5F, cameraZ)).x
+					: -6F;
+				spawnEdgeX = leftEdgeX - mBombSpawnOffsetX;
+			}
+
+			Vector3 spawnPos = new Vector3(spawnEdgeX, targetPos.y, targetPos.z);
+
+			GameObject instance = Instantiate(mBombSpineEffectPrefab, spawnPos, Quaternion.identity);
+
+			SkeletonAnimation sa = instance.GetComponent<SkeletonAnimation>();
+			if (sa != null)
+			{
+				sa.timeScale = 0F;
+			}
+
+			SpineEffectController controller = instance.GetComponent<SpineEffectController>();
+			if (controller != null)
+			{
+				controller.OnActionPoint += () =>
+				{
+					PlayBombExplodeEffect(targetPos);
+					onActionPoint?.Invoke();
+				};
+			}
+
+			float elapsed = 0F;
+			while (elapsed < mBombFlightDuration)
+			{
+				if (instance == null)
+				{
+					yield break;
+				}
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / mBombFlightDuration);
+				Vector3 pos = Vector3.Lerp(spawnPos, targetPos, t);
+				pos.y += Mathf.Sin(t * Mathf.PI) * mBombFlightArcHeight;
+				instance.transform.position = pos;
+				yield return null;
+			}
+
+			if (instance == null)
+			{
+				yield break;
+			}
+
+			instance.transform.position = targetPos;
+
+			if (sa != null)
+			{
+				sa.timeScale = 1F;
+			}
+
+			if (controller == null)
+			{
+				PlayBombExplodeEffect(targetPos);
+				onActionPoint?.Invoke();
+				Destroy(instance);
+			}
 		}
 
 		public void PlayBombExplodeEffect(Vector3 position)
