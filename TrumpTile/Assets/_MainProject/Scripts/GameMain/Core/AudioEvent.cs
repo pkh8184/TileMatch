@@ -3,7 +3,7 @@ namespace TrumpTile.GameMain.Core
 	/// <summary>
 	/// EventManager 오디오 이벤트 호출 헬퍼
 	/// 호출부에서 EventManager 직접 참조 없이 간결하게 사용
-	/// 예) AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+	/// 예) AudioEvent.Play(EAudioKey.SFX_BtnClick);
 	/// </summary>
 	public static class AudioEvent
 	{
