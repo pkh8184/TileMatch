@@ -180,13 +180,13 @@ namespace TrumpTile.GameMain.Core
 		public bool RemoveOneTileToBoard()
 		{
 			Vector3 landPosition;
-			return RemoveOneTileToBoard(out landPosition);
+			return RemoveOneTileToBoard(out landPosition, bWithSpin: false);
 		}
 
 		/// <summary>
 		/// 타일 하나를 보드로 복귀 (착지 위치 반환)
 		/// </summary>
-		public bool RemoveOneTileToBoard(out Vector3 landPosition)
+		public bool RemoveOneTileToBoard(out Vector3 landPosition, bool bWithSpin = false)
 		{
 			landPosition = Vector3.zero;
 
@@ -207,7 +207,7 @@ namespace TrumpTile.GameMain.Core
 
 			mSlotTiles.Remove(tile);
 
-			bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile) ?? false;
+			bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile, bWithSpin) ?? false;
 
 			if (!bPlaced)
 			{
@@ -216,8 +216,10 @@ namespace TrumpTile.GameMain.Core
 				return false;
 			}
 
-			// 착지 위치 반환
-			landPosition = tile.transform.position;
+			// 착지 위치 반환 (보드에 배치된 실제 위치)
+			landPosition = BoardManager.Instance != null
+				? BoardManager.Instance.GetLastPlacedTilePosition()
+				: tile.transform.position;
 
 			RearrangeSlots();
 
@@ -231,7 +233,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void ProcessTileAddition(TileController newTile, int insertIndex)
 		{
-			AudioEvent.Play(EAudioKey.SFX_TileSelect);
+			AudioEvent.Play(EAudioKey.SFX_TileMove);
 
 			Action onMoveComplete = () =>
 			{
@@ -512,7 +514,6 @@ namespace TrumpTile.GameMain.Core
 			BoardManager.Instance?.ReturnTileToBoard(data.tile, data.originalGridX, data.originalGridY, data.originalLayer);
 
 			RearrangeSlots();
-			AudioEvent.Play(EAudioKey.SFX_Undo);
 
 			return true;
 		}

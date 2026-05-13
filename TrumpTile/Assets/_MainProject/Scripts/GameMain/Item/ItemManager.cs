@@ -28,7 +28,7 @@ namespace TrumpTile.GameMain.Item
 			int matchCount)
 		{
 			mItems.Clear();
-			RegisterItem(new HammerItem(slotManager, boardManager, effectManager));
+			RegisterItem(new HammerItem(slotManager, effectManager));
 			RegisterItem(new MagicWandItem(timerControllable, effectManager));
 			RegisterItem(new MagicHatItem(boardManager, effectManager));
 			RegisterItem(new BombItem(boardManager, effectManager, matchCount));

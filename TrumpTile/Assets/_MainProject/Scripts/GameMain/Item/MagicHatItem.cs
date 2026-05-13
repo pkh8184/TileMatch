@@ -30,7 +30,7 @@ namespace TrumpTile.GameMain.Item
 
 		public IEnumerator Execute(Action onComplete)
 		{
-			AudioEvent.Play(EAudioKey.SFX_ItemUse);
+			AudioEvent.Play(EAudioKey.SFX_MagicHat_01);
 
 			List<TileController> boardTiles = mBoardManager.GetBoardTiles();
 			List<Transform> tileTransforms = boardTiles
@@ -49,6 +49,7 @@ namespace TrumpTile.GameMain.Item
 					() =>
 					{
 						// 타일이 중앙에 모인 순간 TileData 교환 (위치는 그대로, 카드 face만 셔플)
+						AudioEvent.Play(EAudioKey.SFX_MagicHat_02);
 						mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
 					},
 					() =>

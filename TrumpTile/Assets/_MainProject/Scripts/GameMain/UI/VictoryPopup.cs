@@ -141,7 +141,7 @@ namespace TrumpTile.GameMain.UI
 			yield return new WaitForSeconds(mShowDelay);
 
 			// 사운드
-			AudioEvent.Play(EAudioKey.SFX_GameClear);
+			AudioEvent.Play(EAudioKey.SFX_StageClear);
 
 			// 텍스트 설정
 			if (mTitleText != null)
@@ -300,7 +300,7 @@ namespace TrumpTile.GameMain.UI
 
 		private void PlayButtonSound()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 		}
 
 		/// <summary>
