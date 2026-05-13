@@ -329,7 +329,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
 
-			AudioEvent.Play(EAudioKey.BGM_MainMenu);
+			AudioEvent.Play(EAudioKey.BGM_Main);
 
 			if (TransitionManager.Instance != null)
 			{
@@ -369,11 +369,6 @@ namespace TrumpTile.GameMain.Core
 
 			mMatchedTileCount += matchedCount;
 			OnProgressChanged?.Invoke(mMatchedTileCount, mTotalTileCount);
-
-			if (mComboCount > 1)
-			{
-				AudioEvent.Play(EAudioKey.SFX_Combo, mComboCount);
-			}
 		}
 
 		#endregion
@@ -401,7 +396,7 @@ namespace TrumpTile.GameMain.Core
 			ItemManager.Inst.SaveItemCountsToServer();
 			UIManager.Instance?.DisableItemButtons();
 			EffectManager.Instance?.PlayGameOverEffect();
-			AudioEvent.Play(EAudioKey.SFX_GameOver);
+			AudioEvent.Play(EAudioKey.SFX_StageLosed);
 
 			if (mGameOverPopup != null)
 			{
@@ -442,7 +437,7 @@ namespace TrumpTile.GameMain.Core
 			yield return new WaitForSeconds(0.5F);
 
 			//EffectManager.Instance?.PlayClearEffect();
-			AudioEvent.Play(EAudioKey.SFX_GameClear);
+			AudioEvent.Play(EAudioKey.SFX_StageClear);
 
 			int stars = CalculateStars();
 

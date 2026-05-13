@@ -285,7 +285,7 @@ namespace TrumpTile.GameMain.UI
 			}
 
 			SettingsManager.Inst?.SetBGM(bIsOn);
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 		}
 
 		private void OnSfxToggleChanged(bool bIsOn)
@@ -299,7 +299,7 @@ namespace TrumpTile.GameMain.UI
 			// SFX가 꺼진 경우엔 소리 재생 안 함, 켠 경우엔 확인용 재생
 			if (bIsOn)
 			{
-				AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+				AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			}
 		}
 
@@ -311,7 +311,7 @@ namespace TrumpTile.GameMain.UI
 			}
 
 			SettingsManager.Inst?.SetVibration(bIsOn);
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 
 			// 진동 켤 때 진동으로 피드백
 			if (bIsOn)
@@ -326,13 +326,13 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnCloseClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			Hide();
 		}
 
 		private void OnLanguageClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 
 			if (mLanguagePopup != null)
 			{
@@ -347,7 +347,7 @@ namespace TrumpTile.GameMain.UI
 				SettingsManager.Inst.CopyUID();
 			}
 
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 
 			if (mCopyToastCanvasGroup != null)
 			{
@@ -370,31 +370,31 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnTermsClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			SettingsManager.Inst.OpenTermsUrl();
 		}
 
 		private void OnPrivacyClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			SettingsManager.Inst.OpenPrivacyUrl();
 		}
 
 		private void OnInstagramClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			SettingsManager.Inst.OpenInstagramUrl();
 		}
 
 		private void OnTwitterClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			SettingsManager.Inst.OpenTwitterUrl();
 		}
 
 		private void OnYoutubeClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			SettingsManager.Inst.OpenYoutubeUrl();
 		}
 

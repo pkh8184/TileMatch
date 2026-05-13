@@ -233,7 +233,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void ProcessTileAddition(TileController newTile, int insertIndex)
 		{
-			AudioEvent.Play(EAudioKey.SFX_TileSelect);
+			AudioEvent.Play(EAudioKey.SFX_TileMove);
 
 			Action onMoveComplete = () =>
 			{
@@ -514,7 +514,6 @@ namespace TrumpTile.GameMain.Core
 			BoardManager.Instance?.ReturnTileToBoard(data.tile, data.originalGridX, data.originalGridY, data.originalLayer);
 
 			RearrangeSlots();
-			AudioEvent.Play(EAudioKey.SFX_Undo);
 
 			return true;
 		}

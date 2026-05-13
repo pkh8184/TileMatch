@@ -121,7 +121,7 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnLanguageSelected(ELanguage language)
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			SettingsManager.Inst?.SetLanguage(language);
 			RefreshSelectedIndicator();
 
@@ -137,7 +137,7 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnCloseClick()
 		{
-			AudioEvent.Play(EAudioKey.SFX_ButtonClick);
+			AudioEvent.Play(EAudioKey.SFX_BtnClick);
 			gameObject.SetActive(false);
 		}
 

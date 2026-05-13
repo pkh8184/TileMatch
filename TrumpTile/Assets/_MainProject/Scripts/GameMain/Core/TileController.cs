@@ -333,7 +333,7 @@ namespace TrumpTile.GameMain.Core
 					mFrozenOverlay.SetActive(false);
 				}
 			}
-			AudioEvent.Play(EAudioKey.SFX_TileSelect);
+			AudioEvent.Play(EAudioKey.SFX_TileMove);
 		}
 
 		private bool IsTouchBlockedByUI()
@@ -506,7 +506,10 @@ namespace TrumpTile.GameMain.Core
 			mLayerIndex = layer;
 
 			InitBoardReturn();
-			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(boardPosition, onComplete));
+			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(boardPosition, () =>
+			{
+				mCurrentAnimation = StartCoroutine(BounceOnLandCoroutine(onComplete));
+			}));
 		}
 
 		#endregion
@@ -545,6 +548,36 @@ namespace TrumpTile.GameMain.Core
 
 			transform.position = targetPosition;
 			transform.rotation = Quaternion.identity;
+			mIsAnimating = false;
+
+			onComplete?.Invoke();
+		}
+
+		private IEnumerator BounceOnLandCoroutine(Action onComplete = null)
+		{
+			mIsAnimating = true;
+
+			float duration = 0.3F;
+			float elapsed = 0F;
+
+			while (elapsed < duration)
+			{
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / duration);
+				float scale;
+
+				if (t < 0.3F)
+					scale = Mathf.Lerp(1.0F, 1.3F, t / 0.3F);
+				else if (t < 0.7F)
+					scale = Mathf.Lerp(1.3F, 0.9F, (t - 0.3F) / 0.4F);
+				else
+					scale = Mathf.Lerp(0.9F, 1.0F, (t - 0.7F) / 0.3F);
+
+				transform.localScale = mOriginalScale * scale;
+				yield return null;
+			}
+
+			transform.localScale = mOriginalScale;
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
