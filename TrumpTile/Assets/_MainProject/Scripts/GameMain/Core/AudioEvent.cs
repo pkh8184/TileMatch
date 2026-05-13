@@ -7,11 +7,11 @@ namespace TrumpTile.GameMain.Core
 	/// </summary>
 	public static class AudioEvent
 	{
-		public static void Play(EAudioKey key, int comboIndex = 0)
+		public static void Play(EAudioKey key)
 		{
 			EventManager.Inst?.ActiveEvent<AudioEventPayload>(
 				EventKeys.AUDIO_PLAY,
-				new AudioEventPayload(EAudioCommand.Play, key, comboIndex)
+				new AudioEventPayload(EAudioCommand.Play, key)
 			);
 		}
 

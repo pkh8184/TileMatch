@@ -131,22 +131,16 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnAudioPlay(AudioEventPayload payload)
 		{
-			bool bIsBgm = payload.Key == EAudioKey.BGM_MainMenu || payload.Key == EAudioKey.BGM_Gameplay;
+			bool bIsBgm = payload.Key == EAudioKey.BGM_Main || payload.Key == EAudioKey.BGM_Ingame;
 			if (bIsBgm)
 			{
 				AudioClip clip = GetClip(payload.Key);
 				mBgmController.Play(clip);
 			}
-			else if (payload.Key == EAudioKey.SFX_Combo)
-			{
-				PlayComboSFX(payload.ComboIndex);
-			}
 			else
 			{
 				AudioClip clip = GetClip(payload.Key);
-				bool bRandomPitch = payload.Key == EAudioKey.SFX_TileSelect
-					|| payload.Key == EAudioKey.SFX_TileMove
-					|| payload.Key == EAudioKey.SFX_Star;
+				bool bRandomPitch = payload.Key == EAudioKey.SFX_TileMove;
 				mSfxController.Play(clip, 1F, bRandomPitch);
 			}
 		}
@@ -158,7 +152,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnAudioStop(AudioEventPayload payload)
 		{
-			bool bIsBgm = payload.Key == EAudioKey.BGM_MainMenu || payload.Key == EAudioKey.BGM_Gameplay;
+			bool bIsBgm = payload.Key == EAudioKey.BGM_Main || payload.Key == EAudioKey.BGM_Ingame;
 			if (bIsBgm)
 			{
 				mBgmController.Stop();
@@ -233,17 +227,6 @@ namespace TrumpTile.GameMain.Core
 				return null;
 			}
 			return mAudioDatabase.GetClip(key);
-		}
-
-		/// <summary>
-		/// 콤보 인덱스에 맞는 SFX 재생
-		/// AudioDatabase에서 SFX_Combo 클립을 가져오되,
-		/// 콤보별 다른 클립이 필요하면 EAudioKey를 확장하거나 AudioDatabase에 별도 항목 추가
-		/// </summary>
-		private void PlayComboSFX(int comboIndex)
-		{
-			AudioClip clip = GetClip(EAudioKey.SFX_Combo);
-			mSfxController.Play(clip);
 		}
 
 		#endregion
