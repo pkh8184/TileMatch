@@ -89,6 +89,8 @@ namespace TrumpTile.GameMain.Item
 			}
 			if (GetItemCount(itemId) <= 0)
 			{
+				// 임시
+				EventManager.Inst.ActiveEvent("ShowItemPurchasePopup", (object)itemId);
 				return;
 			}
 			if (!item.CanExecute())
@@ -109,6 +111,29 @@ namespace TrumpTile.GameMain.Item
 			mIsItemInProgress = false;
 		}
 
+		#endregion
+
+		#region 추가
+		public void AddItem(int itemId, int count)
+		{
+			if (mIsItemInProgress)
+			{
+				return;
+			}
+
+			IItem item;
+			if (!mItems.TryGetValue(itemId, out item))
+			{
+				return;
+			}
+			if(!mItemCounts.ContainsKey(itemId))
+			{
+				mItemCounts[itemId] = 0;
+			}
+			mItemCounts[itemId] += count;
+			
+			OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
+		}
 		#endregion
 
 		#region 서버 동기화

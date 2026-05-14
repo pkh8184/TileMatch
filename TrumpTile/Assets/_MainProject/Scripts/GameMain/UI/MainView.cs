@@ -12,9 +12,6 @@ namespace TrumpTile.GameMain.UI
 {
     public class MainView : ViewBase
     {
-        [Header("로컬 데이터 테스트용 플래그")]
-        [SerializeField] private bool mbLocalDataTestFlag = false;
-
         [Header("MainView 버튼")]
         [SerializeField] private Button mStageStartButton;
 
@@ -37,11 +34,8 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();
 
-            if(mbLocalDataTestFlag)
-            {
-                PlayerDataManager.Inst.Initialize();
-                RefreshLocalData();
-            }
+            PlayerDataManager.Inst?.Initialize();
+            RefreshLocalData();          
             
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);

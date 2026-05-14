@@ -76,7 +76,7 @@ namespace TrumpTile.GameMain.Core
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
 
-		public bool tutorialComplete { get; set; }
+		public bool tutorialComplete { get; set; } = true;
 
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
@@ -98,6 +98,8 @@ namespace TrumpTile.GameMain.Core
 				Destroy(gameObject);
 				return;
 			}
+			
+			PlayerDataManager.Inst?.Initialize();
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
@@ -212,6 +214,10 @@ namespace TrumpTile.GameMain.Core
             {
                 FindObjectOfType<SlotTutorialPopup>(true)?.Show();
             }
+			if (Input.GetKeyDown(KeyCode.Space))
+            {
+                PlayerDataManager.Inst.AddGold(1000);
+            }
         }
 
 		#endregion
@@ -283,6 +289,7 @@ namespace TrumpTile.GameMain.Core
 
 
             await WaitUntill(() => LoadingAnimComplete);
+
 
 			if(levelData.levelNumber == 1)
 			{
@@ -513,9 +520,8 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			CurrentState = EGameState.Paused;
-			//Time.timeScale = 0F;
+			Time.timeScale = 0F;
 			AudioEvent.Pause();
-			UIManager.Instance?.ShowPausePanel();
 		}
 
 		public void ResumeGame()

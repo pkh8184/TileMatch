@@ -43,7 +43,8 @@ namespace TrumpTile.GameMain.UI
             layoutGroup.enabled = false;
 
             Sequence sequence = DOTween.Sequence();
-            for (int i = 0; i < mUIContainerTransform.childCount; i++)
+            sequence.SetUpdate(true);
+            for (int i = 0; i < 4; i++)
             {
                 RectTransform rect = mUIContainerTransform.GetChild(i).GetComponent<RectTransform>();
 

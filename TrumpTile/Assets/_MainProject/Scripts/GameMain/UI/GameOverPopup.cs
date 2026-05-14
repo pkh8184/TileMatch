@@ -133,7 +133,8 @@ namespace TrumpTile.GameMain.UI
 			{
 				return;
 			}
-
+			
+			gameObject.SetActive(true);
 			Debug.Log("[GameOverPopup] Show");
 
 			mIsPopupActive = true;

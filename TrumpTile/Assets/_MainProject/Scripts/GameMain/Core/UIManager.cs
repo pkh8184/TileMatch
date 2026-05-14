@@ -322,7 +322,7 @@ namespace TrumpTile.GameMain.Core
 				{
 					bool bCanUse = GameManager.Instance != null &&
 						GameManager.Instance.CurrentState == GameManager.EGameState.Playing;
-					config.button.interactable = bCanUse && count > 0;
+					config.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
 				}
 				break;
 			}
@@ -347,7 +347,7 @@ namespace TrumpTile.GameMain.Core
 				}
 				if (config.button != null)
 				{
-					config.button.interactable = bCanUse && count > 0;
+					config.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
 				}
 			}
 		}
