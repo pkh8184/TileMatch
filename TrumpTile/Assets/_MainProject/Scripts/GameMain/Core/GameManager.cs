@@ -76,7 +76,7 @@ namespace TrumpTile.GameMain.Core
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
 
-		public bool tutorialComplete { get; set; }
+		public bool tutorialComplete { get; set; } = true;
 
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
@@ -283,6 +283,7 @@ namespace TrumpTile.GameMain.Core
 
 
             await WaitUntill(() => LoadingAnimComplete);
+
 
 			if(levelData.levelNumber == 1)
 			{
