@@ -20,7 +20,9 @@ namespace TrumpTile.GameMain.Core
 
 		[Header("Slot Settings")]
 		[SerializeField] private int mMaxSlots = 6;
+		[SerializeField] private int mBonusSlotCost = 120;
 		[SerializeField] private Transform[] mSlotPositions;
+
 
 		[Header("Animation")]
 		[SerializeField] private float mTileMergeTime = 0.15F;
@@ -56,8 +58,9 @@ namespace TrumpTile.GameMain.Core
 		public int MaxSlots => mMaxSlots;
 		public bool IsProcessing => mIsProcessingMatch;
 		public bool IsGameEnded => mIsGameEnded;
+		public int BonusSlotCost => mBonusSlotCost;
 
-		private void Awake()
+        private void Awake()
 		{
 			if (Instance == null)
 			{

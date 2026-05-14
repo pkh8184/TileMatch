@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -26,6 +27,12 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Slider mTimerSlider;
         [SerializeField] private RectTransform mTimerIconRect;
 
+        [Header("슬롯 관련")]
+        [SerializeField] private Button mBonusSlotButton;
+        [SerializeField] private TMP_Text mBonusSlotText;
+
+        [Header("인게임 샵 뷰")]
+        [SerializeField] private ShopView mShopView;
         public override void Initialize()
         {
             base.Initialize();
@@ -34,6 +41,25 @@ namespace TrumpTile.GameMain.UI
             //임시
             EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
             EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
+
+            mBonusSlotButton.onClick.AddListener(() =>
+            {
+                if (SlotManager.Instance != null && SlotManager.Instance.IsProcessing)
+                {
+                    return;
+                }
+                if(PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost)
+                {
+                    PlayerDataManager.Inst.UseGold(SlotManager.Instance.BonusSlotCost);
+                    SlotManager.Instance.SetSlotCount(7);
+                    mBonusSlotButton.gameObject.SetActive(false);
+                }
+                else
+                {
+                    mShopView.Show();
+                }
+            });
+            mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
 
             mTopLevelNameRect.localScale = Vector3.zero;
         }
