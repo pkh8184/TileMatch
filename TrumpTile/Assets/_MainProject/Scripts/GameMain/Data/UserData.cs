@@ -96,6 +96,20 @@ namespace TrumpTile.GameMain.Data
         public void InitOnlyLoacalData()
         {
             ReadLocalData();
+
+            RemoveAds = false;
+            CurrentStage = 1;
+            FirstTryClearCount = 0;
+            MaxStreakClearStageCount = 0;
+        
+            Gold = 120;
+            Star = 0;
+            CurrentHousingChapter = 0;
+            CurrentHousingSubChapter = 0;
+            CompletedChapterCount = 0;
+            //로그인 데이터
+            FirstLoginDate = DateTime.MinValue;
+            MaxStreakLoginCount = 0;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
