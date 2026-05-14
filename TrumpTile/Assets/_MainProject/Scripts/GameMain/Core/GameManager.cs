@@ -76,6 +76,8 @@ namespace TrumpTile.GameMain.Core
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
 
+		public bool tutorialComplete { get; set; }
+
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
 		public event System.Action<int> OnComboChanged;
@@ -202,7 +204,15 @@ namespace TrumpTile.GameMain.Core
 			{
 				OnGameOver();
 			}
-		}
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                FindObjectOfType<MatchTutorialPopup>(true)?.Show();
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                FindObjectOfType<SlotTutorialPopup>(true)?.Show();
+            }
+        }
 
 		#endregion
 
@@ -273,6 +283,21 @@ namespace TrumpTile.GameMain.Core
 
 
             await WaitUntill(() => LoadingAnimComplete);
+
+			if(levelData.levelNumber == 1)
+			{
+                tutorialComplete = false;
+				FindObjectOfType<MatchTutorialPopup>(true)?.Show();
+            }
+			else if(levelData.levelNumber == 2)
+			{
+                tutorialComplete = false;
+				FindObjectOfType<SlotTutorialPopup>(true)?.Show();
+			}
+
+			await WaitUntill(() => tutorialComplete);
+
+			Debug.Log("게임 시작");
 
             CurrentState = EGameState.Playing;
 		}
@@ -488,7 +513,7 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			CurrentState = EGameState.Paused;
-			Time.timeScale = 0F;
+			//Time.timeScale = 0F;
 			AudioEvent.Pause();
 			UIManager.Instance?.ShowPausePanel();
 		}
