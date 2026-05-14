@@ -437,7 +437,7 @@ namespace TrumpTile.LevelEditor.Editor
                 return;
             }
 
-            int tileCount = level.GetTileCount();
+            int tileCount = level.GetTileCountOnlyMatchable();
             int matchCount = level.matchCount > 0 ? level.matchCount : 3;
 
             if (tileCount % matchCount != 0)

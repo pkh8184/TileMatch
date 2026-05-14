@@ -32,6 +32,7 @@ namespace TrumpTile.GameMain.Core
 		Desert = 1,
 		Interior = 2,
 		Tools = 3,
+		ETC = 4,
 		Length
 	}
 	/// <summary>

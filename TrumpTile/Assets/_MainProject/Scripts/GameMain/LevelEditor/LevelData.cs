@@ -66,9 +66,9 @@ namespace TrumpTile.LevelEditor
             bool isValidate = true;
 
             // 타일 수가 matchCount의 배수인지 확인
-            if (GetTileCount() % matchCount != 0)
+            if (GetTileCountOnlyMatchable() % matchCount != 0)
 			{
-				errorMessage = $"총 타일 수({GetTileCount()})가 {matchCount}의 배수가 아닙니다.\n";
+				errorMessage = $"총 타일 수({GetTileCountOnlyMatchable()})가 {matchCount}의 배수가 아닙니다.\n";
 				isValidate = false;
 			}
 
@@ -78,6 +78,10 @@ namespace TrumpTile.LevelEditor
 			{
 				foreach (TilePlacement placement in layerWrapper.tilePlacementList)
 				{
+					if(placement.tileTypeId == "Bonus" || placement.tileTypeId == "Jewerly")
+					{
+						continue; // 보너스 타일은 매치용 타일에서 제외
+					}
 					if (!typeCount.ContainsKey(placement.tileTypeId))
 					{
 						typeCount[placement.tileTypeId] = 0;
@@ -85,14 +89,32 @@ namespace TrumpTile.LevelEditor
 					typeCount[placement.tileTypeId]++;
 				}
 			}
-			foreach (KeyValuePair<string, int> kvp in typeCount)
+			int jewerlyCount = GetJewerlyTileCount();
+
+            foreach (KeyValuePair<string, int> kvp in typeCount)
 			{
-				if (kvp.Value % matchCount != 0)
+				int tileCount = kvp.Value;
+                if (tileCount % matchCount != 0)
 				{
-					errorMessage += $"타일 '{kvp.Key}'의 개수({kvp.Value})가 {matchCount}의 배수가 아닙니다.\n";
-					idList.Add(kvp.Key);
-					isValidate = false;
+					while(tileCount % matchCount != 0)
+					{
+						if(jewerlyCount <= 0)
+						{
+                            errorMessage += $"타일 '{kvp.Key}'의 개수({kvp.Value})가 {matchCount}의 배수가 아닙니다.\n";
+                            idList.Add(kvp.Key);
+                            isValidate = false;
+                            break;
+						}
+						tileCount++;
+						jewerlyCount--;
+					}
 				}
+			}
+			if(jewerlyCount > 0)
+			{
+				errorMessage += $"보석 타일이 {jewerlyCount}개 남았습니다.\n";
+                idList.Add("Jewerly");
+                isValidate = false;
 			}
 
 			// 타일이 보드 범위 내에 있는지 확인
@@ -150,6 +172,10 @@ namespace TrumpTile.LevelEditor
             JsonUtility.FromJsonOverwrite(json, clone);
             return clone;
         }
+		/// <summary>
+		/// 보너스 타일을 제외한 매치용 타일들 개수만 반환
+		/// </summary>
+		/// <returns></returns>
 		public int GetTileCount()
 		{
 			int count = 0;
@@ -159,6 +185,53 @@ namespace TrumpTile.LevelEditor
 			}
 			return count;
 		}
+		public int GetTileCountOnlyMatchable()
+		{
+            int count = 0;
+            foreach (LayerDataWrapper layerWrapper in layerList)
+            {
+                int without = 0;
+                foreach (TilePlacement placement in layerWrapper.tilePlacementList)
+                {
+                    if (placement.tileTypeId == "Bonus")
+                    {
+                        without++;
+                    }
+                }
+                count += layerWrapper.tilePlacementList.Count - without;
+            }
+            return count;
+        }
+		public int GetBonusTileCount()
+		{
+            int count = 0;
+            foreach (LayerDataWrapper layerWrapper in layerList)
+            {
+                foreach (TilePlacement placement in layerWrapper.tilePlacementList)
+                {
+                    if (placement.tileTypeId == "Bonus")
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+		public int GetJewerlyTileCount()
+		{
+            int count = 0;
+            foreach (LayerDataWrapper layerWrapper in layerList)
+            {
+                foreach (TilePlacement placement in layerWrapper.tilePlacementList)
+                {
+                    if (placement.tileTypeId == "Jewerly")
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
     }
 
 	/// <summary>
