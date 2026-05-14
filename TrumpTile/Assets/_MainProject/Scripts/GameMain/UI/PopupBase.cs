@@ -6,7 +6,7 @@ namespace TrumpTile.GameMain.UI
 {
     public class PopupBase : UIBase
     {
-        private static int mOpenPopupCount = 0;
+        protected static int mOpenPopupCount = 0;
         public static bool IsAnyPopupOpen => mOpenPopupCount > 0;
 
         [Header("Popup 켜기, 끄기 애니메이션 길이(초)")]
