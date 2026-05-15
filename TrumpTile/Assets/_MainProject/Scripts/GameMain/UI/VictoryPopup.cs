@@ -116,6 +116,7 @@ namespace TrumpTile.GameMain.UI
 				mMainButton.interactable = true;
 			}
 
+			mPanelRect.localScale = Vector2.zero;
 			StartCoroutine(ShowCoroutine(level, clearTime, stars));
 		}
 
