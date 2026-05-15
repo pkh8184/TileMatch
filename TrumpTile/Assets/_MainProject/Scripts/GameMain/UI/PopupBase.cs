@@ -30,17 +30,18 @@ namespace TrumpTile.GameMain.UI
         {
             mPopupObj.transform.localScale = Vector2.zero;
 
-            mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack);
+            mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack).SetUpdate(true);
         }
         protected virtual void PlayHideAnim()
         {
             Sequence seq = DOTween.Sequence();
+            seq.SetUpdate(true);
             seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
             seq.OnComplete(() =>
             {
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
-            });
+            });         
         }
     }
 }

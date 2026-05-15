@@ -36,11 +36,16 @@ namespace TrumpTile.GameMain.UI
         public override void Initialize()
         {
             base.Initialize();
+
             mLevelNameCanvasGroup.alpha = 0;
 
             //임시
             EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
             EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
+            //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
+            EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
+
+            
 
             mBonusSlotButton.onClick.AddListener(() =>
             {

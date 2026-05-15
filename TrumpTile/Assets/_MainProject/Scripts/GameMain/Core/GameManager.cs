@@ -98,6 +98,8 @@ namespace TrumpTile.GameMain.Core
 				Destroy(gameObject);
 				return;
 			}
+			
+			PlayerDataManager.Inst?.Initialize();
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
@@ -211,6 +213,10 @@ namespace TrumpTile.GameMain.Core
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 FindObjectOfType<SlotTutorialPopup>(true)?.Show();
+            }
+			if (Input.GetKeyDown(KeyCode.Space))
+            {
+                PlayerDataManager.Inst.AddGold(1000);
             }
         }
 
@@ -514,9 +520,8 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			CurrentState = EGameState.Paused;
-			//Time.timeScale = 0F;
+			Time.timeScale = 0F;
 			AudioEvent.Pause();
-			UIManager.Instance?.ShowPausePanel();
 		}
 
 		public void ResumeGame()

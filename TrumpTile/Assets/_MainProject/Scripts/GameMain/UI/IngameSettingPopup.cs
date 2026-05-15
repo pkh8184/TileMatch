@@ -62,7 +62,6 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnExitButtonClick()
         {
-            Time.timeScale = 1;
             GameManager.Instance.GoToMainMenu();
         }
         private IEnumerator Co_PlayShowAnim()
@@ -84,8 +83,9 @@ namespace TrumpTile.GameMain.UI
         }
         protected override void PlayHideAnim()
         {
-            mPopupObj.SetActive(false);
+            mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
             GameManager.Instance.ResumeGame();
+            gameObject.SetActive(false);
         }
         private void SetBGMToggle(bool isOn)
         {
