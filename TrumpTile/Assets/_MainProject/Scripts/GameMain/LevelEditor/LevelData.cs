@@ -133,24 +133,6 @@ namespace TrumpTile.LevelEditor
 				return isValidate;
 			}
 		
-		public int GetRandomTileSetCount(ETileCartegory eTileCartegory)
-		{
-			int count = 0;
-			foreach(var wrapper in layerList)
-			{
-				foreach(var tile in wrapper.tilePlacementList)
-				{
-					if(tile.tileTypeId.Contains("Random"))
-					{
-						if(tile.tileTypeId.Contains(eTileCartegory.ToString()))
-						{
-							count++;
-						}
-					}
-				}
-			}
-			return count / 3;
-		}
 		/// <summary>
 		/// 레벨 통계 정보
 		/// </summary>
@@ -249,6 +231,24 @@ namespace TrumpTile.LevelEditor
             }
             return count;
         }
+		public int GetRandomTileCount(ETileCartegory eTileCartegory)
+		{
+			int count = 0;
+			foreach(var wrapper in layerList)
+			{
+				foreach(var tile in wrapper.tilePlacementList)
+				{
+					if(tile.tileTypeId.Contains("Random"))
+					{
+						if(tile.tileTypeId.Contains(eTileCartegory.ToString()))
+						{
+							count++;
+						}
+					}
+				}
+			}
+			return count;
+		}
     }
 
 	/// <summary>
