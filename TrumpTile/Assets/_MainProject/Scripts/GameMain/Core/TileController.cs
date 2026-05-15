@@ -79,7 +79,7 @@ namespace TrumpTile.GameMain.Core
 		private BoxCollider2D mBoxCollider;
 		private Vector3 mOriginalScale = Vector3.one;
 		private Vector3 mSpawnTargetPos;
-
+		private bool mbIsJewerly;
 		#endregion
 
 		#region Properties
@@ -395,7 +395,11 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Data
-
+		public void SetTileDataOnly(TileData data)
+		{
+			mTileData = data;
+			mbIsJewerly = true;
+		}
 		public void SetTileData(TileData data)
 		{
 			mTileData = data;
@@ -449,6 +453,11 @@ namespace TrumpTile.GameMain.Core
 					UpdateSortingOrder();
 					onComplete?.Invoke();
 				}));
+			}
+
+			if(mbIsJewerly)
+			{
+				mSpriteRenderer.sprite = mTileData.sprite;	
 			}
 		}
 

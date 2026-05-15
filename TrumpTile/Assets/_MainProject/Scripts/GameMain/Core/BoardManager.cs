@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.DemiEditor;
+using PlasticPipe.PlasticProtocol.Messages;
 using TrumpTile.LevelEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -56,6 +58,13 @@ namespace TrumpTile.GameMain.Core
 		// 마지막으로 배치된 타일 위치 저장
 		private Vector3 mLastPlacedTilePosition = Vector3.zero;
 
+		//랜덤 타일을 세트로 만들기 위한 변수
+		private int mRandomTileCreateCount = 0;
+		private TileData mCurrnetRandomTile;
+		private List<TileData> mRandomTileList = new List<TileData>();
+
+		private Dictionary<string, int> mCreatedTileMap = new Dictionary<string, int>();
+		private List<TileController> mJewerlyTileList = new List<TileController>();
 		#endregion
 
 		#region Properties
@@ -114,6 +123,8 @@ namespace TrumpTile.GameMain.Core
 
 			Dictionary<string, TileData> tileDataMap = CreateTileDataMap();
 
+			InitRandomTileList(levelData);
+
 			ESpawnAnimType spawnAnimType = (ESpawnAnimType)Random.Range(0, TileController.SPAWN_ANIM_COUNT);
 
 			int createdCount = 0;
@@ -147,7 +158,9 @@ namespace TrumpTile.GameMain.Core
                     createdCount++;
                 }
             }
+			
 
+			SetJewerlyTileValid();
 			UpdateAllBlockedStates();
 
 			mIsLevelLoaded = true;
@@ -182,6 +195,13 @@ namespace TrumpTile.GameMain.Core
 				Debug.LogError("[BoardManager] Tile prefab is null!");
 				return null;
 			}
+			data = GetFilteredTile(data);
+
+			if(!mCreatedTileMap.ContainsKey(data.tileTypeId))
+			{
+				mCreatedTileMap[data.tileTypeId] = 0;
+			}
+			mCreatedTileMap[data.tileTypeId]++;
 
 			Vector3 position = GridToWorldPosition(x, y, layer);
 			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
@@ -192,13 +212,84 @@ namespace TrumpTile.GameMain.Core
 			tile.PlaySpawnAnimation(spawnDelay, animType);
 
 			mAllTiles.Add(tile);
+			if(data.tileTypeId == "Jewerly")
+			{
+				mJewerlyTileList.Add(tile);
+			}
 
 			Vector3 gridPos = new Vector3(x, y, layer);
 			mTileGridMap[gridPos] = tile;
 
 			return tile;
 		}
+        private void InitRandomTileList(LevelData levelData)
+        {
+			for(int i = 0; i < (int)ETileCartegory.Length - 1; i++)
+			{
+				int count = levelData.GetRandomTileCount((ETileCartegory)i);
 
+				int min = mAllTileTypes.FindIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
+				int max = mAllTileTypes.FindLastIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
+				Debug.Log($"[BoardManager] {((ETileCartegory)i).ToString()} Cartegory Range : {min}, {max - 1}");
+				TileData tileData = mAllTileTypes[Random.Range(min, max)];	
+
+				for(int j = 0; j < count / 3; j++)
+				{	
+					for(int k = 0; k < 3; k++)
+					{
+						mRandomTileList.Add(tileData);
+					}
+					tileData = mAllTileTypes[Random.Range(min, max)];	
+				}	
+				for(int j = 0; j < count % 3; j++)
+				{
+					mRandomTileList.Add(tileData);
+				}
+			}
+        }
+        private TileData GetFilteredTile(TileData data)
+		{
+			if(!data.tileTypeId.Contains("Random"))
+			{
+				return data;
+			}
+			int randomIndex = Random.Range(0, mRandomTileList.Count);		
+			TileData tile = mRandomTileList[randomIndex];
+			mRandomTileList.RemoveAt(randomIndex);
+
+			return tile;
+		}
+		private void SetJewerlyTileValid()
+		{
+			mJewerlyTileList.Shuffle();
+
+			foreach(var item in mCreatedTileMap)
+			{
+				if(item.Key == "Jewerly")
+				{
+					continue;
+				}
+				
+				int count = item.Value % 3;
+				if(count == 0)
+				{
+					continue;
+				}
+				TileData data = mAllTileTypes.Find(x => x.tileTypeId == item.Key);
+				Debug.Log($"[BoardManager] 3의 배수가 아닌 타일 : {item.Key}");
+
+				Debug.Log($"[BoardManager] 모자란 숫자 : {3 - count}");
+
+				for(int i = 0; i < 3 - count; i++)
+				{
+					Debug.Log($"[BoardManager] Change Jewerly To {item.Key}, Current Jewerly Index : {mJewerlyTileList.Count - 1}");
+					mJewerlyTileList[mJewerlyTileList.Count - 1].SetTileDataOnly(data);
+					mJewerlyTileList.RemoveAt(mJewerlyTileList.Count - 1);
+				}
+
+				if(mJewerlyTileList.Count == 0) break;
+			}
+		}
 		#endregion
 
 		#region Blocked State

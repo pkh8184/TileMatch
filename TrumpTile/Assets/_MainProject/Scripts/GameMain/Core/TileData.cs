@@ -32,8 +32,9 @@ namespace TrumpTile.GameMain.Core
 		Desert = 1,
 		Interior = 2,
 		Tools = 3,
-		ETC = 4,
-		Length
+		ETC,
+		Length,
+	
 	}
 	/// <summary>
 	/// 타일(카드) 데이터
