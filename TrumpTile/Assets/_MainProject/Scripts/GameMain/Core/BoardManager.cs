@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using PlasticPipe.PlasticProtocol.Messages;
 using TrumpTile.LevelEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -56,6 +57,10 @@ namespace TrumpTile.GameMain.Core
 		// 마지막으로 배치된 타일 위치 저장
 		private Vector3 mLastPlacedTilePosition = Vector3.zero;
 
+		//랜덤 타일을 세트로 만들기 위한 변수
+		private int mRandomTileCreateCount = 0;
+		private TileData mCurrnetRandomTile;
+		private List<TileData> mRandomTileList = new List<TileData>();
 		#endregion
 
 		#region Properties
@@ -113,6 +118,8 @@ namespace TrumpTile.GameMain.Core
 			SortingManager.SetMaxGridY(mGridHeight);
 
 			Dictionary<string, TileData> tileDataMap = CreateTileDataMap();
+
+			InitRandomTileList(levelData);
 
 			ESpawnAnimType spawnAnimType = (ESpawnAnimType)Random.Range(0, TileController.SPAWN_ANIM_COUNT);
 
@@ -182,7 +189,7 @@ namespace TrumpTile.GameMain.Core
 				Debug.LogError("[BoardManager] Tile prefab is null!");
 				return null;
 			}
-
+			data = GetFilteredTile(data);
 			Vector3 position = GridToWorldPosition(x, y, layer);
 			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
 
@@ -198,7 +205,37 @@ namespace TrumpTile.GameMain.Core
 
 			return tile;
 		}
+        private void InitRandomTileList(LevelData levelData)
+        {
+			for(int i = 0; i < (int)ETileCartegory.Length; i++)
+			{
+				int count = levelData.GetRandomTileSetCount((ETileCartegory)i);
+				
+				int min = mAllTileTypes.FindIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
+				int max = mAllTileTypes.FindLastIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
 
+				for(int j = 0; j < count; j++)
+				{
+					TileData tileData = mAllTileTypes[Random.Range(min, max)];		
+					for(int k = 0; k < 3; k++)
+					{
+						mRandomTileList.Add(tileData);
+					}
+				}
+			}
+        }
+        private TileData GetFilteredTile(TileData data)
+		{
+			if(!data.tileTypeId.Contains("Random"))
+			{
+				return data;
+			}
+			int randomIndex = Random.Range(0, mRandomTileList.Count);		
+			TileData tile = mRandomTileList[randomIndex];
+			mRandomTileList.RemoveAt(randomIndex);
+
+			return tile;
+		}
 		#endregion
 
 		#region Blocked State
