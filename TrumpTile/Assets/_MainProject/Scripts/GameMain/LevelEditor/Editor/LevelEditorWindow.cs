@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using DG.DemiEditor;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor;
 using UnityEditor;
@@ -77,14 +78,19 @@ namespace TrumpTile.LevelEditor.Editor
 
         private List<int> indexListForBoardSizeUpdate = new List<int>();
         // 색상
-        //private static readonly Color[] LayerColors = new Color[]
-        //{
-        //	new Color(0.2F, 0.6F, 1F, 1F),
-        //	new Color(0.2F, 0.8F, 0.4F, 1F),
-        //	new Color(1F, 0.8F, 0.2F, 1F),
-        //	new Color(1F, 0.4F, 0.4F, 1F),
-        //	new Color(0.8F, 0.4F, 1F, 1F),
-        //};
+        private static readonly Color[] LayerColors = new Color[]
+        {
+        	new Color(1.00f, 1.00f, 1.00f),  // Layer 0  흰색
+			new Color(0.97f, 0.93f, 0.97f),  // Layer 1  거의 흰 라벤더
+			new Color(0.95f, 0.87f, 0.80f),  // Layer 2  연한 살구
+			new Color(0.69f, 0.88f, 0.90f),  // Layer 3  연한 청록
+			new Color(1.00f, 0.85f, 0.73f),  // Layer 4  연한 주황
+			new Color(0.87f, 0.63f, 0.87f),  // Layer 5  연한 보라
+			new Color(0.56f, 0.93f, 0.56f),  // Layer 6  연한 녹색
+			new Color(1.00f, 1.00f, 0.60f),  // Layer 7  연한 노랑
+			new Color(0.68f, 0.85f, 0.90f),  // Layer 8  연한 파랑
+			new Color(1.00f, 0.71f, 0.76f),  // Layer 9  연한 분홍
+        };
 
         // 오른쪽 패널(타일 카테고리) 스크롤 위치
         private Vector2 mRightPanelScrollPos;
@@ -683,24 +689,26 @@ namespace TrumpTile.LevelEditor.Editor
 				if (mCurrentLevelClone.layerList[i].tilePlacementList == null) continue;
 				if (i == mCurrentLayer) continue;
 
-				float alpha = mShowAllLayers ? mLayerOpacity + (i * 0.1f) : 1F;
-
+				float alpha = mShowAllLayers ? 1f : 0.2f;
+				Color color = new Color(LayerColors[i].r,LayerColors[i].g,LayerColors[i].b, alpha);
+				
 				Vector2 gridOrigin = GetGridOrigin(area, i);
 
                 foreach (TilePlacement tile in mCurrentLevelClone.layerList[i].tilePlacementList)
 				{
-					DrawTile(tile, gridOrigin, scaledCellSize, alpha, i);
+					DrawTile(tile, gridOrigin, scaledCellSize, color, alpha, i);
 				}
 			}
 			if (mCurrentLevelClone.layerList.Count == 0) return;
 
             foreach (TilePlacement tile in mCurrentLevelClone.layerList[mCurrentLayer].tilePlacementList)
             {
-                DrawTile(tile, GetGridOrigin(area, mCurrentLayer), scaledCellSize, 1, mCurrentLayer);
+				Color color = LayerColors[mCurrentLayer];
+                DrawTile(tile, GetGridOrigin(area, mCurrentLayer), scaledCellSize, color, 1, mCurrentLayer);
             }
         }
 
-		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, float alpha, int layer)
+		private void DrawTile(TilePlacement tile, Vector2 gridOrigin, float scaledCellSize, Color color, float alpha, int layer)
 		{
 			if (tile == null || mCurrentLevelClone == null) return;
 
@@ -716,9 +724,6 @@ namespace TrumpTile.LevelEditor.Editor
 				scaledCellSize - mCellPadding * 2
 			);
 
-			// 레이어 색상
-			Color tileColor = new Color(1f, 1f, 1f, alpha);
-
 			// 선택 하이라이트
 			if (mSelectedTiles != null && mSelectedTiles.Contains(tile))
 			{
@@ -733,12 +738,13 @@ namespace TrumpTile.LevelEditor.Editor
             }
 			
 			Sprite sprite = mTileDataPresets.Find(x => x.tileTypeId == tile.tileTypeId).sprite;
+			
+			EditorGUI.DrawRect(tileRect, color);
 
-			EditorGUI.DrawRect(tileRect, tileColor);
-			Color origin = GUI.color;
-			GUI.color = tileColor;
+			Color prevColor = GUI.color;
+			GUI.color = new Color(1f, 1f, 1f, alpha);
 			GUI.DrawTexture(tileRect, sprite.texture);
-			GUI.color = origin;
+			GUI.color = prevColor;
 		}
 		private Vector2 GetGridOrigin(Rect area, int layer = 0)
 		{
