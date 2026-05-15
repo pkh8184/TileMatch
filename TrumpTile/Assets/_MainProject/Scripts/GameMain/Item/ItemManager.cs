@@ -97,7 +97,7 @@ namespace TrumpTile.GameMain.Item
 			{
 				return;
 			}
-
+			
 			mItemCounts[itemId]--;
 			OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
 

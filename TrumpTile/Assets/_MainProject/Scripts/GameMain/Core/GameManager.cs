@@ -76,7 +76,8 @@ namespace TrumpTile.GameMain.Core
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
 
-		public bool tutorialComplete { get; set; } = true;
+		public bool tutorialComplete { get; set; }
+		public bool IsTimerFrozen => mIsTimerFrozen;
 
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
@@ -98,7 +99,9 @@ namespace TrumpTile.GameMain.Core
 				Destroy(gameObject);
 				return;
 			}
-			
+
+			tutorialComplete = false;
+
 			PlayerDataManager.Inst?.Initialize();
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
@@ -256,7 +259,7 @@ namespace TrumpTile.GameMain.Core
 			mSlotManager?.ResetSlots();
 
             //임시
-            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)levelData.levelBackgroundSprite);
+            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)levelData);
 
             mBoardManager?.LoadLevel(levelData);
 
@@ -290,17 +293,22 @@ namespace TrumpTile.GameMain.Core
 
             await WaitUntill(() => LoadingAnimComplete);
 
-
-			if(levelData.levelNumber == 1)
+			if(!tutorialComplete)
 			{
-                tutorialComplete = false;
-				FindObjectOfType<MatchTutorialPopup>(true)?.Show();
-            }
-			else if(levelData.levelNumber == 2)
-			{
-                tutorialComplete = false;
-				FindObjectOfType<SlotTutorialPopup>(true)?.Show();
+				if(levelData.levelNumber == 1)
+				{
+					FindObjectOfType<MatchTutorialPopup>(true)?.Show();
+				}
+				else if(levelData.levelNumber == 2)
+				{
+					FindObjectOfType<SlotTutorialPopup>(true)?.Show();
+				}	
+				else
+				{
+					tutorialComplete = true;
+				}
 			}
+
 
 			await WaitUntill(() => tutorialComplete);
 
