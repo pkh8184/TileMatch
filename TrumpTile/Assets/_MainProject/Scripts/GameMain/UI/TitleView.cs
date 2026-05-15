@@ -1,3 +1,4 @@
+using DG.DemiEditor;
 using DG.Tweening;
 using System;
 using System.Collections;
@@ -43,9 +44,11 @@ namespace TrumpTile.GameMain.UI
         {
             Sequence seq = DOTween.Sequence();
 
-            mStudioLogo.fillAmount = 0;
-            seq.Append(mStudioLogo.DOFillAmount(1, 0.5f));
+            seq.Append(mStudioLogo.DOFade(1, mLogoFadeDuration));
             seq.AppendInterval(0.5f);
+            seq.Append(mStudioLogo.DOFade(0, mLogoFadeDuration));
+            seq.AppendInterval(0.5f);
+            
             seq.OnComplete(() => mStudioLogo.transform.parent.gameObject.SetActive(false));
 
             yield return seq.WaitForCompletion();

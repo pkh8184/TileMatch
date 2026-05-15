@@ -371,6 +371,7 @@ namespace TrumpTile.GameMain.Core
 
 			AudioEvent.Play(EAudioKey.BGM_Main);
 
+			Time.timeScale = 1f;
 			if (TransitionManager.Instance != null)
 			{
 				TransitionManager.Instance.LoadScene("MainScene");
