@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
+using TrumpTile.LevelEditor;
+using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,6 +19,11 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Image mLevelNameBackground;
         [SerializeField] private CanvasGroup mLevelNameCanvasGroup;
         [SerializeField] private RectTransform mTopLevelNameRect;
+        [SerializeField] private Image mLevelNameImage;        
+        [SerializeField] private GameObject[] mEffectObjectArray;
+
+        [Header("난이도별 레벨네임 오브젝트 배경")]
+        [SerializeField] private Sprite[] mLevelTextBackgroundArray;
 
         [Header("레벨 배경 관련")]
         [SerializeField] private Image mBackgroundImage;
@@ -26,6 +33,7 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private TMP_Text mTimerText;
         [SerializeField] private Slider mTimerSlider;
         [SerializeField] private RectTransform mTimerIconRect;
+        [SerializeField] private RectTransform mTimePickerRect;
 
         [Header("슬롯 관련")]
         [SerializeField] private Button mBonusSlotButton;
@@ -70,11 +78,17 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnLoadLevelComplete(object obj)
         {
-            Sprite background = (Sprite)obj ? (Sprite)obj : mDefaultBackgroundSprite;
+            LevelData levelData = (LevelData)obj;
+            Sprite background = levelData.levelBackgroundSprite? levelData.levelBackgroundSprite : mDefaultBackgroundSprite;
             mBackgroundImage.sprite = background;    
 
+            int index = GetLevelDifficultyIndex(levelData.difficulty);
+
+            mLevelNameImage.sprite = mLevelTextBackgroundArray[index];
+
             mLevelNameBackground.gameObject.SetActive(true);
-            
+            mEffectObjectArray[index].SetActive(true);
+
             mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
 
             mTopLevelNameRect.localScale = Vector3.zero;  
@@ -82,9 +96,27 @@ namespace TrumpTile.GameMain.UI
             mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
             StartCoroutine(Co_PlayLevelNameAnim());
         }
+        private int GetLevelDifficultyIndex(EDifficultyType eDifficultyType)
+        {
+            string difficultString = eDifficultyType.ToString();
+
+            if(difficultString.Contains("Very"))
+            {
+                return 2;
+            }
+            else if(difficultString.Contains("Hard"))
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
         private void OnTimerSettingComplete(object obj)
         {
             StartCoroutine(Co_TimerTextProgress());
+            StartCoroutine(Co_TimePickerProgress());
             StartCoroutine(Co_TimerSliderProgress());
         }
         private IEnumerator Co_PlayLevelNameAnim()
@@ -119,6 +151,16 @@ namespace TrumpTile.GameMain.UI
             while(true)
             {
                 mTimerText.text = GameManager.Instance.GetCurrentTimeString();
+                yield return null;
+            }
+        }
+        private IEnumerator Co_TimePickerProgress()
+        {
+             while(true)
+            {
+                float angle = 360f * GameManager.Instance.GetCurrentTimeClamped();
+
+                mTimePickerRect.localRotation = Quaternion.Euler(0,0,angle);
                 yield return null;
             }
         }
@@ -157,7 +199,7 @@ namespace TrumpTile.GameMain.UI
                     ? Color.Lerp(yellow, green, (t - 0.5f) * 2f)
                     : Color.Lerp(red, yellow, t * 2f);
 
-                sliderImage.color = result;
+                sliderImage.color = GameManager.Instance.IsTimerFrozen? Color.white : result;
 
                 yield return null;
             }
