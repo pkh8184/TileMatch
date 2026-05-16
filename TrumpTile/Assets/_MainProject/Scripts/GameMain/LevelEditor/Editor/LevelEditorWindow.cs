@@ -80,16 +80,16 @@ namespace TrumpTile.LevelEditor.Editor
         // 색상
         private static readonly Color[] LayerColors = new Color[]
         {
-        	new Color(1.00f, 1.00f, 1.00f),  // Layer 0  흰색
-			new Color(0.97f, 0.93f, 0.97f),  // Layer 1  거의 흰 라벤더
-			new Color(0.95f, 0.87f, 0.80f),  // Layer 2  연한 살구
-			new Color(0.69f, 0.88f, 0.90f),  // Layer 3  연한 청록
-			new Color(1.00f, 0.85f, 0.73f),  // Layer 4  연한 주황
-			new Color(0.87f, 0.63f, 0.87f),  // Layer 5  연한 보라
-			new Color(0.56f, 0.93f, 0.56f),  // Layer 6  연한 녹색
-			new Color(1.00f, 1.00f, 0.60f),  // Layer 7  연한 노랑
-			new Color(0.68f, 0.85f, 0.90f),  // Layer 8  연한 파랑
-			new Color(1.00f, 0.71f, 0.76f),  // Layer 9  연한 분홍
+			new Color(0.95f, 0.52f, 0.52f),  // Layer 0  살몬 레드
+			new Color(0.95f, 0.70f, 0.40f),  // Layer 1  주황
+			new Color(0.70f, 0.72f, 0.30f),  // Layer 2  올리브 (어두운 황록)
+			new Color(0.62f, 0.90f, 0.45f),  // Layer 3  연두 (밝은 녹색)
+			new Color(0.25f, 0.62f, 0.40f),  // Layer 4  진녹색 (어두운 녹색)
+			new Color(0.40f, 0.82f, 0.80f),  // Layer 5  청록
+			new Color(0.45f, 0.68f, 0.92f),  // Layer 6  하늘색
+			new Color(0.50f, 0.48f, 0.85f),  // Layer 7  인디고
+			new Color(0.78f, 0.52f, 0.90f),  // Layer 8  보라
+			new Color(0.95f, 0.55f, 0.78f),  // Layer 9  분홍
         };
 
         // 오른쪽 패널(타일 카테고리) 스크롤 위치
