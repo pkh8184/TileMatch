@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TrumpTile.FrameLibrary;
+using TrumpTile.GameMain.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -54,6 +55,8 @@ namespace TrumpTile.GameMain.UI
             Debug.Log("[IngameView] 메인 씬 로딩 성공");
 
             op.allowSceneActivation = true;
+            EAudioKey key = targetSceneName == "MainScene"? EAudioKey.BGM_Main : EAudioKey.BGM_Ingame;
+            AudioEvent.Play(key);
 
             mbSceneTransitionProgressing = false;
         }

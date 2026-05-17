@@ -26,6 +26,8 @@ namespace TrumpTile.GameMain.Core
 
         private void Awake()
         {
+            PlayerDataManager.Inst.Initialize();
+            //AudioManager.Inst.BGM
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
             foreach (var item in uiBaseArray)
