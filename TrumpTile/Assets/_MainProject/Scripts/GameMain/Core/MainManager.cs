@@ -27,6 +27,7 @@ namespace TrumpTile.GameMain.Core
         private void Start()
         {
             SceneTransister.Inst.PlayFadeInAnim();
+            AudioEvent.Play(EAudioKey.BGM_Main);
         }
     }
 }

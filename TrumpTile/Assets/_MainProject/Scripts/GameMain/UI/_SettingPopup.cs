@@ -93,12 +93,12 @@ namespace TrumpTile.GameMain.UI
 #endif
         private void SetBGMToggle(bool isOn)
         {
-            AudioManager.Inst?.SetBGMEnabled(isOn);
+            AudioManager.Inst?.SetBGMVolume(isOn? 1 : 0);
             PlayerDataManager.Inst?.SetBGMOn(isOn);
         }
         private void SetSFXToggle(bool isOn)
         {
-            AudioManager.Inst?.SetSFXEnabled(isOn);
+            AudioManager.Inst?.SetSFXVolume(isOn? 1 : 0);
             PlayerDataManager.Inst?.SetSFXOn(isOn);
         }
     }  

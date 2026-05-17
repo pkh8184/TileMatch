@@ -1,4 +1,5 @@
 using TrumpTile.FrameLibrary;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
@@ -46,11 +47,13 @@ namespace TrumpTile.GameMain.Core
 		{
 			DontDestroyOnLoad(gameObject);
 			InitializeControllers();
-			LoadSettings();
 			SubscribeEvents();
 		}
-
-		private void OnDestroy()
+        private void Start()
+        {
+            LoadSettings();
+        }
+        private void OnDestroy()
 		{
 			UnsubscribeEvents();
 		}
@@ -86,10 +89,8 @@ namespace TrumpTile.GameMain.Core
 
 		private void LoadSettings()
 		{
-			mBgmVolume = PlayerPrefs.GetFloat(BGM_VOLUME_KEY, 0.5F);
-			mSfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1F);
-			mBBgmEnabled = PlayerPrefs.GetInt(BGM_ENABLED_KEY, 1) == 1;
-			mBSfxEnabled = PlayerPrefs.GetInt(SFX_ENABLED_KEY, 1) == 1;
+			mBgmVolume = PlayerDataManager.Inst.UserData.BGMOn? 1 : 0;
+			mSfxVolume = PlayerDataManager.Inst.UserData.SFXOn? 1 : 0;
 
 			ApplySettingsToControllers();
 		}
@@ -131,6 +132,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnAudioPlay(AudioEventPayload payload)
 		{
+			Debug.Log("[AudioManager] OnAudioPlay 이벤트 발생");
 			bool bIsBgm = payload.Key == EAudioKey.BGM_Main || payload.Key == EAudioKey.BGM_Ingame;
 			if (bIsBgm)
 			{

@@ -14400,7 +14400,7 @@ MonoBehaviour:
   mTimePickerRect: {fileID: 186859480}
   mBonusSlotButton: {fileID: 1459412329}
   mBonusSlotText: {fileID: 583006709}
-  mShopView: {fileID: 0}
+  mShopView: {fileID: 1288289247}
 --- !u!1 &626981042
 GameObject:
   m_ObjectHideFlags: 0
@@ -19836,6 +19836,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 91566192}
+  - {fileID: 1335682967}
   - {fileID: 2011625116}
   m_Father: {fileID: 680795684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -36098,7 +36099,7 @@ MonoBehaviour:
   mSlotManager: {fileID: 10376034}
   mGameOverPopup: {fileID: 396594452}
   mVictoryPopup: {fileID: 225975896}
-  mStartLevel: 43
+  mStartLevel: 1
   mMatchCount: 3
   mMaxSlots: 7
   mStarConfig: {fileID: 11400000, guid: 87ca16f56d0a7fa4ca3be7462ddb1874, type: 2}
@@ -58311,6 +58312,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8558111584193587145, guid: b0577274dcbd51e4590ff6fa9a798bf8, type: 3}
   m_PrefabInstance: {fileID: 1288289245}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1288289247 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 652599515887047946, guid: b0577274dcbd51e4590ff6fa9a798bf8, type: 3}
+  m_PrefabInstance: {fileID: 1288289245}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 529e0e412062cd543ac982b6e35341e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1318157915
 GameObject:
   m_ObjectHideFlags: 0
@@ -63368,7 +63380,7 @@ RectTransform:
   - {fileID: 1133434894}
   - {fileID: 1422752002}
   - {fileID: 1021042402}
-  m_Father: {fileID: 2011625116}
+  m_Father: {fileID: 711161498}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -91701,7 +91713,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1335682967}
   - {fileID: 348870281}
   - {fileID: 406973058}
   - {fileID: 1501560426}
