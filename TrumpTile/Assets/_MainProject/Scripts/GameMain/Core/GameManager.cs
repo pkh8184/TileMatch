@@ -530,7 +530,7 @@ namespace TrumpTile.GameMain.Core
 
 			CurrentState = EGameState.Paused;
 			Time.timeScale = 0F;
-			AudioEvent.Pause();
+			//AudioEvent.Pause();
 		}
 
 		public void ResumeGame()

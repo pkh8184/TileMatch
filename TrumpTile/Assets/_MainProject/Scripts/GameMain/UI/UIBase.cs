@@ -30,8 +30,16 @@ namespace TrumpTile.GameMain.UI
 
             Refresh();
             //로컬 데이터(프로필 이미지, 프레임 등) 연결 되면 주석 해제
-            //RefreshLocalData();
+            RefreshLocalData();
 
+            foreach(var button in GetComponentsInChildren<Button>(true))
+            {
+                button.onClick.AddListener(() => AudioEvent.Play(EAudioKey.SFX_BtnClick));
+            }
+            foreach(var toggle in GetComponentsInChildren<Toggle>(true))
+            {
+                toggle.onValueChanged.AddListener((isOn) => AudioEvent.Play(EAudioKey.SFX_BtnClick));
+            }
             //로칼리이제이션 테이블 작성 되면 주석 해제
             //SetTMP_TextIsRTL();
             //EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_LANGUAGE, (obj) => SetTMP_TextIsRTL());

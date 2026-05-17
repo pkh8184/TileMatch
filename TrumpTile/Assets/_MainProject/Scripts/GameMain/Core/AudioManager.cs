@@ -89,8 +89,8 @@ namespace TrumpTile.GameMain.Core
 
 		private void LoadSettings()
 		{
-			mBgmVolume = PlayerDataManager.Inst.UserData.BGMOn? 1 : 0;
-			mSfxVolume = PlayerDataManager.Inst.UserData.SFXOn? 1 : 0;
+			mBgmVolume = 1;
+			mSfxVolume = 1;		
 
 			ApplySettingsToControllers();
 		}
@@ -99,11 +99,11 @@ namespace TrumpTile.GameMain.Core
 		{
 			mBgmController.SetVolume(mBgmVolume);
 			mBgmController.SetEnabled(mBBgmEnabled);
-			mBgmController.SetMuted(mBIsMuted);
+			mBgmController.SetMuted(!PlayerDataManager.Inst.UserData.BGMOn);
 
 			mSfxController.SetVolume(mSfxVolume);
 			mSfxController.SetEnabled(mBSfxEnabled);
-			mSfxController.SetMuted(mBIsMuted);
+			mSfxController.SetMuted(!PlayerDataManager.Inst.UserData.SFXOn);
 		}
 
 		#endregion
@@ -201,7 +201,14 @@ namespace TrumpTile.GameMain.Core
 			mSfxController.SetVolume(mSfxVolume);
 			PlayerPrefs.SetFloat(SFX_VOLUME_KEY, mSfxVolume);
 		}
-
+		public void SetBGMMute(bool isMute)
+		{
+			mBgmController.SetMuted(isMute);
+		}
+		public void SetSFXMute(bool isMute)
+		{
+			mSfxController.SetMuted(isMute);
+		}
 		public void ToggleMute()
 		{
 			mBIsMuted = !mBIsMuted;
