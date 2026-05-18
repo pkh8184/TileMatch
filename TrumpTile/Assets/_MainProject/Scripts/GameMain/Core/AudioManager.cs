@@ -45,6 +45,11 @@ namespace TrumpTile.GameMain.Core
 
 		private void Awake()
 		{
+			 if (FindObjectsOfType<AudioManager>().Length > 1)
+			{
+				Destroy(gameObject);
+				return;
+			}
 			DontDestroyOnLoad(gameObject);
 			InitializeControllers();
 			SubscribeEvents();
@@ -132,7 +137,6 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnAudioPlay(AudioEventPayload payload)
 		{
-			Debug.Log("[AudioManager] OnAudioPlay 이벤트 발생");
 			bool bIsBgm = payload.Key == EAudioKey.BGM_Main || payload.Key == EAudioKey.BGM_Ingame;
 			if (bIsBgm)
 			{

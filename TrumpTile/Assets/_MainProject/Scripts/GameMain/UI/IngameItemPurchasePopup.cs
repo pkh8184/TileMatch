@@ -38,12 +38,21 @@ namespace TrumpTile.GameMain.UI
         private bool mbCanPucrchase;
         public override void Initialize()
         {
-            base.Initialize();
-            //임시
-            EventManager.Inst.AddEvent("ShowItemPurchasePopup", obj => InitPopupDataBeforeShow(obj));
+            base.Initialize();    
 
             mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("AccessShopView"));
             mPurchaseButton.onClick.AddListener(PurchaseProgress);
+        }
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
+            //임시
+            EventManager.Inst.AddEvent("ShowItemPurchasePopup", obj => InitPopupDataBeforeShow(obj));
+        }
+        protected override void DeSubscribeEvent()
+        {
+            base.DeSubscribeEvent();
+            EventManager.Inst?.RemoveEvent("ShowItemPurchasePopup");
         }
         public override void Hide()
         {
@@ -87,6 +96,8 @@ namespace TrumpTile.GameMain.UI
             PlayerDataManager.Inst.UseGold(mItemCostArray[index]);
             
             ItemManager.Inst.AddItem(mCurrentItemID, mItemCountArray[index]);
+
+            AudioEvent.Play(EAudioKey.SFX_Purchase);
 
             RefreshGoldData(index);
         }

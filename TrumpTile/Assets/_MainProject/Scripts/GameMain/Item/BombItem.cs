@@ -89,7 +89,7 @@ namespace TrumpTile.GameMain.Item
 					}
 					pendingCount--;
 				}
-
+				AudioEvent.Play(EAudioKey.SFX_Bomb);
 				yield return new WaitForSeconds(BOMB_SET_DELAY);
 			}
 

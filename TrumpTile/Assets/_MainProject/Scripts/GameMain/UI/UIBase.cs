@@ -13,6 +13,10 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Button showButton;
         [SerializeField] private Button hideButton;
 
+        protected void OnDestroy()
+        {
+            DeSubscribeEvent();
+        }
         //씬 매니저가 씬에 존재하는 모든 UIBase를 순회하여 호출
         public virtual void Initialize()
         {
@@ -25,13 +29,13 @@ namespace TrumpTile.GameMain.UI
                 hideButton.onClick.AddListener(Hide);
             }
 
-            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, (obj) => Refresh());
-            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, (obj) => RefreshLocalData());
+            SubscribeEvent();
 
             Refresh();
             //로컬 데이터(프로필 이미지, 프레임 등) 연결 되면 주석 해제
             RefreshLocalData();
 
+            //씬에 존재하는 모든 버튼, 토글에 클릭 효과음 추가
             foreach(var button in GetComponentsInChildren<Button>(true))
             {
                 button.onClick.AddListener(() => AudioEvent.Play(EAudioKey.SFX_BtnClick));
@@ -57,6 +61,16 @@ namespace TrumpTile.GameMain.UI
         protected virtual void Refresh() { }
         protected virtual void RefreshLocalData() { }
         
+        protected virtual void SubscribeEvent()
+        {
+            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, (obj) => Refresh());
+            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, (obj) => RefreshLocalData());
+        }
+        protected virtual void DeSubscribeEvent()
+        {
+            EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_DATA);
+            EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA);
+        }
         /// <summary>
         /// 현재 언어가 아랍어로 설정된 경우 TMP_Text의 IsRTL을 true로 해줌. 
         /// 오른쪽에서부터 텍스트 시작

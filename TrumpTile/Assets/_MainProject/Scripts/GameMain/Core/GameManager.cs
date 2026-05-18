@@ -90,15 +90,7 @@ namespace TrumpTile.GameMain.Core
 
 		private void Awake()
 		{
-			if (Instance == null)
-			{
-				Instance = this;
-			}
-			else
-			{
-				Destroy(gameObject);
-				return;
-			}
+			Instance = this;
 
 			tutorialComplete = false;
 

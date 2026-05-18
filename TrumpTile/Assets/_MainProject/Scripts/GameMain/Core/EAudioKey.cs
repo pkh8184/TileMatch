@@ -24,6 +24,9 @@ namespace TrumpTile.GameMain.Core
 		SFX_BtnClick,
 		SFX_LevelName_01,
 		SFX_LevelName_02,
+		SFX_SceneTransition_In,
+		SFX_SceneTransition_Out,
+		SFX_Purchase,
 
 		// SFX - Game
 		SFX_StageClear,

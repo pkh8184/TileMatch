@@ -47,14 +47,6 @@ namespace TrumpTile.GameMain.UI
 
             mLevelNameCanvasGroup.alpha = 0;
 
-            //임시
-            EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
-            EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
-            //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
-            EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
-
-            
-
             mBonusSlotButton.onClick.AddListener(() =>
             {
                 if (SlotManager.Instance != null && SlotManager.Instance.IsProcessing)
@@ -75,6 +67,22 @@ namespace TrumpTile.GameMain.UI
             mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
 
             mTopLevelNameRect.localScale = Vector3.zero;
+        }
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
+            //임시
+            EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
+            EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
+            //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
+            EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
+        }
+        protected override void DeSubscribeEvent()
+        {
+            base.DeSubscribeEvent();
+            EventManager.Inst?.RemoveEvent("IngameLoadingComplete");
+            EventManager.Inst?.RemoveEvent("TimerSettingComplete");
+            EventManager.Inst?.RemoveEvent("AccessShopView");
         }
         private void OnLoadLevelComplete(object obj)
         {

@@ -34,8 +34,9 @@ namespace TrumpTile.GameMain.Core
 
 		public void SetMuted(bool bMuted)
 		{
-			mBIsMuted = bMuted;
-			ApplyVolume();
+			//mBIsMuted = bMuted;
+			mBgmSource.mute = bMuted;
+			//ApplyVolume();
 		}
 
 		public void SetVolume(float volume)

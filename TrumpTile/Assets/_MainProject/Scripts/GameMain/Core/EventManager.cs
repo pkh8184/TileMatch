@@ -95,7 +95,6 @@ namespace TrumpTile.GameMain.Core
 			else
 			{
 				mTypedEvents.Add(eventKey, action);
-				UnityEngine.Debug.Log($"[EventManager] {eventKey} 이벤트 등록 완료");
 			}
 		}
 
@@ -124,7 +123,6 @@ namespace TrumpTile.GameMain.Core
 			if (mTypedEvents[eventKey] is Action<T> action)
 			{
 				action.Invoke(payload);
-				UnityEngine.Debug.Log($"[EventManager] {eventKey} 이벤트 실행");
 			}
 		}
 

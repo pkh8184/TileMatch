@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TrumpTile.FrameLibrary;
 using TrumpTile.GameMain.Core;
 using UnityEngine;
@@ -17,7 +16,12 @@ namespace TrumpTile.GameMain.UI
         private bool mbSceneTransitionProgressing = false;
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject);
+            if (FindObjectsOfType<SceneTransister>().Length > 1)
+			{
+				Destroy(gameObject);
+				return;
+			}
+			DontDestroyOnLoad(gameObject);
         }
         public void PlayFadeInAnim()
         {
@@ -66,6 +70,7 @@ namespace TrumpTile.GameMain.UI
 
             mSceneTransister.SetActive(true);
             mTransisterAnimator.SetTrigger("FadeIn");
+            AudioEvent.Play(EAudioKey.SFX_SceneTransition_In);
 
             yield return new WaitForSecondsRealtime(1f);
 
@@ -77,6 +82,7 @@ namespace TrumpTile.GameMain.UI
 
             mSceneTransister.SetActive(true);
             mTransisterAnimator.SetTrigger("FadeOut");
+            AudioEvent.Play(EAudioKey.SFX_SceneTransition_Out);
 
             yield return new WaitForSecondsRealtime(1f);
         }
