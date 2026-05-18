@@ -15,7 +15,7 @@ namespace TrumpTile.GameMain.UI
 
         protected void OnDestroy()
         {
-            DeSubscribeEvent();
+            UnSubscribeEvent();
         }
         //씬 매니저가 씬에 존재하는 모든 UIBase를 순회하여 호출
         public virtual void Initialize()
@@ -66,7 +66,7 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, (obj) => Refresh());
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, (obj) => RefreshLocalData());
         }
-        protected virtual void DeSubscribeEvent()
+        protected virtual void UnSubscribeEvent()
         {
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_DATA);
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA);

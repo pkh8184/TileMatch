@@ -15,10 +15,18 @@ namespace TrumpTile.GameMain.UI
 
         [Header("Show / Hide 애니메이션을 적용할 실제 팝업창")]
         [SerializeField] protected GameObject mPopupObj;
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            //로드된 씬에는 모든 팝업이 닫혀있기 때문에 그에 맞춘 처리
+            mOpenPopupCount = 0;
+        }
         public override void Show()
         {
             base.Show();
             mOpenPopupCount++;
+            Debug.Log($"Show {this.name}, OpenPopupCount : {mOpenPopupCount}");
             PlayShowAnim();
         }
         public override void Hide()

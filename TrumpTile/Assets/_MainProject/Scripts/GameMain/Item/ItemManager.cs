@@ -99,7 +99,9 @@ namespace TrumpTile.GameMain.Item
 			}
 			
 			mItemCounts[itemId]--;
-			OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
+			PlayerDataManager.Inst.SetItemCount(itemId, mItemCounts[itemId]);
+			EventManager.Inst.ActiveEvent("ItemCountChanged");
+			//OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
 
 			StartCoroutine(ExecuteItemCoroutine(item));
 		}
@@ -132,7 +134,10 @@ namespace TrumpTile.GameMain.Item
 			}
 			mItemCounts[itemId] += count;
 			
-			OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
+			PlayerDataManager.Inst.SetItemCount(itemId, mItemCounts[itemId]);
+			EventManager.Inst.ActiveEvent("ItemCountChanged");
+			
+			//OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
 		}
 		#endregion
 

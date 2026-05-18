@@ -49,9 +49,10 @@ namespace TrumpTile.GameMain.UI
             //임시
             EventManager.Inst.AddEvent("ShowItemPurchasePopup", obj => InitPopupDataBeforeShow(obj));
         }
-        protected override void DeSubscribeEvent()
+        protected override void UnSubscribeEvent()
         {
-            base.DeSubscribeEvent();
+            base.UnSubscribeEvent();
+
             EventManager.Inst?.RemoveEvent("ShowItemPurchasePopup");
         }
         public override void Hide()
@@ -81,6 +82,7 @@ namespace TrumpTile.GameMain.UI
             mItemImage.sprite = mItemSpriteArray[index];
 
             GameManager.Instance.PauseGame();
+            
             Show();
         }
 
@@ -100,6 +102,8 @@ namespace TrumpTile.GameMain.UI
             AudioEvent.Play(EAudioKey.SFX_Purchase);
 
             RefreshGoldData(index);
+
+            Hide();
         }
         private void RefreshGoldData(int index)
         {
