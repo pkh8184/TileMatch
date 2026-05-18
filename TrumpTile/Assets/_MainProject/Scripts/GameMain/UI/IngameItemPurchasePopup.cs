@@ -52,6 +52,7 @@ namespace TrumpTile.GameMain.UI
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
+
             EventManager.Inst?.RemoveEvent("ShowItemPurchasePopup");
         }
         public override void Hide()
@@ -81,6 +82,7 @@ namespace TrumpTile.GameMain.UI
             mItemImage.sprite = mItemSpriteArray[index];
 
             GameManager.Instance.PauseGame();
+            
             Show();
         }
 

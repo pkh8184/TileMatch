@@ -311,6 +311,7 @@ namespace TrumpTile.GameMain.Core
 		public void RestartLevel()
 		{
 			Debug.Log($"[GameManager] RestartLevel - Level {CurrentLevel}");
+			AudioManager.Inst.SetBGMVolume(1f);
 			StartLevel(CurrentLevel);
 		}
 		private async Task WaitUntill(Func<bool> condition)
@@ -361,7 +362,9 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
 
-			AudioEvent.Play(EAudioKey.BGM_Main);
+			//AudioEvent.Play(EAudioKey.BGM_Main);
+			
+			AudioManager.Inst.SetBGMVolume(1f);
 
 			Time.timeScale = 1f;
 			if (TransitionManager.Instance != null)
@@ -421,6 +424,8 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
+			
+			AudioManager.Inst.SetBGMVolume(0.2f);
 
 			Debug.Log("[GameManager] Game Over!");
 
@@ -441,6 +446,8 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log("[GameManager] Continue game - Revive");
 
+			AudioManager.Inst.SetBGMVolume(1f);
+			
 			CurrentState = EGameState.Playing;
 
 			mSlotManager?.ResumeGame();
@@ -464,6 +471,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			CurrentState = EGameState.GameClear;
 
+			AudioManager.Inst.SetBGMVolume(0.2f);
 			ItemManager.Inst.SaveItemCountsToServer();
 			UIManager.Instance?.DisableItemButtons();
 
