@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
+using TrumpTile.GameMain.Item;
 using TrumpTile.LevelEditor;
 using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
@@ -37,6 +38,16 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Button mBonusSlotButton;
         [SerializeField] private TMP_Text mBonusSlotText;
 
+        [System.Serializable]
+		private class ItemButtonConfig
+		{
+			public int itemId;
+			public Button button;
+			public TMP_Text countText;
+		}
+
+        [Header("아이템 버튼")]
+        [SerializeField] private ItemButtonConfig[] mItemButtonConfigArray = new ItemButtonConfig[4];
         [Header("인게임 샵 뷰")]
         [SerializeField] private ShopView mShopView;
         public override void Initialize()
@@ -54,14 +65,33 @@ namespace TrumpTile.GameMain.UI
                 if(PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost)
                 {
                     PlayerDataManager.Inst.UseGold(SlotManager.Instance.BonusSlotCost);
-                    SlotManager.Instance.SetSlotCount(7);
-                    mBonusSlotButton.gameObject.SetActive(false);
+                    Sequence seq = DOTween.Sequence();
+                    seq.Append(mBonusSlotButton.transform.DOScale(0, 0.3f));
+                    seq.OnComplete(() => 
+                    {
+                        mBonusSlotButton.gameObject.SetActive(false);
+                        SlotManager.Instance.SetSlotCount(7);
+                    });
                 }
                 else
                 {
                     mShopView.Show();
                 }
             });
+
+            foreach (var item in mItemButtonConfigArray)
+            {
+                int id = item.itemId;
+                item.button.onClick.AddListener(() =>
+                {
+                    OnItemButtonClick(id);
+                });
+
+                int count = PlayerDataManager.Inst.GetItemCount(id);
+                item.countText.text = count.ToString();
+                item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
+            }
+
             mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
 
             mTopLevelNameRect.localScale = Vector3.zero;
@@ -74,6 +104,7 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
             //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
             EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
+            EventManager.Inst.AddEvent("ItemCountChanged", _ => OnItemCountChanged());
         }
         protected override void UnSubscribeEvent()
         {
@@ -81,6 +112,25 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("IngameLoadingComplete");
             EventManager.Inst?.RemoveEvent("TimerSettingComplete");
             EventManager.Inst?.RemoveEvent("AccessShopView");
+            EventManager.Inst?.RemoveEvent("ItemCountChanged");
+        }
+        private void OnItemCountChanged()
+        {
+             foreach (var item in mItemButtonConfigArray)
+            {
+                int id = item.itemId;
+                int count = PlayerDataManager.Inst.GetItemCount(id);
+                item.countText.text = count.ToString();
+                item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
+            }
+        }
+        private void OnItemButtonClick(int id)
+        {
+            if (GameManager.Instance == null || !GameManager.Instance.CanUseItem())
+			{
+				return;
+			}
+            ItemManager.Inst.UseItem(id);
         }
         private void OnLoadLevelComplete(object obj)
         {
@@ -100,6 +150,7 @@ namespace TrumpTile.GameMain.UI
             mTopLevelNameRect.localScale = Vector3.zero;  
 
             mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
+            mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
             StartCoroutine(Co_PlayLevelNameAnim());
         }
         private int GetLevelDifficultyIndex(EDifficultyType eDifficultyType)

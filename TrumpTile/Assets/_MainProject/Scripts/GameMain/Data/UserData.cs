@@ -101,7 +101,13 @@ namespace TrumpTile.GameMain.Data
             CurrentStage = 1;
             FirstTryClearCount = 0;
             MaxStreakClearStageCount = 0;
-        
+
+            ItemCounts = new Dictionary<int, ObscuredInt>();
+            ItemCounts[1005] = 0;
+            ItemCounts[1006] = 0;
+            ItemCounts[1007] = 0;
+            ItemCounts[1008] = 0;
+            
             Gold = 120;
             Star = 0;
             CurrentHousingChapter = 0;

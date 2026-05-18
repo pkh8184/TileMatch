@@ -1135,19 +1135,7 @@ MonoBehaviour:
   mComboText: {fileID: 0}
   mTimerText: {fileID: 0}
   mTimerSlider: {fileID: 0}
-  mItemButtonConfigs:
-  - itemId: 1005
-    button: {fileID: 1442677958}
-    countText: {fileID: 499882503}
-  - itemId: 1006
-    button: {fileID: 1895223458}
-    countText: {fileID: 1119222977}
-  - itemId: 1007
-    button: {fileID: 785467446}
-    countText: {fileID: 1464297978}
-  - itemId: 1008
-    button: {fileID: 638106113}
-    countText: {fileID: 388239078}
+  mItemButtonConfigs: []
   mPauseButton: {fileID: 0}
   mLevelClearPanel: {fileID: 0}
   mPausePanel: {fileID: 0}
@@ -14542,12 +14530,29 @@ MonoBehaviour:
   - {fileID: 21300000, guid: ff133cc2e031ee445a9ffce4a17c1b28, type: 3}
   mBackgroundImage: {fileID: 334041782}
   mDefaultBackgroundSprite: {fileID: 21300000, guid: c1c2500649800d94f9330522cc1807fb, type: 3}
+  mDifficultyLevelBackgroundArray:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   mTimerText: {fileID: 1111534989}
   mTimerSlider: {fileID: 1974546617}
   mTimerIconRect: {fileID: 2053052253}
   mTimePickerRect: {fileID: 186859480}
   mBonusSlotButton: {fileID: 1459412329}
   mBonusSlotText: {fileID: 583006709}
+  mItemButtonConfigArray:
+  - itemId: 1005
+    button: {fileID: 1442677958}
+    countText: {fileID: 499882503}
+  - itemId: 1006
+    button: {fileID: 1895223458}
+    countText: {fileID: 1119222977}
+  - itemId: 1007
+    button: {fileID: 785467446}
+    countText: {fileID: 1464297978}
+  - itemId: 1008
+    button: {fileID: 638106113}
+    countText: {fileID: 388239078}
   mShopView: {fileID: 1288289247}
 --- !u!1 &626981042
 GameObject:
