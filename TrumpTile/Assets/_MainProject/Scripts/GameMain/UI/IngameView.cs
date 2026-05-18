@@ -1,14 +1,11 @@
 using DG.Tweening;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using TrumpTile.LevelEditor;
 using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
@@ -28,6 +25,7 @@ namespace TrumpTile.GameMain.UI
         [Header("레벨 배경 관련")]
         [SerializeField] private Image mBackgroundImage;
         [SerializeField] private Sprite mDefaultBackgroundSprite;
+        [SerializeField] private Sprite[] mDifficultyLevelBackgroundArray = new Sprite[3];
 
         [Header("타이머 관련")]
         [SerializeField] private TMP_Text mTimerText;
@@ -77,22 +75,22 @@ namespace TrumpTile.GameMain.UI
             //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
             EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
         }
-        protected override void DeSubscribeEvent()
+        protected override void UnSubscribeEvent()
         {
-            base.DeSubscribeEvent();
+            base.UnSubscribeEvent();
             EventManager.Inst?.RemoveEvent("IngameLoadingComplete");
             EventManager.Inst?.RemoveEvent("TimerSettingComplete");
             EventManager.Inst?.RemoveEvent("AccessShopView");
         }
         private void OnLoadLevelComplete(object obj)
         {
-            LevelData levelData = (LevelData)obj;
-            Sprite background = levelData.levelBackgroundSprite? levelData.levelBackgroundSprite : mDefaultBackgroundSprite;
-            mBackgroundImage.sprite = background;    
+            LevelData levelData = (LevelData)obj;   
 
             int index = GetLevelDifficultyIndex(levelData.difficulty);
 
             mLevelNameImage.sprite = mLevelTextBackgroundArray[index];
+            Sprite background = mDifficultyLevelBackgroundArray[index];
+            mBackgroundImage.sprite = background? background : mDefaultBackgroundSprite; 
 
             mLevelNameBackground.gameObject.SetActive(true);
             mEffectObjectArray[index].SetActive(true);

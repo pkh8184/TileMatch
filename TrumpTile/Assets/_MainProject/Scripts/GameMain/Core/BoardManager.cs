@@ -30,6 +30,7 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private TileController mTilePrefab;
 		[SerializeField] private List<TileData> mAllTileTypes;
 		[SerializeField] private Sprite mDefaultTileBackground;
+		[SerializeField] private Sprite[] mDifficultyTileBackgroundArray = new Sprite[3];
 
 		[Header("Spawn Animation")]
 		[SerializeField] private float mSpawnDelayPerTile = 0.02F;
@@ -117,7 +118,21 @@ namespace TrumpTile.GameMain.Core
 			mGridHeight = levelData.boardHeight;
 			mMaxLayers = levelData.maxLayers;
 
-			Sprite tileBackground = levelData.tileBackgroundSprite ? levelData.tileBackgroundSprite : mDefaultTileBackground;
+			string difficulty = levelData.difficulty.ToString();
+			Sprite difficultyBackground = null;
+			if(difficulty.Contains("Very"))
+			{
+				difficultyBackground = mDifficultyTileBackgroundArray[2];
+			}
+			else if(difficulty.Contains("Hard"))
+			{
+				difficultyBackground = mDifficultyTileBackgroundArray[1];
+			}
+			else if(difficulty.Contains("Normal"))
+			{
+				difficultyBackground = mDifficultyTileBackgroundArray[0];
+			}
+			Sprite tileBackground = difficultyBackground ? difficultyBackground : mDefaultTileBackground;
 
 			SortingManager.SetMaxGridY(mGridHeight);
 
