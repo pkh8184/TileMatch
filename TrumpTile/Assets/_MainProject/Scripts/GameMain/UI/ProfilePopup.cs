@@ -21,7 +21,7 @@ namespace TrumpTile.GameMain.UI
         [Header("리스트 활성화 버튼")]
         [SerializeField] private Button mAvataButton;
         [SerializeField] private Button mFrameButton;
-
+        [SerializeField] private Color mUnActiveColor;
         [Header("이미지 리스트 오브젝트")]
         [SerializeField] private GameObject mAvataListObject;
         [SerializeField] private GameObject mFrameListObject;
@@ -61,10 +61,16 @@ namespace TrumpTile.GameMain.UI
             mFrameButton.onClick.AddListener(() => OnSpriteListChange(false));
             mApplyButton.onClick.AddListener(() => ApplyChanges());
         }
-        public void SetProfilePopupValid(List<Sprite> avata, List<Sprite> frame)
+        public void SetProfilePopupValid(List<Sprite> avata = null, List<Sprite> frame = null)
         {
-            mAvataSpriteList = avata;
-            mFrameSpriteList = frame;
+            if(mAvataSpriteList == null)
+            {
+                  mAvataSpriteList = avata;
+            }
+            if(mFrameSpriteList == null)
+            {
+                  mFrameSpriteList = frame;
+            }
 
             mCurrentAvataIndex = PlayerDataManager.Inst.GetProfileImageIndex();
             mCurrentFrameIndex = PlayerDataManager.Inst.GetProfileFrameIndex();
@@ -81,8 +87,8 @@ namespace TrumpTile.GameMain.UI
             mAvataListObject.SetActive(isAvata);
             mFrameListObject.SetActive(!isAvata);
 
-            mAvataButton.image.color = mAvataListObject.activeSelf ? Color.white : Color.gray;
-            mFrameButton.image.color = mFrameListObject.activeSelf ? Color.white : Color.gray;
+            mAvataButton.image.color = mAvataListObject.activeSelf ? Color.white : mUnActiveColor;
+            mFrameButton.image.color = mFrameListObject.activeSelf ? Color.white : mUnActiveColor;
 
             AdjustSelectedMark(isAvata);
         }
@@ -126,6 +132,16 @@ namespace TrumpTile.GameMain.UI
         protected override void PlayShowAnim()
         {
             mPopupObj.transform.localScale = Vector2.zero;
+
+            mCurrentAvataIndex = PlayerDataManager.Inst.GetProfileImageIndex();
+            mCurrentFrameIndex = PlayerDataManager.Inst.GetProfileFrameIndex();
+
+            mAvataPreviewImage.sprite = mAvataSpriteList[mCurrentAvataIndex];
+            mFramePreviewImage.sprite = mFrameSpriteList[mCurrentFrameIndex];
+            
+            AdjustSelectedMark(mAvataListObject.activeSelf);
+            mMakerRect.localScale = Vector2.one;
+
             Sequence sq = DOTween.Sequence();
 
             ScrollRect scroll = mAvataListObject.GetComponent<ScrollRect>();
