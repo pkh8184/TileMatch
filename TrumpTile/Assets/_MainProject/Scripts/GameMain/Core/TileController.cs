@@ -256,12 +256,13 @@ namespace TrumpTile.GameMain.Core
 
 			if (mIsInSlot)
 			{
-				PlayShakeAnimation();
 				return;
 			}
 
 			if (!IsSelectable)
 			{
+				PlayShakeAnimation();
+				Debug.Log("Block 타일 흔들리는 애니메이션");
 				return;
 			}
 
