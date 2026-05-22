@@ -33,5 +33,6 @@ namespace TrumpTile.GameMain.Core
 		SFX_StageLosed,
 		SFX_StageLosed_02,
 		SFX_StageFail,
+		SFX_Reject,
 	}
 }
