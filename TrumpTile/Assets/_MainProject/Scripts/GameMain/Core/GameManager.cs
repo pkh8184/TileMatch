@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TrumpTile.GameMain.UI;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
-using TrumpTile.LevelEditor;
+using TrumpTile.LevelEditor.Editor;
 using System;
 
 namespace TrumpTile.GameMain.Core

@@ -2,10 +2,21 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Core;
-using TrumpTile.LevelEditor.Editor;
 
-namespace TrumpTile.LevelEditor
+namespace TrumpTile.LevelEditor.Editor
 {
+	public enum EDifficultyType
+	{
+		Tutorial = 0,
+		Easy_Normal,
+		Easy_Hard,
+		Easy_VeryHard,
+		Normal,
+		Hard,
+		VeryHard,
+		Length
+	}
+	
 	[Serializable]
 	public class LayerDataWrapper
 	{

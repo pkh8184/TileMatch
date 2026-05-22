@@ -4,7 +4,6 @@ using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
-using TrumpTile.LevelEditor;
 using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
 using UnityEngine.UI;

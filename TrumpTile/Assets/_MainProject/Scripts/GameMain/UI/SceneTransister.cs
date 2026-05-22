@@ -106,7 +106,18 @@ namespace TrumpTile.GameMain.UI
             {
                 mRectArray[i].anchoredPosition = mOriginPosArray[i];
                 mRectArray[i].rotation = mOriginRotationArray[i];
-                Vector2 _direction = mRectArray[i].anchoredPosition.normalized;
+                // 앵커 중심점
+                Vector2 anchorCenter = (mRectArray[i].anchorMin + mRectArray[i].anchorMax) / 2f;
+
+                // 실제 화면 위치로 변환
+                Vector2 screenCenter = new Vector2(
+                    anchorCenter.x * Screen.width,
+                    anchorCenter.y * Screen.height
+                );
+
+                Vector2 screenMiddle = new Vector2(Screen.width / 2f, Screen.height / 2f);
+                Vector2 _direction = (screenCenter - screenMiddle).normalized;
+                //Vector2 _direction = mRectArray[i].anchoredPosition.normalized;
                 Vector2 _targetPos = mRectArray[i].anchoredPosition + _direction * 1000f;
                 
                 mRectArray[i].anchoredPosition = _targetPos;
@@ -148,7 +159,17 @@ namespace TrumpTile.GameMain.UI
             {
                 mRectArray[i].anchoredPosition = mOriginPosArray[i];
                 mRectArray[i].rotation = mOriginRotationArray[i];
-                Vector2 _direction = mRectArray[i].anchoredPosition.normalized;
+                  // 앵커 중심점
+                Vector2 anchorCenter = (mRectArray[i].anchorMin + mRectArray[i].anchorMax) / 2f;
+
+                // 실제 화면 위치로 변환
+                Vector2 screenCenter = new Vector2(
+                    anchorCenter.x * Screen.width,
+                    anchorCenter.y * Screen.height
+                );
+
+                Vector2 screenMiddle = new Vector2(Screen.width / 2f, Screen.height / 2f);
+                Vector2 _direction = (screenCenter - screenMiddle).normalized;
                 Vector2 _targetPos = mRectArray[i].anchoredPosition + _direction * 1000f;
                 
                 seq.Insert(0.01f * i, mRectArray[i].DOAnchorPos(_targetPos, 1f));

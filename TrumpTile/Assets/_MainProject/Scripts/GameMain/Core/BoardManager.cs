@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DG.DemiEditor;
-using PlasticPipe.PlasticProtocol.Messages;
-using TrumpTile.LevelEditor;
+using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -276,7 +274,11 @@ namespace TrumpTile.GameMain.Core
 		}
 		private void SetJewerlyTileValid()
 		{
-			mJewerlyTileList.Shuffle();
+			for (int i = mJewerlyTileList.Count - 1; i > 0; i--)
+			{
+				int j = Random.Range(0, i + 1);
+				(mJewerlyTileList[i], mJewerlyTileList[j]) = (mJewerlyTileList[j], mJewerlyTileList[i]);
+			}
 
 			foreach(var item in mCreatedTileMap)
 			{

@@ -11,17 +11,6 @@ using UnityEngine.Localization.PropertyVariants.TrackedProperties;
 
 namespace TrumpTile.LevelEditor.Editor
 {
-	public enum EDifficultyType
-	{
-		Tutorial = 0,
-		Easy_Normal,
-		Easy_Hard,
-		Easy_VeryHard,
-		Normal,
-		Hard,
-		VeryHard,
-		Length
-	}
 	/// <summary>
 	/// 강화된 레벨 자동 생성기 V2
 	/// - 보드 중앙 정렬
