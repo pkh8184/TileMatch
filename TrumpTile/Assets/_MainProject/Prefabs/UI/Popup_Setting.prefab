@@ -301,10 +301,10 @@ RectTransform:
   - {fileID: 3729224563153775102}
   m_Father: {fileID: 4125884442728108216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -59.940742}
-  m_SizeDelta: {x: 1080, y: 1920}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8834717164800123634
 MonoBehaviour:
@@ -318,8 +318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464451c31bebba340b9480eb5da918e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showButton: {fileID: 4408590676145911250}
-  hideButton: {fileID: 8514467283513293391}
+  mShowButton: {fileID: 4408590676145911250}
+  mHideButton: {fileID: 8514467283513293391}
   mShowDuration: 0.3
   mHideDuration: 0.3
   mPopupObj: {fileID: 7554872313681736776}
@@ -331,8 +331,8 @@ MonoBehaviour:
   - {fileID: 6064864240588630563}
   - {fileID: 4529848646461519966}
   - {fileID: 8526575584010573370}
-  mCurrentLangaugeSprite: {fileID: 21300000, guid: d81643348d2b87547a2c39467979a1bd, type: 3}
-  mDefaultLangaugeSprite: {fileID: 21300000, guid: 5e1af09ee5ae6434faf3fee7d9e9dd56, type: 3}
+  mCurrentLangaugeSprite: {fileID: 21300000, guid: 728e252666683da4284b36fd55da919e, type: 3}
+  mDefaultLangaugeSprite: {fileID: 21300000, guid: 6d497dea472e0224099e3e31215d1ffc, type: 3}
 --- !u!1 &1232349380166130197
 GameObject:
   m_ObjectHideFlags: 0
@@ -3303,10 +3303,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6682386905520889899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1080, y: 1920}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2422425903786207099
 CanvasRenderer:
@@ -4201,7 +4201,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6431003371556603317}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4236,8 +4236,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89072d67eac691c479b6eddc829ebfde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showButton: {fileID: 0}
-  hideButton: {fileID: 5620990167156468066}
+  mShowButton: {fileID: 0}
+  mHideButton: {fileID: 5620990167156468066}
   mShowDuration: 0.3
   mHideDuration: 0.3
   mPopupObj: {fileID: 1341890383878432931}

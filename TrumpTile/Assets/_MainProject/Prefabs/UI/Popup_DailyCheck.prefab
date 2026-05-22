@@ -5430,6 +5430,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7019760184379229004}
+  - component: {fileID: 7226760286952076185}
   m_Layer: 5
   m_Name: Popup_DailyCheck
   m_TagString: Untagged
@@ -5458,6 +5459,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1080, y: 1920}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7226760286952076185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6338709948184479344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17c164d374a7a7a43b20d347dc341a09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mShowButton: {fileID: 0}
+  mHideButton: {fileID: 1670437755323575278}
+  mContentController:
+    mRotateAnimConfig:
+      angle: {x: 0, y: 0, z: 10}
+      duration: 1
+      interval: 5
+      isLoop: 1
 --- !u!1 &6367374451135168531
 GameObject:
   m_ObjectHideFlags: 0
@@ -5879,19 +5900,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3071903241696909490}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6338709948184479344}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &6668907871793887875
 GameObject:
   m_ObjectHideFlags: 0
