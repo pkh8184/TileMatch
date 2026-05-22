@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Threading.Tasks;
-using TrumpTile.LevelEditor;
+using TrumpTile.LevelEditor.Editor;
 
 namespace TrumpTile.GameMain.Data
 {
