@@ -26,8 +26,8 @@ namespace TrumpTile.GameMain.Core
 
         private void Awake()
         {
+            Application.targetFrameRate = 60;
             PlayerDataManager.Inst.Initialize();
-            //AudioManager.Inst.BGM
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
             foreach (var item in uiBaseArray)
