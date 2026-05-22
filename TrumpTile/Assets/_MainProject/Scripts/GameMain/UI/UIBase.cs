@@ -10,8 +10,8 @@ namespace TrumpTile.GameMain.UI
     public class UIBase : MonoBehaviour
     {
         [Header("View 혹은 Popup을 켜고 끄는 버튼\n(켜거나 끄지 않는 오브젝트인 경우 할당 X)")]
-        [SerializeField] private Button showButton;
-        [SerializeField] private Button hideButton;
+        [SerializeField] protected Button mShowButton;
+        [SerializeField] protected Button mHideButton;
 
         protected void OnDestroy()
         {
@@ -20,13 +20,13 @@ namespace TrumpTile.GameMain.UI
         //씬 매니저가 씬에 존재하는 모든 UIBase를 순회하여 호출
         public virtual void Initialize()
         {
-            if (showButton != null)
+            if (mShowButton != null)
             {
-                showButton.onClick.AddListener(Show);
+                mShowButton.onClick.AddListener(Show);
             }
-            if (hideButton != null)
+            if (mHideButton != null)
             {
-                hideButton.onClick.AddListener(Hide);
+                mHideButton.onClick.AddListener(Hide);
             }
 
             SubscribeEvent();
