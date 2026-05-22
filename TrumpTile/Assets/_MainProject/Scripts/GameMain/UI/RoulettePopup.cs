@@ -1,18 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
-public class RoulettePopup : MonoBehaviour
+namespace TrumpTile.GameMain.UI
 {
-    // Start is called before the first frame update
-    void Start()
+    public class RoulettePopup : PopupBase
     {
-        
-    }
+        [Header("애니메이션을 위한 참조")]
+        [SerializeField] private RectTransform mRouletteRect;
+        protected override void PlayShowAnim()
+        {
+            base.PlayShowAnim();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+            Sequence seq = DOTween.Sequence();
+            mRouletteRect.localRotation = Quaternion.Euler(0,0,-207);
+
+            seq.Append(mRouletteRect.DORotate(new Vector3(0,0,-242), 1f).SetEase(Ease.OutQuart));
+        }
+    }    
 }
+
