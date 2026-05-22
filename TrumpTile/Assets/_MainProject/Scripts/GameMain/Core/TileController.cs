@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using DG.Tweening;
 namespace TrumpTile.GameMain.Core
 {
 	/// <summary>
@@ -33,6 +34,7 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private SpriteRenderer mBackgroundRenderer;
 		[SerializeField] private SpriteRenderer mSpriteRenderer;
 		[SerializeField] private SpriteRenderer mHighlightRenderer;
+		[SerializeField] private ParticleSystem mSelectParticle;
 		[SerializeField] private GameObject mBlockedOverlay;
 		[SerializeField] private GameObject mFrozenOverlay;
 		[SerializeField] private GameObject mLockedOverlay;
@@ -116,6 +118,7 @@ namespace TrumpTile.GameMain.Core
 			mBackgroundRenderer = GetComponent<SpriteRenderer>();
 			mBoxCollider = GetComponent<BoxCollider2D>();
 			mOriginalScale = transform.localScale;
+			//mSelectParticle = 
 		}
 
 		private void OnDestroy()
@@ -427,6 +430,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			bool bWasInSlot = mIsInSlot;
 
+
 			mIsInSlot = true;
 			mSlotIndex = index;
 
@@ -439,6 +443,12 @@ namespace TrumpTile.GameMain.Core
 			AudioEvent.Play(EAudioKey.SFX_TileMove);
 			StopCurrentAnimation();
 
+			mSelectParticle.Play();
+			
+			Sequence seq = DOTween.Sequence();
+			seq.Append(transform.DOScale(mOriginalScale * 1.5f, 0.1f));
+			seq.Append(transform.DOScale(mOriginalScale * 0.9f, 0.1f));
+
 			if (bWasInSlot)
 			{
 				mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(slotPosition, () =>
@@ -446,6 +456,7 @@ namespace TrumpTile.GameMain.Core
 					UpdateSortingOrder();
 					onComplete?.Invoke();
 				}));
+				
 			}
 			else
 			{
@@ -461,7 +472,6 @@ namespace TrumpTile.GameMain.Core
 				mSpriteRenderer.sprite = mTileData.sprite;	
 			}
 		}
-
 		public void MoveToSlot(Vector3 slotPosition)
 		{
 			MoveToSlot(slotPosition, mSlotIndex, null);
@@ -557,6 +567,10 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			transform.position = targetPosition;
+
+			Sequence seq = DOTween.Sequence();
+			seq.Append(transform.DOScale(mOriginalScale, 0.1f));
+			
 			transform.rotation = Quaternion.identity;
 			mIsAnimating = false;
 
