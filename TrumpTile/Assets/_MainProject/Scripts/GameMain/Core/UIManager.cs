@@ -4,6 +4,7 @@ using TMPro;
 using System;
 using System.Collections;
 using TrumpTile.GameMain.Item;
+using DG.Tweening;
 namespace TrumpTile.GameMain.Core
 {
 	public class UIManager : MonoBehaviour
@@ -443,10 +444,59 @@ namespace TrumpTile.GameMain.Core
 			{
 				rawImage.color = backgroundColor;
 			}
-
-			StartCoroutine(AnimateFloatingText(floatingObj));
+			int rand = UnityEngine.Random.Range(0, 3);
+			if(rand != 0)
+			{
+				tmp.color = new Color(textColor.r,textColor.g,textColor.b, 1);
+				if(rand == 1)
+				{
+					PlayComboAnim_A(floatingObj);
+				}
+				else if(rand == 2)
+				{
+					PlayComboAnim_B(floatingObj);
+				}
+				else
+				{
+					PlayComboAnim_C(floatingObj);
+				}
+			}
+			else
+			{
+				StartCoroutine(AnimateFloatingText(floatingObj));
+			}
 		}
-
+		private void PlayComboAnim_A(GameObject obj)
+		{
+			Sequence seq = DOTween.Sequence();
+			obj.transform.localScale = new Vector2(1,0);
+			
+			seq.Append(obj.transform.DOScaleY(1, 0.5f).SetEase(Ease.OutExpo));
+			seq.Append(obj.GetComponent<CanvasGroup>().DOFade(0, 0.5f));
+			seq.OnComplete(() => Destroy(obj));
+		}
+		private void PlayComboAnim_B(GameObject obj)
+		{
+			Sequence seq = DOTween.Sequence();
+			obj.transform.localScale = new Vector2(0,0);
+			
+			seq.Append(obj.transform.DOScale(1.1f, 0.25f).SetEase(Ease.OutExpo));
+			seq.Append(obj.transform.DOScale(1, 0.25f).SetEase(Ease.OutExpo));
+			seq.Append(obj.GetComponent<CanvasGroup>().DOFade(0, 0.5f));
+			seq.OnComplete(() => Destroy(obj));
+		}
+		private void PlayComboAnim_C(GameObject obj)
+		{
+			Sequence seq = DOTween.Sequence();
+			TextMeshProUGUI tmp = obj.GetComponentInChildren<TextMeshProUGUI>();
+			string value = tmp.text;
+			seq.Append(DOTween.To(() => 0, x =>
+			{
+				tmp.text = value.Substring(0, x);
+			}, value.Length, 0.5f).SetEase(Ease.Linear));
+			seq.Append(obj.GetComponent<CanvasGroup>().DOFade(0, 0.5f));
+			seq.OnComplete(() => Destroy(obj));
+		}
 		private IEnumerator AnimateFloatingText(GameObject obj)
 		{
 			float duration = 1F;
