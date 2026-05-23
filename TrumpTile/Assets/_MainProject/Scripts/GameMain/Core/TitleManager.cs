@@ -27,6 +27,8 @@ namespace TrumpTile.GameMain.Core
         private void Awake()
         {
             Application.targetFrameRate = 60;
+            Screen.SetResolution(1080, 1920, true);
+            
             PlayerDataManager.Inst.Initialize();
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
