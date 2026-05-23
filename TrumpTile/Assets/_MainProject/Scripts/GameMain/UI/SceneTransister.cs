@@ -133,6 +133,8 @@ namespace TrumpTile.GameMain.UI
 
             mSceneTransister.SetActive(true);
 
+            yield return new WaitForSecondsRealtime(0.1f);
+
             Sequence seq = DOTween.Sequence();
             Vector3 direction = Vector3.zero;
             

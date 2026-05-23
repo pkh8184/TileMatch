@@ -2317,6 +2317,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8940280683941827395, guid: 692291213e738c8438ee5104c239716d, type: 3}
+      propertyPath: mHideButton
+      value: 
+      objectReference: {fileID: 270404631}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2327,6 +2331,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7448436145143065545, guid: 692291213e738c8438ee5104c239716d, type: 3}
   m_PrefabInstance: {fileID: 270404629}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &270404631 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1774022094838501064, guid: 692291213e738c8438ee5104c239716d, type: 3}
+  m_PrefabInstance: {fileID: 270404629}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &306365038
 GameObject:
   m_ObjectHideFlags: 0
@@ -15078,6 +15093,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 680795684}
     m_Modifications:
+    - target: {fileID: 1090563226793872701, guid: 9bf598b57400e6d4091ddea31584392f, type: 3}
+      propertyPath: mHideButton
+      value: 
+      objectReference: {fileID: 701876987}
     - target: {fileID: 1766423170657874318, guid: 9bf598b57400e6d4091ddea31584392f, type: 3}
       propertyPath: m_Name
       value: Popup_Tutorial_Slot
@@ -15176,6 +15195,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7890621128173451102, guid: 9bf598b57400e6d4091ddea31584392f, type: 3}
   m_PrefabInstance: {fileID: 701876985}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &701876987 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1250980562707580268, guid: 9bf598b57400e6d4091ddea31584392f, type: 3}
+  m_PrefabInstance: {fileID: 701876985}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &704285111
 GameObject:
   m_ObjectHideFlags: 0
@@ -20016,7 +20046,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mShowButton: {fileID: 0}
-  mHideButton: {fileID: 0}
+  mHideButton: {fileID: 406973055}
   mShowDuration: 0.3
   mHideDuration: 0.3
   mPopupObj: {fileID: 2011625115}
