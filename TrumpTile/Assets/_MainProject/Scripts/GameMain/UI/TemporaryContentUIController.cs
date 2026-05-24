@@ -20,6 +20,11 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private ScaleAnimConfig mScaleAnimConfig;
         public override void PlayShowButtonAnim(Button button)
         {
+            if(button == null)
+            {
+                return;
+            }
+
             Sequence sq = DOTween.Sequence();
             sq.Append(button.transform.DOScale(Vector2.one * mScaleAnimConfig.scale, mScaleAnimConfig.duration));
             sq.Append(button.transform.DOScale(Vector2.one, mScaleAnimConfig.duration));

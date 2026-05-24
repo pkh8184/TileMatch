@@ -8,7 +8,13 @@ namespace TrumpTile.GameMain.UI
     [System.Serializable]
     public class ContentUIController
     {
-        public virtual void PlayShowButtonAnim(Button button){}
+        public virtual void PlayShowButtonAnim(Button button)
+        {
+            if(button == null)
+            {
+                return;
+            }
+        }
     }    
 }
 

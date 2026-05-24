@@ -17,11 +17,12 @@ namespace TrumpTile.GameMain.Core
 		private BannerView mBannerView;
 		private bool mbIsInitialized = false;
 
-		private void Start()
-		{
+        private void Awake()
+        {
+			if(mbIsInitialized) return;
 			DontDestroyOnLoad(gameObject);
 			InitializeMobileAds();
-		}
+        }
 
 		private void InitializeMobileAds()
 		{
@@ -56,7 +57,7 @@ namespace TrumpTile.GameMain.Core
 			mBannerView.OnBannerAdLoadFailed += OnBannerAdLoadFailed;
 
 			mBannerView.LoadAd(new AdRequest());
-			Debug.Log("[AdManager] 배너 광고 로드 요청");
+			//Debug.Log("[AdManager] 배너 광고 로드 요청");
 
 		//	mBannerView.Hide();
 
@@ -112,6 +113,7 @@ namespace TrumpTile.GameMain.Core
 		private void OnBannerAdLoaded()
 		{
 			Debug.Log("[AdManager] 배너 광고 로드 성공");
+			//ShowBannerAd();
         }
 
 		private void OnBannerAdLoadFailed(LoadAdError error)
@@ -123,7 +125,10 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnDestroy()
 		{
-			DestroyBannerAd();
+			if (Inst == this)
+			{
+				DestroyBannerAd();
+			}
 		}
 	}
 }

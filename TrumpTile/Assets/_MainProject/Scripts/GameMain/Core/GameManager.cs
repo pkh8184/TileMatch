@@ -9,6 +9,8 @@ using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
 using TrumpTile.LevelEditor.Editor;
 using System;
+using UnityEngine.UI;
+using TMPro;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -46,6 +48,10 @@ namespace TrumpTile.GameMain.Core
 		private bool mIsSlowMotion = false;
 		[SerializeField] private bool mEnableTimerLog = false;
 		[SerializeField] private bool mbLevelTestMode = false;
+
+		[Header("빌드 테스트용 참조")]
+		[SerializeField] private GameObject mBuildTestObject;
+		[SerializeField] private TMP_Text mBuildTestText;
 		private float mTimerLogAccumulator = 0F;
 
 		// 게임 상태
@@ -237,6 +243,9 @@ namespace TrumpTile.GameMain.Core
 			LevelData levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
 			if (levelData == null)
 			{
+				mBuildTestObject.SetActive(true);
+				mBuildTestText.text = "레벨 데이터 로드에 실패했습니다. 5초 후 메인 화면으로 돌아갑니다.";
+				
 				Debug.LogError($"[GameManager] LevelData load failed: Level {levelNumber}");
 				return;
 			}
@@ -307,6 +316,11 @@ namespace TrumpTile.GameMain.Core
 			Debug.Log("게임 시작");
 
             CurrentState = EGameState.Playing;
+		}
+		private IEnumerator Co_BuildTest_ToMain()
+		{
+			yield return new WaitForSeconds(5f);
+			SceneTransister.Inst.TransistScene("MainScene");
 		}
 		public void RestartLevel()
 		{

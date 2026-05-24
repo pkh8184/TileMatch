@@ -3,6 +3,8 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Build;
 
 namespace TrumpTile.Editor
 {
@@ -307,6 +309,14 @@ namespace TrumpTile.Editor
                                  ? BuildOptions.Development | BuildOptions.AllowDebugging
                                  : BuildOptions.None,
             };
+
+            // 260524 원준 : Addressable 컨텐츠 빌드 명시적 호출
+            AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult result);
+            if (!string.IsNullOrEmpty(result.Error))
+            {
+                EditorUtility.DisplayDialog("Addressables 빌드 실패", result.Error, "확인");
+                return;
+            }
 
             BuildReport  report  = BuildPipeline.BuildPlayer(options);
             BuildSummary summary = report.summary;

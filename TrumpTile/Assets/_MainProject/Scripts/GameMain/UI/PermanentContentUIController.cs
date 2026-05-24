@@ -21,6 +21,11 @@ namespace TrumpTile.GameMain.UI
 
         public override void PlayShowButtonAnim(Button button)
         {
+            if(button == null)
+            {
+                return;
+            }
+            
             Sequence sq = DOTween.Sequence();
             sq.Append(button.transform.DORotate(mRotateAnimConfig.angle, mRotateAnimConfig.duration).SetEase(Ease.InOutSine));
             sq.Append(button.transform.DORotate(new Vector3(0, 0, 0), mRotateAnimConfig.duration).SetEase(Ease.InOutSine));

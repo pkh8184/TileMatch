@@ -71,11 +71,12 @@ namespace TrumpTile.GameMain.UI
                 }
                 yield return null;
             }
-            Debug.Log("[IngameView] 메인 씬 로딩 성공");
 
             op.allowSceneActivation = true;
             EAudioKey key = targetSceneName == "MainScene"? EAudioKey.BGM_Main : EAudioKey.BGM_Ingame;
             AudioEvent.Play(key);
+
+           // AdManager.Inst.ShowBannerAd();
 
             mbSceneTransitionProgressing = false;
         }
