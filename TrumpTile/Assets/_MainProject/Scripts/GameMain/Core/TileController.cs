@@ -445,10 +445,6 @@ namespace TrumpTile.GameMain.Core
 
 			mSelectParticle.Play();
 			
-			Sequence seq = DOTween.Sequence();
-			seq.Append(transform.DOScale(mOriginalScale * 1.5f, 0.1f));
-			seq.Append(transform.DOScale(mOriginalScale * 0.9f, 0.1f));
-
 			if (bWasInSlot)
 			{
 				mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(slotPosition, () =>
@@ -549,6 +545,11 @@ namespace TrumpTile.GameMain.Core
 
 			float elapsed = 0F;
 
+			Sequence seq = DOTween.Sequence();
+			seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
+			seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
+			seq.Append(transform.DOScale(mOriginalScale, duration / 3));
+
 			while (elapsed < duration)
 			{
 				elapsed += Time.deltaTime;
@@ -567,11 +568,9 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			transform.position = targetPosition;
-
-			Sequence seq = DOTween.Sequence();
-			seq.Append(transform.DOScale(mOriginalScale, 0.1f));
 			
 			transform.rotation = Quaternion.identity;
+			transform.localScale = mOriginalScale;
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
