@@ -62,6 +62,7 @@ namespace TrumpTile.GameMain.UI
                     
                     seq.AppendInterval(0.3f);
                     seq.Append(mAnimTargetRectTransformArray[i].DOMove(mMoveTargetRectTransformArray[i].position, 0.5f));
+                    seq.Join(mAnimTargetRectTransformArray[i].DOScale(Vector2.one * 0.8f, 0.5f));
                     seq.AppendInterval(0.3f);
                 }
 

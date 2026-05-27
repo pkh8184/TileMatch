@@ -123,8 +123,11 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("TimerSettingComplete");
             EventManager.Inst?.RemoveEvent("AccessShopView");
             EventManager.Inst?.RemoveEvent("ItemCountChanged");
-            EventManager.Inst.RemoveEvent("PurchaseItem");
-            PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;
+            EventManager.Inst?.RemoveEvent("PurchaseItem");
+            if(PlayerDataManager.Inst != null)
+            {
+                PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;   
+            }
         }
         private void PurchaseItem(object id)
         {
