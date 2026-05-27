@@ -40,7 +40,7 @@ namespace TrumpTile.GameMain.Data
 		// 선택한 스테이지 (메인 맵에서 선택한 값, 서버 저장 불필요)
 		private int mSelectedStage = 0;
 
-		public event Action<int> OnGoldChanged;
+		public event Action OnGoldChanged;
 		public event Action<int> OnStageChanged;
 
 		private void Awake()
@@ -82,7 +82,7 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.Gold.Value += amount;
-			OnGoldChanged?.Invoke(Gold);
+			OnGoldChanged?.Invoke();
 		}
 
 		public bool UseGold(int amount)
@@ -92,7 +92,7 @@ namespace TrumpTile.GameMain.Data
 				return false;
 			}
 			mUserData.Gold.Value -= amount;
-			OnGoldChanged?.Invoke(Gold);
+			OnGoldChanged?.Invoke();
 			return true;
 		}
 

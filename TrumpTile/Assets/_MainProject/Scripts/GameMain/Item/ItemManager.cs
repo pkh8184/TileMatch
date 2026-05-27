@@ -90,7 +90,7 @@ namespace TrumpTile.GameMain.Item
 			if (GetItemCount(itemId) <= 0)
 			{
 				// 임시
-				EventManager.Inst.ActiveEvent("ShowItemPurchasePopup", (object)itemId);
+				EventManager.Inst.ActiveEvent("PurchaseItem", (object)itemId);
 				return;
 			}
 			if (!item.CanExecute())

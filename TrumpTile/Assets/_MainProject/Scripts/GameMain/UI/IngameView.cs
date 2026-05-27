@@ -1,4 +1,5 @@
 using DG.Tweening;
+using JetBrains.Annotations;
 using System.Collections;
 using TMPro;
 using TrumpTile.GameMain.Core;
@@ -42,8 +43,13 @@ namespace TrumpTile.GameMain.UI
 		private class ItemButtonConfig
 		{
 			public int itemId;
+            public int amount;
+            public int cost;
 			public Button button;
 			public TMP_Text countText;
+            public GameObject countObject;
+            public GameObject costObject;
+            public TMP_Text costText;
 		}
 
         [Header("아이템 버튼")]
@@ -62,7 +68,7 @@ namespace TrumpTile.GameMain.UI
                 {
                     return;
                 }
-                
+
                 if(mbUnlockProcess) return;
                 mbUnlockProcess = true;
 
@@ -92,13 +98,9 @@ namespace TrumpTile.GameMain.UI
                 {
                     OnItemButtonClick(id);
                 });
-
-                int count = PlayerDataManager.Inst.GetItemCount(id);
-                item.countText.text = count.ToString();
-                item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
             }
 
-            mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
+            RefreshButtons();
 
             mTopLevelNameRect.localScale = Vector3.zero;
         }
@@ -110,7 +112,9 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
             //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
             EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
-            EventManager.Inst.AddEvent("ItemCountChanged", _ => OnItemCountChanged());
+            EventManager.Inst.AddEvent("ItemCountChanged", _ => RefreshButtons());
+            EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
+            PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
         }
         protected override void UnSubscribeEvent()
         {
@@ -119,32 +123,53 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("TimerSettingComplete");
             EventManager.Inst?.RemoveEvent("AccessShopView");
             EventManager.Inst?.RemoveEvent("ItemCountChanged");
+            EventManager.Inst.RemoveEvent("PurchaseItem");
+            PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;
         }
-        private void RefreshButtonsOnRetry()
+        private void PurchaseItem(object id)
         {
-            Debug.Log("버튼 리프레쉬");
-            mBonusSlotButton.gameObject.SetActive(true);
-            mBonusSlotButton.transform.localScale = Vector2.one;
-
+            int itemId = (int)id;
+            foreach(var item in mItemButtonConfigArray)
+            {
+                if(item.itemId == itemId)
+                {
+                    if(PlayerDataManager.Inst.Gold < item.cost)
+                    {
+                        mShopView.Show();
+                        return;
+                    }
+                    ItemManager.Inst.AddItem(itemId, item.amount);
+                    PlayerDataManager.Inst.UseGold(item.cost);
+                    AudioEvent.Play(EAudioKey.SFX_Purchase);
+                    return;
+                }
+            }
+        }
+        private void RefreshButtons()
+        {
             foreach (var item in mItemButtonConfigArray)
             {
                 int id = item.itemId;
                 int count = PlayerDataManager.Inst.GetItemCount(id);
-                item.countText.text = count.ToString();
+                if(count == 0)
+                {
+                    item.countObject.SetActive(false);
+
+                    item.costObject.SetActive(true);
+                    item.costText.text = item.cost.ToString();
+                }
+                else
+                {
+                    item.costObject.SetActive(false);
+
+                    item.countObject.SetActive(true);
+                    item.countText.text = count.ToString();
+                }
                 item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
+                item.costText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
             }
 
             mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
-        }
-        private void OnItemCountChanged()
-        {
-             foreach (var item in mItemButtonConfigArray)
-            {
-                int id = item.itemId;
-                int count = PlayerDataManager.Inst.GetItemCount(id);
-                item.countText.text = count.ToString();
-                item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
-            }
         }
         private void OnItemButtonClick(int id)
         {
@@ -206,9 +231,11 @@ namespace TrumpTile.GameMain.UI
             }
             else
             {
-                RefreshButtonsOnRetry();   
+                mBonusSlotButton.gameObject.SetActive(true);
+                mBonusSlotButton.transform.localScale = Vector2.one;  
             }
 
+            RefreshButtons();
             Sequence sq = DOTween.Sequence();
 
             AudioEvent.Play(EAudioKey.SFX_LevelName_01);
