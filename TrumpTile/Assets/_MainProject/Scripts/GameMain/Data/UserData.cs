@@ -45,6 +45,10 @@ namespace TrumpTile.GameMain.Data
         public DateTime FirstLoginDate;
         public ObscuredInt MaxStreakLoginCount;
 
+        //컨텐츠 구독 데이터
+        public ObscuredBool SeasonPassUnlock;
+        public ObscuredBool PiggyBankUnlock;
+
         //기타 데이터
         public readonly string UID;
         public readonly string TermsAndConditionVersion;

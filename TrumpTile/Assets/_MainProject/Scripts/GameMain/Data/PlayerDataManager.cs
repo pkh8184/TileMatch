@@ -179,6 +179,14 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.ItemCounts[itemId] = count;
 		}
+		public void AddItemCount(int itemId, int count)
+		{
+			if (mUserData == null || mUserData.ItemCounts == null)
+			{
+				return;
+			}
+			mUserData.ItemCounts[itemId] += count;
+		}
 
 		public Dictionary<int, int> GetAllItemCounts()
 		{
@@ -194,6 +202,33 @@ namespace TrumpTile.GameMain.Data
 			return result;
 		}
 
+	#endregion
+
+	#region 컨텐츠 해금
+		public void RemoveAds()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.RemoveAds = true;
+		}
+		public void UnlockSeasonPass()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.SeasonPassUnlock = true;
+		}
+		public void UnlockPiggyBank()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.PiggyBankUnlock = true;
+		}
 	#endregion
 
 	#region Getters (기존)
