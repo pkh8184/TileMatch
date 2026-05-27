@@ -32,6 +32,9 @@ namespace TrumpTile.GameMain.Core
 		Desert = 1,
 		Interior = 2,
 		Tools = 3,
+		Food = 4,
+		Toy = 5,
+		Balls = 6,
 		ETC,
 		Length,
 	

@@ -9,14 +9,17 @@ namespace TrumpTile.LevelEditor.Editor
 {
 	public class TileDataGenerator : EditorWindow
 	{
-		private string mSpriteFolderPath = "Assets/_MainProject/Textures/SweetMyHome/Icon/UI_Tile_01";
+		private string mSpriteFolderPath = "Assets/_MainProject/Textures/UI/Sprite/Tile";
 		private string mOutputFolderPath = "Assets/_MainProject/SODatas/TileData";
 
 		// 파일명 패턴 설정
 		private string mDesertName = "Desert";
 		private string mFruitName = "Fruit";
 		private string mInteriorName = "Interior";
-		private string mToolsName = "Tools"; // 파일명이 Clover로 되어있으므로
+		private string mToolsName = "Tools";
+		private string mFoodsName = "Foods";
+		private string mToysName = "Toys";
+		private string mBallsName = "Balls";
 
 		[MenuItem("Tools/Tile Match/Generate Tile Data")]
 		public static void OpenWindow()
@@ -74,6 +77,9 @@ namespace TrumpTile.LevelEditor.Editor
 			mFruitName = EditorGUILayout.TextField("Fruit", mFruitName);
 			mInteriorName = EditorGUILayout.TextField("Interior", mInteriorName);
 			mToolsName = EditorGUILayout.TextField("Tools", mToolsName);
+			mFoodsName = EditorGUILayout.TextField("Foods", mFoodsName);
+			mToysName = EditorGUILayout.TextField("Toys", mToysName);
+			mBallsName = EditorGUILayout.TextField("Balls", mBallsName);
 
 			EditorGUILayout.Space(5);
 			EditorGUILayout.HelpBox(
@@ -81,7 +87,10 @@ namespace TrumpTile.LevelEditor.Editor
 				$"  Tile_{mDesertName}_000.png\n" +
 				$"  Tile_{mFruitName}_000.png\n" +
 				$"  Tile_{mInteriorName}_000.png\n" +
-				$"  Tile_{mToolsName}_000.png",
+				$"  Tile_{mToolsName}_000.png\n" +
+				$"  Tile_{mFoodsName}_000.png\n" +
+				$"  Tile_{mToysName}_000.png\n" +
+				$"  Tile_{mBallsName}_000.png",
 				MessageType.None);
 
 			EditorGUILayout.Space(20);
@@ -124,6 +133,7 @@ namespace TrumpTile.LevelEditor.Editor
 
 			int created = 0;
 			int failed = 0;
+			int exit = 0;
 			for(int i = 0; i < (int)ETileCartegory.Length; i++)
 			{
 				string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { $"{mSpriteFolderPath}/{(ETileCartegory)i}" });
@@ -146,7 +156,13 @@ namespace TrumpTile.LevelEditor.Editor
 						failed++;
 						continue;
 					}
-                    
+					string assetPath = $"{outputPath}/{(ETileCartegory)i}_{number}.asset";
+
+                    if (AssetDatabase.LoadAssetAtPath<TileData>(assetPath) != null)
+					{			
+						exit++;	
+						continue;
+					}
 					TileData tileData = ScriptableObject.CreateInstance<TileData>();
 
 					tileData.tileTypeId = $"{(ETileCartegory)i}_{number}";
@@ -154,7 +170,6 @@ namespace TrumpTile.LevelEditor.Editor
 					tileData.tileCartegory = (ETileCartegory)i;
                     tileData.sprite = sprite;
 
-                    string assetPath = $"{outputPath}/{(ETileCartegory)i}_{number}.asset";
                     AssetDatabase.CreateAsset(tileData, assetPath);
                     created++;
 					number++;
@@ -167,7 +182,7 @@ namespace TrumpTile.LevelEditor.Editor
 			if (failed == 0)
 			{
 				EditorUtility.DisplayDialog("Complete",
-					$"✓ {created}개의 TileData가 생성되었습니다!\n\n" +
+					$"✓ {created}개의 TileData가 생성되었습니다!(이미 존재하던 {exit}개 제외)\n\n" +
 					$"위치: {mOutputFolderPath}", "OK");
 			}
 			else
