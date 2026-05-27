@@ -110,6 +110,10 @@ namespace TrumpTile.GameMain.Core
 
 			Log($"Loading level: {levelData.levelNumber}");
 
+			mRandomTileList.Clear();
+			mJewerlyTileList.Clear();
+			mCreatedTileMap.Clear();
+			
 			ClearBoard();
 
 			mGridWidth = levelData.boardWidth;

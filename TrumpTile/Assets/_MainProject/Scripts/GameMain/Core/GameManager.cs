@@ -53,6 +53,7 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private GameObject mBuildTestObject;
 		[SerializeField] private TMP_Text mBuildTestText;
 		private float mTimerLogAccumulator = 0F;
+		private bool mbIsRetry = false;
 
 		// 게임 상태
 		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
@@ -89,8 +90,6 @@ namespace TrumpTile.GameMain.Core
 		public event System.Action<int> OnScoreChanged;
 		public event System.Action<int> OnComboChanged;
 		public event System.Action<int, int> OnProgressChanged;
-
-
 
 		#region Unity Lifecycle
 
@@ -239,7 +238,7 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.Loading;
 
 			LoadingAnimComplete = false;
-
+			
 			LevelData levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
 			if (levelData == null)
 			{
@@ -258,9 +257,10 @@ namespace TrumpTile.GameMain.Core
 
 			mSlotManager?.Initialize();  // 반드시 ResetSlots() 이전
 			mSlotManager?.ResetSlots();
+			mSlotManager?.SetSlotCount(6);
 
             //임시
-            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)levelData);
+            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)(levelData, mbIsRetry));
 
             mBoardManager?.LoadLevel(levelData);
 
@@ -289,8 +289,7 @@ namespace TrumpTile.GameMain.Core
 			UIManager.Instance?.UpdateScore(mCurrentScore);
 			UIManager.Instance?.RefreshAllItemButtons();
 			OnScoreChanged?.Invoke(mCurrentScore);
-			OnComboChanged?.Invoke(0);
-
+			OnComboChanged?.Invoke(0);		
 
             await WaitUntill(() => LoadingAnimComplete);
 
@@ -324,6 +323,7 @@ namespace TrumpTile.GameMain.Core
 		}
 		public void RestartLevel()
 		{
+			mbIsRetry = true;
 			Debug.Log($"[GameManager] RestartLevel - Level {CurrentLevel}");
 			AudioManager.Inst.SetBGMVolume(1f);
 			StartLevel(CurrentLevel);

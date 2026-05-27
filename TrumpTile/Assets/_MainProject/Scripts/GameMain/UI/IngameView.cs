@@ -36,6 +36,7 @@ namespace TrumpTile.GameMain.UI
         [Header("슬롯 관련")]
         [SerializeField] private Button mBonusSlotButton;
         [SerializeField] private TMP_Text mBonusSlotText;
+        private bool mbUnlockProcess;
 
         [System.Serializable]
 		private class ItemButtonConfig
@@ -61,6 +62,10 @@ namespace TrumpTile.GameMain.UI
                 {
                     return;
                 }
+                
+                if(mbUnlockProcess) return;
+                mbUnlockProcess = true;
+
                 if(PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost)
                 {
                     PlayerDataManager.Inst.UseGold(SlotManager.Instance.BonusSlotCost);
@@ -70,11 +75,13 @@ namespace TrumpTile.GameMain.UI
                     {
                         mBonusSlotButton.gameObject.SetActive(false);
                         SlotManager.Instance.SetSlotCount(7);
+                        mbUnlockProcess = false;
                     });
                 }
                 else
                 {
                     mShopView.Show();
+                    mbUnlockProcess = false;
                 }
             });
 
@@ -113,6 +120,22 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("AccessShopView");
             EventManager.Inst?.RemoveEvent("ItemCountChanged");
         }
+        private void RefreshButtonsOnRetry()
+        {
+            Debug.Log("버튼 리프레쉬");
+            mBonusSlotButton.gameObject.SetActive(true);
+            mBonusSlotButton.transform.localScale = Vector2.one;
+
+            foreach (var item in mItemButtonConfigArray)
+            {
+                int id = item.itemId;
+                int count = PlayerDataManager.Inst.GetItemCount(id);
+                item.countText.text = count.ToString();
+                item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
+            }
+
+            mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
+        }
         private void OnItemCountChanged()
         {
              foreach (var item in mItemButtonConfigArray)
@@ -133,7 +156,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnLoadLevelComplete(object obj)
         {
-            LevelData levelData = (LevelData)obj;   
+            var (levelData, isRetry) = ((LevelData, bool))obj;   
 
             int index = GetLevelDifficultyIndex(levelData.difficulty);
 
@@ -150,7 +173,7 @@ namespace TrumpTile.GameMain.UI
 
             mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
             mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
-            StartCoroutine(Co_PlayLevelNameAnim());
+            StartCoroutine(Co_PlayLevelNameAnim(isRetry));
         }
         private int GetLevelDifficultyIndex(EDifficultyType eDifficultyType)
         {
@@ -175,9 +198,16 @@ namespace TrumpTile.GameMain.UI
             StartCoroutine(Co_TimePickerProgress());
             StartCoroutine(Co_TimerSliderProgress());
         }
-        private IEnumerator Co_PlayLevelNameAnim()
+        private IEnumerator Co_PlayLevelNameAnim(bool isRetry)
         {
-            yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());
+            if(!isRetry)
+            {
+                yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());   
+            }
+            else
+            {
+                RefreshButtonsOnRetry();   
+            }
 
             Sequence sq = DOTween.Sequence();
 

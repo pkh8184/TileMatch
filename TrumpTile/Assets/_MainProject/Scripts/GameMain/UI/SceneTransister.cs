@@ -73,8 +73,10 @@ namespace TrumpTile.GameMain.UI
             }
 
             op.allowSceneActivation = true;
-            EAudioKey key = targetSceneName == "MainScene"? EAudioKey.BGM_Main : EAudioKey.BGM_Ingame;
-            AudioEvent.Play(key);
+            if(targetSceneName == "MainScene")
+            {
+                AudioEvent.Play(EAudioKey.BGM_Main);
+            }
 
            // AdManager.Inst.ShowBannerAd();
 
