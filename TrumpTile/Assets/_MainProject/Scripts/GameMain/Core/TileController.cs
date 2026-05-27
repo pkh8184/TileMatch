@@ -117,7 +117,6 @@ namespace TrumpTile.GameMain.Core
 			}
 			mBackgroundRenderer = GetComponent<SpriteRenderer>();
 			mBoxCollider = GetComponent<BoxCollider2D>();
-			mOriginalScale = transform.localScale;
 			//mSelectParticle = 
 		}
 
@@ -155,6 +154,8 @@ namespace TrumpTile.GameMain.Core
 			UpdateSortingOrder();
 			SetOverlaysActive(false);
 			EnableCollider(true);
+
+			mOriginalScale = transform.localScale;
 		}
 
 		private void SetupVisual(Sprite tileBackground)

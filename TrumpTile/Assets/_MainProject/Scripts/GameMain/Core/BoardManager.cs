@@ -22,7 +22,12 @@ namespace TrumpTile.GameMain.Core
 		[Header("Grid Settings")]
 		[SerializeField] private float mCellSize = 1F;
 		[SerializeField] private float mOverlapThreshold = 0.8F;
-
+		[Header("Tile Size By Board Max Size")]
+		[SerializeField] private float mTileSize_5;
+		[SerializeField] private float mTileSize_6;
+		[SerializeField] private float mTileSize_Over7;
+		private float mMaxBoardSize;
+		private Vector3 mTileScale;
 
 		[Header("References")]
 		[SerializeField] private TileController mTilePrefab;
@@ -119,6 +124,21 @@ namespace TrumpTile.GameMain.Core
 			mGridWidth = levelData.boardWidth;
 			mGridHeight = levelData.boardHeight;
 			mMaxLayers = levelData.maxLayers;
+			mMaxBoardSize = Mathf.Max(mGridWidth, mGridHeight);
+
+			switch(mMaxBoardSize)
+			{
+				case 6:
+					mTileScale = new Vector3(mTileSize_6, mTileSize_6, 1);
+					break;
+				case 7:
+					mTileScale = new Vector3(mTileSize_Over7, mTileSize_Over7, 1);
+					break;
+				default:
+					mTileScale = new Vector3(mTileSize_5, mTileSize_5, 1);
+					break;
+			}
+
 
 			string difficulty = levelData.difficulty.ToString();
 			Sprite difficultyBackground = null;
@@ -220,9 +240,12 @@ namespace TrumpTile.GameMain.Core
 			}
 			mCreatedTileMap[data.tileTypeId]++;
 
+
 			Vector3 position = GridToWorldPosition(x, y, layer);
 			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
 
+			tile.transform.localScale = mTileScale;
+			//tile.transform.localPosition = position;
 			tile.Initialize(data, x, y, layer, tileBackground);
 
 			float spawnDelay = Mathf.Min(spawnIndex * mSpawnDelayPerTile, mMaxSpawnDelay);
@@ -660,20 +683,57 @@ namespace TrumpTile.GameMain.Core
 
 		public Vector3 GridToWorldPosition(float x, float y, int layer)
 		{
-			Vector3 boardOrigin = transform.position - new Vector3(
-				(mGridWidth - 1) * mCellSize / 2F,
-				(mGridHeight - 1) * mCellSize / 2F,
-				0
-			);
+			float startX = 0;
+			if(mGridWidth % 2 == 0)
+			{
+				startX -= mTileScale.x / 2;
+				startX -= mTileScale.x * ((mGridWidth / 2) - 1);
+			}
+			else
+			{
+				startX -= mTileScale.x * (mGridWidth / 2);
+			}
+			float startY = 0;
+			if(mGridHeight % 2 == 0)
+			{
+				startY -= mTileScale.x / 2;
+				startY -= mTileScale.x * ((mGridHeight / 2) - 1);
+			}
+			else
+			{
+				startY -= mTileScale.x * (mGridHeight / 2);
+			}
+			
+			float posX = startX + (mTileScale.x * x);
+			float posY = startY + (mTileScale.x * y);
 
-			// 레이어별 오프셋 가져오기
-			Vector2 offset = GetLayerOffset(layer);
+			float offsetX = 0;
+			float offsetY = 0;
+			if(layer % 2 == 1)
+			{
+				if(mGridWidth < 8)
+				{
+					offsetX -= mTileScale.x / 2f;
+				}
+				else
+				{
+					offsetX = mTileScale.x / 2f;
+                }
+				if(mGridHeight < 8)
+				{
+					offsetY -= mTileScale.x / 2f;
+				}
+				else
+				{
+					offsetY = mTileScale.x / 2f;
+                }
+			}
 
-			return boardOrigin + new Vector3(
-				x * mCellSize + offset.x,
-				y * mCellSize + offset.y,
-				-layer * 0.1F
-			);
+			return new Vector3(posX + offsetX, posY + offsetY, -0.1f * layer); //+ new Vector3(
+			// 	x * mTileScale.x + offset.x,
+			// 	y * mTileScale.x + offset.y,
+			// 	-layer * 0.1F
+			// );
 		}
 
 		/// <summary>
