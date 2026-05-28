@@ -77,7 +77,7 @@ namespace TrumpTile.GameMain.UI
                 RectTransform rect = mAnimRectList[i];
 
                 rect.anchoredPosition = new Vector2(300, rect.anchoredPosition.y);
-                mShowAnimSequence.Insert(i * 0.05f, rect.DOAnchorPosX(0, 0.1f).SetEase(Ease.OutQuad));
+                mShowAnimSequence.Insert(i * 0.05f, rect.DOAnchorPosX(-118, 0.1f).SetEase(Ease.OutQuad));
             }
 
             yield return mShowAnimSequence.WaitForCompletion();

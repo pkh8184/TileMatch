@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TrumpTile.LevelEditor.Editor;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -23,9 +25,12 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private float mCellSize = 1F;
 		[SerializeField] private float mOverlapThreshold = 0.8F;
 		[Header("Tile Size By Board Max Size")]
-		[SerializeField] private float mTileSize_5;
-		[SerializeField] private float mTileSize_6;
-		[SerializeField] private float mTileSize_Over7;
+		[SerializeField] [Tooltip("보드 최대 크기가 5 이하일 때 타일 사이즈")] private float mTileSize_5;
+		[SerializeField] [Tooltip("보드 최대 크기가 6일 때 타일 사이즈")] private float mTileSize_6;
+		[SerializeField] [Tooltip("보드 최대 크기가 7일 때 타일 사이즈")] private float mTileSize_7;
+		[SerializeField] [Tooltip("보드 최대 크기가 8일 때 타일 사이즈")] private float mTileSize_8;
+		private float mTilePosOffsetX;
+		private float mTilePosOffsetY;
 		private float mMaxBoardSize;
 		private Vector3 mTileScale;
 
@@ -50,7 +55,9 @@ namespace TrumpTile.GameMain.Core
 		private Dictionary<Vector3, TileController> mTileGridMap = new Dictionary<Vector3, TileController>();
 
 		private int mGridWidth;
+		private int mOriginWidth;
 		private int mGridHeight;
+		private int mOriginHeight;
 		private int mMaxLayers;
 
 		private bool mIsShuffling = false;
@@ -121,10 +128,32 @@ namespace TrumpTile.GameMain.Core
 			
 			ClearBoard();
 
-			mGridWidth = levelData.boardWidth;
-			mGridHeight = levelData.boardHeight;
+			mOriginWidth = levelData.boardWidth;
+			mOriginHeight = levelData.boardHeight;
 			mMaxLayers = levelData.maxLayers;
-			mMaxBoardSize = Mathf.Max(mGridWidth, mGridHeight);
+			
+			float boardOffsetXMax = levelData.layerList[0].tilePlacementList.Max(x => x.gridX);
+			float boardOffsetXMin = levelData.layerList[0].tilePlacementList.Min(x => x.gridX);
+
+			float boardOffsetYMax = levelData.layerList[0].tilePlacementList.Max(x => x.gridY);
+			float boardOffsetYMin = levelData.layerList[0].tilePlacementList.Min(x => x.gridY);
+
+			float maxX = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Max(x => x.gridX);
+			float minX = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Min(x => x.gridX);
+
+			float maxY = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Max(x => x.gridY);
+			float minY = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Min(x => x.gridY);
+
+			float x = maxX - minX;
+			float y = maxY - minY;
+
+			int gridX = (int)x + 1;
+			int gridY = (int)y + 1;
+
+			mGridWidth = (int)boardOffsetXMax - (int)boardOffsetXMin + 1;
+			mGridHeight = (int)boardOffsetYMax - (int)boardOffsetYMin + 1;
+
+			mMaxBoardSize = Mathf.Max(gridX, gridY);
 
 			switch(mMaxBoardSize)
 			{
@@ -132,7 +161,10 @@ namespace TrumpTile.GameMain.Core
 					mTileScale = new Vector3(mTileSize_6, mTileSize_6, 1);
 					break;
 				case 7:
-					mTileScale = new Vector3(mTileSize_Over7, mTileSize_Over7, 1);
+					mTileScale = new Vector3(mTileSize_7, mTileSize_7, 1);
+					break;
+				case 8:
+					mTileScale = new Vector3(mTileSize_8, mTileSize_8, 1);
 					break;
 				default:
 					mTileScale = new Vector3(mTileSize_5, mTileSize_5, 1);
@@ -176,7 +208,7 @@ namespace TrumpTile.GameMain.Core
                             Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
                             continue;
                         }
-                        CreateTile(data, placement.gridX, placement.gridY, i, tileBackground, createdCount, spawnAnimType);
+                        CreateTile(data, placement.gridX - boardOffsetXMin, placement.gridY - boardOffsetYMin, i, tileBackground, createdCount, spawnAnimType);
                         createdCount++;
                     }
                 }
@@ -711,7 +743,7 @@ namespace TrumpTile.GameMain.Core
 			float offsetY = 0;
 			if(layer % 2 == 1)
 			{
-				if(mGridWidth < 8)
+				if(mOriginWidth < 8)
 				{
 					offsetX -= mTileScale.x / 2f;
 				}
@@ -719,7 +751,7 @@ namespace TrumpTile.GameMain.Core
 				{
 					offsetX = mTileScale.x / 2f;
                 }
-				if(mGridHeight < 8)
+				if(mOriginHeight < 8)
 				{
 					offsetY -= mTileScale.x / 2f;
 				}
@@ -729,11 +761,7 @@ namespace TrumpTile.GameMain.Core
                 }
 			}
 
-			return new Vector3(posX + offsetX, posY + offsetY, -0.1f * layer); //+ new Vector3(
-			// 	x * mTileScale.x + offset.x,
-			// 	y * mTileScale.x + offset.y,
-			// 	-layer * 0.1F
-			// );
+			return new Vector3(posX + offsetX, posY + offsetY, -0.1f * layer);
 		}
 
 		/// <summary>
@@ -745,7 +773,7 @@ namespace TrumpTile.GameMain.Core
 			float offsetY = 0;
 			if(layer % 2 == 1)
 			{
-				if(mGridWidth < 8)
+				if(mOriginWidth < 8)
 				{
 					offsetX = -0.3f;
 				}
@@ -753,7 +781,7 @@ namespace TrumpTile.GameMain.Core
 				{
 					offsetX = 0.3f;
                 }
-				if(mGridHeight < 8)
+				if(mOriginHeight < 8)
 				{
 					offsetY = -0.3f;
 				}
