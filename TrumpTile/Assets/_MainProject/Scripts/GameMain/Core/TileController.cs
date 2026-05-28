@@ -571,7 +571,7 @@ namespace TrumpTile.GameMain.Core
 			transform.position = targetPosition;
 			
 			transform.rotation = Quaternion.identity;
-			transform.localScale = Vector3.one * 0.65f;
+			transform.localScale = Vector3.one * 0.59f;
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
