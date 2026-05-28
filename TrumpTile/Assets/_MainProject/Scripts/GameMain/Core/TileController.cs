@@ -549,7 +549,7 @@ namespace TrumpTile.GameMain.Core
 			Sequence seq = DOTween.Sequence();
 			seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
 			seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
-			seq.Append(transform.DOScale(mOriginalScale, duration / 3));
+			seq.Append(transform.DOScale(Vector3.one * 0.65f , duration / 3));
 
 			while (elapsed < duration)
 			{
@@ -571,7 +571,7 @@ namespace TrumpTile.GameMain.Core
 			transform.position = targetPosition;
 			
 			transform.rotation = Quaternion.identity;
-			transform.localScale = mOriginalScale;
+			transform.localScale = Vector3.one * 0.65f;
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
