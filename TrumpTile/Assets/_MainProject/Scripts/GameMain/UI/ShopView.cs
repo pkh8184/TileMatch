@@ -44,7 +44,7 @@ namespace TrumpTile.GameMain.UI
 
             Sequence sequence = DOTween.Sequence();
             sequence.SetUpdate(true);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
             {
                 RectTransform rect = mUIContainerTransform.GetChild(i).GetComponent<RectTransform>();
 

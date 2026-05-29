@@ -284,7 +284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6682386905520889899
 RectTransform:
   m_ObjectHideFlags: 0
@@ -447,14 +447,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8231342878473563871}
-  - {fileID: 404361400168021244}
-  - {fileID: 1981980919195447852}
   m_Father: {fileID: 4125884442728108216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1080, y: 1920}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1410974438539793201
 GameObject:
@@ -1191,10 +1189,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 517660032753301259}
+  m_Father: {fileID: 8231342878473563871}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.35185185, y: 0.2314811}
-  m_AnchorMax: {x: 0.6481481, y: 0.25752276}
+  m_AnchorMin: {x: 0.29487178, y: 0.04775768}
+  m_AnchorMax: {x: 0.70512813, y: 0.09161729}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2246,7 +2244,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48
+  m_fontSize: 45.45
   m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2739,10 +2737,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 517660032753301259}
+  m_Father: {fileID: 8231342878473563871}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.28703704, y: 0.74606544}
-  m_AnchorMax: {x: 0.712963, y: 0.77210706}
+  m_AnchorMin: {x: 0.32196796, y: 0.914426}
+  m_AnchorMax: {x: 0.67803204, y: 0.95828557}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5767,6 +5765,8 @@ RectTransform:
   - {fileID: 7183686567274150627}
   - {fileID: 6726516124938023680}
   - {fileID: 148669526091431291}
+  - {fileID: 404361400168021244}
+  - {fileID: 1981980919195447852}
   m_Father: {fileID: 517660032753301259}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.1388889, y: 0.203125}
