@@ -37,6 +37,7 @@ namespace TrumpTile.GameMain.Core
 
 		[Header("Star Config")]
 		[SerializeField] private StarConfig mStarConfig;
+		private int mStarCount;
 
 		[Header("Scoring")]
 		[SerializeField] private int mBaseMatchScore = 100;
@@ -48,7 +49,6 @@ namespace TrumpTile.GameMain.Core
 		private bool mIsSlowMotion = false;
 		[SerializeField] private bool mEnableTimerLog = false;
 		[SerializeField] private bool mbLevelTestMode = false;
-
 		[Header("빌드 테스트용 참조")]
 		[SerializeField] private GameObject mBuildTestObject;
 		[SerializeField] private TMP_Text mBuildTestText;
@@ -64,7 +64,7 @@ namespace TrumpTile.GameMain.Core
 
 		// Public 프로퍼티
 		public int MatchCount => mMatchCount;
-
+		public int StarCount => mStarCount;
 
 		private int mCurrentLevelIndex;
 		public int CurrentLevel => mCurrentLevelIndex + 1;
@@ -72,6 +72,7 @@ namespace TrumpTile.GameMain.Core
 
 		// 타이머
 		private float mElapsedTime;
+		public float ElapsedTime => mElapsedTime;
 		private float mTargetClearTime;
 		private bool mIsTimerFrozen = false;
 		private string mTimerString;
@@ -171,7 +172,10 @@ namespace TrumpTile.GameMain.Core
                     if (mCurrentTime <= 0) OnGameOver();
                 }		
             }
-
+			if(Input.GetKeyDown(KeyCode.Escape))
+			{
+				EventManager.Inst.ActiveEvent("OnExitButton");
+			}
 			if (mEnableDebugKeys)
 			{
 				HandleDebugKeys();
@@ -238,7 +242,9 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.Loading;
 
 			LoadingAnimComplete = false;
-			
+			tutorialComplete = false;
+			mStarCount = 0;
+
 			LevelData levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
 			if (levelData == null)
 			{
@@ -292,24 +298,6 @@ namespace TrumpTile.GameMain.Core
 			OnComboChanged?.Invoke(0);		
 
             await WaitUntill(() => LoadingAnimComplete);
-
-			if(!tutorialComplete)
-			{
-				if(levelData.levelNumber == 1)
-				{
-					FindObjectOfType<MatchTutorialPopup>(true)?.Show();
-				}
-				else if(levelData.levelNumber == 2)
-				{
-					FindObjectOfType<SlotTutorialPopup>(true)?.Show();
-				}	
-				else
-				{
-					tutorialComplete = true;
-				}
-			}
-
-
 			await WaitUntill(() => tutorialComplete);
 
 			Debug.Log("게임 시작");
@@ -493,24 +481,25 @@ namespace TrumpTile.GameMain.Core
 
 			//EffectManager.Instance?.PlayClearEffect();
 
-			int stars = CalculateStars();
+			mStarCount = CalculateStars();
 
-			SaveLevelProgress(CurrentLevel, stars);
+			SaveLevelProgress(CurrentLevel, mStarCount);
 
 			yield return new WaitForSeconds(0.5F);
 
+			EventManager.Inst.ActiveEvent("LevelClear");
 			// VictoryPopup 표시
-			if (mVictoryPopup != null)
-			{
-				bool bHasNext = HasNextLevel();
-				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
-				mVictoryPopup.Show(CurrentLevel, mElapsedTime, stars, bHasNext);
-			}
-			else
-			{
-				Debug.LogWarning("[GameManager] VictoryPopup is null!");
-				UIManager.Instance?.ShowLevelClearPanel(stars);
-			}
+			// if (mVictoryPopup != null)
+			// {
+			// 	bool bHasNext = HasNextLevel();
+			// 	Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
+			// 	mVictoryPopup.Show(CurrentLevel, mElapsedTime, stars, bHasNext);
+			// }
+			// else
+			// {
+			// 	Debug.LogWarning("[GameManager] VictoryPopup is null!");
+			// 	UIManager.Instance?.ShowLevelClearPanel(stars);
+			// }
 		}
 
 		private int CalculateStars()

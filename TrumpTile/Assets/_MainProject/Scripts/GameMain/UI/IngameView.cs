@@ -7,10 +7,22 @@ using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
 using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
+using UnityEngine.Localization.SmartFormat.Utilities;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
+    [System.Serializable]
+    public class IngameItemConfig
+    {
+        public string itemName;
+        public string itemDescription;
+        public int itemId;
+        public int amount = 3;
+        public int cost = 100;
+        public int unlockLevel;
+        public Sprite itemIcon;
+    }
     public class IngameView : ViewBase
     {
         [Header("스테이지 시작 시 표시될 레벨네임 오브젝트들")]
@@ -37,69 +49,51 @@ namespace TrumpTile.GameMain.UI
         [Header("슬롯 관련")]
         [SerializeField] private Button mBonusSlotButton;
         [SerializeField] private TMP_Text mBonusSlotText;
-        private bool mbUnlockProcess;
 
         [System.Serializable]
 		private class ItemButtonConfig
 		{
-			public int itemId;
-            public int amount;
-            public int cost;
+			public IngameItemConfig ingameItemConfig;
 			public Button button;
 			public TMP_Text countText;
-            public GameObject countObject;
-            public GameObject costObject;
-            public TMP_Text costText;
+            public GameObject lockObject;
+            public GameObject unlockObject;
 		}
 
         [Header("아이템 버튼")]
         [SerializeField] private ItemButtonConfig[] mItemButtonConfigArray = new ItemButtonConfig[4];
         [Header("인게임 샵 뷰")]
         [SerializeField] private ShopView mShopView;
+        [Header("구매 팝업들")]
+        [SerializeField] private IngameItemPurchasePopup mItemPurchasePopup;
+        [SerializeField] private IngameSlotPurchasePopup mSlotPurchasePopup;
+        [Header("튜토리얼 팝업들")]
+        [SerializeField] private PopupBase mMatchTutorial;
+        [SerializeField] private PopupBase mSlotTutorial;
+        [SerializeField] private ItemTutorialPopup mItemTutorial;
         public override void Initialize()
         {
             base.Initialize();
 
             mLevelNameCanvasGroup.alpha = 0;
-
+            mSlotPurchasePopup.SetSlotButtonObject(mBonusSlotButton.gameObject);
             mBonusSlotButton.onClick.AddListener(() =>
             {
                 if (SlotManager.Instance != null && SlotManager.Instance.IsProcessing)
                 {
                     return;
                 }
-
-                if(mbUnlockProcess) return;
-                mbUnlockProcess = true;
-
-                if(PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost)
+                if(PlayerDataManager.Inst.Gold < SlotManager.Instance.BonusSlotCost)
                 {
-                    PlayerDataManager.Inst.UseGold(SlotManager.Instance.BonusSlotCost);
-                    Sequence seq = DOTween.Sequence();
-                    seq.Append(mBonusSlotButton.transform.DOScale(0, 0.3f));
-                    seq.OnComplete(() => 
-                    {
-                        mBonusSlotButton.gameObject.SetActive(false);
-                        SlotManager.Instance.SetSlotCount(7);
-                        mbUnlockProcess = false;
-                    });
+                    mShopView.Show();
                 }
                 else
                 {
-                    mShopView.Show();
-                    mbUnlockProcess = false;
+                    GameManager.Instance.PauseGame();
+                    mSlotPurchasePopup.Show();
                 }
             });
-
-            foreach (var item in mItemButtonConfigArray)
-            {
-                int id = item.itemId;
-                item.button.onClick.AddListener(() =>
-                {
-                    OnItemButtonClick(id);
-                });
-            }
-
+            
             RefreshButtons();
 
             mTopLevelNameRect.localScale = Vector3.zero;
@@ -134,16 +128,11 @@ namespace TrumpTile.GameMain.UI
             int itemId = (int)id;
             foreach(var item in mItemButtonConfigArray)
             {
-                if(item.itemId == itemId)
+                if(item.ingameItemConfig.itemId == itemId)
                 {
-                    if(PlayerDataManager.Inst.Gold < item.cost)
-                    {
-                        mShopView.Show();
-                        return;
-                    }
-                    ItemManager.Inst.AddItem(itemId, item.amount);
-                    PlayerDataManager.Inst.UseGold(item.cost);
-                    AudioEvent.Play(EAudioKey.SFX_Purchase);
+                    GameManager.Instance.PauseGame();
+                    mItemPurchasePopup.SetValid(item.ingameItemConfig);
+                    mItemPurchasePopup.Show();
                     return;
                 }
             }
@@ -152,24 +141,10 @@ namespace TrumpTile.GameMain.UI
         {
             foreach (var item in mItemButtonConfigArray)
             {
-                int id = item.itemId;
+                int id = item.ingameItemConfig.itemId;
                 int count = PlayerDataManager.Inst.GetItemCount(id);
-                if(count == 0)
-                {
-                    item.countObject.SetActive(false);
-
-                    item.costObject.SetActive(true);
-                    item.costText.text = item.cost.ToString();
-                }
-                else
-                {
-                    item.costObject.SetActive(false);
-
-                    item.countObject.SetActive(true);
-                    item.countText.text = count.ToString();
-                }
+                item.countText.text = count.ToString();
                 item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
-                item.costText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
             }
 
             mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
@@ -201,7 +176,27 @@ namespace TrumpTile.GameMain.UI
 
             mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
             mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
-            StartCoroutine(Co_PlayLevelNameAnim(isRetry));
+            
+            foreach (var item in mItemButtonConfigArray)
+            {
+                if(levelData.levelNumber >= item.ingameItemConfig.unlockLevel)
+                {
+                    item.unlockObject.SetActive(true);
+                    item.lockObject.SetActive(false);
+                    int id = item.ingameItemConfig.itemId;
+                    item.button.onClick.AddListener(() =>
+                    {
+                        OnItemButtonClick(id);
+                    });   
+                }
+                else
+                {
+                    item.lockObject.SetActive(true);
+                    item.unlockObject.SetActive(false);
+                }
+            }
+            
+            StartCoroutine(Co_PlayLevelNameAnim(isRetry, levelData.levelNumber));
         }
         private int GetLevelDifficultyIndex(EDifficultyType eDifficultyType)
         {
@@ -226,7 +221,7 @@ namespace TrumpTile.GameMain.UI
             StartCoroutine(Co_TimePickerProgress());
             StartCoroutine(Co_TimerSliderProgress());
         }
-        private IEnumerator Co_PlayLevelNameAnim(bool isRetry)
+        private IEnumerator Co_PlayLevelNameAnim(bool isRetry, int level)
         {
             if(!isRetry)
             {
@@ -259,6 +254,35 @@ namespace TrumpTile.GameMain.UI
             sq.OnComplete(() => GameManager.Instance.LoadingAnimComplete = true);
 
             yield return sq.WaitForCompletion();
+            
+            int itemId = 0;
+            int index = 0;
+            foreach(var item in mItemButtonConfigArray)
+            {
+                if(level == item.ingameItemConfig.unlockLevel)
+                {
+                    itemId = item.ingameItemConfig.itemId;
+                    break;
+                }
+                index++;
+            }
+            if(level == 1)
+            {
+                mMatchTutorial.Show();
+            }
+            else if(level == 2)
+            {
+                mSlotTutorial.Show();
+            }
+            else if(itemId != 0)
+            {
+                mItemTutorial.SetValid(mItemButtonConfigArray[index].ingameItemConfig);
+                mItemTutorial.Show();
+            }
+            else
+            {
+                GameManager.Instance.tutorialComplete = true;
+            }
 
             mLevelNameBackground.gameObject.SetActive(false);
         }
