@@ -45,7 +45,13 @@ namespace TrumpTile.GameMain.Data
 				return null;
 			}
 
-			int index = CalculateIndex(DateTime.Parse(startDate), DateTime.Today, entries.Count);
+			if (!DateTime.TryParse(startDate, out DateTime parsedDate))
+			{
+				Debug.LogError("[DailyPuzzleTable] Invalid startDate format: " + startDate);
+				return null;
+			}
+
+			int index = CalculateIndex(parsedDate, DateTime.Today, entries.Count);
 			return entries[index];
 		}
 	}
