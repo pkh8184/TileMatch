@@ -139,6 +139,10 @@ namespace TrumpTile.GameMain.UI
             yield return new WaitForSecondsRealtime(0.1f);
 
             Sequence seq = DOTween.Sequence();
+
+            float randomAngle = Random.Range(30f, 60f);
+            float randomDir = Random.value > 0.5f ? 1f : -1f;
+
             Vector3 direction = Vector3.zero;
             
             mRectArray[0].anchoredPosition = mOriginPosArray[0];
@@ -155,9 +159,6 @@ namespace TrumpTile.GameMain.UI
 
             Vector2 targetPos = mRectArray[0].anchoredPosition + (Vector2)direction * 1920f;
             seq.Append(mRectArray[0].DOAnchorPos(targetPos, 1f));
-
-            float randomAngle = Random.Range(30f, 60f);
-            float randomDir = Random.value > 0.5f ? 1f : -1f;
             seq.Join(mRectArray[0].DORotate(new Vector3(0, 0, randomAngle * randomDir), 1f, RotateMode.LocalAxisAdd));
 
             for(int i = 1; i < mRectArray.Length; i++)
@@ -177,12 +178,13 @@ namespace TrumpTile.GameMain.UI
                 Vector2 _direction = (screenCenter - screenMiddle).normalized;
                 Vector2 _targetPos = mRectArray[i].anchoredPosition + _direction * 1000f;
                 
-                seq.Insert(0.01f * i, mRectArray[i].DOAnchorPos(_targetPos, 1f));
+                seq.Insert(0.05f * i, mRectArray[i].DOAnchorPos(_targetPos, 1f));
 
                 randomAngle = Random.Range(30f, 60f);
                 randomDir = Random.value > 0.5f ? 1f : -1f;
                 seq.Join(mRectArray[i].DORotate(new Vector3(0, 0, randomAngle * randomDir), 1f, RotateMode.LocalAxisAdd));
             }
+
             AudioEvent.Play(EAudioKey.SFX_SceneTransition_Out);
 
             yield return seq.WaitForCompletion(); 
@@ -199,14 +201,14 @@ namespace TrumpTile.GameMain.UI
 
             Sequence seq = DOTween.Sequence();
 
-            seq.Append(mRectArray[0].DOAnchorPos(mOriginPosArray[0], 1f));
-            seq.Join(mRectArray[0].DORotate(new Vector3(0,0,mOriginRotationArray[0].eulerAngles.z), 1f));
-
-            for(int i = 1; i < mRectArray.Length; i++)
+            for(int i = mRectArray.Length - 1; i > 0; i--)
             {      
-                seq.Insert(0.01f * i, mRectArray[i].DOAnchorPos(mOriginPosArray[i], 1f));
+                seq.Insert(0.05f * (mRectArray.Length - 1 - i), mRectArray[i].DOAnchorPos(mOriginPosArray[i], 1f));
                 seq.Join(mRectArray[i].DORotate(new Vector3(0,0,mOriginRotationArray[i].eulerAngles.z), 1f));
             }
+            seq.Insert(0.05f * (mRectArray.Length - 1), mRectArray[0].DOAnchorPos(mOriginPosArray[0], 1f));
+            seq.Join(mRectArray[0].DORotate(new Vector3(0,0,mOriginRotationArray[0].eulerAngles.z), 1f));
+
             AudioEvent.Play(EAudioKey.SFX_SceneTransition_Out);
 
             yield return seq.WaitForCompletion();
