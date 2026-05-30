@@ -30,6 +30,13 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private List<Sprite> mAvataSpriteList;
         [SerializeField] private List<Sprite> mFrameSpriteList;
 
+        [Header("메인씬 로딩 시 연출 효과를 줄 렉트들")]
+        [SerializeField] private RectTransform mLeftElementsRect;
+        [SerializeField] private RectTransform mRightElementsRect;
+        [SerializeField] private RectTransform[] mSizeAdjustElementRectArray;
+        private CanvasGroup mLeftElementsRectCanvasGroup;
+        private CanvasGroup mRightElementsRectCanvasGroup;
+        private List<CanvasGroup> mSizeAdjustElementRectCanvasGroupList = new List<CanvasGroup>();
         public override void Initialize()
         {
             base.Initialize();
@@ -39,6 +46,23 @@ namespace TrumpTile.GameMain.UI
             
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
+            EventManager.Inst.AddEvent("MainSceneLoadComplete", _ => OnMainSceneLoadComplete());
+
+            mLeftElementsRect.anchoredPosition = Vector2.left * 250;
+            mRightElementsRect.anchoredPosition = Vector2.right * 250;
+            foreach(var item in mSizeAdjustElementRectArray)
+            {
+                item.localScale = Vector2.zero;
+                CanvasGroup group = item.GetComponent<CanvasGroup>();
+                mSizeAdjustElementRectCanvasGroupList.Add(group);
+                group.alpha = 0;
+            }
+
+            mLeftElementsRectCanvasGroup = mLeftElementsRect.GetComponent<CanvasGroup>();
+            mLeftElementsRectCanvasGroup.alpha = 0;
+
+            mRightElementsRectCanvasGroup = mRightElementsRect.GetComponent<CanvasGroup>();
+            mRightElementsRectCanvasGroup.alpha = 0;
         }
 
         protected override void Refresh()
@@ -59,6 +83,22 @@ namespace TrumpTile.GameMain.UI
         private void OnStageButtonClick()
         {
             SceneTransister.Inst.TransistScene("GameScene");
+        }
+        private void OnMainSceneLoadComplete()
+        {
+            Sequence seq = DOTween.Sequence();
+            seq.Append(mLeftElementsRect.DOAnchorPosX(0, 0.5f / 1.5f));
+            seq.Join(mRightElementsRect.DOAnchorPosX(0, 0.5f / 1.5f));
+            seq.Join(mLeftElementsRectCanvasGroup.DOFade(1, 0.7f / 1.5f));
+            seq.Join(mRightElementsRectCanvasGroup.DOFade(1, 0.7f / 1.5f));
+
+            int i = 0;
+            foreach(var item in mSizeAdjustElementRectArray)
+            {
+                seq.Insert(0.5f / 1.5f + (0.2f / 1.5f * i), item.DOScale(Vector2.one, 0.5f / 1.5f));
+                seq.Join(mSizeAdjustElementRectCanvasGroupList[i].DOFade(1, 0.7f / 1.5f));
+                i++;
+            }
         }
     }
 }
