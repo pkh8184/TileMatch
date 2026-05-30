@@ -11,6 +11,7 @@ using TrumpTile.LevelEditor.Editor;
 using System;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.AddressableAssets;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -239,7 +240,16 @@ namespace TrumpTile.GameMain.Core
 
 			LoadingAnimComplete = false;
 			
-			LevelData levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
+			LevelData levelData;
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				AssetReferenceT<LevelData> assetRef = DailyPuzzleManager.Inst.GetTodayAssetRef();
+				levelData = await DataManager.Instance.LoadDailyLevelAsync(assetRef);
+			}
+			else
+			{
+				levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
+			}
 			if (levelData == null)
 			{
 				mBuildTestObject.SetActive(true);
@@ -292,6 +302,11 @@ namespace TrumpTile.GameMain.Core
 			OnComboChanged?.Invoke(0);		
 
             await WaitUntill(() => LoadingAnimComplete);
+
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				tutorialComplete = true;
+			}
 
 			if(!tutorialComplete)
 			{
@@ -375,6 +390,7 @@ namespace TrumpTile.GameMain.Core
 		public void GoToMainMenu()
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
+			DailyPuzzleManager.Inst?.ExitDailyMode();
 
 			//AudioEvent.Play(EAudioKey.BGM_Main);
 			
@@ -495,7 +511,14 @@ namespace TrumpTile.GameMain.Core
 
 			int stars = CalculateStars();
 
-			SaveLevelProgress(CurrentLevel, stars);
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				DailyPuzzleManager.Inst.OnDailyClear();
+			}
+			else
+			{
+				SaveLevelProgress(CurrentLevel, stars);
+			}
 
 			yield return new WaitForSeconds(0.5F);
 
@@ -657,6 +680,11 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		private void LoadProgress()
 		{
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				return;
+			}
+
 			// Inspector에서 mStartLevel을 1보다 크게 설정했으면 그 값 사용 (디버그용)
 			if (mStartLevel > 1)
 			{
