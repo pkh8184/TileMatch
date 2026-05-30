@@ -341,7 +341,6 @@ GameObject:
   - component: {fileID: 2711962240468108238}
   - component: {fileID: 8548982504802614815}
   - component: {fileID: 2216404815921983946}
-  - component: {fileID: 3872802798603455502}
   m_Layer: 5
   m_Name: Popup_StageCancle
   m_TagString: Untagged
@@ -407,34 +406,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3872802798603455502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5663121729416872128}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f27682fa8e99e64a888bb7df8122ed5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mShowButton: {fileID: 0}
-  mHideButton: {fileID: 173953732906854398}
-  mShowDuration: 0.3
-  mHideDuration: 0.3
-  mPopupObj: {fileID: 6568570035727377899}
-  mOKButton: {fileID: 8210493458413397749}
-  mAnimTargetRectTransformArray:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  mMoveTargetRectTransformArray:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  mIndicatorRectTransform: {fileID: 0}
-  mMatchParticle: {fileID: 0}
 --- !u!1 &5703529433102268944
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,7 +637,7 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 10
-  m_fontSizeMax: 128
+  m_fontSizeMax: 72.7
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
