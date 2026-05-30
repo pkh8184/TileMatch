@@ -24,6 +24,11 @@ namespace TrumpTile.GameMain.Core
 		public bool IsInitialized => mbIsInitialized;
 		public bool IsTodayCleared => CheckIsTodayCleared();
 
+		private void Awake()
+		{
+			DontDestroyOnLoad(gameObject);
+		}
+
 		public static bool CheckIsTodayCleared()
 		{
 			string key = DAILY_CLEARED_KEY_PREFIX + DateTime.Today.ToString("yyyy-MM-dd");
