@@ -49,7 +49,6 @@ namespace TrumpTile.GameMain.UI
         [Header("슬롯 관련")]
         [SerializeField] private Button mBonusSlotButton;
         [SerializeField] private TMP_Text mBonusSlotText;
-        private bool mbUnlockProcess;
 
         [System.Serializable]
 		private class ItemButtonConfig
@@ -57,9 +56,6 @@ namespace TrumpTile.GameMain.UI
 			public IngameItemConfig ingameItemConfig;
 			public Button button;
 			public TMP_Text countText;
-            public GameObject countObject;
-            public GameObject costObject;
-            public TMP_Text costText;
             public GameObject lockObject;
             public GameObject unlockObject;
 		}
@@ -70,7 +66,7 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private ShopView mShopView;
         [Header("구매 팝업들")]
         [SerializeField] private IngameItemPurchasePopup mItemPurchasePopup;
-        [SerializeField] private IngameItemPurchasePopup mSlotPurchasePopup;
+        [SerializeField] private IngameSlotPurchasePopup mSlotPurchasePopup;
         [Header("튜토리얼 팝업들")]
         [SerializeField] private PopupBase mMatchTutorial;
         [SerializeField] private PopupBase mSlotTutorial;
@@ -80,33 +76,21 @@ namespace TrumpTile.GameMain.UI
             base.Initialize();
 
             mLevelNameCanvasGroup.alpha = 0;
-
+            mSlotPurchasePopup.SetSlotButtonObject(mBonusSlotButton.gameObject);
             mBonusSlotButton.onClick.AddListener(() =>
             {
                 if (SlotManager.Instance != null && SlotManager.Instance.IsProcessing)
                 {
                     return;
                 }
-
-                if(mbUnlockProcess) return;
-                mbUnlockProcess = true;
-
-                if(PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost)
+                if(PlayerDataManager.Inst.Gold < SlotManager.Instance.BonusSlotCost)
                 {
-                    PlayerDataManager.Inst.UseGold(SlotManager.Instance.BonusSlotCost);
-                    Sequence seq = DOTween.Sequence();
-                    seq.Append(mBonusSlotButton.transform.DOScale(0, 0.3f));
-                    seq.OnComplete(() => 
-                    {
-                        mBonusSlotButton.gameObject.SetActive(false);
-                        SlotManager.Instance.SetSlotCount(7);
-                        mbUnlockProcess = false;
-                    });
+                    mShopView.Show();
                 }
                 else
                 {
-                    mShopView.Show();
-                    mbUnlockProcess = false;
+                    GameManager.Instance.PauseGame();
+                    mSlotPurchasePopup.Show();
                 }
             });
             
@@ -159,22 +143,8 @@ namespace TrumpTile.GameMain.UI
             {
                 int id = item.ingameItemConfig.itemId;
                 int count = PlayerDataManager.Inst.GetItemCount(id);
-                if(count == 0)
-                {
-                    item.countObject.SetActive(false);
-
-                    item.costObject.SetActive(true);
-                    item.costText.text = item.ingameItemConfig.cost.ToString();
-                }
-                else
-                {
-                    item.costObject.SetActive(false);
-
-                    item.countObject.SetActive(true);
-                    item.countText.text = count.ToString();
-                }
+                item.countText.text = count.ToString();
                 item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
-                item.costText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
             }
 
             mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
