@@ -1,7 +1,6 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
@@ -44,7 +43,8 @@ namespace TrumpTile.GameMain.UI
             
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
             mDailyPuzzleButton.onClick.AddListener(OnDailyPuzzleButtonClick);
-            _ = InitializeDailyPuzzleAsync();
+            mDailyPuzzleButton.interactable = false;
+            InitializeDailyPuzzleAsync();
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
         }
 
@@ -68,7 +68,7 @@ namespace TrumpTile.GameMain.UI
             SceneTransister.Inst.TransistScene("GameScene");
         }
 
-        private async Task InitializeDailyPuzzleAsync()
+        private async void InitializeDailyPuzzleAsync()
         {
             await DailyPuzzleManager.Inst.InitializeAsync();
             RefreshDailyPuzzleButton();
