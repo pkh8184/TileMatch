@@ -87,15 +87,15 @@ namespace TrumpTile.GameMain.UI
         private void OnMainSceneLoadComplete()
         {
             Sequence seq = DOTween.Sequence();
-            seq.Append(mLeftElementsRect.DOAnchorPosX(0, 0.5f / 1.5f));
-            seq.Join(mRightElementsRect.DOAnchorPosX(0, 0.5f / 1.5f));
-            seq.Join(mLeftElementsRectCanvasGroup.DOFade(1, 0.7f / 1.5f));
-            seq.Join(mRightElementsRectCanvasGroup.DOFade(1, 0.7f / 1.5f));
+            seq.Append(mLeftElementsRect.DOAnchorPosX(0, 0.25f));
+            seq.Join(mRightElementsRect.DOAnchorPosX(0, 0.25f));
+            seq.Join(mLeftElementsRectCanvasGroup.DOFade(1, 0.3f));
+            seq.Join(mRightElementsRectCanvasGroup.DOFade(1, 0.3f));
 
             int i = 0;
             foreach(var item in mSizeAdjustElementRectArray)
             {
-                seq.Insert(0.5f / 1.5f + (0.2f / 1.5f * i), item.DOScale(Vector2.one, 0.5f / 1.5f));
+                seq.Insert(0.25f / 1.5f + (0.2f / 1.5f * i), item.DOScale(Vector2.one, 0.5f / 1.5f));
                 seq.Join(mSizeAdjustElementRectCanvasGroupList[i].DOFade(1, 0.7f / 1.5f));
                 i++;
             }
