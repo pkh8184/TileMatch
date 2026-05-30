@@ -134,6 +134,8 @@ namespace TrumpTile.GameMain.UI
         {
             if (mSceneTransister == null) yield break;
 
+            mbSceneTransitionProgressing = true;
+
             mSceneTransister.SetActive(true);
 
             yield return new WaitForSecondsRealtime(0.1f);
@@ -190,6 +192,8 @@ namespace TrumpTile.GameMain.UI
             yield return seq.WaitForCompletion(); 
 
             mSceneTransister.SetActive(false);
+
+            mbSceneTransitionProgressing = false;
         }
         private IEnumerator Co_FadeOutAnim()
         {
