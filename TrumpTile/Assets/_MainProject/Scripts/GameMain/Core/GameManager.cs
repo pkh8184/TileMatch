@@ -244,7 +244,16 @@ namespace TrumpTile.GameMain.Core
 			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
 				AssetReferenceT<LevelData> assetRef = DailyPuzzleManager.Inst.GetTodayAssetRef();
-				levelData = await DataManager.Instance.LoadDailyLevelAsync(assetRef);
+				if (assetRef == null)
+				{
+					Debug.LogError("[GameManager] Daily puzzle assetRef is null. Exiting daily mode.");
+					DailyPuzzleManager.Inst.ExitDailyMode();
+					levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
+				}
+				else
+				{
+					levelData = await DataManager.Instance.LoadDailyLevelAsync(assetRef);
+				}
 			}
 			else
 			{
@@ -511,7 +520,8 @@ namespace TrumpTile.GameMain.Core
 
 			int stars = CalculateStars();
 
-			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+			if (bIsDailyMode)
 			{
 				DailyPuzzleManager.Inst.OnDailyClear();
 			}
@@ -525,7 +535,7 @@ namespace TrumpTile.GameMain.Core
 			// VictoryPopup 표시
 			if (mVictoryPopup != null)
 			{
-				bool bHasNext = HasNextLevel();
+				bool bHasNext = !bIsDailyMode && HasNextLevel();
 				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
 				mVictoryPopup.Show(CurrentLevel, mElapsedTime, stars, bHasNext);
 			}
