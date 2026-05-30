@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
@@ -14,6 +15,10 @@ namespace TrumpTile.GameMain.UI
     {
         [Header("MainView 버튼")]
         [SerializeField] private Button mStageStartButton;
+
+        [Header("일일 퍼즐")]
+        [SerializeField] private Button mDailyPuzzleButton;
+        [SerializeField] private TMP_Text mDailyPuzzleButtonText;
 
         [Header("MainView 텍스트")]
         [SerializeField] private TMP_Text mGoldText;
@@ -38,6 +43,8 @@ namespace TrumpTile.GameMain.UI
             RefreshLocalData();          
             
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
+            mDailyPuzzleButton.onClick.AddListener(OnDailyPuzzleButtonClick);
+            _ = InitializeDailyPuzzleAsync();
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
         }
 
@@ -59,6 +66,34 @@ namespace TrumpTile.GameMain.UI
         private void OnStageButtonClick()
         {
             SceneTransister.Inst.TransistScene("GameScene");
+        }
+
+        private async Task InitializeDailyPuzzleAsync()
+        {
+            await DailyPuzzleManager.Inst.InitializeAsync();
+            RefreshDailyPuzzleButton();
+        }
+
+        private void RefreshDailyPuzzleButton()
+        {
+            bool bCleared = DailyPuzzleManager.Inst.IsTodayCleared;
+            mDailyPuzzleButton.interactable = !bCleared;
+
+            if (mDailyPuzzleButtonText != null)
+            {
+                mDailyPuzzleButtonText.text = bCleared ? "완료" : "일일 퍼즐";
+            }
+        }
+
+        private void OnDailyPuzzleButtonClick()
+        {
+            if (!DailyPuzzleManager.Inst.IsInitialized)
+            {
+                Debug.LogWarning("[MainView] DailyPuzzleManager not initialized yet");
+                return;
+            }
+
+            DailyPuzzleManager.Inst.EnterDailyPuzzle();
         }
     }
 }
