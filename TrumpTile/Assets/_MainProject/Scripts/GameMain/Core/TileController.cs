@@ -82,6 +82,7 @@ namespace TrumpTile.GameMain.Core
 		private Vector3 mOriginalScale = Vector3.one;
 		private Vector3 mSpawnTargetPos;
 		private bool mbIsJewerly;
+		private bool mbIsShake;
 		#endregion
 
 		#region Properties
@@ -265,6 +266,7 @@ namespace TrumpTile.GameMain.Core
 
 			if (!IsSelectable)
 			{
+				if(mbIsShake) return;
 				PlayShakeAnimation();
 				AudioEvent.Play(EAudioKey.SFX_Reject);
 				return;
@@ -549,7 +551,7 @@ namespace TrumpTile.GameMain.Core
 			Sequence seq = DOTween.Sequence();
 			seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
 			seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
-			seq.Append(transform.DOScale(Vector3.one * 0.65f , duration / 3));
+			seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
 
 			while (elapsed < duration)
 			{
@@ -571,7 +573,7 @@ namespace TrumpTile.GameMain.Core
 			transform.position = targetPosition;
 			
 			transform.rotation = Quaternion.identity;
-			transform.localScale = Vector3.one * 0.59f;
+			transform.localScale = Vector3.one * 0.6f;
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
@@ -627,6 +629,7 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			transform.position = targetPosition;
+			transform.localScale = Vector3.one * 0.6f;
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
@@ -642,6 +645,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
+			mbIsShake = true;
 			StartCoroutine(ShakeCoroutine());
 		}
 
@@ -662,7 +666,7 @@ namespace TrumpTile.GameMain.Core
 				transform.position = originalPos + new Vector3(offsetX, offsetY, 0F);
 				yield return null;
 			}
-
+			mbIsShake = false;
 			transform.position = originalPos;
 		}
 
