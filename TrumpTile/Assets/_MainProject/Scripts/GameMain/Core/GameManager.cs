@@ -48,7 +48,6 @@ namespace TrumpTile.GameMain.Core
 		private bool mIsSlowMotion = false;
 		[SerializeField] private bool mEnableTimerLog = false;
 		[SerializeField] private bool mbLevelTestMode = false;
-
 		[Header("빌드 테스트용 참조")]
 		[SerializeField] private GameObject mBuildTestObject;
 		[SerializeField] private TMP_Text mBuildTestText;
@@ -238,6 +237,7 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.Loading;
 
 			LoadingAnimComplete = false;
+			tutorialComplete = false;
 			
 			LevelData levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
 			if (levelData == null)
@@ -292,24 +292,6 @@ namespace TrumpTile.GameMain.Core
 			OnComboChanged?.Invoke(0);		
 
             await WaitUntill(() => LoadingAnimComplete);
-
-			if(!tutorialComplete)
-			{
-				if(levelData.levelNumber == 1)
-				{
-					FindObjectOfType<MatchTutorialPopup>(true)?.Show();
-				}
-				else if(levelData.levelNumber == 2)
-				{
-					FindObjectOfType<SlotTutorialPopup>(true)?.Show();
-				}	
-				else
-				{
-					tutorialComplete = true;
-				}
-			}
-
-
 			await WaitUntill(() => tutorialComplete);
 
 			Debug.Log("게임 시작");
