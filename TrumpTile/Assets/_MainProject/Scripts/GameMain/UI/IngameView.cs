@@ -182,16 +182,18 @@ namespace TrumpTile.GameMain.UI
             Sprite background = mDifficultyLevelBackgroundArray[index];
             mBackgroundImage.sprite = background? background : mDefaultBackgroundSprite; 
 
-            mLevelNameBackground.gameObject.SetActive(true);
-            mEffectObjectArray[index].SetActive(true);
+            bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
 
-            mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
+            if (!bIsDailyMode)
+            {
+                mLevelNameBackground.gameObject.SetActive(true);
+                mEffectObjectArray[index].SetActive(true);
+                mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
+                mTopLevelNameRect.localScale = Vector3.zero;
+                mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
+                mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
+            }
 
-            mTopLevelNameRect.localScale = Vector3.zero;  
-
-            mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
-            mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
-            
             foreach (var item in mItemButtonConfigArray)
             {
                 if(levelData.levelNumber >= item.ingameItemConfig.unlockLevel)
@@ -202,7 +204,7 @@ namespace TrumpTile.GameMain.UI
                     item.button.onClick.AddListener(() =>
                     {
                         OnItemButtonClick(id);
-                    });   
+                    });
                 }
                 else
                 {
@@ -211,8 +213,15 @@ namespace TrumpTile.GameMain.UI
                     item.button.onClick.AddListener(() => ShowBallon(item));
                 }
             }
-            
-            StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber));
+
+            if (bIsDailyMode)
+            {
+                StartCoroutine(Co_PlayFadeInOnly());
+            }
+            else
+            {
+                StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber));
+            }
         }
         private void ShowBallon(ItemButtonConfig item)
         {
@@ -261,6 +270,13 @@ namespace TrumpTile.GameMain.UI
             StartCoroutine(Co_TimePickerProgress());
             StartCoroutine(Co_TimerSliderProgress());
         }
+        private IEnumerator Co_PlayFadeInOnly()
+        {
+            yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());
+            RefreshButtons();
+            GameManager.Instance.LoadingAnimComplete = true;
+        }
+
         private IEnumerator Co_PlayLevelNameAnim(int level)
         {
             yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());   

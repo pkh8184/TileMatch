@@ -96,6 +96,10 @@ namespace TrumpTile.GameMain.UI
         
         private async void InitializeDailyPuzzleAsync()
         {
+            if (DailyPuzzleManager.Inst == null)
+            {
+                return;
+            }
             await DailyPuzzleManager.Inst.InitializeAsync();
             RefreshDailyPuzzleButton();
         }
