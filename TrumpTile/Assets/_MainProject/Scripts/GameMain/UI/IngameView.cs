@@ -240,11 +240,13 @@ namespace TrumpTile.GameMain.UI
         {
             if(mBallonRect.gameObject.activeSelf)
             {
-                 mBallonRect.gameObject.SetActive(false);
+                mBallonRect.gameObject.SetActive(false);
             }
             mBallonRect.SetParent(item.button.transform);
-            mBallonRect.anchoredPosition = new Vector2(0, mBallonRect.anchoredPosition.y);
-            mBallonRect.localScale = Vector2.zero;
+            float baseY = mBallonRect.anchoredPosition.y;
+            mBallonRect.anchoredPosition = new Vector2(0f, baseY);
+            mBallonRect.localScale = Vector3.zero;
+            mBallonRect.localRotation = Quaternion.Euler(0f, 0f, -8f);
 
             mBallonText.text = item.ingameItemConfig.unlockLevel.ToString() + "레벨 오픈";
             if(mBallonSequence != null && mBallonSequence.IsActive())
@@ -255,9 +257,17 @@ namespace TrumpTile.GameMain.UI
             mBallonRect.gameObject.SetActive(true);
 
             mBallonSequence = DOTween.Sequence();
-            mBallonSequence.Append(mBallonRect.DOScale(1f, 0.3f));
-            mBallonSequence.AppendInterval(0.5f);
-            mBallonSequence.Append(mBallonRect.DOScale(0f, 0.2f));
+            // 등장: 회전 풀기 + 스케일 튀어오름 + 위로 살짝 떠오름
+            mBallonSequence.Append(mBallonRect.DOScale(1f, 0.35f).SetEase(Ease.OutBack, 2.5f));
+            mBallonSequence.Join(mBallonRect.DOLocalRotate(Vector3.zero, 0.35f).SetEase(Ease.OutCubic));
+            mBallonSequence.Join(mBallonRect.DOAnchorPosY(baseY + 4f, 0.35f).SetEase(Ease.OutCubic));
+            // 흔들림 1회 (살짝 내려갔다 다시 위로)
+            mBallonSequence.Append(mBallonRect.DOAnchorPosY(baseY - 2f, 0.25f).SetEase(Ease.InOutSine));
+            mBallonSequence.Append(mBallonRect.DOAnchorPosY(baseY + 4f, 0.25f).SetEase(Ease.InOutSine));
+            // 잠시 유지
+            mBallonSequence.AppendInterval(0.3f);
+            // 사라짐: 안으로 빨려들어가듯
+            mBallonSequence.Append(mBallonRect.DOScale(0f, 0.22f).SetEase(Ease.InBack));
             mBallonSequence.OnComplete(() => mBallonRect.gameObject.SetActive(false));
         }
         private int GetLevelDifficultyIndex(EDifficultyType eDifficultyType)
