@@ -11,6 +11,7 @@ using TrumpTile.LevelEditor.Editor;
 using System;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.AddressableAssets;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -242,10 +243,29 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.Loading;
 
 			LoadingAnimComplete = false;
-			tutorialComplete = false;
+      tutorialComplete = false;
 			mStarCount = 0;
 
-			LevelData levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
+			LevelData levelData;
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				AssetReferenceT<LevelData> assetRef = DailyPuzzleManager.Inst.GetTodayAssetRef();
+				if (assetRef == null)
+				{
+					Debug.LogError("[GameManager] Daily puzzle assetRef is null. Exiting daily mode.");
+					DailyPuzzleManager.Inst.ExitDailyMode();
+					levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
+				}
+				else
+				{
+					levelData = await DataManager.Instance.LoadDailyLevelAsync(assetRef);
+				}
+			}
+			else
+			{
+				levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
+			}
+
 			if (levelData == null)
 			{
 				mBuildTestObject.SetActive(true);
@@ -297,7 +317,29 @@ namespace TrumpTile.GameMain.Core
 			OnScoreChanged?.Invoke(mCurrentScore);
 			OnComboChanged?.Invoke(0);		
 
-            await WaitUntill(() => LoadingAnimComplete);
+      await WaitUntill(() => LoadingAnimComplete);
+
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				tutorialComplete = true;
+			}
+
+			if(!tutorialComplete)
+			{
+				if(levelData.levelNumber == 1)
+				{
+					FindObjectOfType<MatchTutorialPopup>(true)?.Show();
+				}
+				else if(levelData.levelNumber == 2)
+				{
+					FindObjectOfType<SlotTutorialPopup>(true)?.Show();
+				}	
+				else
+				{
+					tutorialComplete = true;
+				}
+			}
+      
 			await WaitUntill(() => tutorialComplete);
 
 			Debug.Log("게임 시작");
@@ -363,6 +405,7 @@ namespace TrumpTile.GameMain.Core
 		public void GoToMainMenu()
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
+			DailyPuzzleManager.Inst?.ExitDailyMode();
 
 			//AudioEvent.Play(EAudioKey.BGM_Main);
 			
@@ -482,24 +525,33 @@ namespace TrumpTile.GameMain.Core
 			//EffectManager.Instance?.PlayClearEffect();
 
 			mStarCount = CalculateStars();
-
-			SaveLevelProgress(CurrentLevel, mStarCount);
+      
+			bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+			if (bIsDailyMode)
+			{
+				DailyPuzzleManager.Inst.OnDailyClear();
+			}
+			else
+			{
+				SaveLevelProgress(CurrentLevel, mStarCount);
+			}
 
 			yield return new WaitForSeconds(0.5F);
 
 			EventManager.Inst.ActiveEvent("LevelClear");
 			// VictoryPopup 표시
-			// if (mVictoryPopup != null)
-			// {
-			// 	bool bHasNext = HasNextLevel();
-			// 	Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
-			// 	mVictoryPopup.Show(CurrentLevel, mElapsedTime, stars, bHasNext);
-			// }
-			// else
-			// {
-			// 	Debug.LogWarning("[GameManager] VictoryPopup is null!");
-			// 	UIManager.Instance?.ShowLevelClearPanel(stars);
-			// }
+      
+			if (mVictoryPopup != null)
+			{
+				bool bHasNext = !bIsDailyMode && HasNextLevel();
+				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
+				mVictoryPopup.Show(CurrentLevel, mElapsedTime, stars, bHasNext);
+			}
+			else
+			{
+				Debug.LogWarning("[GameManager] VictoryPopup is null!");
+				UIManager.Instance?.ShowLevelClearPanel(stars);
+			}
 		}
 
 		private int CalculateStars()
@@ -646,6 +698,11 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		private void LoadProgress()
 		{
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				return;
+			}
+
 			// Inspector에서 mStartLevel을 1보다 크게 설정했으면 그 값 사용 (디버그용)
 			if (mStartLevel > 1)
 			{

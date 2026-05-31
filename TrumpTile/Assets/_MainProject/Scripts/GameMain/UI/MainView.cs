@@ -15,6 +15,10 @@ namespace TrumpTile.GameMain.UI
         [Header("MainView 버튼")]
         [SerializeField] private Button mStageStartButton;
 
+        [Header("일일 퍼즐")]
+        [SerializeField] private Button mDailyPuzzleButton;
+        [SerializeField] private TMP_Text mDailyPuzzleButtonText;
+
         [Header("MainView 텍스트")]
         [SerializeField] private TMP_Text mGoldText;
         [SerializeField] private TMP_Text mCurrentStageText;
@@ -45,6 +49,9 @@ namespace TrumpTile.GameMain.UI
             RefreshLocalData();          
             
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
+            mDailyPuzzleButton.onClick.AddListener(OnDailyPuzzleButtonClick);
+            mDailyPuzzleButton.interactable = false;
+            InitializeDailyPuzzleAsync();
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
             EventManager.Inst.AddEvent("MainSceneLoadComplete", _ => OnMainSceneLoadComplete());
 
@@ -70,6 +77,7 @@ namespace TrumpTile.GameMain.UI
             mGoldText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.Gold);
             mCurrentStageText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
         }
+        
         protected override void RefreshLocalData()
         {
             int index = PlayerDataManager.Inst.GetProfileImageIndex();
@@ -80,10 +88,40 @@ namespace TrumpTile.GameMain.UI
 
             Debug.Log($"[{name}] Refresh Local Data");
         }
+        
         private void OnStageButtonClick()
         {
             SceneTransister.Inst.TransistScene("GameScene");
         }
+        
+        private async void InitializeDailyPuzzleAsync()
+        {
+            await DailyPuzzleManager.Inst.InitializeAsync();
+            RefreshDailyPuzzleButton();
+        }
+
+        private void RefreshDailyPuzzleButton()
+        {
+            bool bCleared = DailyPuzzleManager.Inst.IsTodayCleared;
+            mDailyPuzzleButton.interactable = !bCleared;
+
+            if (mDailyPuzzleButtonText != null)
+            {
+                mDailyPuzzleButtonText.text = bCleared ? "완료" : "일일 퍼즐";
+            }
+        }
+
+        private void OnDailyPuzzleButtonClick()
+        {
+            if (!DailyPuzzleManager.Inst.IsInitialized)
+            {
+                Debug.LogWarning("[MainView] DailyPuzzleManager not initialized yet");
+                return;
+            }
+
+            DailyPuzzleManager.Inst.EnterDailyPuzzle();
+         }
+
         private void OnMainSceneLoadComplete()
         {
             Sequence seq = DOTween.Sequence();

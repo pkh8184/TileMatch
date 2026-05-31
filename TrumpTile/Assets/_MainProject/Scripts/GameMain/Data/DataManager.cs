@@ -104,6 +104,36 @@ namespace TrumpTile.GameMain.Data
 		}
 
 		/// <summary>
+		/// 일일 퍼즐 레벨 비동기 로드 (AssetReference 직접 사용)
+		/// </summary>
+		public async Task<LevelData> LoadDailyLevelAsync(AssetReferenceT<LevelData> assetRef)
+		{
+			if (assetRef == null)
+			{
+				Debug.LogWarning("[DataManager] Daily level assetRef is null");
+				return null;
+			}
+
+			if (mCurrentLevelHandle.IsValid())
+			{
+				Addressables.Release(mCurrentLevelHandle);
+				mCurrentLevelData = null;
+			}
+
+			mCurrentLevelHandle = Addressables.LoadAssetAsync<LevelData>(assetRef);
+			await mCurrentLevelHandle.Task;
+
+			if (mCurrentLevelHandle.Status == AsyncOperationStatus.Succeeded)
+			{
+				mCurrentLevelData = mCurrentLevelHandle.Result;
+				return mCurrentLevelData;
+			}
+
+			Debug.LogWarning("[DataManager] Daily LevelData load failed");
+			return null;
+		}
+
+		/// <summary>
 		/// 현재 레벨 데이터 해제
 		/// </summary>
 		public void ReleaseLevelData()
