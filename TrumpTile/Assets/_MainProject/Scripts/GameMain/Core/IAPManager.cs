@@ -64,6 +64,12 @@ namespace  TrumpTile.GameMain.Core
         private void OnProductsFetched(List<Product> products)
         {
             Debug.Log("[IAPManager] 상품 목록 로드 성공");
+
+            foreach (var product in products)
+            {
+                Debug.Log($"[IAPManager] 상품 ID: {product.definition.id}");
+            }
+
             mStoreController.FetchPurchases();
         }
         private void OnPurchasesFetched(Orders orders)

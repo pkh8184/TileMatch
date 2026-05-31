@@ -16,7 +16,12 @@ MonoBehaviour:
   - mEProductId: 0
     mEProductType: 0
     mProductId: goldpackage_001
-    mRewardList: []
+    mRewardList:
+    - rid: 5782853522439012354
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5782853522439012354
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 100

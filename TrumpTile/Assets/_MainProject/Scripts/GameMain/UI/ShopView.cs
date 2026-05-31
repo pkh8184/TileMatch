@@ -19,6 +19,13 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private RectTransform mUIContainerTransform;
         [SerializeField] private float mAnimDuration = 0.5f;
 
+        [SerializeField] private Button mGoldPackageButton;
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            mGoldPackageButton.onClick.AddListener(() => IAPManager.Instance.PurchaseProduct(EProductId.GoldPackage_1));
+        }
         public override void Show()
         {
             base.Show();
