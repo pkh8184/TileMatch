@@ -185,7 +185,53 @@ namespace TrumpTile.GameMain.Core
 			Vector3 landPosition;
 			return RemoveOneTileToBoard(out landPosition, bWithSpin: false);
 		}
+		public bool RemoveAllTile()
+		{
+			Vector3 landPosition;
+			return RemoveAllTileToBoard(out landPosition, false);
+		}
+		private bool RemoveAllTileToBoard(out Vector3 landPosition, bool bWithSpin = false)
+		{
+			landPosition = Vector3.zero;
 
+			if (mSlotTiles.Count == 0)
+			{
+				return false;
+			}
+			if (mIsProcessingMatch)
+			{
+				return false;
+			}
+			while(mSlotTiles.Count > 0)
+			{
+				TileController tile = mSlotTiles[mSlotTiles.Count - 1];
+				if (tile == null)
+				{
+					return false;
+				}
+
+				mSlotTiles.Remove(tile);
+
+				bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile, bWithSpin) ?? false;
+
+				if (!bPlaced)
+				{
+					mSlotTiles.Add(tile);
+					Debug.LogWarning("[SlotManager] Failed to place tile on board");
+					return false;
+				}
+
+				// 착지 위치 반환 (보드에 배치된 실제 위치)
+				landPosition = BoardManager.Instance != null
+					? BoardManager.Instance.GetLastPlacedTilePosition()
+					: tile.transform.position;
+
+				RearrangeSlots();
+
+				Debug.Log($"[SlotManager] Tile returned to board: {tile.Data?.TileID} at {landPosition}");	
+			}
+			return true;
+		}
 		/// <summary>
 		/// 타일 하나를 보드로 복귀 (착지 위치 반환)
 		/// </summary>

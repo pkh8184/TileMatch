@@ -34,5 +34,11 @@ namespace TrumpTile.GameMain.Core
 		SFX_StageLosed_02,
 		SFX_StageFail,
 		SFX_Reject,
+
+		// additional clip
+		BGM_Ingame_Hard,
+		BGM_Ingame_VeryHard,
+		SFX_LevelName_Hard,
+		SFX_LevelName_VeryHard
 	}
 }

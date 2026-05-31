@@ -85,6 +85,11 @@ namespace TrumpTile.GameMain.Core
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
 
+		// 부활 관련
+		private bool mbIsTimeOut;
+		private bool mbIsResurrection;
+		public bool IsResurrection => mbIsResurrection;
+		// 튜토리얼 체크
 		public bool tutorialComplete { get; set; }
 		public bool IsTimerFrozen => mIsTimerFrozen;
 
@@ -105,16 +110,9 @@ namespace TrumpTile.GameMain.Core
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
-            if (uiBaseArray != null)
+            foreach (var item in uiBaseArray)
             {
-                foreach (UIBase uiBase in uiBaseArray)
-                {
-                    uiBase.Initialize();
-                }
-            }
-            else
-            {
-                Debug.Log("UIBase를 찾지 못했습니다.");
+                item.Initialize();
             }
         }
 
@@ -170,7 +168,11 @@ namespace TrumpTile.GameMain.Core
                         }
                     }
                     mCurrentTime = mTargetClearTime - mElapsedTime;
-                    if (mCurrentTime <= 0) OnGameOver();
+                    if (mCurrentTime <= 0) 
+					{
+						mbIsTimeOut = true;
+						OnGameOver();
+					}
                 }		
             }
 			if(Input.GetKeyDown(KeyCode.Escape))
@@ -243,7 +245,7 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.Loading;
 
 			LoadingAnimComplete = false;
-      tutorialComplete = false;
+      		tutorialComplete = false;
 			mStarCount = 0;
 
 			LevelData levelData;
@@ -339,6 +341,7 @@ namespace TrumpTile.GameMain.Core
 		public void RestartLevel()
 		{
 			mbIsRetry = true;
+			mbIsResurrection = false;
 			Debug.Log($"[GameManager] RestartLevel - Level {CurrentLevel}");
 			AudioManager.Inst.SetBGMVolume(1f);
 			StartLevel(CurrentLevel);
@@ -466,10 +469,7 @@ namespace TrumpTile.GameMain.Core
 			EffectManager.Instance?.PlayGameOverEffect();
 			AudioEvent.Play(EAudioKey.SFX_StageLosed);
 
-			if (mGameOverPopup != null)
-			{
-				mGameOverPopup.Show();
-			}
+			EventManager.Inst.ActiveEvent("GameOver");
 		}
 
 		private void OnContinueGame()
@@ -487,7 +487,36 @@ namespace TrumpTile.GameMain.Core
 
 			UIManager.Instance?.UpdateItemButtonStates();
 		}
+		public void ContinueGame()
+		{
+			if(mbIsTimeOut)
+			{
+				mElapsedTime = 0;
+				mTargetClearTime = 40;
 
+				AudioManager.Inst.SetBGMVolume(1f);
+
+				mSlotManager?.ResumeGame();
+
+				CurrentState = EGameState.Playing;
+			}
+			else
+			{
+				if(mCurrentTime < 20)
+				{
+					mElapsedTime = 0;
+					mTargetClearTime = 30;
+				}
+				AudioManager.Inst.SetBGMVolume(1f);
+
+				mSlotManager?.ResumeGame();
+				mSlotManager?.RemoveAllTile();
+
+				CurrentState = EGameState.Playing;
+			}
+
+			mbIsResurrection = true;
+		}
 		public void LevelClear()
 		{
 			if (CurrentState == EGameState.GameClear)

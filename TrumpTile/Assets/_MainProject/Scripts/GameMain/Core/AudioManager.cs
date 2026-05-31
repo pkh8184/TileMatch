@@ -137,7 +137,8 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnAudioPlay(AudioEventPayload payload)
 		{
-			bool bIsBgm = payload.Key == EAudioKey.BGM_Main || payload.Key == EAudioKey.BGM_Ingame;
+			string key = payload.Key.ToString();
+			bool bIsBgm = key.Contains("BGM");
 			if (bIsBgm)
 			{
 				AudioClip clip = GetClip(payload.Key);

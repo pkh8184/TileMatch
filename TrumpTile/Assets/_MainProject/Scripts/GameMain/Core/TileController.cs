@@ -83,6 +83,8 @@ namespace TrumpTile.GameMain.Core
 		private Vector3 mSpawnTargetPos;
 		private bool mbIsJewerly;
 		private bool mbIsShake;
+
+
 		#endregion
 
 		#region Properties
@@ -157,6 +159,7 @@ namespace TrumpTile.GameMain.Core
 			EnableCollider(true);
 
 			mOriginalScale = transform.localScale;
+			mSpawnTargetPos = transform.position;
 		}
 
 		private void SetupVisual(Sprite tileBackground)
@@ -506,9 +509,12 @@ namespace TrumpTile.GameMain.Core
 		private void ReturnToBoard(Vector3 boardPosition)
 		{
 			InitBoardReturn();
-			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(boardPosition, null));
+			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(boardPosition, () => EnableCollider(true)));
 		}
-
+		public void ReturnToBoard()
+		{
+			ReturnToBoard(mSpawnTargetPos);
+		}
 		public void ReturnToBoard(Vector3 boardPosition, int x, int y, int layer)
 		{
 			mGridX = x;
@@ -516,6 +522,14 @@ namespace TrumpTile.GameMain.Core
 			mLayerIndex = layer;
 
 			ReturnToBoard(boardPosition);
+		}
+		public void FlyToBoard(Action onComplete = null)
+		{
+			InitBoardReturn();
+			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(mSpawnTargetPos, () =>
+			{
+				mCurrentAnimation = StartCoroutine(BounceOnLandCoroutine(() => EnableCollider(true)));
+			}));
 		}
 
 		public void FlyToBoard(Vector3 boardPosition, int x, int y, int layer, Action onComplete = null)
@@ -549,9 +563,19 @@ namespace TrumpTile.GameMain.Core
 			float elapsed = 0F;
 
 			Sequence seq = DOTween.Sequence();
-			seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
-			seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
-			seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
+
+			if(mSlotIndex > -1)
+			{
+				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
+				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
+				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
+			}			
+			else
+			{
+				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
+				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
+				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
+			}
 
 			while (elapsed < duration)
 			{
@@ -573,7 +597,14 @@ namespace TrumpTile.GameMain.Core
 			transform.position = targetPosition;
 			
 			transform.rotation = Quaternion.identity;
-			transform.localScale = Vector3.one * 0.6f;
+			if(mSlotIndex > -1)
+			{
+				transform.localScale = Vector3.one * 0.6f;
+			}
+			else
+			{
+				transform.localScale = mOriginalScale;
+			}
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
@@ -619,6 +650,20 @@ namespace TrumpTile.GameMain.Core
 			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.03F, 0.15F);
 
 			float elapsed = 0F;
+			Sequence seq = DOTween.Sequence();
+
+			if(mSlotIndex > -1)
+			{
+				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
+				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
+				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
+			}			
+			else
+			{
+				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
+				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
+				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
+			}
 
 			while (elapsed < duration)
 			{
@@ -629,7 +674,14 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			transform.position = targetPosition;
-			transform.localScale = Vector3.one * 0.6f;
+			if(mSlotIndex > -1)
+			{
+				transform.localScale = Vector3.one * 0.6f;
+			}
+			else
+			{
+				transform.localScale = mOriginalScale;
+			}
 			mIsAnimating = false;
 
 			onComplete?.Invoke();

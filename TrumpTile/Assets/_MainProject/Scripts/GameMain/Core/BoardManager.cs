@@ -50,7 +50,7 @@ namespace TrumpTile.GameMain.Core
 
 		#region Private Fields
 
-		private List<TileController> mAllTiles = new List<TileController>();
+		[SerializeField] private List<TileController> mAllTiles = new List<TileController>();
 		private Dictionary<Vector3, TileController> mTileGridMap = new Dictionary<Vector3, TileController>();
 
 		private int mGridWidth;
@@ -61,6 +61,8 @@ namespace TrumpTile.GameMain.Core
 
 		private bool mIsShuffling = false;
 		private bool mIsLevelLoaded = false;
+
+		private int count;
 
 		[Header("LayerList 기반으로 레벨 생성(기존 레벨들은 false로 해줘야 생성 가능)")]
 		[SerializeField] private bool mbCreateTileByLayerList = false;
@@ -270,13 +272,12 @@ namespace TrumpTile.GameMain.Core
 				mCreatedTileMap[data.tileTypeId] = 0;
 			}
 			mCreatedTileMap[data.tileTypeId]++;
-
+			count++;
 
 			Vector3 position = GridToWorldPosition(x, y, layer);
 			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
-
+			tile.name += count.ToString();
 			tile.transform.localScale = mTileScale;
-			//tile.transform.localPosition = position;
 			tile.Initialize(data, x, y, layer, tileBackground);
 
 			float spawnDelay = Mathf.Min(spawnIndex * mSpawnDelayPerTile, mMaxSpawnDelay);
@@ -397,7 +398,6 @@ namespace TrumpTile.GameMain.Core
 				{
 					continue;
 				}
-
 				Vector3 otherPos = other.transform.position;
 
 				float dx = Mathf.Abs(otherPos.x - tilePos.x);
@@ -563,11 +563,13 @@ namespace TrumpTile.GameMain.Core
 
 			if (bWithSpin)
 			{
-				tile.FlyToBoard(position, x, y, layer);
+				//tile.FlyToBoard(position, x, y, layer);
+				tile.FlyToBoard();
 			}
 			else
 			{
-				tile.ReturnToBoard(position, x, y, layer);
+				//tile.ReturnToBoard(position, x, y, layer);
+				tile.ReturnToBoard();
 			}
 
 			if (!mAllTiles.Contains(tile))
@@ -575,10 +577,11 @@ namespace TrumpTile.GameMain.Core
 				mAllTiles.Add(tile);
 			}
 
-			Vector3Int gridPos = new Vector3Int(x, y, layer);
+			//Vector3Int gridPos = new Vector3Int(x, y, layer);
+			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap[gridPos] = tile;
 
-			mLastPlacedTilePosition = position;
+			mLastPlacedTilePosition = tile.transform.position;
 
 			UpdateAllBlockedStates();
 		}
