@@ -51,9 +51,8 @@ namespace TrumpTile.GameMain.UI
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
             mDailyPuzzleButton.onClick.AddListener(OnDailyPuzzleButtonClick);
             mDailyPuzzleButton.interactable = false;
-            InitializeDailyPuzzleAsync();
+            //InitializeDailyPuzzleAsync();
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
-            EventManager.Inst.AddEvent("MainSceneLoadComplete", _ => OnMainSceneLoadComplete());
 
             mLeftElementsRect.anchoredPosition = Vector2.left * 250;
             mRightElementsRect.anchoredPosition = Vector2.right * 250;
@@ -71,7 +70,16 @@ namespace TrumpTile.GameMain.UI
             mRightElementsRectCanvasGroup = mRightElementsRect.GetComponent<CanvasGroup>();
             mRightElementsRectCanvasGroup.alpha = 0;
         }
-
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
+            EventManager.Inst.AddEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
+        }
+        protected override void UnSubscribeEvent()
+        {
+            base.UnSubscribeEvent();
+            EventManager.Inst?.RemoveEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
+        }
         protected override void Refresh()
         {
             mGoldText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.Gold);

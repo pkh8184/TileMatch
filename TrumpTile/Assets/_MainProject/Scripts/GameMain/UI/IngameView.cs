@@ -109,8 +109,8 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
             EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
             //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
-            EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
-            EventManager.Inst.AddEvent("ItemCountChanged", _ => RefreshButtons());
+            EventManager.Inst.AddEvent("AccessShopView", mShopView.Show);
+            EventManager.Inst.AddEvent("ItemCountChanged", RefreshButtons);
             EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
             
             PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
@@ -118,11 +118,11 @@ namespace TrumpTile.GameMain.UI
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
-            EventManager.Inst?.RemoveEvent("IngameLoadingComplete");
-            EventManager.Inst?.RemoveEvent("TimerSettingComplete");
-            EventManager.Inst?.RemoveEvent("AccessShopView");
-            EventManager.Inst?.RemoveEvent("ItemCountChanged");
-            EventManager.Inst?.RemoveEvent("PurchaseItem");
+            EventManager.Inst?.RemoveEvent("IngameLoadingComplete", OnLoadLevelComplete);
+            EventManager.Inst?.RemoveEvent("TimerSettingComplete", OnTimerSettingComplete);
+            EventManager.Inst?.RemoveEvent("AccessShopView", mShopView.Show);
+            EventManager.Inst?.RemoveEvent("ItemCountChanged", RefreshButtons);
+            EventManager.Inst?.RemoveEvent("PurchaseItem", PurchaseItem);
 
             if(PlayerDataManager.Inst != null)
             {
@@ -182,6 +182,19 @@ namespace TrumpTile.GameMain.UI
             Sprite background = mDifficultyLevelBackgroundArray[index];
             mBackgroundImage.sprite = background? background : mDefaultBackgroundSprite; 
 
+            if(index == 0)
+            {
+                AudioEvent.Play(EAudioKey.BGM_Ingame);
+            }
+            else if(index == 1)
+            {
+                AudioEvent.Play(EAudioKey.BGM_Ingame_Hard);
+            }
+            else
+            {
+                AudioEvent.Play(EAudioKey.BGM_Ingame_VeryHard);
+            }
+
             bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
 
             if (!bIsDailyMode)
@@ -220,7 +233,7 @@ namespace TrumpTile.GameMain.UI
             }
             else
             {
-                StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber));
+                StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber, index));
             }
         }
         private void ShowBallon(ItemButtonConfig item)
@@ -264,7 +277,7 @@ namespace TrumpTile.GameMain.UI
                 return 0;
             }
         }
-        private void OnTimerSettingComplete(object obj)
+        private void OnTimerSettingComplete()
         {
             StartCoroutine(Co_TimerTextProgress());
             StartCoroutine(Co_TimePickerProgress());
@@ -277,14 +290,25 @@ namespace TrumpTile.GameMain.UI
             GameManager.Instance.LoadingAnimComplete = true;
         }
 
-        private IEnumerator Co_PlayLevelNameAnim(int level)
+        private IEnumerator Co_PlayLevelNameAnim(int level, int difficultyIndex)
         {
             yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());   
 
             RefreshButtons();
             Sequence sq = DOTween.Sequence();
 
-            AudioEvent.Play(EAudioKey.SFX_LevelName_01);
+            if(difficultyIndex == 0)
+            {
+                AudioEvent.Play(EAudioKey.SFX_LevelName_01);
+            }
+            else if(difficultyIndex == 1)
+            {
+                AudioEvent.Play(EAudioKey.SFX_LevelName_Hard);
+            }
+            else
+            {
+                AudioEvent.Play(EAudioKey.SFX_LevelName_VeryHard);
+            }
             sq.Append(mLevelNameCanvasGroup.DOFade(1, 0.5f));
             RectTransform rt = mLevelNameCanvasGroup.transform.GetComponent<RectTransform>();
 

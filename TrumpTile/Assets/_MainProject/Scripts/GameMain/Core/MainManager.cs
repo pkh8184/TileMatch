@@ -13,18 +13,11 @@ namespace TrumpTile.GameMain.Core
         {
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
-            if (uiBaseArray != null)
+            foreach (var item in uiBaseArray)
             {
-                foreach (UIBase uiBase in uiBaseArray)
-                {
-                    uiBase.Initialize();
-                }    
+                item.Initialize();
             }
-            else
-            {
-                Debug.Log("UIBase를 찾지 못했습니다.");
-            }
-            
+
             _ = AdManager.Inst;
         }
         private IEnumerator Start()

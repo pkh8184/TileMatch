@@ -53,6 +53,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.Show();
             
+            AudioEvent.Play(EAudioKey.SFX_StageClear);
             mbAnimProgress = true;
 
             Sequence seq = DOTween.Sequence();
@@ -86,13 +87,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("LevelClear", _ => Show());
+            EventManager.Inst.AddEvent("LevelClear", Show);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent("LevelClear");
+            EventManager.Inst?.RemoveEvent("LevelClear", Show);
         }
         private void OnRewardButtonClick()
         {

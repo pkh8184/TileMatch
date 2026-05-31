@@ -51,7 +51,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("GameOver", _ => Show());
+            EventManager.Inst.AddEvent("GameOver", Show);
+        }
+        protected override void UnSubscribeEvent()
+        {
+            base.UnSubscribeEvent();
+
+            EventManager.Inst?.RemoveEvent("GameOver", Show);
         }
         public override void Show()
         {

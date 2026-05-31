@@ -788,7 +788,7 @@ MonoBehaviour:
   mStudioLogo: {fileID: 870880501}
   mLogoFadeDuration: 0.7
   mLoadingSlider: {fileID: 947923544}
-  mVersionCheckPopup: {fileID: 4304270000276239054}
+  mVersionCheckPopup: {fileID: 725408123}
   mVersionText: {fileID: 1680478217}
 --- !u!1 &725408119
 GameObject:
@@ -801,6 +801,7 @@ GameObject:
   - component: {fileID: 725408120}
   - component: {fileID: 725408122}
   - component: {fileID: 725408121}
+  - component: {fileID: 725408123}
   m_Layer: 5
   m_Name: PublicPopup_VersionCheck
   m_TagString: Untagged
@@ -866,6 +867,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 725408119}
   m_CullTransparentMesh: 1
+--- !u!114 &725408123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 725408119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3e3eaf21ca1bc24b9313c8c5fd688f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mShowButton: {fileID: 0}
+  mHideButton: {fileID: 0}
+  mShowDuration: 0.3
+  mHideDuration: 0.3
+  mPopupObj: {fileID: 765565552500207749}
 --- !u!1 &762488258
 GameObject:
   m_ObjectHideFlags: 0
@@ -1989,7 +2007,6 @@ GameObject:
   - component: {fileID: 8529155937480953893}
   - component: {fileID: 7233764824281238229}
   - component: {fileID: 2871413893060640210}
-  - component: {fileID: 4304270000276239054}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -2116,23 +2133,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4304270000276239054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 765565552500207749}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3e3eaf21ca1bc24b9313c8c5fd688f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mShowButton: {fileID: 0}
-  mHideButton: {fileID: 0}
-  mShowDuration: 1
-  mHideDuration: 1
-  mPopupObj: {fileID: 0}
 --- !u!1 &4877447717509246176
 GameObject:
   m_ObjectHideFlags: 0

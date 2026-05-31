@@ -14,6 +14,10 @@ namespace TrumpTile.GameMain.Core
 		// 타입 안전 제네릭 이벤트
 		private Dictionary<string, Delegate> mTypedEvents = new Dictionary<string, Delegate>();
 
+		// 매개변수가 없는 함수 이벤트 처리
+		private Dictionary<string, Action> mNoParamEvents = new Dictionary<string, Action>();
+
+
 		#region 초기화 & OnDestroy
 
 		private void Awake()
@@ -25,6 +29,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			mEvents.Clear();
 			mTypedEvents.Clear();
+			mNoParamEvents.Clear();
 		}
 
 		#endregion
@@ -75,11 +80,11 @@ namespace TrumpTile.GameMain.Core
 			mEvents[eventKey].Invoke(parameter);
 		}
 
-		//파라미터 없는 이벤트 실행
-		public void ActiveEvent(string eventKey)
-		{
-			ActiveEvent(eventKey, null);
-		}
+		// //파라미터 없는 이벤트 실행
+		// public void ActiveEvent(string eventKey)
+		// {
+		// 	ActiveEvent(eventKey, null);
+		// }
 
 		#endregion
 
@@ -126,6 +131,53 @@ namespace TrumpTile.GameMain.Core
 			}
 		}
 
+		#endregion
+
+		#region 매개변수 없는 함수 이벤트 처리
+
+		/// <summary>
+		/// 매개변수 없는 함수 이벤트 등록
+		/// </summary>
+		/// <param name="eventKey"></param>
+		/// <param name="action"></param>
+		public void AddEvent(string eventKey, Action action)
+		{
+			if (mNoParamEvents.ContainsKey(eventKey))
+			{
+				mNoParamEvents[eventKey] -= action;
+				mNoParamEvents[eventKey] += action;
+			}
+			else
+			{
+				mNoParamEvents.Add(eventKey, action);
+			}
+		}
+
+		/// <summary>
+		/// 매개변수 없는 함수 이벤트 삭제
+		/// </summary>
+		/// <param name="eventKey"></param>
+		/// <param name="action"></param>
+		public void RemoveEvent(string eventKey, Action action)
+		{
+			if (mNoParamEvents.ContainsKey(eventKey) == false) return;
+
+			mNoParamEvents[eventKey] -= action;
+
+			if (mNoParamEvents[eventKey] == null)
+				mNoParamEvents.Remove(eventKey);
+		}
+		/// <summary>
+		/// 매개변수 없는 함수 이벤트 실행
+		/// </summary>
+		/// <param name="eventKey"></param>
+		/// <param name="action"></param>
+		public void ActiveEvent(string eventKey)
+		{
+			if (mNoParamEvents.ContainsKey(eventKey) == false) return;
+
+			mNoParamEvents[eventKey].Invoke();
+		}
 		#endregion
 	}
 }

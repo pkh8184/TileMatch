@@ -60,6 +60,13 @@ namespace TrumpTile.GameMain.UI
         {
             yield return StartCoroutine(Co_FadeOutAnim());
 
+            UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
+
+            foreach(var item in uiBaseArray)
+            {
+                item.Deinitialize();
+            }
+
             AsyncOperation op = SceneManager.LoadSceneAsync(targetSceneName);
             op.allowSceneActivation = false;
 

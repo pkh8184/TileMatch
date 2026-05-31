@@ -110,16 +110,9 @@ namespace TrumpTile.GameMain.Core
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
-            if (uiBaseArray != null)
+            foreach (var item in uiBaseArray)
             {
-                foreach (UIBase uiBase in uiBaseArray)
-                {
-                    uiBase.Initialize();
-                }
-            }
-            else
-            {
-                Debug.Log("UIBase를 찾지 못했습니다.");
+                item.Initialize();
             }
         }
 
@@ -252,7 +245,7 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.Loading;
 
 			LoadingAnimComplete = false;
-      tutorialComplete = false;
+      		tutorialComplete = false;
 			mStarCount = 0;
 
 			LevelData levelData;

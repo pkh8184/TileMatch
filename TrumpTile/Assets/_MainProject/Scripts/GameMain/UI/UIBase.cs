@@ -3,6 +3,7 @@ using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
@@ -12,11 +13,7 @@ namespace TrumpTile.GameMain.UI
         [Header("View 혹은 Popup을 켜고 끄는 버튼\n(켜거나 끄지 않는 오브젝트인 경우 할당 X)")]
         [SerializeField] protected Button mShowButton;
         [SerializeField] protected Button mHideButton;
-
-        protected void OnDestroy()
-        {
-            UnSubscribeEvent();
-        }
+    
         //씬 매니저가 씬에 존재하는 모든 UIBase를 순회하여 호출
         public virtual void Initialize()
         {
@@ -31,10 +28,10 @@ namespace TrumpTile.GameMain.UI
 
             SubscribeEvent();
 
-            Refresh();
             //로컬 데이터(프로필 이미지, 프레임 등) 연결 되면 주석 해제
             RefreshLocalData();
-
+            Refresh();
+            
             //씬에 존재하는 모든 버튼, 토글에 클릭 효과음 추가
             foreach(var button in GetComponentsInChildren<Button>(true))
             {
@@ -63,13 +60,18 @@ namespace TrumpTile.GameMain.UI
         
         protected virtual void SubscribeEvent()
         {
-            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, (obj) => Refresh());
-            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, (obj) => RefreshLocalData());
+            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
+            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
         }
         protected virtual void UnSubscribeEvent()
         {
-            EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_DATA);
-            EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA);
+            EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
+            EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
+        }
+        public void Deinitialize()
+        {
+            Debug.Log($"{name} 이벤트 구독 취소");
+            UnSubscribeEvent();
         }
         /// <summary>
         /// 현재 언어가 아랍어로 설정된 경우 TMP_Text의 IsRTL을 true로 해줌. 
