@@ -71,6 +71,10 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private PopupBase mMatchTutorial;
         [SerializeField] private PopupBase mSlotTutorial;
         [SerializeField] private ItemTutorialPopup mItemTutorial;
+        [Header("아이템 해금 말풍선 관련")]
+        [SerializeField] private RectTransform mBallonRect;
+        [SerializeField] private TMP_Text mBallonText;
+        private Sequence mBallonSequence;
         public override void Initialize()
         {
             base.Initialize();
@@ -108,6 +112,7 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("AccessShopView", _ => mShopView.Show());
             EventManager.Inst.AddEvent("ItemCountChanged", _ => RefreshButtons());
             EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
+            
             PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
         }
         protected override void UnSubscribeEvent()
@@ -118,6 +123,7 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("AccessShopView");
             EventManager.Inst?.RemoveEvent("ItemCountChanged");
             EventManager.Inst?.RemoveEvent("PurchaseItem");
+
             if(PlayerDataManager.Inst != null)
             {
                 PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;   
@@ -161,6 +167,15 @@ namespace TrumpTile.GameMain.UI
         {
             var (levelData, isRetry) = ((LevelData, bool))obj;   
 
+            if(isRetry)
+            {
+                mBonusSlotButton.gameObject.SetActive(true);
+                mBonusSlotButton.transform.localScale = Vector2.one;
+                GameManager.Instance.LoadingAnimComplete = true;
+                GameManager.Instance.tutorialComplete = true;
+                return;
+            }
+
             int index = GetLevelDifficultyIndex(levelData.difficulty);
 
             mLevelNameImage.sprite = mLevelTextBackgroundArray[index];
@@ -193,10 +208,35 @@ namespace TrumpTile.GameMain.UI
                 {
                     item.lockObject.SetActive(true);
                     item.unlockObject.SetActive(false);
+                    item.button.onClick.AddListener(() => ShowBallon(item));
                 }
             }
             
-            StartCoroutine(Co_PlayLevelNameAnim(isRetry, levelData.levelNumber));
+            StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber));
+        }
+        private void ShowBallon(ItemButtonConfig item)
+        {
+            if(mBallonRect.gameObject.activeSelf)
+            {
+                 mBallonRect.gameObject.SetActive(false);
+            }
+            mBallonRect.SetParent(item.button.transform);
+            mBallonRect.anchoredPosition = new Vector2(0, mBallonRect.anchoredPosition.y);
+            mBallonRect.localScale = Vector2.zero;
+
+            mBallonText.text = item.ingameItemConfig.unlockLevel.ToString() + "레벨 오픈";
+            if(mBallonSequence != null && mBallonSequence.IsActive())
+            {
+                mBallonSequence.Kill();
+            }
+
+            mBallonRect.gameObject.SetActive(true);
+
+            mBallonSequence = DOTween.Sequence();
+            mBallonSequence.Append(mBallonRect.DOScale(1f, 0.3f));
+            mBallonSequence.AppendInterval(0.5f);
+            mBallonSequence.Append(mBallonRect.DOScale(0f, 0.2f));
+            mBallonSequence.OnComplete(() => mBallonRect.gameObject.SetActive(false));
         }
         private int GetLevelDifficultyIndex(EDifficultyType eDifficultyType)
         {
@@ -221,17 +261,9 @@ namespace TrumpTile.GameMain.UI
             StartCoroutine(Co_TimePickerProgress());
             StartCoroutine(Co_TimerSliderProgress());
         }
-        private IEnumerator Co_PlayLevelNameAnim(bool isRetry, int level)
+        private IEnumerator Co_PlayLevelNameAnim(int level)
         {
-            if(!isRetry)
-            {
-                yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());   
-            }
-            else
-            {
-                mBonusSlotButton.gameObject.SetActive(true);
-                mBonusSlotButton.transform.localScale = Vector2.one;  
-            }
+            yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());   
 
             RefreshButtons();
             Sequence sq = DOTween.Sequence();
