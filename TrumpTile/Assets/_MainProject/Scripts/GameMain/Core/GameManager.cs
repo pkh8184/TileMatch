@@ -272,6 +272,7 @@ namespace TrumpTile.GameMain.Core
 				mBuildTestText.text = "레벨 데이터 로드에 실패했습니다. 5초 후 메인 화면으로 돌아갑니다.";
 				
 				Debug.LogError($"[GameManager] LevelData load failed: Level {levelNumber}");
+				StartCoroutine(Co_BuildTest_ToMain());
 				return;
 			}
 
@@ -317,27 +318,11 @@ namespace TrumpTile.GameMain.Core
 			OnScoreChanged?.Invoke(mCurrentScore);
 			OnComboChanged?.Invoke(0);		
 
-      await WaitUntill(() => LoadingAnimComplete);
+      		await WaitUntill(() => LoadingAnimComplete);
 
 			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
 				tutorialComplete = true;
-			}
-
-			if(!tutorialComplete)
-			{
-				if(levelData.levelNumber == 1)
-				{
-					FindObjectOfType<MatchTutorialPopup>(true)?.Show();
-				}
-				else if(levelData.levelNumber == 2)
-				{
-					FindObjectOfType<SlotTutorialPopup>(true)?.Show();
-				}	
-				else
-				{
-					tutorialComplete = true;
-				}
 			}
       
 			await WaitUntill(() => tutorialComplete);
