@@ -8,13 +8,30 @@ namespace TrumpTile.FirebaseLibrary
     {
         public static async Task Login()
         {
-            if(FirebaseService.Auth.CurrentUser == null)
+            try
             {
-                await SignInAnonymously();
-
-                //구글플레이서비스 연동 후 아래 로직으로 교체해야함 
-                //await SignInWithGooglePlayGameService();
+                await SignInWithGooglePlayGameService();
+                    // 로그인 성공 후 IAP 초기화
             }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError($"[IAPManager] 구글 로그인 실패: {e.Message}");
+            }
+            // if(FirebaseService.Auth.CurrentUser == null)
+            // {
+            //     //await SignInAnonymously();
+
+            //     //구글플레이서비스 연동 후 아래 로직으로 교체해야함 
+            //     try
+            //     {
+            //         await SignInWithGooglePlayGameService();
+            //         // 로그인 성공 후 IAP 초기화
+            //     }
+            //     catch (Exception e)
+            //     {
+            //         UnityEngine.Debug.LogError($"[IAPManager] 구글 로그인 실패: {e.Message}");
+            //     }
+            // }
         }
 
 

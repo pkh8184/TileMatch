@@ -44,6 +44,8 @@ namespace TrumpTile.GameMain.Core
             Debug.Log("[TitleManager] 로고 송출 완료, 파이어베이스 참조 초기화 및 로그인 실행");
 
             StartCoroutine(Co_IncreaseLoadingProgress());
+            
+            yield return FirebaseAuthService.Login();
 
             if(mbWhitoutFirebase)
             {
