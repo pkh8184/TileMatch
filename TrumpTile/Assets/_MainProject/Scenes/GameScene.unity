@@ -1859,7 +1859,6 @@ GameObject:
   - component: {fileID: 202188136}
   - component: {fileID: 202188135}
   - component: {fileID: 202188134}
-  - component: {fileID: 202188133}
   m_Layer: 5
   m_Name: Button_Home
   m_TagString: Untagged
@@ -1887,27 +1886,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &202188133
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 202188131}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6ff95c50b3e6bad4aa3d027f10b897fa, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &202188134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3313,7 +3291,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 396594451}
-  - component: {fileID: 396594452}
   - component: {fileID: 396594453}
   m_Layer: 5
   m_Name: GameOver
@@ -3342,41 +3319,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &396594452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 396594450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39e831fa2843d7549b44b57c441709f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mPopupPanel: {fileID: 1278212479}
-  mDimBackground: {fileID: 0}
-  mGaugeArea: {fileID: 0}
-  mGaugeFill: {fileID: 802940644}
-  mCountText: {fileID: 587410370}
-  mMessageText: {fileID: 1921329748}
-  mContinueButton: {fileID: 0}
-  mContinueButtonRect: {fileID: 0}
-  mRestartButton: {fileID: 1278212481}
-  mRestartButtonRect: {fileID: 0}
-  mDimAlpha: 0.9
-  mGaugePopDuration: 0.4
-  mGaugePopScale: 1.2
-  mButtonPopDuration: 0.3
-  mButtonPopScale: 1.3
-  mButtonDelay: 0.1
-  mCountdownTime: 5
-  mInputBlockDuration: 2
-  mMaxReviveCount: 3
-  mMessages:
-  - Don't give Up!
-  mGaugeFullColor: {r: 0.3, g: 0.85, b: 0.3, a: 1}
-  mGaugeLowColor: {r: 0.85, g: 0.3, b: 0.3, a: 1}
 --- !u!114 &396594453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3391,9 +3333,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mShowButton: {fileID: 0}
   mHideButton: {fileID: 0}
-  mBackground: {fileID: 0}
-  mTimeGauge: {fileID: 0}
-  mTimeText: {fileID: 0}
+  mBackground: {fileID: 1278212482}
+  mTimeGauge: {fileID: 802940644}
+  mTimeText: {fileID: 587410370}
+  mMessageText: {fileID: 1921329748}
+  mResurrectionButton: {fileID: 2106718378}
+  mRetryButton: {fileID: 1129684320}
+  mMainButton: {fileID: 202188134}
+  mCount: 5
+  mMessage: "\uD3EC\uAE30\uD558\uC9C0 \uB9C8\uC138\uC694!"
+  mStartColor: {r: 0, g: 1, b: 0.054581404, a: 0}
+  mEndColor: {r: 1, g: 0.12816063, b: 0, a: 0}
+  mBeforeResurrectionObj: {fileID: 2106718376}
+  mAfterResurrectionObj: {fileID: 427614446}
 --- !u!1 &405339418
 GameObject:
   m_ObjectHideFlags: 0
@@ -14580,7 +14532,6 @@ GameObject:
   - component: {fileID: 587410369}
   - component: {fileID: 587410371}
   - component: {fileID: 587410370}
-  - component: {fileID: 587410372}
   m_Layer: 5
   m_Name: Message_CountDown
   m_TagString: Untagged
@@ -14704,27 +14655,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 587410368}
   m_CullTransparentMesh: 1
---- !u!95 &587410372
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587410368}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 982601b7c375a494a81f436d2b561104, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &589704988
 GameObject:
   m_ObjectHideFlags: 0
@@ -37437,9 +37367,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mBoardManager: {fileID: 1966883229}
   mSlotManager: {fileID: 10376034}
-  mGameOverPopup: {fileID: 396594452}
+  mGameOverPopup: {fileID: 0}
   mVictoryPopup: {fileID: 0}
-  mStartLevel: 2
+  mStartLevel: 3
   mMatchCount: 3
   mMaxSlots: 7
   mStarConfig: {fileID: 11400000, guid: 87ca16f56d0a7fa4ca3be7462ddb1874, type: 2}
@@ -48051,7 +47981,6 @@ GameObject:
   - component: {fileID: 1129684322}
   - component: {fileID: 1129684321}
   - component: {fileID: 1129684320}
-  - component: {fileID: 1129684319}
   m_Layer: 5
   m_Name: Button_Retry
   m_TagString: Untagged
@@ -48079,27 +48008,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &1129684319
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1129684317}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6ff95c50b3e6bad4aa3d027f10b897fa, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1129684320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58568,7 +58476,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 100995481}
-  - {fileID: 1921329747}
   - {fileID: 2106718377}
   - {fileID: 427614447}
   m_Father: {fileID: 396594451}
@@ -93091,11 +92998,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1278212480}
+  m_Father: {fileID: 2106718377}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -99}
+  m_AnchoredPosition: {x: 0, y: 144}
   m_SizeDelta: {x: 600, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1921329748
@@ -93801,6 +93708,7 @@ MonoBehaviour:
   mSpawnDelayPerTile: 0.02
   mMaxSpawnDelay: 0.6
   mEnableDebugLog: 0
+  mAllTiles: []
   mbCreateTileByLayerList: 1
 --- !u!4 &1966883230
 Transform:
@@ -99394,7 +99302,6 @@ GameObject:
   - component: {fileID: 2106718380}
   - component: {fileID: 2106718379}
   - component: {fileID: 2106718378}
-  - component: {fileID: 2106718381}
   m_Layer: 5
   m_Name: Button_Ads
   m_TagString: Untagged
@@ -99415,6 +99322,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 801956942}
+  - {fileID: 1921329747}
   m_Father: {fileID: 1278212480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -99504,27 +99412,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2106718376}
   m_CullTransparentMesh: 1
---- !u!95 &2106718381
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106718376}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6ff95c50b3e6bad4aa3d027f10b897fa, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2125637750
 GameObject:
   m_ObjectHideFlags: 0
