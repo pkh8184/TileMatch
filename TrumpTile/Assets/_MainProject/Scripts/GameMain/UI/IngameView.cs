@@ -75,6 +75,8 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private RectTransform mBallonRect;
         [SerializeField] private TMP_Text mBallonText;
         private Sequence mBallonSequence;
+        private float mBallonBaseY;
+        private bool mbBallonBaseYCached;
         public override void Initialize()
         {
             base.Initialize();
@@ -238,21 +240,27 @@ namespace TrumpTile.GameMain.UI
         }
         private void ShowBallon(ItemButtonConfig item)
         {
+            // 인스펙터 직렬화된 Y를 최초 1회 캐싱. 이후 매번 같은 기준으로 사용해 누적 누락.
+            if (!mbBallonBaseYCached)
+            {
+                mBallonBaseY = mBallonRect.anchoredPosition.y;
+                mbBallonBaseYCached = true;
+            }
+
+            if(mBallonSequence != null && mBallonSequence.IsActive())
+            {
+                mBallonSequence.Kill();
+            }
             if(mBallonRect.gameObject.activeSelf)
             {
                 mBallonRect.gameObject.SetActive(false);
             }
             mBallonRect.SetParent(item.button.transform);
-            float baseY = mBallonRect.anchoredPosition.y;
-            mBallonRect.anchoredPosition = new Vector2(0f, baseY);
+            mBallonRect.anchoredPosition = new Vector2(0f, mBallonBaseY);
             mBallonRect.localScale = Vector3.zero;
             mBallonRect.localRotation = Quaternion.Euler(0f, 0f, -8f);
 
             mBallonText.text = item.ingameItemConfig.unlockLevel.ToString() + "레벨 오픈";
-            if(mBallonSequence != null && mBallonSequence.IsActive())
-            {
-                mBallonSequence.Kill();
-            }
 
             mBallonRect.gameObject.SetActive(true);
 
@@ -260,10 +268,10 @@ namespace TrumpTile.GameMain.UI
             // 등장: 회전 풀기 + 스케일 튀어오름 + 위로 살짝 떠오름
             mBallonSequence.Append(mBallonRect.DOScale(1f, 0.35f).SetEase(Ease.OutBack, 2.5f));
             mBallonSequence.Join(mBallonRect.DOLocalRotate(Vector3.zero, 0.35f).SetEase(Ease.OutCubic));
-            mBallonSequence.Join(mBallonRect.DOAnchorPosY(baseY + 4f, 0.35f).SetEase(Ease.OutCubic));
+            mBallonSequence.Join(mBallonRect.DOAnchorPosY(mBallonBaseY + 4f, 0.35f).SetEase(Ease.OutCubic));
             // 흔들림 1회 (살짝 내려갔다 다시 위로)
-            mBallonSequence.Append(mBallonRect.DOAnchorPosY(baseY - 2f, 0.25f).SetEase(Ease.InOutSine));
-            mBallonSequence.Append(mBallonRect.DOAnchorPosY(baseY + 4f, 0.25f).SetEase(Ease.InOutSine));
+            mBallonSequence.Append(mBallonRect.DOAnchorPosY(mBallonBaseY - 2f, 0.25f).SetEase(Ease.InOutSine));
+            mBallonSequence.Append(mBallonRect.DOAnchorPosY(mBallonBaseY + 4f, 0.25f).SetEase(Ease.InOutSine));
             // 잠시 유지
             mBallonSequence.AppendInterval(0.3f);
             // 사라짐: 안으로 빨려들어가듯
