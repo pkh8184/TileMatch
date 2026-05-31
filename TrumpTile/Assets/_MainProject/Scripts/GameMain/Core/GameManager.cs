@@ -545,12 +545,12 @@ namespace TrumpTile.GameMain.Core
 			{
 				bool bHasNext = !bIsDailyMode && HasNextLevel();
 				Debug.Log($"[GameManager] Showing VictoryPopup - Level: {CurrentLevel}, HasNext: {bHasNext}");
-				mVictoryPopup.Show(CurrentLevel, mElapsedTime, stars, bHasNext);
+				mVictoryPopup.Show(CurrentLevel, mElapsedTime, mStarCount, bHasNext);
 			}
 			else
 			{
 				Debug.LogWarning("[GameManager] VictoryPopup is null!");
-				UIManager.Instance?.ShowLevelClearPanel(stars);
+				UIManager.Instance?.ShowLevelClearPanel(mStarCount);
 			}
 		}
 
