@@ -40,7 +40,7 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private GameObject mLockedOverlay;
 
 		[Header("Animation Settings")]
-		[SerializeField] private float mMoveSpeed = 20F;
+		[SerializeField] private float mMoveSpeed = 15F;
 		[SerializeField] private float mShakeDuration = 0.15F;
 		[SerializeField] private float mShakeIntensity = 0.05F;
 		[SerializeField] private float mFlyArcHeight = 0.3F;
@@ -78,12 +78,18 @@ namespace TrumpTile.GameMain.Core
 		#region Private Fields
 
 		private Coroutine mCurrentAnimation;
+		private Sequence mActiveTween;
 		private BoxCollider2D mBoxCollider;
 		private Vector3 mOriginalScale = Vector3.one;
 		private Vector3 mSpawnTargetPos;
 		private bool mbIsJewerly;
 		private bool mbIsShake;
 
+		private enum EFinalScaleMode
+		{
+			InSlot,
+			OnBoard,
+		}
 
 		#endregion
 
@@ -436,7 +442,6 @@ namespace TrumpTile.GameMain.Core
 		{
 			bool bWasInSlot = mIsInSlot;
 
-
 			mIsInSlot = true;
 			mSlotIndex = index;
 
@@ -447,31 +452,25 @@ namespace TrumpTile.GameMain.Core
 
 			SetMovingToSlotSorting();
 			AudioEvent.Play(EAudioKey.SFX_TileMove);
-			StopCurrentAnimation();
 
-			mSelectParticle.Play();
-			
-			if (bWasInSlot)
+			if (mSelectParticle != null)
 			{
-				mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(slotPosition, () =>
+				mSelectParticle.Play();
+			}
+
+			StartMoveTween(
+				slotPosition,
+				bUseArc: !bWasInSlot,
+				EFinalScaleMode.InSlot,
+				() =>
 				{
 					UpdateSortingOrder();
 					onComplete?.Invoke();
-				}));
-				
-			}
-			else
-			{
-				mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(slotPosition, () =>
-				{
-					UpdateSortingOrder();
-					onComplete?.Invoke();
-				}));
-			}
+				});
 
 			if(mbIsJewerly)
 			{
-				mSpriteRenderer.sprite = mTileData.sprite;	
+				mSpriteRenderer.sprite = mTileData.sprite;
 			}
 		}
 		public void MoveToSlot(Vector3 slotPosition)
@@ -484,8 +483,7 @@ namespace TrumpTile.GameMain.Core
 			mSlotIndex = newIndex;
 			UpdateSortingOrder();
 
-			StopCurrentAnimation();
-			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(newPosition, null));
+			StartMoveTween(newPosition, bUseArc: false, EFinalScaleMode.InSlot, null);
 		}
 
 		#endregion
@@ -509,7 +507,7 @@ namespace TrumpTile.GameMain.Core
 		private void ReturnToBoard(Vector3 boardPosition)
 		{
 			InitBoardReturn();
-			mCurrentAnimation = StartCoroutine(MoveToPositionCoroutine(boardPosition, () => EnableCollider(true)));
+			StartMoveTween(boardPosition, bUseArc: false, EFinalScaleMode.OnBoard, () => EnableCollider(true));
 		}
 		public void ReturnToBoard()
 		{
@@ -526,10 +524,10 @@ namespace TrumpTile.GameMain.Core
 		public void FlyToBoard(Action onComplete = null)
 		{
 			InitBoardReturn();
-			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(mSpawnTargetPos, () =>
+			StartMoveTween(mSpawnTargetPos, bUseArc: true, EFinalScaleMode.OnBoard, () =>
 			{
 				mCurrentAnimation = StartCoroutine(BounceOnLandCoroutine(() => EnableCollider(true)));
-			}));
+			});
 		}
 
 		public void FlyToBoard(Vector3 boardPosition, int x, int y, int layer, Action onComplete = null)
@@ -539,75 +537,104 @@ namespace TrumpTile.GameMain.Core
 			mLayerIndex = layer;
 
 			InitBoardReturn();
-			mCurrentAnimation = StartCoroutine(ArcSpinCoroutine(boardPosition, () =>
+			StartMoveTween(boardPosition, bUseArc: true, EFinalScaleMode.OnBoard, () =>
 			{
 				mCurrentAnimation = StartCoroutine(BounceOnLandCoroutine(onComplete));
-			}));
+			});
 		}
 
 		#endregion
 
 		#region Animation Coroutines
 
-		private IEnumerator ArcSpinCoroutine(Vector3 targetPosition, Action onComplete)
+		private void KillActiveTween()
 		{
-			mIsAnimating = true;
+			if (mActiveTween != null && mActiveTween.IsActive())
+			{
+				mActiveTween.Kill(false);
+			}
+			mActiveTween = null;
+		}
+
+		/// <summary>
+		/// 보드↔슬롯 이동을 단일 DOTween 시퀀스로 처리한다.
+		/// bUseArc == true 인 경우 아크 궤적 + 회전 + 펀치 스케일 적용 (보드→슬롯 첫 진입, 슬롯→보드 복귀).
+		/// bUseArc == false 인 경우 스무스 직선 이동 (슬롯 내 정렬, 단순 복귀).
+		/// </summary>
+		private void StartMoveTween(Vector3 targetPosition, bool bUseArc, EFinalScaleMode finalScaleMode, Action onComplete)
+		{
+			StopCurrentAnimation();
 
 			Vector3 startPos = transform.position;
 			float distance = Vector3.Distance(startPos, targetPosition);
-			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.1F, 0.25F);
+			float duration = bUseArc
+				? Mathf.Clamp(distance / mMoveSpeed, 0.2F, 0.35F)
+				: Mathf.Clamp(distance / mMoveSpeed, 0.08F, 0.2F);
 
-			float rotationAmount = UnityEngine.Random.Range(0, 2) == 0 ? mFlyRotation : -mFlyRotation;
-			float arcHeight = Mathf.Min(distance * mFlyArcHeight, 0.5F);
-
-			float elapsed = 0F;
+			transform.rotation = Quaternion.identity;
+			mIsAnimating = true;
 
 			Sequence seq = DOTween.Sequence();
 
-			if(mSlotIndex > -1)
+			if (bUseArc)
 			{
-				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
-				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
-				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
-			}			
-			else
-			{
-				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
-				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
-				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
-			}
+				float arcHeight = Mathf.Min(distance * mFlyArcHeight, 0.5F);
+				Vector3 midPoint = (startPos + targetPosition) * 0.5F + Vector3.up * arcHeight;
+				Vector3[] path = { startPos, midPoint, targetPosition };
 
-			while (elapsed < duration)
-			{
-				elapsed += Time.deltaTime;
-				float t = elapsed / duration;
-				float easedT = t * t;
+				seq.Append(transform.DOPath(path, duration, PathType.CatmullRom).SetEase(Ease.OutQuad));
 
-				Vector3 currentPos = Vector3.Lerp(startPos, targetPosition, easedT);
-				float arc = Mathf.Sin(easedT * Mathf.PI) * arcHeight;
-				currentPos.y += arc;
-				transform.position = currentPos;
-
-				float currentRotation = Mathf.Lerp(0F, rotationAmount, easedT);
-				transform.rotation = Quaternion.Euler(0F, 0F, currentRotation);
-
-				yield return null;
-			}
-
-			transform.position = targetPosition;
-			
-			transform.rotation = Quaternion.identity;
-			if(mSlotIndex > -1)
-			{
-				transform.localScale = Vector3.one * 0.6f;
+				float rotationSign = UnityEngine.Random.Range(0, 2) == 0 ? 1F : -1F;
+				seq.Join(transform.DOLocalRotate(new Vector3(0F, 0F, rotationSign * mFlyRotation), duration, RotateMode.FastBeyond360).SetEase(Ease.OutCubic));
 			}
 			else
 			{
-				transform.localScale = mOriginalScale;
+				seq.Append(transform.DOMove(targetPosition, duration).SetEase(Ease.OutQuad));
 			}
-			mIsAnimating = false;
 
-			onComplete?.Invoke();
+			seq.Join(BuildScalePunchTween(finalScaleMode, duration));
+
+			Vector3 finalScale = ResolveFinalScale(finalScaleMode);
+			seq.OnComplete(() =>
+			{
+				transform.position = targetPosition;
+				transform.rotation = Quaternion.identity;
+				transform.localScale = finalScale;
+				mIsAnimating = false;
+				mActiveTween = null;
+				onComplete?.Invoke();
+			});
+
+			mActiveTween = seq;
+		}
+
+		private Tween BuildScalePunchTween(EFinalScaleMode mode, float duration)
+		{
+			Sequence scaleSeq = DOTween.Sequence();
+
+			if (mode == EFinalScaleMode.InSlot)
+			{
+				// 두근거림 없이 슬롯 크기로 부드럽게 축소
+				scaleSeq.Append(transform.DOScale(Vector3.one * 0.6F, duration).SetEase(Ease.OutQuad));
+			}
+			else
+			{
+				float step = duration / 3F;
+				scaleSeq.Append(transform.DOScale(Vector3.one * 0.6F, step));
+				scaleSeq.Append(transform.DOScale(mOriginalScale * 0.9F, step));
+				scaleSeq.Append(transform.DOScale(mOriginalScale, step));
+			}
+
+			return scaleSeq;
+		}
+
+		private Vector3 ResolveFinalScale(EFinalScaleMode mode)
+		{
+			if (mode == EFinalScaleMode.InSlot)
+			{
+				return Vector3.one * 0.6F;
+			}
+			return mOriginalScale;
 		}
 
 		private IEnumerator BounceOnLandCoroutine(Action onComplete = null)
@@ -635,53 +662,6 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			transform.localScale = mOriginalScale;
-			mIsAnimating = false;
-
-			onComplete?.Invoke();
-		}
-
-		private IEnumerator MoveToPositionCoroutine(Vector3 targetPosition, Action onComplete)
-		{
-			mIsAnimating = true;
-			transform.rotation = Quaternion.identity;
-
-			Vector3 startPos = transform.position;
-			float distance = Vector3.Distance(startPos, targetPosition);
-			float duration = Mathf.Clamp(distance / mMoveSpeed, 0.03F, 0.15F);
-
-			float elapsed = 0F;
-			Sequence seq = DOTween.Sequence();
-
-			if(mSlotIndex > -1)
-			{
-				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
-				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
-				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
-			}			
-			else
-			{
-				seq.Append(transform.DOScale(Vector3.one * 0.6f , duration / 3));
-				seq.Append(transform.DOScale(mOriginalScale * 0.9f, duration / 3));
-				seq.Append(transform.DOScale(mOriginalScale * 1.5f, duration / 3));
-			}
-
-			while (elapsed < duration)
-			{
-				elapsed += Time.deltaTime;
-				float t = Mathf.SmoothStep(0F, 1F, elapsed / duration);
-				transform.position = Vector3.Lerp(startPos, targetPosition, t);
-				yield return null;
-			}
-
-			transform.position = targetPosition;
-			if(mSlotIndex > -1)
-			{
-				transform.localScale = Vector3.one * 0.6f;
-			}
-			else
-			{
-				transform.localScale = mOriginalScale;
-			}
 			mIsAnimating = false;
 
 			onComplete?.Invoke();
@@ -1007,6 +987,7 @@ namespace TrumpTile.GameMain.Core
 				StopCoroutine(mCurrentAnimation);
 				mCurrentAnimation = null;
 			}
+			KillActiveTween();
 			mIsAnimating = false;
 		}
 
