@@ -27,10 +27,12 @@ namespace TrumpTile.GameMain.Core
             
             _ = AdManager.Inst;
         }
-        private void Start()
+        private IEnumerator Start()
         {
-            SceneTransister.Inst.PlayFadeInAnim();
+            yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());
             AudioEvent.Play(EAudioKey.BGM_Main);
+            
+            EventManager.Inst.ActiveEvent("MainSceneLoadComplete");
         }
     }
 }

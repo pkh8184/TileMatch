@@ -9,6 +9,7 @@ namespace TrumpTile.GameMain.Core
 	/// </summary>
 	public struct ComboTriggeredPayload
 	{
+		public Sprite sprite;
 		public string Label;
 		public int ConsecutiveCount;
 		public bool HasSound;
@@ -195,10 +196,11 @@ namespace TrumpTile.GameMain.Core
 				AudioManager.Inst?.PlaySFX(entry.audioClip);
 			}
 
-			UIManager.Instance.ShowFloatingText(GetDisplayPosition(), entry.label + "!", entry.labelColor, entry.backgroundColor);
+			UIManager.Instance.ShowFloatingText(GetDisplayPosition(), entry.label + "!", entry.labelColor, entry.backgroundColor, entry.comboSprite);
 
 			ComboTriggeredPayload payload = new ComboTriggeredPayload()
 			{
+				sprite = entry.comboSprite,
 				Label = entry.label,
 				ConsecutiveCount = mConsecutiveMatchCount,
 				HasSound = entry.hasSound,

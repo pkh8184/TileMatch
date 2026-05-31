@@ -50,6 +50,7 @@ namespace TrumpTile.GameMain.Core
 		[Header("Floating Text")]
 		[SerializeField] private GameObject mFloatingTextPrefab;
 		[SerializeField] private Transform mFloatingTextParent;
+		[SerializeField] private GameObject mComboPrefab;
 
 		[Header("Animation")]
 		[SerializeField] private Animator mComboAnimator;
@@ -423,7 +424,32 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Floating Text
+		public void ShowFloatingText(Vector3 position, string text, Color textColor, Color backgroundColor, Sprite sprite)
+		{
+			if (mComboPrefab == null)
+			{
+				return;
+			}
 
+			Transform parent = mFloatingTextParent != null ? mFloatingTextParent : transform;
+			GameObject floatingObj = Instantiate(mComboPrefab, position, Quaternion.identity, parent);
+
+			Image image = floatingObj.GetComponent<Image>();
+			image.sprite = sprite;
+
+			PlayComboSpriteAnim(image);
+		}
+		private void PlayComboSpriteAnim(Image image)
+		{
+			Sequence seq = DOTween.Sequence();
+
+			seq.Append(image.DOFade(1, 0.3f));
+			seq.Join(image.transform.DOScale(1.2f, 0.3f));
+			seq.Append(image.transform.DOScale(1, 0.2f));
+			seq.Append(image.DOFade(0, 0.2f));
+
+			seq.OnComplete(() => Destroy(image.gameObject));
+		}
 		public void ShowFloatingText(Vector3 position, string text, Color textColor, Color backgroundColor)
 		{
 			if (mFloatingTextPrefab == null)

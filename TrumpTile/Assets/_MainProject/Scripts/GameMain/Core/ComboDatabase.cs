@@ -11,6 +11,7 @@ namespace TrumpTile.GameMain.Core
 	{
 		[Tooltip("화면에 표시될 콤보 레이블 (예: Good, Nice, Great ...)")]
 		public string label;
+		public Sprite comboSprite;
 
 		[Tooltip("이 콤보가 발동되는 연속 매치 횟수")]
 		public int consecutiveCount;
@@ -27,11 +28,11 @@ namespace TrumpTile.GameMain.Core
 		[Tooltip("hasSound가 TRUE일 때 재생할 오디오 클립")]
 		public AudioClip audioClip;
 
-		[Tooltip("화면에 표시될 레이블 색상")]
-		public Color labelColor = Color.yellow;
+		 [Tooltip("화면에 표시될 레이블 색상")]
+		 public Color labelColor = Color.yellow;
 
-		[Tooltip("배경에 표현될 색상")]
-		public Color backgroundColor = Color.white;
+		 [Tooltip("배경에 표현될 색상")]
+		 public Color backgroundColor = Color.white;
 	}
 
 	/// <summary>

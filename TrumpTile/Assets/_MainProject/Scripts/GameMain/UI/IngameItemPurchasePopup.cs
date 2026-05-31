@@ -6,6 +6,7 @@ using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -27,88 +28,86 @@ namespace TrumpTile.GameMain.UI
         [Header("아이템 구매 버튼")]
         [SerializeField] private Button mPurchaseButton;
 
-        [Header("아이템 이름, 아이템 설명, 아이템 개수, 아이템 가격, 아이템 스프라이트(순서대로 망치, 시계, 모자, 폭탄)")]
-        [SerializeField] private string[] mItemNameStringArray = new string[4];
-        [SerializeField] private string[] mItemDescriptionStringArray = new string[4];
-        [SerializeField] private int[] mItemCountArray = new int[4];
-        [SerializeField] private int[] mItemCostArray = new int[4];
-        [SerializeField] private Sprite[] mItemSpriteArray = new Sprite[4];
-
         private int mCurrentItemID;
+        private int mCurrentCost;
+        private int mCurrentAmount;
         private bool mbCanPucrchase;
+
+        private bool mbPurchaseProgress;
+
         public override void Initialize()
         {
             base.Initialize();    
 
             mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("AccessShopView"));
             mPurchaseButton.onClick.AddListener(PurchaseProgress);
+
+            RefreshGoldData();
+        }
+        protected override void PlayHideAnim()
+        {
+            Sequence seq = DOTween.Sequence();
+            seq.SetUpdate(true);
+            seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
+            seq.OnComplete(() =>
+            {
+                mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+                gameObject.SetActive(false);
+                GameManager.Instance.ResumeGame();
+                mbPurchaseProgress = false;
+            });         
         }
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();
-            //임시
-            EventManager.Inst.AddEvent("ShowItemPurchasePopup", obj => InitPopupDataBeforeShow(obj));
+
+            PlayerDataManager.Inst.OnGoldChanged += RefreshGoldData;
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
-
-            EventManager.Inst?.RemoveEvent("ShowItemPurchasePopup");
+            if(PlayerDataManager.Inst != null)
+            {
+                PlayerDataManager.Inst.OnGoldChanged -= RefreshGoldData;
+            }
         }
-        public override void Hide()
+        public void SetValid(IngameItemConfig config)
         {
-            base.Hide();
-            GameManager.Instance.ResumeGame();
+            mItemNameText.text = config.itemName;
+            mItemDescriptionText.text = config.itemDescription;
+            mItemCountText.text = "X" + config.amount.ToString();
+            mCurrentAmount = config.amount;
+            mItemCostText.text = config.cost.ToString();
+            mCurrentCost = config.cost;
+            mItemImage.sprite = config.itemIcon;
+            mCurrentItemID = config.itemId;
         }
-        private void InitPopupDataBeforeShow(object obj)
-        {
-            int index = (int)obj;
-
-            mCurrentItemID = index;
-
-            index -= 1005;
-            if(index >= 4) return;
-
-            RefreshGoldData(index);
-            
-            mItemNameText.text = mItemNameStringArray[index];
-            
-            mItemDescriptionText.text = mItemDescriptionStringArray[index];
-            
-            mItemCountText.text = "X" + mItemCountArray[index].ToString(); 
-            
-            mItemCostText.text = mItemCostArray[index].ToString();
-
-            mItemImage.sprite = mItemSpriteArray[index];
-
-            GameManager.Instance.PauseGame();
-            
-            Show();
-        }
-
         private void PurchaseProgress()
         {
+            if(mbPurchaseProgress)
+            {
+                return;
+            }
             if(!mbCanPucrchase)
             {
                 EventManager.Inst.ActiveEvent("AccessShopView");
                 return;
             }
-            int index = mCurrentItemID - 1005;
 
-            PlayerDataManager.Inst.UseGold(mItemCostArray[index]);
+            mbPurchaseProgress = true;
+
+            PlayerDataManager.Inst.UseGold(mCurrentCost);
             
-            ItemManager.Inst.AddItem(mCurrentItemID, mItemCountArray[index]);
+            ItemManager.Inst.AddItem(mCurrentItemID, mCurrentAmount);
 
             AudioEvent.Play(EAudioKey.SFX_Purchase);
 
-            RefreshGoldData(index);
-
             Hide();
         }
-        private void RefreshGoldData(int index)
+        private void RefreshGoldData()
         {
             mGoldText.text = PlayerDataManager.Inst.Gold.ToString();
-            mbCanPucrchase = PlayerDataManager.Inst.Gold >= mItemCostArray[index];
+            mbCanPucrchase = PlayerDataManager.Inst.Gold >= mCurrentCost;
             mItemCostText.color = mbCanPucrchase? Color.white : Color.red;
         }
     }    

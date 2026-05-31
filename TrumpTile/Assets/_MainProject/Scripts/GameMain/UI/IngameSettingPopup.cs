@@ -62,8 +62,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnExitButtonClick()
         {
-            mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
-            GameManager.Instance.GoToMainMenu();
+            EventManager.Inst.ActiveEvent("OnExitButton");
         }
         private IEnumerator Co_PlayShowAnim()
         {
