@@ -152,7 +152,7 @@ namespace TrumpTile.GameMain.UI
                 int id = item.ingameItemConfig.itemId;
                 int count = PlayerDataManager.Inst.GetItemCount(id);
                 item.countText.text = count.ToString();
-                item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
+                //item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
             }
 
             mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
