@@ -137,10 +137,10 @@ namespace TrumpTile.GameMain.Core
 				GameManager.Instance.OnComboChanged -= UpdateCombo;
 				GameManager.Instance.OnProgressChanged -= UpdateProgress;
 			}
-			if (ItemManager.Inst != null)
-			{
-				ItemManager.Inst.OnItemCountChanged -= UpdateItemCount;
-			}
+			// if (ItemManager.Inst != null)
+			// {
+			// 	//ItemManager.Inst.OnItemCountChanged -= UpdateItemCount;
+			// }
 		}
 
 		#region Button Callbacks

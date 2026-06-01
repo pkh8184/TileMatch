@@ -70,7 +70,6 @@ namespace TrumpTile.GameMain.UI
         }
         public void Deinitialize()
         {
-            Debug.Log($"{name} 이벤트 구독 취소");
             UnSubscribeEvent();
         }
         /// <summary>
