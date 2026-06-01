@@ -211,6 +211,7 @@ namespace TrumpTile.GameMain.Data
 			{
 				return;
 			}
+			Debug.Log("[PlayerDataManager] 광고 제거 해금 완료");
 			mUserData.RemoveAds = true;
 		}
 		public void UnlockSeasonPass()
@@ -219,6 +220,7 @@ namespace TrumpTile.GameMain.Data
 			{
 				return;
 			}
+			Debug.Log("[PlayerDataManager] 시즌패스 해금 완료");
 			mUserData.SeasonPassUnlock = true;
 		}
 		public void UnlockPiggyBank()
@@ -227,6 +229,7 @@ namespace TrumpTile.GameMain.Data
 			{
 				return;
 			}
+			Debug.Log("[PlayerDataManager] 돼지저금통 해금 완료");
 			mUserData.PiggyBankUnlock = true;
 		}
 	#endregion
