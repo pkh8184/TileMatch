@@ -32,7 +32,10 @@ namespace TrumpTile.GameMain.UI
 
             foreach(var item in mPurchaseButtonCofigArray)
             {
-                item.button.GetComponentInChildren<TMP_Text>().text = IAPManager.Instance.GetProductPrice(item.eProductId);
+                if(IAPManager.Instance != null)
+                {
+                    item.button.GetComponentInChildren<TMP_Text>().text = IAPManager.Instance.GetProductPrice(item.eProductId);   
+                }
                 item.button.onClick.AddListener(() => OnPurchaeButtonClick(item.eProductId));
             }
         }
@@ -58,6 +61,7 @@ namespace TrumpTile.GameMain.UI
             base.SubscribeEvent();
 
             EventManager.Inst.AddEvent("AccessShopView", Show);
+            EventManager.Inst.AddEvent("PurchaseSuccess", Hide);
            // EventManager.Inst.AddEvent("ShopView", Show);    
         }
         protected override void UnSubscribeEvent()
@@ -65,6 +69,7 @@ namespace TrumpTile.GameMain.UI
             base.UnSubscribeEvent();
 
             EventManager.Inst?.RemoveEvent("AccessShopView", Show);
+            EventManager.Inst?.RemoveEvent("PurchaseSuccess", Hide);
         }
         private void OnPurchaeButtonClick(EProductId eProductId)
         {

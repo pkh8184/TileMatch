@@ -101,6 +101,8 @@ namespace  TrumpTile.GameMain.Core
         private void OnPurchaseFailed(FailedOrder failedOrder)
         {
             Debug.Log($"[IAPManager] 구매 실패: {failedOrder.FailureReason}");
+
+            EventManager.Inst.ActiveEvent("PurchaseFailed");
         }
     } 
 }

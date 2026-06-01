@@ -11,13 +11,14 @@ GameObject:
   - component: {fileID: 5082791192893390231}
   - component: {fileID: 8544304793729695475}
   - component: {fileID: 4139670031210595593}
+  - component: {fileID: 8755729311810063155}
   m_Layer: 5
   m_Name: Popup_PurchaseSuccess
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5082791192893390231
 RectTransform:
   m_ObjectHideFlags: 0
@@ -76,6 +77,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8755729311810063155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477922452142052589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f672ad426dd27944ba8d1f31745d490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mShowButton: {fileID: 0}
+  mHideButton: {fileID: 0}
+  mShowDuration: 0.3
+  mHideDuration: 0.3
+  mPopupObj: {fileID: 892418865444486691}
+  mButton: {fileID: 2139730346164979167}
 --- !u!1 &892418865444486691
 GameObject:
   m_ObjectHideFlags: 0
