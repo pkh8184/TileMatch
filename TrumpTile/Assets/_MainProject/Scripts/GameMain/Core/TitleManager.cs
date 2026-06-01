@@ -36,6 +36,8 @@ namespace TrumpTile.GameMain.Core
             {
                 item.Initialize();
             }
+            //임시
+            GooglePlayGames.PlayGamesPlatform.Activate();
         }
         private IEnumerator Start()
         {
