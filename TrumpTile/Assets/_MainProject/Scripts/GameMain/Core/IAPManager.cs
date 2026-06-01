@@ -86,6 +86,8 @@ namespace  TrumpTile.GameMain.Core
             string productId = product.definition.id;
 
             mProductDatabase.GrantReward(productId);
+
+            EventManager.Inst.ActiveEvent("PurchaseConfirmed");
         }
         // 구매 실패
         private void OnPurchaseFailed(FailedOrder failedOrder)

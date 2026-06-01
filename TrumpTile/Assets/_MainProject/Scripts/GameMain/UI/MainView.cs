@@ -14,6 +14,7 @@ namespace TrumpTile.GameMain.UI
     {
         [Header("MainView 버튼")]
         [SerializeField] private Button mStageStartButton;
+        [SerializeField] private Button mShopButton;
 
         [Header("일일 퍼즐")]
         [SerializeField] private Button mDailyPuzzleButton;
@@ -47,7 +48,7 @@ namespace TrumpTile.GameMain.UI
 
             PlayerDataManager.Inst?.Initialize();
             RefreshLocalData();          
-            
+            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("AccessShopView"));
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
             mDailyPuzzleButton.onClick.AddListener(OnDailyPuzzleButtonClick);
             mDailyPuzzleButton.interactable = false;

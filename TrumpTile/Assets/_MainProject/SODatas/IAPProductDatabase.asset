@@ -14,13 +14,305 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mProductEntries:
   - mEProductId: 0
-    mEProductType: 0
+    mEProductType: 1
     mProductId: tm_goldpack_001
     mRewardList:
     - rid: 5782853522439012354
+  - mEProductId: 1
+    mEProductType: 0
+    mProductId: tm_goldpack_002
+    mRewardList:
+    - rid: 5061743641250234372
+  - mEProductId: 2
+    mEProductType: 0
+    mProductId: tm_goldpack_003
+    mRewardList:
+    - rid: 5061743641250234373
+  - mEProductId: 3
+    mEProductType: 0
+    mProductId: tm_goldpack_004
+    mRewardList:
+    - rid: 5061743641250234374
+  - mEProductId: 4
+    mEProductType: 0
+    mProductId: tm_goldpack_005
+    mRewardList:
+    - rid: 5061743641250234375
+  - mEProductId: 5
+    mEProductType: 0
+    mProductId: tm_goldpack_006
+    mRewardList:
+    - rid: 5061743641250234376
+  - mEProductId: 6
+    mEProductType: 0
+    mProductId: tm_itempack_001
+    mRewardList:
+    - rid: 5061743641250234377
+    - rid: 5061743641250234378
+    - rid: 5061743641250234379
+    - rid: 5061743641250234380
+    - rid: 5061743641250234381
+  - mEProductId: 7
+    mEProductType: 0
+    mProductId: tm_itempack_002
+    mRewardList:
+    - rid: 5061743641250234382
+    - rid: 5061743641250234383
+    - rid: 5061743641250234384
+    - rid: 5061743641250234385
+    - rid: 5061743641250234386
+  - mEProductId: 8
+    mEProductType: 0
+    mProductId: tm_itempack_003
+    mRewardList:
+    - rid: 5061743641250234387
+    - rid: 5061743641250234388
+    - rid: 5061743641250234389
+    - rid: 5061743641250234390
+    - rid: 5061743641250234391
+  - mEProductId: 9
+    mEProductType: 0
+    mProductId: tm_itempack_004
+    mRewardList:
+    - rid: 5061743641250234392
+    - rid: 5061743641250234393
+    - rid: 5061743641250234394
+    - rid: 5061743641250234395
+    - rid: 5061743641250234396
+  - mEProductId: 10
+    mEProductType: 0
+    mProductId: tm_beginnerpack_001
+    mRewardList:
+    - rid: 5061743641250234397
+    - rid: 5061743641250234398
+    - rid: 5061743641250234399
+    - rid: 5061743641250234400
+    - rid: 5061743641250234401
+  - mEProductId: 11
+    mEProductType: 0
+    mProductId: tm_middlepack_001
+    mRewardList:
+    - rid: 5061743641250234402
+    - rid: 5061743641250234403
+    - rid: 5061743641250234404
+    - rid: 5061743641250234405
+    - rid: 5061743641250234406
+  - mEProductId: 12
+    mEProductType: 0
+    mProductId: tm_expertpack_001
+    mRewardList:
+    - rid: 5061743641250234407
+    - rid: 5061743641250234408
+    - rid: 5061743641250234409
+    - rid: 5061743641250234410
+    - rid: 5061743641250234411
+  - mEProductId: 13
+    mEProductType: 1
+    mProductId: tm_adsremove_001
+    mRewardList:
+    - rid: 5061743641250234412
+  - mEProductId: 14
+    mEProductType: 0
+    mProductId: tm_piggybank_001
+    mRewardList:
+    - rid: 5061743641250234413
   references:
     version: 2
     RefIds:
+    - rid: 5061743641250234372
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 500
+    - rid: 5061743641250234373
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1000
+    - rid: 5061743641250234374
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2500
+    - rid: 5061743641250234375
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5000
+    - rid: 5061743641250234376
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10000
+    - rid: 5061743641250234377
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2
+        itemId: 1005
+    - rid: 5061743641250234378
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2
+        itemId: 1006
+    - rid: 5061743641250234379
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2
+        itemId: 1007
+    - rid: 5061743641250234380
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2
+        itemId: 1008
+    - rid: 5061743641250234381
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 150
+    - rid: 5061743641250234382
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1005
+    - rid: 5061743641250234383
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1006
+    - rid: 5061743641250234384
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1007
+    - rid: 5061743641250234385
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1008
+    - rid: 5061743641250234386
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 200
+    - rid: 5061743641250234387
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10
+        itemId: 1005
+    - rid: 5061743641250234388
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10
+        itemId: 1006
+    - rid: 5061743641250234389
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10
+        itemId: 1007
+    - rid: 5061743641250234390
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10
+        itemId: 1008
+    - rid: 5061743641250234391
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1000
+    - rid: 5061743641250234392
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 20
+        itemId: 1005
+    - rid: 5061743641250234393
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 20
+        itemId: 1006
+    - rid: 5061743641250234394
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 20
+        itemId: 1007
+    - rid: 5061743641250234395
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 20
+        itemId: 1008
+    - rid: 5061743641250234396
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2500
+    - rid: 5061743641250234397
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        itemId: 1005
+    - rid: 5061743641250234398
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        itemId: 1006
+    - rid: 5061743641250234399
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        itemId: 1007
+    - rid: 5061743641250234400
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        itemId: 1008
+    - rid: 5061743641250234401
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1000
+    - rid: 5061743641250234402
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1005
+    - rid: 5061743641250234403
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1006
+    - rid: 5061743641250234404
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1007
+    - rid: 5061743641250234405
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5
+        itemId: 1008
+    - rid: 5061743641250234406
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2500
+    - rid: 5061743641250234407
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 30
+        itemId: 1005
+    - rid: 5061743641250234408
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 30
+        itemId: 1006
+    - rid: 5061743641250234409
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 30
+        itemId: 1007
+    - rid: 5061743641250234410
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 30
+        itemId: 1008
+    - rid: 5061743641250234411
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 5000
+    - rid: 5061743641250234412
+      type: {class: RemoveAds, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data: 
+    - rid: 5061743641250234413
+      type: {class: PiggyBank, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data: 
     - rid: 5782853522439012354
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:

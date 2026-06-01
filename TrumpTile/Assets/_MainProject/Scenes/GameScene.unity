@@ -9238,14 +9238,13 @@ GameObject:
   - component: {fileID: 485872689}
   - component: {fileID: 485872692}
   - component: {fileID: 485872691}
-  - component: {fileID: 485872690}
   m_Layer: 5
   m_Name: Popup_GameOver_Timer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &485872689
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9267,26 +9266,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &485872690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 485872688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b3682b30c928bc47ba32d58c181eada, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mShowButton: {fileID: 0}
-  mHideButton: {fileID: 275945060}
-  mShowDuration: 0.3
-  mHideDuration: 0.3
-  mPopupObj: {fileID: 414224578}
-  mLevelText: {fileID: 2078327352}
-  mCancleButton: {fileID: 597741283}
-  mConfirmButton: {fileID: 1915234349}
 --- !u!114 &485872691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15712,7 +15691,6 @@ MonoBehaviour:
     countText: {fileID: 388239078}
     lockObject: {fileID: 255490481}
     unlockObject: {fileID: 443527309}
-  mShopView: {fileID: 1288289247}
   mItemPurchasePopup: {fileID: 711161499}
   mSlotPurchasePopup: {fileID: 8259355753659371330}
   mMatchTutorial: {fileID: 270404631}
@@ -38284,7 +38262,7 @@ MonoBehaviour:
   mSlotManager: {fileID: 10376034}
   mGameOverPopup: {fileID: 0}
   mVictoryPopup: {fileID: 0}
-  mStartLevel: 2
+  mStartLevel: 1
   mMatchCount: 3
   mMaxSlots: 7
   mStarConfig: {fileID: 11400000, guid: 87ca16f56d0a7fa4ca3be7462ddb1874, type: 2}
@@ -61232,17 +61210,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8558111584193587145, guid: b0577274dcbd51e4590ff6fa9a798bf8, type: 3}
   m_PrefabInstance: {fileID: 1288289245}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1288289247 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 652599515887047946, guid: b0577274dcbd51e4590ff6fa9a798bf8, type: 3}
-  m_PrefabInstance: {fileID: 1288289245}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 529e0e412062cd543ac982b6e35341e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1306079604
 GameObject:
   m_ObjectHideFlags: 0
@@ -106964,14 +106931,13 @@ GameObject:
   - component: {fileID: 4743974995371774225}
   - component: {fileID: 1356490716077780160}
   - component: {fileID: 8842095739490870037}
-  - component: {fileID: 8842095739490870038}
   m_Layer: 5
   m_Name: Popup_GameOver_Slot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &3121045774942349519
 GameObject:
   m_ObjectHideFlags: 0
@@ -147732,26 +147698,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8842095739490870038
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3089570916000584223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b3682b30c928bc47ba32d58c181eada, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mShowButton: {fileID: 0}
-  mHideButton: {fileID: 7358088674885743905}
-  mShowDuration: 0.3
-  mHideDuration: 0.3
-  mPopupObj: {fileID: 4566387174062798644}
-  mLevelText: {fileID: 5547733796848890573}
-  mCancleButton: {fileID: 1551110847596704810}
-  mConfirmButton: {fileID: 734558619161382084}
 --- !u!222 &8887557648866782675
 CanvasRenderer:
   m_ObjectHideFlags: 0

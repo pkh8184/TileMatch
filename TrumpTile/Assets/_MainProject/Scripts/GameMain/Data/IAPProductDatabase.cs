@@ -60,6 +60,20 @@ namespace TrumpTile.GameMain.Data
     public enum EProductId
     {
         GoldPackage_1,
+        GoldPackage_2,
+        GoldPackage_3,
+        GoldPackage_4,
+        GoldPackage_5,
+        GoldPackage_6,
+        ItemPackage_1,
+        ItemPackage_2,
+        ItemPackage_3,
+        ItemPackage_4,
+        NewbiePackage,
+        BigginerPackage,
+        MasterPackage,
+        RemoveAds,
+        PiggyBank,
         None
     }
     [System.Serializable]

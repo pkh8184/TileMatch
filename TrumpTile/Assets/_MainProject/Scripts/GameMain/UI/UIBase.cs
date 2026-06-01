@@ -61,11 +61,13 @@ namespace TrumpTile.GameMain.UI
         protected virtual void SubscribeEvent()
         {
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
+            EventManager.Inst.AddEvent("PurchaseConfirmed", Refresh);
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
         }
         protected virtual void UnSubscribeEvent()
         {
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
+            EventManager.Inst?.RemoveEvent("PurchaseConfirmed", Refresh);
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
         }
         public void Deinitialize()

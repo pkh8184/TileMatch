@@ -62,8 +62,6 @@ namespace TrumpTile.GameMain.UI
 
         [Header("아이템 버튼")]
         [SerializeField] private ItemButtonConfig[] mItemButtonConfigArray = new ItemButtonConfig[4];
-        [Header("인게임 샵 뷰")]
-        [SerializeField] private ShopView mShopView;
         [Header("구매 팝업들")]
         [SerializeField] private IngameItemPurchasePopup mItemPurchasePopup;
         [SerializeField] private IngameSlotPurchasePopup mSlotPurchasePopup;
@@ -91,7 +89,7 @@ namespace TrumpTile.GameMain.UI
                 }
                 if(PlayerDataManager.Inst.Gold < SlotManager.Instance.BonusSlotCost)
                 {
-                    mShopView.Show();
+                    EventManager.Inst.ActiveEvent("AccessShopView");
                 }
                 else
                 {
@@ -111,7 +109,6 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
             EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
             //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
-            EventManager.Inst.AddEvent("AccessShopView", mShopView.Show);
             EventManager.Inst.AddEvent("ItemCountChanged", RefreshButtons);
             EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
             
@@ -122,7 +119,6 @@ namespace TrumpTile.GameMain.UI
             base.UnSubscribeEvent();
             EventManager.Inst?.RemoveEvent("IngameLoadingComplete", OnLoadLevelComplete);
             EventManager.Inst?.RemoveEvent("TimerSettingComplete", OnTimerSettingComplete);
-            EventManager.Inst?.RemoveEvent("AccessShopView", mShopView.Show);
             EventManager.Inst?.RemoveEvent("ItemCountChanged", RefreshButtons);
             EventManager.Inst?.RemoveEvent("PurchaseItem", PurchaseItem);
 

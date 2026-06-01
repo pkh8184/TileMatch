@@ -6,6 +6,7 @@ using TMPro;
 using TrumpTile.GameMain.Data;
 using DG.Tweening;
 using TrumpTile.GameMain.Core;
+using System;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -18,13 +19,21 @@ namespace TrumpTile.GameMain.UI
         [Header("ShopView 접근 시 애니메이션 효과를 주기 위한 RectTransform 참조")]
         [SerializeField] private RectTransform mUIContainerTransform;
         [SerializeField] private float mAnimDuration = 0.5f;
-
-        [SerializeField] private Button mGoldPackageButton;
+        [Serializable]
+        private class PurchaseButtonConfig
+        {
+            public EProductId eProductId;
+            public Button button;
+        }
+        [SerializeField] private PurchaseButtonConfig[] mPurchaseButtonCofigArray;
         public override void Initialize()
         {
             base.Initialize();
 
-            mGoldPackageButton.onClick.AddListener(() => IAPManager.Instance.PurchaseProduct(EProductId.GoldPackage_1));
+            foreach(var item in mPurchaseButtonCofigArray)
+            {
+                item.button.onClick.AddListener(() => OnPurchaeButtonClick(item.eProductId));
+            }
         }
         public override void Show()
         {
@@ -42,6 +51,23 @@ namespace TrumpTile.GameMain.UI
             base.Hide();
 
             AdManager.Inst.ShowBannerAd();
+        }
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
+
+            EventManager.Inst.AddEvent("AccessShopView", Show);
+           // EventManager.Inst.AddEvent("ShopView", Show);    
+        }
+        protected override void UnSubscribeEvent()
+        {
+            base.UnSubscribeEvent();
+
+            EventManager.Inst?.RemoveEvent("AccessShopView", Show);
+        }
+        private void OnPurchaeButtonClick(EProductId eProductId)
+        {
+            IAPManager.Instance.PurchaseProduct(eProductId);
         }
         private IEnumerator Co_PlayPackageShowAnim(ScrollRect scroll)
         {
