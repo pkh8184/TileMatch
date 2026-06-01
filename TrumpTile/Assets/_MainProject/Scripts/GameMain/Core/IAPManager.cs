@@ -39,6 +39,14 @@ namespace  TrumpTile.GameMain.Core
             string id = mProductDatabase.GetProductId(eProductId);
             mStoreController.PurchaseProduct(id);
         }
+        public string GetProductPrice(EProductId eProductId)
+        {
+            string id = mProductDatabase.GetProductId(eProductId);
+            
+            Product product = mStoreController.GetProductById(id);
+
+            return product.metadata.localizedPriceString;
+        }
         private async Task InitializeIAP()
         {
             mStoreController = UnityIAPServices.StoreController();

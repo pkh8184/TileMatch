@@ -32,6 +32,7 @@ namespace TrumpTile.GameMain.UI
 
             foreach(var item in mPurchaseButtonCofigArray)
             {
+                item.button.GetComponentInChildren<TMP_Text>().text = IAPManager.Instance.GetProductPrice(item.eProductId);
                 item.button.onClick.AddListener(() => OnPurchaeButtonClick(item.eProductId));
             }
         }
