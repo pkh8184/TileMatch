@@ -57,7 +57,7 @@ namespace TrumpTile.FirebaseLibrary
                 }
                 else
                 {
-                    Debug.Log($"PlayGames 로그인 실패");
+                    Debug.Log($"PlayGames 로그인 실패 : {error}");
                 }
             });
         }
