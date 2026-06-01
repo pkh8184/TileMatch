@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Firebase.Auth;
+using UnityEngine;
 
 namespace TrumpTile.FirebaseLibrary
 {
@@ -48,7 +49,17 @@ namespace TrumpTile.FirebaseLibrary
         }
         private static async Task SignInWithGooglePlayGameService()
         {
-
+            Social.localUser.Authenticate((success, error) =>
+            {
+                if(success)
+                {
+                    Debug.Log($"PlayGames 로그인 성공");
+                }
+                else
+                {
+                    Debug.Log($"PlayGames 로그인 실패");
+                }
+            });
         }
     }
 
