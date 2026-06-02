@@ -58,6 +58,10 @@ namespace TrumpTile.GameMain.Core
 		private int mGridHeight;
 		private int mOriginHeight;
 		private int mMaxLayers;
+		private float mBoardPivotX;
+		private float mBoardPivotY;
+
+		private Vector3[,,] mBoardMap;
 
 		private bool mIsShuffling = false;
 		private bool mIsLevelLoaded = false;
@@ -132,12 +136,8 @@ namespace TrumpTile.GameMain.Core
 			mOriginWidth = levelData.boardWidth;
 			mOriginHeight = levelData.boardHeight;
 			mMaxLayers = levelData.maxLayers;
-			
-			float boardOffsetXMax = levelData.layerList[0].tilePlacementList.Max(x => x.gridX);
-			float boardOffsetXMin = levelData.layerList[0].tilePlacementList.Min(x => x.gridX);
 
-			float boardOffsetYMax = levelData.layerList[0].tilePlacementList.Max(x => x.gridY);
-			float boardOffsetYMin = levelData.layerList[0].tilePlacementList.Min(x => x.gridY);
+			mBoardMap = new Vector3[mMaxLayers,8,8];
 
 			float maxX = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Max(x => x.gridX);
 			float minX = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Min(x => x.gridX);
@@ -150,12 +150,12 @@ namespace TrumpTile.GameMain.Core
 
 			int gridX = (int)x + 1;
 			int gridY = (int)y + 1;
-
-			mGridWidth = (int)boardOffsetXMax - (int)boardOffsetXMin + 1;
-			mGridHeight = (int)boardOffsetYMax - (int)boardOffsetYMin + 1;
+			
+			mGridWidth = (int)maxX - (int)minX + 1;
+			mGridHeight = (int)maxY - (int)minY + 1;
 
 			mMaxBoardSize = Mathf.Max(gridX, gridY);
-
+			Debug.Log($"[BoardManager] 조정된 보드 사이즈 : {mMaxBoardSize}\n보드 넓이 : {mGridWidth}, 보드 높이 : {mGridHeight}\nX축 배치 보정값 : {minX}, Y축 배치 보정값 : {minY}");
 			switch(mMaxBoardSize)
 			{
 				case 6:
@@ -171,7 +171,6 @@ namespace TrumpTile.GameMain.Core
 					mTileScale = new Vector3(mTileSize_5, mTileSize_5, 1);
 					break;
 			}
-
 
 			string difficulty = levelData.difficulty.ToString();
 			Sprite difficultyBackground = null;
@@ -209,7 +208,7 @@ namespace TrumpTile.GameMain.Core
                             Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
                             continue;
                         }
-                        CreateTile(data, placement.gridX - boardOffsetXMin, placement.gridY - boardOffsetYMin, i, tileBackground, createdCount, spawnAnimType);
+                        CreateTile(data, placement.gridX - minX, placement.gridY - minY, i, tileBackground, createdCount, spawnAnimType);
                         createdCount++;
                     }
                 }
@@ -714,30 +713,38 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Utility
+		// public Vector3 GridToWorldPos(float x, float y, int layer)
+		// {
+		// 	//float pivotX = mOriginWidth % 2 == 0? -mTileScale.x / 2 : 0;
+		// 	//float pivotY = mOriginHeight % 2 == 0? -mTileScale.x / 2 : 0;
 
+
+		// }
 		public Vector3 GridToWorldPosition(float x, float y, int layer)
 		{
 			float startX = 0;
-			if(mGridWidth % 2 == 0)
+			if(mOriginWidth % 2 == 0)
 			{
 				startX -= mTileScale.x / 2;
-				startX -= mTileScale.x * ((mGridWidth / 2) - 1);
+				startX -= mTileScale.x * (mGridWidth / 2 - 1);
 			}
 			else
 			{
-				startX -= mTileScale.x * (mGridWidth / 2);
+				startX -= mTileScale.x * (mGridWidth / 2 - 1);
 			}
 			float startY = 0;
-			if(mGridHeight % 2 == 0)
+			if(mOriginHeight % 2 == 0)
 			{
 				startY -= mTileScale.x / 2;
-				startY -= mTileScale.x * ((mGridHeight / 2) - 1);
+				startY -= mTileScale.x * (mGridHeight / 2 - 1);
 			}
 			else
 			{
-				startY -= mTileScale.x * (mGridHeight / 2);
+				startY -= mTileScale.x * (mGridHeight / 2 - 1);
 			}
-			
+			//startY -= mTileScale.x / 2;
+			//startY -= mTileScale.x * ((mGridHeight / 2) - 1);
+
 			float posX = startX + (mTileScale.x * x);
 			float posY = startY + (mTileScale.x * y);
 
@@ -752,7 +759,7 @@ namespace TrumpTile.GameMain.Core
 				else
 				{
 					offsetX = mTileScale.x / 2f;
-                }
+				}
 				if(mOriginHeight < 8)
 				{
 					offsetY -= mTileScale.x / 2f;
@@ -760,7 +767,7 @@ namespace TrumpTile.GameMain.Core
 				else
 				{
 					offsetY = mTileScale.x / 2f;
-                }
+				}
 			}
 
 			return new Vector3(posX + offsetX, posY + offsetY, -0.1f * layer);
