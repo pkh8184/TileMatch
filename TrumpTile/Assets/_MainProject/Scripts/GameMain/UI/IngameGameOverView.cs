@@ -63,16 +63,16 @@ namespace TrumpTile.GameMain.UI
         {
             base.Show();
 
-            if(GameManager.Instance.IsResurrection)
-            {
-                mAfterResurrectionObj.SetActive(true);
-                mBeforeResurrectionObj.SetActive(false);
-            }
-            else
-            {
-                mBeforeResurrectionObj.SetActive(true);
-                mAfterResurrectionObj.SetActive(false);
-            }
+            // if(GameManager.Instance.IsResurrection)
+            // {
+            //     mAfterResurrectionObj.SetActive(true);
+            //     mBeforeResurrectionObj.SetActive(false);
+            // }
+            // else
+            // {
+            //     mBeforeResurrectionObj.SetActive(true);
+            //     mAfterResurrectionObj.SetActive(false);
+            // }
             mBackground.color = new Color(mBackground.color.r, mBackground.color.g, mBackground.color.b, mBackgroundOriginAlpha);
             mTimeGauge.fillAmount = 1;
 

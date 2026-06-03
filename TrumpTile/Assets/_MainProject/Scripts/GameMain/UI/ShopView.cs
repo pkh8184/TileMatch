@@ -54,6 +54,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.Hide();
 
+            if(GameManager.Instance != null)
+            {
+                if(!PopupBase.IsAnyPopupOpen)
+                {
+                    GameManager.Instance.ResumeGame();
+                }
+            }
             AdManager.Inst.ShowBannerAd();
         }
         protected override void SubscribeEvent()

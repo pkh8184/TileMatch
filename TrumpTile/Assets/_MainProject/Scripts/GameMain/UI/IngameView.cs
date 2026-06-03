@@ -89,6 +89,7 @@ namespace TrumpTile.GameMain.UI
                 }
                 if(PlayerDataManager.Inst.Gold < SlotManager.Instance.BonusSlotCost)
                 {
+                    GameManager.Instance.PauseGame();
                     EventManager.Inst.ActiveEvent("AccessShopView");
                 }
                 else

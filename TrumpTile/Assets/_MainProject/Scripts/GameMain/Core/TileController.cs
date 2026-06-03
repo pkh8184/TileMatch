@@ -257,7 +257,12 @@ namespace TrumpTile.GameMain.Core
 		#region Input
 
 		private void OnMouseDown()
-		{
+		{		
+			if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.Playing)
+			{
+				return;
+			}
+
 			if (IsTouchBlockedByUI())
 			{
 				return;
@@ -284,11 +289,6 @@ namespace TrumpTile.GameMain.Core
 			if (mIsFrozen && mFrozenCount > 0)
 			{
 				BreakIce();
-				return;
-			}
-
-			if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.Playing)
-			{
 				return;
 			}
 
