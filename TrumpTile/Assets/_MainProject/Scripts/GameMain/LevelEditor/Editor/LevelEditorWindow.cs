@@ -367,6 +367,13 @@ namespace TrumpTile.LevelEditor.Editor
                     mCurrentLevelClone.tileBackgroundSprite = mTileBackgroundSpriteList[mCurrentTileBackgroundIndex];
                 }
 
+				EditorGUILayout.LabelField("RandomTileRangeSetting", EditorStyles.boldLabel);
+				EditorGUI.BeginChangeCheck();
+
+				for(int i = 0; i < (int)ETileCartegory.Length - 1; i++)
+				{
+					mCurrentLevelClone.randomTileRangeByCartegory[i] = EditorGUILayout.IntSlider($"{(ETileCartegory)i}", mCurrentLevelClone.randomTileRangeByCartegory[i], 0, 999);
+				}
             }
 			else
 			{
@@ -690,7 +697,15 @@ namespace TrumpTile.LevelEditor.Editor
 				if (i == mCurrentLayer) continue;
 
 				float alpha = mShowAllLayers ? 1f : 0.2f;
-				Color color = new Color(LayerColors[i].r,LayerColors[i].g,LayerColors[i].b, alpha);
+				Color color;
+				if(i >= LayerColors.Length)
+				{
+					color = new Color(LayerColors[LayerColors.Length - 1].r,LayerColors[LayerColors.Length - 1].g,LayerColors[LayerColors.Length - 1].b, alpha);
+				}
+				else
+				{
+					color = new Color(LayerColors[i].r,LayerColors[i].g,LayerColors[i].b, alpha);
+				}
 				
 				Vector2 gridOrigin = GetGridOrigin(area, i);
 
