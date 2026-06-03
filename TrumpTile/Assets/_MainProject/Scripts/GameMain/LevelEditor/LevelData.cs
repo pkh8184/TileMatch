@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Core;
+using System.Runtime.CompilerServices;
 
 namespace TrumpTile.LevelEditor.Editor
 {
@@ -52,6 +53,9 @@ namespace TrumpTile.LevelEditor.Editor
 
 		[Header("사용 가능한 타일 타입")]
 		public List<TileTypeConfig> availableTileTypes = new();
+		[Header("랜덤 타일 등장 개수 지정")]
+		[EnumLabeledArray(typeof(ETileCartegory))]
+		public int[] randomTileRangeByCartegory = new int[(int)ETileCartegory.Length - 1]; 
 
 		[Header("레벨에 적용될 배경 데이터")]
 		public Sprite levelBackgroundSprite;

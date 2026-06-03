@@ -330,11 +330,27 @@ namespace TrumpTile.GameMain.Core
 			for(int i = 0; i < (int)ETileCartegory.Length - 1; i++)
 			{
 				int count = levelData.GetRandomTileCount((ETileCartegory)i);
-
+				Debug.Log($"[BoardManager] {(ETileCartegory)i} 랜덤 타일 개수 : {count}");
+				if(count == 0) continue;
 				int min = mAllTileTypes.FindIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
 				int max = mAllTileTypes.FindLastIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
-				Debug.Log($"[BoardManager] {((ETileCartegory)i).ToString()} Cartegory Range : {min}, {max - 1}");
-				TileData tileData = mAllTileTypes[Random.Range(min, max)];	
+				
+				int typeCount = levelData.randomTileRangeByCartegory[i];
+				Debug.Log($"[BoardManager] {(ETileCartegory)i} 랜덤 타일 범위 : {typeCount}");
+				if(typeCount > max - min + 1 || typeCount <= 0)
+				{
+					typeCount = max - min + 1;
+				}
+
+				List<TileData> filteredTileList = new List<TileData>();
+				for(int j = 0; j < typeCount; j++)
+				{
+					TileData filteredTile = mAllTileTypes[Random.Range(min, max)];
+					Debug.Log($"[BoardManager] {j+1}번째 선택된 {(ETileCartegory)i} 랜덤 타일 : {filteredTile.TileID}");
+					filteredTileList.Add(filteredTile);
+				}
+				
+				TileData tileData = filteredTileList[Random.Range(0, typeCount)];
 
 				for(int j = 0; j < count / 3; j++)
 				{	
@@ -342,7 +358,7 @@ namespace TrumpTile.GameMain.Core
 					{
 						mRandomTileList.Add(tileData);
 					}
-					tileData = mAllTileTypes[Random.Range(min, max)];	
+					tileData = filteredTileList[Random.Range(0, typeCount)];	
 				}	
 				for(int j = 0; j < count % 3; j++)
 				{
