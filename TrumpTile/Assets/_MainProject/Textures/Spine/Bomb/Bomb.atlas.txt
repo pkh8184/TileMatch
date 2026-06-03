@@ -4,75 +4,187 @@ size: 1024,1024
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-fx_debris1
+deb1
   rotate: false
-  xy: 210, 964
-  size: 53, 52
-  orig: 72, 72
-  offset: 8, 10
+  xy: 681, 631
+  size: 57, 56
+  orig: 80, 80
+  offset: 10, 12
   index: -1
-fx_debris2
+deb2
   rotate: false
-  xy: 58, 972
-  size: 46, 44
-  orig: 72, 72
-  offset: 11, 11
+  xy: 405, 641
+  size: 47, 46
+  orig: 80, 80
+  offset: 14, 13
   index: -1
-fx_debris3
+deb3
   rotate: false
-  xy: 106, 970
-  size: 50, 46
-  orig: 72, 72
-  offset: 6, 16
+  xy: 454, 640
+  size: 53, 47
+  orig: 80, 80
+  offset: 7, 20
   index: -1
-fx_debris4
+deb4
   rotate: false
-  xy: 158, 970
-  size: 50, 46
-  orig: 72, 72
-  offset: 8, 8
+  xy: 566, 638
+  size: 53, 49
+  orig: 80, 80
+  offset: 9, 9
   index: -1
-fx_debris5
+deb5
   rotate: true
-  xy: 2, 973
-  size: 43, 54
-  orig: 72, 72
-  offset: 13, 11
+  xy: 241, 643
+  size: 44, 59
+  orig: 80, 80
+  offset: 16, 13
+  index: -1
+deb6
+  rotate: true
+  xy: 740, 630
+  size: 57, 65
+  orig: 80, 80
+  offset: 17, 5
+  index: -1
+deb7
+  rotate: true
+  xy: 509, 640
+  size: 47, 55
+  orig: 80, 80
+  offset: 12, 17
+  index: -1
+deb8
+  rotate: true
+  xy: 354, 642
+  size: 45, 49
+  orig: 80, 80
+  offset: 16, 11
+  index: -1
+fuse0
+  rotate: true
+  xy: 410, 535
+  size: 103, 111
+  orig: 103, 111
+  offset: 0, 0
+  index: -1
+fuse1
+  rotate: false
+  xy: 201, 540
+  size: 103, 101
+  orig: 103, 101
+  offset: 0, 0
+  index: -1
+fuse10
+  rotate: false
+  xy: 50, 671
+  size: 48, 16
+  orig: 48, 16
+  offset: 0, 0
+  index: -1
+fuse11
+  rotate: false
+  xy: 2, 681
+  size: 46, 6
+  orig: 46, 6
+  offset: 0, 0
+  index: -1
+fuse2
+  rotate: false
+  xy: 97, 558
+  size: 102, 92
+  orig: 102, 92
+  offset: 0, 0
+  index: -1
+fuse3
+  rotate: false
+  xy: 2, 587
+  size: 93, 82
+  orig: 94, 82
+  offset: 0, 0
+  index: -1
+fuse4
+  rotate: false
+  xy: 872, 614
+  size: 74, 73
+  orig: 75, 73
+  offset: 0, 0
+  index: -1
+fuse5
+  rotate: true
+  xy: 807, 627
+  size: 60, 63
+  orig: 63, 63
+  offset: 0, 0
+  index: -1
+fuse6
+  rotate: false
+  xy: 621, 633
+  size: 58, 54
+  orig: 58, 54
+  offset: 0, 0
+  index: -1
+fuse7
+  rotate: false
+  xy: 302, 643
+  size: 50, 44
+  orig: 50, 44
+  offset: 0, 0
+  index: -1
+fuse8
+  rotate: false
+  xy: 150, 652
+  size: 49, 35
+  orig: 49, 35
+  offset: 0, 0
+  index: -1
+fuse9
+  rotate: false
+  xy: 100, 662
+  size: 48, 25
+  orig: 48, 25
+  offset: 0, 0
   index: -1
 fx_fireball
   rotate: true
-  xy: 523, 743
+  xy: 2, 265
   size: 273, 274
   orig: 384, 384
   offset: 57, 72
   index: -1
-fx_smoke1
-  rotate: true
-  xy: 2, 2
-  size: 369, 370
-  orig: 384, 384
-  offset: 11, 6
+fx_fuse
+  rotate: false
+  xy: 306, 537
+  size: 102, 102
+  orig: 128, 128
+  offset: 13, 13
   index: -1
 fx_smoke2
   rotate: true
-  xy: 372, 373
+  xy: 648, 2
   size: 368, 369
   orig: 384, 384
   offset: 4, 8
   index: -1
 fx_smoke3
   rotate: false
-  xy: 2, 391
+  xy: 278, 3
   size: 368, 367
   orig: 384, 384
   offset: 11, 13
   index: -1
 fx_spark
   rotate: false
-  xy: 265, 760
+  xy: 523, 372
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
+  index: -1
+fx_sparkbit
+  rotate: false
+  xy: 201, 649
+  size: 38, 38
+  orig: 48, 48
+  offset: 5, 5
   index: -1
 
 Bomb2.png
@@ -80,24 +192,31 @@ size: 1024,1024
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-Layer 1
-  rotate: false
-  xy: 2, 2
-  size: 514, 513
-  orig: 514, 513
-  offset: 0, 0
+Bomb
+  rotate: true
+  xy: 396, 4
+  size: 390, 420
+  orig: 512, 512
+  offset: 68, 17
   index: -1
 fx_flash
   rotate: false
-  xy: 396, 517
+  xy: 2, 396
   size: 448, 448
   orig: 512, 512
   offset: 32, 32
   index: -1
 fx_shockwave
   rotate: false
-  xy: 2, 573
+  xy: 2, 2
   size: 392, 392
   orig: 512, 512
   offset: 60, 60
+  index: -1
+fx_smoke1
+  rotate: true
+  xy: 452, 475
+  size: 369, 370
+  orig: 384, 384
+  offset: 11, 6
   index: -1
