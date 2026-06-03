@@ -27,7 +27,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.UnSubscribeEvent();
             
-            EventManager.Inst.RemoveEvent("PurchaseFailed", Show);
+            EventManager.Inst.RemoveEvent("PurchaseConfirmed", Show);
         }
         protected override void PlayHideAnim()
         {

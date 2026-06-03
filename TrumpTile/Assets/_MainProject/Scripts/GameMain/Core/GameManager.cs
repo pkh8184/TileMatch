@@ -43,7 +43,11 @@ namespace TrumpTile.GameMain.Core
 		[Header("Scoring")]
 		[SerializeField] private int mBaseMatchScore = 100;
 		[SerializeField] private int mComboMultiplier = 50;
-
+		[Header("부활 횟수 / 부활 비용")]
+		[SerializeField] private int mReviveCount = 3;
+		[SerializeField] private int[] mReviveCost = new int[3];
+		public int[] ReviveCost => mReviveCost;
+		
 		[Header("Debug")]
 		[SerializeField] private bool mEnableDebugKeys = true;
 		[SerializeField] private float mSlowMotionScale = 0.2F;
@@ -87,8 +91,8 @@ namespace TrumpTile.GameMain.Core
 
 		// 부활 관련
 		private bool mbIsTimeOut;
-		private bool mbIsResurrection;
-		public bool IsResurrection => mbIsResurrection;
+		private int mCurrentReviveCount = 0;
+		public int CurrentReviveCount { get => mCurrentReviveCount; set => mCurrentReviveCount = value; }
 		// 튜토리얼 체크
 		public bool tutorialComplete { get; set; }
 		public bool IsTimerFrozen => mIsTimerFrozen;
@@ -341,9 +345,12 @@ namespace TrumpTile.GameMain.Core
 		public void RestartLevel()
 		{
 			mbIsRetry = true;
-			mbIsResurrection = false;
 			Debug.Log($"[GameManager] RestartLevel - Level {CurrentLevel}");
 			AudioManager.Inst.SetBGMVolume(1f);
+
+			mCurrentReviveCount = 0;
+			mbIsTimeOut = false;
+
 			StartLevel(CurrentLevel);
 		}
 		private async Task WaitUntill(Func<bool> condition)
@@ -469,7 +476,19 @@ namespace TrumpTile.GameMain.Core
 			EffectManager.Instance?.PlayGameOverEffect();
 			AudioEvent.Play(EAudioKey.SFX_StageLosed);
 
-			EventManager.Inst.ActiveEvent("GameOver");
+			if(mCurrentReviveCount >= mReviveCount)
+			{
+				EventManager.Inst.ActiveEvent("StageFailed");
+				return;
+			}
+			if(mbIsTimeOut)
+			{
+				EventManager.Inst.ActiveEvent("GameOver_TimeOut");	
+			}
+			else
+			{
+				EventManager.Inst.ActiveEvent("GameOver_SlotFull");
+			}
 		}
 
 		private void OnContinueGame()
@@ -499,6 +518,8 @@ namespace TrumpTile.GameMain.Core
 				mSlotManager?.ResumeGame();
 
 				CurrentState = EGameState.Playing;
+
+				mbIsTimeOut = false;
 			}
 			else
 			{
@@ -514,8 +535,8 @@ namespace TrumpTile.GameMain.Core
 
 				CurrentState = EGameState.Playing;
 			}
-
-			mbIsResurrection = true;
+			
+			mCurrentReviveCount++;
 		}
 		public void LevelClear()
 		{
