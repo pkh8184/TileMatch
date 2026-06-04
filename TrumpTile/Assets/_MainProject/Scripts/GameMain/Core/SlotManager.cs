@@ -285,7 +285,7 @@ namespace TrumpTile.GameMain.Core
 		{
 			AudioEvent.Play(EAudioKey.SFX_TileMove);
 
-			newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex, () => CheckCanMatch(newTile));
+			newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex, () => CheckMatch(newTile));
 
 			RerangeSlotsAfterAddTile(insertIndex);
 
@@ -423,28 +423,28 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Match Processing
-		private void CheckCanMatch(TileController tile)
+		private void CheckMatch(TileController tile)
 		{
 			int insertIndex = mSlotTiles.IndexOf(tile);
 			if(insertIndex < 2)
 			{
 				return;
 			}
-			
-			string id = mSlotTiles[insertIndex].TileTypeId;
-
-			for(int i = insertIndex - 1; i >= insertIndex - 2; i--)
-			{
-				if(mSlotTiles[i].TileTypeId != id)
-				{
-					return;
-				}
-			}
 
 			MatchProcess(insertIndex);
 		}
 		private void MatchProcess(int index)
 		{
+			string id = mSlotTiles[index].TileTypeId;
+
+			for(int i = index - 1; i >= index - 2; i--)
+			{
+				if(mSlotTiles[i].TileTypeId != id)
+				{
+					CheckGameState();
+					return;
+				}
+			}
 			List<TileController> matchedTileList = new List<TileController>();
 			for(int i = 0; i < 3; i++)
 			{
@@ -625,6 +625,7 @@ namespace TrumpTile.GameMain.Core
 		
 		private void CheckGameState()
 		{
+			Debug.Log("게임 상태 확인");
 			if (mIsGameEnded)
 			{
 				return;
@@ -649,7 +650,7 @@ namespace TrumpTile.GameMain.Core
 					.Where(t => t?.Data != null)
 					.GroupBy(t => t.Data.TileID)
 					.Any(g => g.Count() >= matchCount);
-
+				Debug.Log($"슬롯 꽉 참, bHasMatch : {bHasMatch}" );
 				if (!bHasMatch)
 				{
 					Debug.Log("[SlotManager] Game Over!");
