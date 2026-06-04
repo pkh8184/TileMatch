@@ -43,8 +43,7 @@ namespace TrumpTile.GameMain.Core
 		[Header("Scoring")]
 		[SerializeField] private int mBaseMatchScore = 100;
 		[SerializeField] private int mComboMultiplier = 50;
-		[Header("부활 횟수 / 부활 비용")]
-		[SerializeField] private int mReviveCount = 3;
+		[Header("부활 비용")]
 		[SerializeField] private int[] mReviveCost = new int[3];
 		public int[] ReviveCost => mReviveCost;
 		
@@ -93,6 +92,7 @@ namespace TrumpTile.GameMain.Core
 		private bool mbIsTimeOut;
 		private int mCurrentReviveCount = 0;
 		public int CurrentReviveCount { get => mCurrentReviveCount; set => mCurrentReviveCount = value; }
+		public bool FreeReviveStage {get;set;}
 		// 튜토리얼 체크
 		public bool tutorialComplete { get; set; }
 		public bool IsTimerFrozen => mIsTimerFrozen;
@@ -134,7 +134,6 @@ namespace TrumpTile.GameMain.Core
 
 			Debug.Log($"[GameManager] Starting level: {mStartLevel}");
 			await StartLevelAsync(mStartLevel);
-
         }
 
 		private void OnDestroy()
@@ -252,6 +251,11 @@ namespace TrumpTile.GameMain.Core
       		tutorialComplete = false;
 			mStarCount = 0;
 
+			if(levelNumber <= 5)
+			{
+				FreeReviveStage = true;
+			}
+
 			LevelData levelData;
 			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
@@ -347,6 +351,7 @@ namespace TrumpTile.GameMain.Core
 			mbIsRetry = true;
 			Debug.Log($"[GameManager] RestartLevel - Level {CurrentLevel}");
 			AudioManager.Inst.SetBGMVolume(1f);
+			EventManager.Inst.ActiveEvent("RestartLevel");
 
 			mCurrentReviveCount = 0;
 			mbIsTimeOut = false;
@@ -476,11 +481,6 @@ namespace TrumpTile.GameMain.Core
 			EffectManager.Instance?.PlayGameOverEffect();
 			AudioEvent.Play(EAudioKey.SFX_StageLosed);
 
-			if(mCurrentReviveCount >= mReviveCount)
-			{
-				EventManager.Inst.ActiveEvent("StageFailed");
-				return;
-			}
 			if(mbIsTimeOut)
 			{
 				EventManager.Inst.ActiveEvent("GameOver_TimeOut");	
@@ -535,8 +535,6 @@ namespace TrumpTile.GameMain.Core
 
 				CurrentState = EGameState.Playing;
 			}
-			
-			mCurrentReviveCount++;
 		}
 		public void LevelClear()
 		{
