@@ -157,6 +157,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				Debug.Log($"[SlotManager] Slot full! Count: {mSlotTiles.Count}");
 				OnSlotFull?.Invoke();
+				CheckGameState();
 				return false;
 			}
 
