@@ -41,8 +41,6 @@ namespace TrumpTile.GameMain.UI
 
             mCostButton.onClick.AddListener(ReviveWithPay);
 
-            PlayerDataManager.Inst.RemoveAds();
-
             if(PlayerDataManager.Inst.UserData.RemoveAds)
             {
                 mAdsButton.gameObject.SetActive(false);
