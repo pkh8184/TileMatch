@@ -438,10 +438,40 @@ namespace TrumpTile.GameMain.Core
 
 		#region Movement - To Slot
 
+		public float MoveToSlotReturnDuration(Vector3 slotPosition, int index, Action onComplete)
+		{
+			if (mBlockedOverlay != null)
+			{
+				mBlockedOverlay.SetActive(false);
+			}
+
+			SetMovingToSlotSorting();
+
+			if (mSelectParticle != null)
+			{
+				mSelectParticle.Play();
+			}
+
+			StartMoveTween(
+				slotPosition,
+				bUseArc: true,
+				EFinalScaleMode.OnBoard,
+				() =>
+				{
+					UpdateSortingOrder();
+					onComplete();
+				});
+			
+			if(mbIsJewerly)
+			{
+				mSpriteRenderer.sprite = mTileData.sprite;
+			}
+			return 0;
+		}
 		public void MoveToSlot(Vector3 slotPosition, int index, Action onComplete = null)
 		{
-			bool bWasInSlot = mIsInSlot;
-
+			//bool bWasInSlot = mIsInSlot;
+	
 			mIsInSlot = true;
 			mSlotIndex = index;
 
@@ -460,7 +490,7 @@ namespace TrumpTile.GameMain.Core
 
 			StartMoveTween(
 				slotPosition,
-				bUseArc: !bWasInSlot,
+				bUseArc: true,//!bWasInSlot,
 				EFinalScaleMode.InSlot,
 				() =>
 				{
@@ -575,14 +605,14 @@ namespace TrumpTile.GameMain.Core
 			mIsAnimating = true;
 
 			Sequence seq = DOTween.Sequence();
-
+			
 			if (bUseArc)
 			{
 				float arcHeight = Mathf.Min(distance * mFlyArcHeight, 0.5F);
 				Vector3 midPoint = (startPos + targetPosition) * 0.5F + Vector3.up * arcHeight;
 				Vector3[] path = { startPos, midPoint, targetPosition };
 
-				seq.Append(transform.DOPath(path, duration, PathType.CatmullRom).SetEase(Ease.OutQuad));
+				seq.Append(transform.DOPath(path, duration).SetEase(Ease.OutQuad));
 
 				float rotationSign = UnityEngine.Random.Range(0, 2) == 0 ? 1F : -1F;
 				seq.Join(transform.DOLocalRotate(new Vector3(0F, 0F, rotationSign * mFlyRotation), duration, RotateMode.FastBeyond360).SetEase(Ease.OutCubic));
@@ -597,9 +627,12 @@ namespace TrumpTile.GameMain.Core
 			Vector3 finalScale = ResolveFinalScale(finalScaleMode);
 			seq.OnComplete(() =>
 			{
-				transform.position = targetPosition;
-				transform.rotation = Quaternion.identity;
-				transform.localScale = finalScale;
+				mIsAnimating = false;
+				mActiveTween = null;
+				onComplete?.Invoke();
+			});
+			seq.OnKill(() =>
+			{
 				mIsAnimating = false;
 				mActiveTween = null;
 				onComplete?.Invoke();
