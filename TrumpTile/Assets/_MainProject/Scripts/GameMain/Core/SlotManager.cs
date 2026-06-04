@@ -467,6 +467,17 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			EffectManager.Instance?.PlayMatchEffect(matchedTileList[1].transform.position);
+
+			AudioEvent.Play(EAudioKey.SFX_TileMatch);
+
+			OnMatch?.Invoke(matchedTileList.Count);
+			OnMatchFound?.Invoke(matchedTileList.Count);
+			if (EventManager.Inst != null)
+			{
+				EventManager.Inst.ActiveEvent(EventKeys.MATCH_OCCURRED, (object)matchedTileList.Count);
+			}
+
+			CheckGameState();
 		}
 		private IEnumerator CheckAndProcessAllMatches()
 		{

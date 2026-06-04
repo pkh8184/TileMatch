@@ -29,6 +29,7 @@ namespace TrumpTile.GameMain.UI
         public override void Show()
         {
             mLevelText.text = "레벨 " + GameManager.Instance.CurrentLevel.ToString();
+            AudioEvent.Play(EAudioKey.SFX_StageLosed_02);
             base.Show();
         }
         protected override void SubscribeEvent()
