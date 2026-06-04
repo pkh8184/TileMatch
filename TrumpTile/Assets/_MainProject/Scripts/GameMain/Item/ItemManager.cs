@@ -31,7 +31,7 @@ namespace TrumpTile.GameMain.Item
 			RegisterItem(new HammerItem(slotManager, effectManager));
 			RegisterItem(new MagicWandItem(timerControllable, effectManager));
 			RegisterItem(new MagicHatItem(boardManager, effectManager));
-			RegisterItem(new BombItem(boardManager, effectManager, matchCount));
+			RegisterItem(new BombItem(slotManager, boardManager, effectManager, matchCount));
 
 			LoadItemCounts();
 		}
