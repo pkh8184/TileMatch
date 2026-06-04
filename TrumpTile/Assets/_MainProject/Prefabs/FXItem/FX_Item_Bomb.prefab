@@ -62,7 +62,9 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials: []
+  m_Materials:
+  - {fileID: 2100000, guid: c5db0700e96601a40b7d833ce9add0fe, type: 2}
+  - {fileID: 2100000, guid: 5f660eeed9261514b99558f3e02ed970, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -133,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0947dfdcca4d4846985c807c2689006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mAnimationName: animation
+  mAnimationName: explode
   mActionEventName: Bomb_Used
   mScale: {x: 0.5, y: 0.5, z: 0.5}
   mPositionOffset: {x: 0, y: 0, z: 0}
