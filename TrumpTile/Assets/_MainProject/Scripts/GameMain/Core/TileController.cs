@@ -282,6 +282,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				if(mbIsShake) return;
 				PlayShakeAnimation();
+				Debug.Log($"mIsSelectable : {mIsSelectable}\n mIsLocked : {mIsLocked}\n mIsAnimating : {mIsAnimating}\n mIsInSlot : {mIsInSlot}");
 				AudioEvent.Play(EAudioKey.SFX_Reject);
 				return;
 			}
@@ -310,7 +311,8 @@ namespace TrumpTile.GameMain.Core
 
 			if (BoardManager.Instance != null)
 			{
-				BoardManager.Instance.RemoveTileFromBoard(this);
+				mIsInSlot = true;
+				BoardManager.Instance.RemoveTileFromBoardBeforeAdd(this);
 			}
 
 			bool bAdded = SlotManager.Instance != null && SlotManager.Instance.AddTile(this);
@@ -318,6 +320,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				if (BoardManager.Instance != null)
 				{
+					mIsInSlot = false;
 					BoardManager.Instance.ReturnTileToBoard(this, savedX, savedY, savedLayer);
 				}
 				EnableCollider(true);
@@ -472,7 +475,6 @@ namespace TrumpTile.GameMain.Core
 		{
 			//bool bWasInSlot = mIsInSlot;
 	
-			mIsInSlot = true;
 			mSlotIndex = index;
 
 			if (mBlockedOverlay != null)

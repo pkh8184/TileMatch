@@ -452,6 +452,7 @@ namespace TrumpTile.GameMain.Core
 
 				if (dx < checkRadius && dy < checkRadius)
 				{
+					Debug.Log($"{tile.name } 타일 상호작용 불가, {other.name} 타일이 위에 있음");
 					return true;
 				}
 			}
@@ -483,6 +484,25 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			mAllTiles.Remove(tile);
+
+			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
+			mTileGridMap.Remove(gridPos);
+
+			UpdateAllBlockedStates();
+
+			Log($"Tile removed from board: {tile.TileTypeId}");
+
+			if (bProcessBonus)
+			{
+				ProcessBonusTile(tile);
+			}
+		}
+		public void RemoveTileFromBoardBeforeAdd(TileController tile, bool bProcessBonus = true)
+		{
+			if (tile == null)
+			{
+				return;
+			}
 
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap.Remove(gridPos);
@@ -871,7 +891,14 @@ namespace TrumpTile.GameMain.Core
 		{
 			return mAllTiles.Where(t => t != null && !t.IsInSlot).ToList();
 		}
-
+		public List<TileController> GetBoardTilesContainSlot()
+		{
+			foreach(var item in mAllTiles)
+			{
+				Debug.Log(item.name);
+			}
+			return mAllTiles.Where(t => t != null).ToList();
+		}
 		public void SetSize(int width, int height)
 		{
 			mGridWidth = width;

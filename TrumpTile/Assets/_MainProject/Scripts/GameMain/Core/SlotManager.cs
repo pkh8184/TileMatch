@@ -460,6 +460,7 @@ namespace TrumpTile.GameMain.Core
 
 			foreach(var item in matchedTileList)
 			{
+				BoardManager.Instance.RemoveTileFromBoard(item);
 				item.gameObject.SetActive(false);
 			}
 

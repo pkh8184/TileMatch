@@ -16,11 +16,13 @@ namespace TrumpTile.GameMain.Item
 		private const float TIMEOUT = 3F;
 
 		private BoardManager mBoardManager;
+		private SlotManager mSlotManager;
 		private EffectManager mEffectManager;
 		private int mMatchCount;
 
-		public BombItem(BoardManager boardManager, EffectManager effectManager, int matchCount)
+		public BombItem(SlotManager slotManager, BoardManager boardManager, EffectManager effectManager, int matchCount)
 		{
+			mSlotManager = slotManager;
 			mBoardManager = boardManager;
 			mEffectManager = effectManager;
 			mMatchCount = matchCount;
@@ -32,15 +34,20 @@ namespace TrumpTile.GameMain.Item
 			{
 				return false;
 			}
-			return mBoardManager.GetBoardTiles()
+			return mBoardManager.GetBoardTilesContainSlot()
 				.Where(t => t != null && t.Data != null)
 				.GroupBy(t => t.Data.TileID)
 				.Any(g => g.Count() >= mMatchCount);
+			// return mBoardManager.GetBoardTiles()
+			// 	.Where(t => t != null && t.Data != null)
+			// 	.GroupBy(t => t.Data.TileID)
+			// 	.Any(g => g.Count() >= mMatchCount);
 		}
 
 		public IEnumerator Execute(Action onComplete)
 		{
-			List<IGrouping<string, TileController>> groups = mBoardManager.GetBoardTiles()
+			//List<IGrouping<string, TileController>> groups = mBoardManager.GetBoardTiles()
+			List<IGrouping<string, TileController>> groups = mBoardManager.GetBoardTilesContainSlot()
 				.Where(t => t != null && t.Data != null)
 				.GroupBy(t => t.Data.TileID)
 				.Where(g => g.Count() >= mMatchCount)
@@ -53,31 +60,51 @@ namespace TrumpTile.GameMain.Item
 			}
 
 			int setsToRemove = Mathf.Min(3, groups.Count);
-			int pendingCount = setsToRemove;
+			Vector3 center = Vector3.zero;
+
+			List<TileController> setTiles = new List<TileController>();
 
 			for (int i = 0; i < setsToRemove; i++)
 			{
-				List<TileController> setTiles = groups[i].Take(mMatchCount).ToList();
-				Vector3 center = ComputeCenter(setTiles);
+				//List<TileController> setTiles = groups[i].Take(mMatchCount).ToList();
+				//Vector3 center = ComputeCenter(setTiles);
+				setTiles.AddRange(groups[i].OrderBy(t => t.IsInSlot ? 1 : 0).Take(mMatchCount));
+				//List<TileController> capturedTiles = setTiles;
 
-				List<TileController> capturedTiles = setTiles;
+				// if (mEffectManager != null)
+				// {
+				// 	mEffectManager.PlayBombSpineEffect(center, () =>
+				// 	{
+				// 		foreach (TileController tile in capturedTiles)
+				// 		{
+				// 			if (tile != null)
+				// 			{
+				// 				mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
+				// 				tile.Remove();
+				// 			}
+				// 		}
+				// 	});
+				// }
+				// else
+				// {
+				// 	foreach (TileController tile in capturedTiles)
+				// 	{
+				// 		if (tile != null)
+				// 		{
+				// 			mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
+				// 			tile.Remove();
+				// 		}
+				// 	}
+				// 	pendingCount--;
+				// }
+				//yield return new WaitForSeconds(BOMB_SET_DELAY);
+			}
 
-				if (mEffectManager != null)
-				{
-					mEffectManager.PlayBombSpineEffect(center, () =>
-					{
-						foreach (TileController tile in capturedTiles)
-						{
-							if (tile != null)
-							{
-								mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
-								tile.Remove();
-							}
-						}
-						pendingCount--;
-					});
-				}
-				else
+			List<TileController> capturedTiles = setTiles;
+			int pendingCount = capturedTiles.Count;
+			if (mEffectManager != null)
+			{
+				mEffectManager.PlayBombSpineEffect(center, () =>
 				{
 					foreach (TileController tile in capturedTiles)
 					{
@@ -86,12 +113,23 @@ namespace TrumpTile.GameMain.Item
 							mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
 							tile.Remove();
 						}
+						pendingCount--;
+					}
+				});
+			}
+			else
+			{
+				foreach (TileController tile in capturedTiles)
+				{
+					if (tile != null)
+					{
+						mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
+						tile.Remove();
 					}
 					pendingCount--;
 				}
-				AudioEvent.Play(EAudioKey.SFX_Bomb);
-				yield return new WaitForSeconds(BOMB_SET_DELAY);
 			}
+			AudioEvent.Play(EAudioKey.SFX_Bomb);
 
 			float elapsed = 0F;
 			while (pendingCount > 0 && elapsed < TIMEOUT)
@@ -100,10 +138,16 @@ namespace TrumpTile.GameMain.Item
 				yield return null;
 			}
 
-			mBoardManager.UpdateAllBlockedStates();
 			yield return new WaitForSeconds(0.3F);
 
+			mBoardManager.UpdateAllBlockedStates();
+
 			onComplete?.Invoke();
+
+			if(BoardManager.Instance.GetAllTiles().Count == 0)
+			{
+				GameManager.Instance.LevelClear();
+			}
 		}
 
 		private Vector3 ComputeCenter(List<TileController> tiles)
