@@ -437,10 +437,6 @@ namespace TrumpTile.GameMain.Core
 			{
 				if(mSlotTiles[i].TileTypeId != id)
 				{
-					if(mSlotTiles.Count == mMaxSlots)
-					{
-						GameManager.Instance.OnGameOver();
-					}
 					return;
 				}
 			}
@@ -626,7 +622,7 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Game State
-
+		
 		private void CheckGameState()
 		{
 			if (mIsGameEnded)
