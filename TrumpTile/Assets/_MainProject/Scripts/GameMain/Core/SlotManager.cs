@@ -38,7 +38,6 @@ namespace TrumpTile.GameMain.Core
 		// 타일 리스트
 		[SerializeField] private List<TileController> mSlotTiles = new List<TileController>();
 
-		private Queue<Action> mMatchCheckQueue = new Queue<Action>();
 		// 처리 중 락
 		private bool mIsProcessingMatch = false;
 		private bool mIsGameEnded = false;
@@ -62,6 +61,7 @@ namespace TrumpTile.GameMain.Core
 		public bool IsGameEnded => mIsGameEnded;
 		public int BonusSlotCost => mBonusSlotCost;
 
+		private EAudioKey mMatchAudioKey;
         private void Awake()
 		{
 			if (Instance == null)
@@ -85,6 +85,20 @@ namespace TrumpTile.GameMain.Core
 			bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsExtraSlotUnlocked;
 			SetSlotCount(bUnlocked ? 7 : 6);
 			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, ExtraSlotUnlocked: {bUnlocked}");
+			
+			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
+			if(difficulty.Contains("VeryHard"))
+			{
+				mMatchAudioKey = EAudioKey.SFX_TileMatch_VeryHard;
+			}
+			else if(difficulty.Contains("Hard"))
+			{
+				mMatchAudioKey = EAudioKey.SFX_TileMatch_Hard;
+			}
+			else
+			{
+				mMatchAudioKey = EAudioKey.SFX_TileMatch;
+			}
 		}
 
 		public void ResetSlots()
@@ -286,7 +300,11 @@ namespace TrumpTile.GameMain.Core
 		{
 			AudioEvent.Play(EAudioKey.SFX_TileMove);
 
-			newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex, () => CheckMatch(newTile));
+			newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex, () => 
+			{
+				newTile.IsArrivedSlot = true;
+				CheckMatch();
+			});
 
 			RerangeSlotsAfterAddTile(insertIndex);
 
@@ -369,7 +387,21 @@ namespace TrumpTile.GameMain.Core
 				TileController tile = mSlotTiles[i];
 				Vector3 targetPos = mSlotPositions[i].position;
 
-				tile.AdjustSlotPosition(targetPos, i);
+				if(i == mSlotTiles.Count - 1)
+				{
+					tile.AdjustSlotPosition(targetPos, i, () => 
+					{
+						tile.IsArrivedSlot = true;
+						CheckMatch();
+					});
+				}
+				else
+				{
+					tile.AdjustSlotPosition(targetPos, i, () => 
+					{
+						tile.IsArrivedSlot = true;
+					});	
+				}
 				tile.UpdateSortingOrder();
 			}
 		}
@@ -389,7 +421,21 @@ namespace TrumpTile.GameMain.Core
 				TileController tile = mSlotTiles[i];
 				Vector3 targetPos = mSlotPositions[i].position;
 
-				tile.AdjustSlotPosition(targetPos, i);
+				if(i == mSlotTiles.Count - 1)
+				{
+					tile.AdjustSlotPosition(targetPos, i, () => 
+					{
+						tile.IsArrivedSlot = true;
+						CheckMatch();
+					});
+				}
+				else
+				{
+					tile.AdjustSlotPosition(targetPos, i, () => 
+					{
+						tile.IsArrivedSlot = true;
+					});	
+				}
 				tile.UpdateSortingOrder();
 			}
 		}
@@ -424,49 +470,69 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Match Processing
-		private void CheckMatch(TileController tile)
+		private void CheckMatch()
 		{
-			int insertIndex = mSlotTiles.IndexOf(tile);
-			if(insertIndex < 2)
+			if(mSlotTiles.Count < 3)
 			{
 				return;
 			}
 
-			MatchProcess(insertIndex);
+			MatchProcess();
 		}
-		private void MatchProcess(int index)
+		private void MatchProcess()
 		{
-			string id = mSlotTiles[index].TileTypeId;
-
-			for(int i = index - 1; i >= index - 2; i--)
+			List<TileController> matchedTileList = new List<TileController>();
+			for(int i = 0; i < mSlotTiles.Count; i++)
 			{
-				if(mSlotTiles[i].TileTypeId != id)
+				if(!mSlotTiles[i].IsArrivedSlot)
 				{
-					CheckGameState();
-					return;
+					continue;
+				}			
+				string id = mSlotTiles[i].TileTypeId;
+				int count = 0;
+
+				for(int j = i + 1; j < mSlotTiles.Count && j < i + 3; j++)
+				{
+					if(!mSlotTiles[j].IsArrivedSlot)
+					{
+						continue;
+					}			
+					if(mSlotTiles[j].TileTypeId == id)
+					{
+						count++;
+						if(count >= 2)
+						{
+							break;
+						}
+					}
+				}
+				if(count >= 2)
+				{
+					matchedTileList.Add(mSlotTiles[i]);
+					matchedTileList.Add(mSlotTiles[i + 1]);
+					matchedTileList.Add(mSlotTiles[i + 2]);
+					i += 2;
 				}
 			}
-			List<TileController> matchedTileList = new List<TileController>();
-			for(int i = 0; i < 3; i++)
+			if(matchedTileList.Count == 0)
 			{
-				matchedTileList.Add(mSlotTiles[index - i]);
+				CheckGameState();
+				return;
 			}
-			for(int i = 0; i < 3; i++)
-			{
-				mSlotTiles.RemoveAt(index - 2);
-			}
-
-			RerangeSlotsAfterMatch(index - 2);
-
+			int rerangeIndex = matchedTileList[0].SlotIndex;
 			foreach(var item in matchedTileList)
 			{
+				mSlotTiles.Remove(item);
 				BoardManager.Instance.RemoveTileFromBoard(item);
-				item.gameObject.SetActive(false);
+				Destroy(item.gameObject);
+			}
+			for(int i = 1; i < matchedTileList.Count; i += 3)
+			{
+				EffectManager.Instance?.PlayMatchEffect(matchedTileList[i].transform.position);
+				AudioEvent.Play(mMatchAudioKey);
 			}
 
-			EffectManager.Instance?.PlayMatchEffect(matchedTileList[1].transform.position);
-
-			AudioEvent.Play(EAudioKey.SFX_TileMatch);
+			RerangeSlotsAfterMatch(rerangeIndex);
 
 			OnMatch?.Invoke(matchedTileList.Count);
 			OnMatchFound?.Invoke(matchedTileList.Count);
