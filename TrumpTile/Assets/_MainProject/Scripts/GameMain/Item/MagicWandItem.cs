@@ -15,39 +15,38 @@ namespace TrumpTile.GameMain.Item
 		private ITimerControllable mTimerControllable;
 		private EffectManager mEffectManager;
 
+		private bool mbActionDone;
 		public MagicWandItem(ITimerControllable timerControllable, EffectManager effectManager)
 		{
 			mTimerControllable = timerControllable;
 			mEffectManager = effectManager;
+			mbActionDone = true;
 		}
 
 		public bool CanExecute()
 		{
-			return mTimerControllable != null;
+			return mTimerControllable != null && mbActionDone;
 		}
 
 		public IEnumerator Execute(Action onComplete)
 		{
 			AudioEvent.Play(EAudioKey.SFX_Clock);
 
-			bool bActionDone = false;
+			mbActionDone = false;
 
 			if (mEffectManager != null)
 			{
 				mEffectManager.PlayMagicWandSpineEffect();
-				mEffectManager.PlayClockItemEffect(FREEZE_DURATION, () =>
-				{
-					mTimerControllable.FreezeTimer(FREEZE_DURATION);
-					bActionDone = true;
-				});
+				mEffectManager.PlayClockItemEffect(FREEZE_DURATION, () => mTimerControllable.FreezeTimer(FREEZE_DURATION), () => mbActionDone = true);
 			}
 			else
 			{
 				mTimerControllable.FreezeTimer(FREEZE_DURATION);
-				bActionDone = true;
+				yield return new WaitForSeconds(FREEZE_DURATION);
+				mbActionDone = true;
 			}
 
-			yield return new WaitUntil(() => bActionDone);
+			yield return new WaitUntil(() => mbActionDone);
 			yield return new WaitForSeconds(0.3f);
 
 			onComplete?.Invoke();

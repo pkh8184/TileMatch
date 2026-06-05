@@ -834,12 +834,12 @@ namespace TrumpTile.GameMain.Core
 			PlaySpineEffectWithCallback(mMagicWandSpineEffectPrefab, mMagicWandEffectPosition, onActionPoint);
 		}
 
-		public void PlayClockItemEffect(float freezeDuration, Action onActionPoint)
+		public void PlayClockItemEffect(float freezeDuration, Action onActionPoint, Action onDone)
 		{
-			StartCoroutine(ClockItemEffectCoroutine(freezeDuration, onActionPoint));
+			StartCoroutine(ClockItemEffectCoroutine(freezeDuration, onActionPoint, onDone));
 		}
 
-		private IEnumerator ClockItemEffectCoroutine(float freezeDuration, Action onActionPoint)
+		private IEnumerator ClockItemEffectCoroutine(float freezeDuration, Action onActionPoint, Action onDone)
 		{
 			if (mClockItemEffectPrefab == null)
 			{
@@ -867,6 +867,8 @@ namespace TrumpTile.GameMain.Core
 			yield return new WaitForSeconds(mClockFadeOutDuration);
 
 			Destroy(clockObj);
+			
+			onDone?.Invoke();
 		}
 
 		public void PlayMagicHatSpineEffect(Action onActionPoint = null)
