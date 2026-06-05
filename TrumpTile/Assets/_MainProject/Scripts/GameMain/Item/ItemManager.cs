@@ -119,7 +119,10 @@ namespace TrumpTile.GameMain.Item
 				mIsItemInProgress = true;
 			}
 			yield return StartCoroutine(item.Execute(null));
-			mIsItemInProgress = false;
+			if(item.ItemId != 1006)
+			{
+				mIsItemInProgress = false;
+			}
 		}
 
 		#endregion
