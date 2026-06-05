@@ -504,8 +504,8 @@ namespace TrumpTile.GameMain.Core
 
 			mSlotManager?.ResumeGame();
 
-			mSlotManager?.RemoveOneTileToBoard();
-			mSlotManager?.RemoveOneTileToBoard();
+			mSlotManager?.RemoveSlotLastIndexTileToBoard();
+			mSlotManager?.RemoveSlotLastIndexTileToBoard();
 
 			UIManager.Instance?.UpdateItemButtonStates();
 		}

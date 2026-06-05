@@ -37,7 +37,7 @@ namespace TrumpTile.GameMain.Item
 				mEffectManager.PlayHammerSpineEffect(popPosition, () =>
 				{
 					Vector3 landPosition;
-					bool bSuccess = mSlotManager.RemoveOneTileToBoard(out landPosition, bWithSpin: true);
+					bool bSuccess = mSlotManager.RemoveSlotLastIndexTileToBoard(out landPosition, bWithSpin: true);
 					if (bSuccess)
 					{
 						mEffectManager.PlayStrikeLandEffect(landPosition);
@@ -48,7 +48,7 @@ namespace TrumpTile.GameMain.Item
 			else
 			{
 				Vector3 landPosition;
-				mSlotManager.RemoveOneTileToBoard(out landPosition, bWithSpin: true);
+				mSlotManager.RemoveSlotLastIndexTileToBoard(out landPosition, bWithSpin: true);
 				bActionDone = true;
 			}
 

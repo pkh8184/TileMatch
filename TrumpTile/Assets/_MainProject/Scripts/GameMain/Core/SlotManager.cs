@@ -197,10 +197,10 @@ namespace TrumpTile.GameMain.Core
 		/// <summary>
 		/// 타일 하나를 보드로 복귀 (기본)
 		/// </summary>
-		public bool RemoveOneTileToBoard()
+		public bool RemoveSlotLastIndexTileToBoard()
 		{
 			Vector3 landPosition;
-			return RemoveOneTileToBoard(out landPosition, bWithSpin: false);
+			return RemoveSlotLastIndexTileToBoard(out landPosition, bWithSpin: false);
 		}
 		public bool RemoveAllTile()
 		{
@@ -229,7 +229,7 @@ namespace TrumpTile.GameMain.Core
 
 				mSlotTiles.Remove(tile);
 
-				bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile, bWithSpin) ?? false;
+				bool bPlaced = BoardManager.Instance?.PlaceTileOnOriginSpot(tile, bWithSpin) ?? false;
 
 				if (!bPlaced)
 				{
@@ -243,7 +243,7 @@ namespace TrumpTile.GameMain.Core
 					? BoardManager.Instance.GetLastPlacedTilePosition()
 					: tile.transform.position;
 
-				RearrangeSlots();
+				//RearrangeSlots();
 
 				Debug.Log($"[SlotManager] Tile returned to board: {tile.Data?.TileID} at {landPosition}");	
 			}
@@ -252,7 +252,7 @@ namespace TrumpTile.GameMain.Core
 		/// <summary>
 		/// 타일 하나를 보드로 복귀 (착지 위치 반환)
 		/// </summary>
-		public bool RemoveOneTileToBoard(out Vector3 landPosition, bool bWithSpin = false)
+		public bool RemoveSlotLastIndexTileToBoard(out Vector3 landPosition, bool bWithSpin = false)
 		{
 			landPosition = Vector3.zero;
 
@@ -272,8 +272,8 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			mSlotTiles.Remove(tile);
-
-			bool bPlaced = BoardManager.Instance?.PlaceTileOnEmptySpot(tile, bWithSpin) ?? false;
+			
+			bool bPlaced = BoardManager.Instance?.PlaceTileOnOriginSpot(tile, bWithSpin) ?? false;
 
 			if (!bPlaced)
 			{
@@ -287,7 +287,7 @@ namespace TrumpTile.GameMain.Core
 				? BoardManager.Instance.GetLastPlacedTilePosition()
 				: tile.transform.position;
 
-			RearrangeSlots();
+			//RearrangeSlots();
 
 			Debug.Log($"[SlotManager] Tile returned to board: {tile.Data?.TileID} at {landPosition}");
 			return true;

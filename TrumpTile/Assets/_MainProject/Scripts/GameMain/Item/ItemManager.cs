@@ -20,7 +20,11 @@ namespace TrumpTile.GameMain.Item
 		// (itemId, 새 개수)
 		public event Action<int, int> OnItemCountChanged;
 
-		public void Initialize(
+        private void OnDestroy()
+        {
+            EventManager.Inst?.RemoveEvent("PurchaseConfirmed", LoadItemCounts);
+        }
+        public void Initialize(
 			BoardManager boardManager,
 			SlotManager slotManager,
 			EffectManager effectManager,
@@ -34,6 +38,8 @@ namespace TrumpTile.GameMain.Item
 			RegisterItem(new BombItem(slotManager, boardManager, effectManager, matchCount));
 
 			LoadItemCounts();
+
+			EventManager.Inst.AddEvent("PurchaseConfirmed", LoadItemCounts);
 		}
 
 		private void RegisterItem(IItem item)
@@ -41,7 +47,7 @@ namespace TrumpTile.GameMain.Item
 			mItems[item.ItemId] = item;
 		}
 
-		private void LoadItemCounts()
+		public void LoadItemCounts()
 		{
 			mItemCounts = PlayerDataManager.Inst.GetAllItemCounts();
 		}
@@ -108,7 +114,10 @@ namespace TrumpTile.GameMain.Item
 
 		private IEnumerator ExecuteItemCoroutine(IItem item)
 		{
-			mIsItemInProgress = true;
+			if(item.ItemId != 1006)
+			{
+				mIsItemInProgress = true;
+			}
 			yield return StartCoroutine(item.Execute(null));
 			mIsItemInProgress = false;
 		}
