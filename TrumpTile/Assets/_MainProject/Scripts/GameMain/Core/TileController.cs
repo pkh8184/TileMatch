@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using DG.Tweening;
+using TrumpTile.GameMain.Item;
 namespace TrumpTile.GameMain.Core
 {
 	/// <summary>
@@ -263,7 +264,10 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
-
+			if(!ItemManager.Inst.CanUseItem())
+			{
+				return;
+			}
 			if (IsTouchBlockedByUI())
 			{
 				return;
@@ -420,9 +424,9 @@ namespace TrumpTile.GameMain.Core
 			mTileData = data;
 			mbIsJewerly = true;
 		}
-		public void SetTileData(TileData data)
+		public void SetTileData(TileController data)
 		{
-			mTileData = data;
+			mTileData = data.Data;
 
 			if (mSpriteRenderer != null && mTileData != null)
 			{
@@ -509,6 +513,7 @@ namespace TrumpTile.GameMain.Core
 		private void ReturnToBoard(Vector3 boardPosition)
 		{
 			InitBoardReturn();
+			mbIsArrivedSlot = false;
 			StartMoveTween(boardPosition, bUseArc: false, EFinalScaleMode.OnBoard, () => EnableCollider(true));
 		}
 		public void ReturnToBoard()
@@ -526,6 +531,7 @@ namespace TrumpTile.GameMain.Core
 		public void FlyToBoard(Action onComplete = null)
 		{
 			InitBoardReturn();
+			mbIsArrivedSlot = false;
 			StartMoveTween(mSpawnTargetPos, bUseArc: true, EFinalScaleMode.OnBoard, () =>
 			{
 				mCurrentAnimation = StartCoroutine(BounceOnLandCoroutine(() => EnableCollider(true)));

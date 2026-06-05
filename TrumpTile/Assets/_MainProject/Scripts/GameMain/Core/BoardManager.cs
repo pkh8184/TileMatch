@@ -137,8 +137,6 @@ namespace TrumpTile.GameMain.Core
 			mOriginHeight = levelData.boardHeight;
 			mMaxLayers = levelData.maxLayers;
 
-			mBoardMap = new Vector3[mMaxLayers,8,8];
-
 			float maxX = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Max(x => x.gridX);
 			float minX = levelData.layerList.SelectMany(layer => layer.tilePlacementList).Min(x => x.gridX);
 
@@ -430,32 +428,125 @@ namespace TrumpTile.GameMain.Core
 
 			int tileX = tile.GridX;
 			int tileY = tile.GridY;
-			int tileLayer = tile.LayerIndex;
-			Vector3 tilePos = tile.transform.position;
-
-			float checkRadius = mCellSize * mOverlapThreshold;
-
-			foreach (TileController other in mAllTiles)
+			int layer = tile.LayerIndex;
+			
+			int rangeX = 0;
+			if(mOriginWidth == 8)
 			{
-				if (other == null || other == tile || other.IsInSlot)
+				if(layer % 2 == 0)
 				{
-					continue;
+					rangeX = -1;
 				}
-				if (other.LayerIndex <= tileLayer)
+				else
 				{
-					continue;
-				}
-				Vector3 otherPos = other.transform.position;
-
-				float dx = Mathf.Abs(otherPos.x - tilePos.x);
-				float dy = Mathf.Abs(otherPos.y - tilePos.y);
-
-				if (dx < checkRadius && dy < checkRadius)
-				{
-					Debug.Log($"{tile.name } 타일 상호작용 불가, {other.name} 타일이 위에 있음");
-					return true;
+					rangeX = 1;
 				}
 			}
+			else
+			{
+				if(layer % 2 == 0)
+				{
+					rangeX = 1;
+				}
+				else
+				{
+					rangeX = -1;
+				}
+			}
+			int rangeY = 0;
+			if(mOriginHeight == 8)
+			{
+				if(layer % 2 == 0)
+				{
+					rangeY = -1;
+				}
+				else
+				{
+					rangeY = 1;
+				}
+			}
+			else
+			{
+				if(layer % 2 == 0)
+				{
+					rangeY = 1;
+				}
+				else
+				{
+					rangeY = -1;
+				}
+			}
+			int count = 1;
+			for(int i = layer + 1; i < MaxLayers; i++)
+			{
+				if(count % 2 == 0)
+				{
+					if(mBoardMap[tileX, tileY, i] != Vector3.zero)
+					{
+						return true;
+					}
+				}
+				else
+				{
+					if(mBoardMap[tileX, tileY, i] != Vector3.zero)
+					{
+						return true;
+					}
+					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					{
+						if(mBoardMap[tileX + rangeX, tileY, i] != Vector3.zero)
+						{
+							return true;
+						}
+					}
+					if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+					{
+						if(mBoardMap[tileX, tileY + rangeY, i] != Vector3.zero)
+						{
+							return true;
+						}
+					}
+					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					{
+						if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+						{
+							if(mBoardMap[tileX + rangeX, tileY + rangeY, i] != Vector3.zero)
+							{
+								return true;
+							}
+						}
+					}
+				}
+				count++;
+			}
+			// int tileX = tile.GridX;
+			// int tileY = tile.GridY;
+			// int tileLayer = tile.LayerIndex;
+			// Vector3 tilePos = tile.transform.position;
+
+			// float checkRadius = mCellSize * mOverlapThreshold;
+
+			// foreach (TileController other in mAllTiles)
+			// {
+			// 	if (other == null || other == tile || other.IsInSlot)
+			// 	{
+			// 		continue;
+			// 	}
+			// 	if (other.LayerIndex <= tileLayer)
+			// 	{
+			// 		continue;
+			// 	}
+			// 	Vector3 otherPos = other.transform.position;
+
+			// 	float dx = Mathf.Abs(otherPos.x - tilePos.x);
+			// 	float dy = Mathf.Abs(otherPos.y - tilePos.y);
+
+			// 	if (dx < checkRadius && dy < checkRadius)
+			// 	{
+			// 		Debug.Log($"{tile.name } 타일 상호작용 불가, {other.name} 타일이 위에 있음");
+			// 		return true;
+			// 	}
+			// }
 
 			return false;
 		}
@@ -488,6 +579,8 @@ namespace TrumpTile.GameMain.Core
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap.Remove(gridPos);
 
+			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
+			
 			UpdateAllBlockedStates();
 
 			Log($"Tile removed from board: {tile.TileTypeId}");
@@ -506,6 +599,8 @@ namespace TrumpTile.GameMain.Core
 
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap.Remove(gridPos);
+			
+			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
 
 			UpdateAllBlockedStates();
 
@@ -530,36 +625,26 @@ namespace TrumpTile.GameMain.Core
 
 			Vector3Int origGridPos = new Vector3Int(origX, origY, origLayer);
 
+			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.one;
+
 			if (!mTileGridMap.ContainsKey(origGridPos))
 			{
 				PlaceTileAt(tile, origX, origY, origLayer);
 				return;
 			}
 
-			PlaceTileOnEmptySpot(tile, bWithSpin: false);
+			PlaceTileOnOriginSpot(tile, bWithSpin: false);
 		}
 
-		public bool PlaceTileOnEmptySpot(TileController tile, bool bWithSpin = false)
+		public bool PlaceTileOnOriginSpot(TileController tile, bool bWithSpin = false)
 		{
 			if (tile == null)
 			{
 				return false;
 			}
 
-			for (int layer = mMaxLayers - 1; layer >= 0; layer--)
-			{
-				Vector2Int? emptyPos = FindEmptyPositionOnLayer(layer);
-				if (emptyPos.HasValue)
-				{
-					PlaceTileAt(tile, emptyPos.Value.x, emptyPos.Value.y, layer, bWithSpin);
-					Log($"Tile placed at empty spot: ({emptyPos.Value.x}, {emptyPos.Value.y}, L{layer})");
-					return true;
-				}
-			}
+			PlaceTileAtOrigin(tile, bWithSpin);
 
-			int newX = mGridWidth;
-			PlaceTileAt(tile, newX, 0, 0, bWithSpin);
-			Log($"Tile placed at extended position: ({newX}, 0, L0)");
 			return true;
 		}
 
@@ -623,7 +708,30 @@ namespace TrumpTile.GameMain.Core
 
 			return null;
 		}
+		private void PlaceTileAtOrigin(TileController tile, bool bWithSpin = false)
+		{
+			if(bWithSpin)
+			{
+				tile.FlyToBoard();
+			}
+			else
+			{
+				tile.ReturnToBoard();
+			}
+			if (!mAllTiles.Contains(tile))
+			{
+				mAllTiles.Add(tile);
+			}
 
+			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
+			mTileGridMap[gridPos] = tile;
+			
+			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.one;
+
+			mLastPlacedTilePosition = tile.transform.position;
+
+			UpdateAllBlockedStates();
+		}
 		private void PlaceTileAt(TileController tile, int x, int y, int layer, bool bWithSpin = false)
 		{
 			Vector3 position = GridToWorldPosition(x, y, layer);
@@ -690,9 +798,8 @@ namespace TrumpTile.GameMain.Core
 				tile.SetSelectable(false);
 			}
 
-			List<TileData> dataList = boardTiles
+			List<TileController> dataList = boardTiles
 				.Where(t => t.Data != null)
-				.Select(t => t.Data)
 				.ToList();
 
 			ShuffleList(dataList);
