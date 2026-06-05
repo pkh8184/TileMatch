@@ -21,6 +21,7 @@ namespace TrumpTile.GameMain.Core
 		#region Match Effect Settings
 
 		[Header("Match Effect")]
+		[SerializeField] private GameObject[] mMatchEffectArray;
 		[SerializeField] private GameObject mMatchEffectPrefab;
 		[SerializeField] private float mMatchEffectDuration = 0.5F;
 		[SerializeField] private Color[] mSuitColors = new Color[]
@@ -257,6 +258,20 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log($"[EffectManager] PlayMatchEffect at {position}");
 
+			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
+			if(difficulty.Contains("VeryHard"))
+			{
+				mMatchEffectPrefab = mMatchEffectArray[2];
+			}
+			else if(difficulty.Contains("Hard"))
+			{
+				mMatchEffectPrefab = mMatchEffectArray[1];
+			}
+			else
+			{
+				mMatchEffectPrefab = mMatchEffectArray[0];
+			}
+			
 			if (mMatchEffectPrefab != null)
 			{
 				GameObject effectObj = Instantiate(mMatchEffectPrefab, position, Quaternion.identity);

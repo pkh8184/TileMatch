@@ -62,6 +62,8 @@ namespace TrumpTile.GameMain.Core
 		// 게임 상태
 		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
 		public EGameState CurrentState { get; private set; }
+		private EDifficultyType mELevelDifficulty;
+		public EDifficultyType LevelDifficulty => mELevelDifficulty;
 
 		//로딩 애니메이션 완료 체크
 		public bool LoadingAnimComplete { get; set; }
@@ -286,6 +288,7 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
+			mELevelDifficulty = levelData.difficulty;
 			Debug.Log($"[GameManager] Starting Level {CurrentLevel}: {levelData.levelName}");
 
 			mCurrentScore = 0;

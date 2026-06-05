@@ -38,7 +38,6 @@ namespace TrumpTile.GameMain.Core
 		// 타일 리스트
 		[SerializeField] private List<TileController> mSlotTiles = new List<TileController>();
 
-		private Queue<Action> mMatchCheckQueue = new Queue<Action>();
 		// 처리 중 락
 		private bool mIsProcessingMatch = false;
 		private bool mIsGameEnded = false;
@@ -62,6 +61,7 @@ namespace TrumpTile.GameMain.Core
 		public bool IsGameEnded => mIsGameEnded;
 		public int BonusSlotCost => mBonusSlotCost;
 
+		private EAudioKey mMatchAudioKey;
         private void Awake()
 		{
 			if (Instance == null)
@@ -85,6 +85,20 @@ namespace TrumpTile.GameMain.Core
 			bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsExtraSlotUnlocked;
 			SetSlotCount(bUnlocked ? 7 : 6);
 			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, ExtraSlotUnlocked: {bUnlocked}");
+			
+			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
+			if(difficulty.Contains("VeryHard"))
+			{
+				mMatchAudioKey = EAudioKey.SFX_TileMatch_VeryHard;
+			}
+			else if(difficulty.Contains("Hard"))
+			{
+				mMatchAudioKey = EAudioKey.SFX_TileMatch_Hard;
+			}
+			else
+			{
+				mMatchAudioKey = EAudioKey.SFX_TileMatch;
+			}
 		}
 
 		public void ResetSlots()
@@ -515,7 +529,7 @@ namespace TrumpTile.GameMain.Core
 			for(int i = 1; i < matchedTileList.Count; i += 3)
 			{
 				EffectManager.Instance?.PlayMatchEffect(matchedTileList[i].transform.position);
-				AudioEvent.Play(EAudioKey.SFX_TileMatch);
+				AudioEvent.Play(mMatchAudioKey);
 			}
 
 			RerangeSlotsAfterMatch(rerangeIndex);
