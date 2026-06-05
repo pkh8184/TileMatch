@@ -84,7 +84,7 @@ namespace TrumpTile.GameMain.Core
 		private Vector3 mSpawnTargetPos;
 		private bool mbIsJewerly;
 		private bool mbIsShake;
-
+		private bool mbIsArrivedSlot;
 		private enum EFinalScaleMode
 		{
 			InSlot,
@@ -107,6 +107,7 @@ namespace TrumpTile.GameMain.Core
 		public bool IsFrozen => mIsFrozen;
 		public bool IsLocked => mIsLocked;
 		public bool IsAnimating => mIsAnimating;
+		public bool IsArrivedSlot {get => mbIsArrivedSlot; set => mbIsArrivedSlot = value;}
 
 		#endregion
 
@@ -440,37 +441,6 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Movement - To Slot
-
-		public float MoveToSlotReturnDuration(Vector3 slotPosition, int index, Action onComplete)
-		{
-			if (mBlockedOverlay != null)
-			{
-				mBlockedOverlay.SetActive(false);
-			}
-
-			SetMovingToSlotSorting();
-
-			if (mSelectParticle != null)
-			{
-				mSelectParticle.Play();
-			}
-
-			StartMoveTween(
-				slotPosition,
-				bUseArc: true,
-				EFinalScaleMode.OnBoard,
-				() =>
-				{
-					UpdateSortingOrder();
-					onComplete();
-				});
-			
-			if(mbIsJewerly)
-			{
-				mSpriteRenderer.sprite = mTileData.sprite;
-			}
-			return 0;
-		}
 		public void MoveToSlot(Vector3 slotPosition, int index, Action onComplete = null)
 		{
 			//bool bWasInSlot = mIsInSlot;
@@ -510,12 +480,12 @@ namespace TrumpTile.GameMain.Core
 			MoveToSlot(slotPosition, mSlotIndex, null);
 		}
 
-		public void AdjustSlotPosition(Vector3 newPosition, int newIndex)
+		public void AdjustSlotPosition(Vector3 newPosition, int newIndex, Action onComplete = null)
 		{
 			mSlotIndex = newIndex;
 			UpdateSortingOrder();
 
-			StartMoveTween(newPosition, bUseArc: false, EFinalScaleMode.InSlot, null);
+			StartMoveTween(newPosition, bUseArc: false, EFinalScaleMode.InSlot, onComplete);
 		}
 
 		#endregion
@@ -627,13 +597,8 @@ namespace TrumpTile.GameMain.Core
 			seq.Join(BuildScalePunchTween(finalScaleMode, duration));
 
 			Vector3 finalScale = ResolveFinalScale(finalScaleMode);
+			
 			seq.OnComplete(() =>
-			{
-				mIsAnimating = false;
-				mActiveTween = null;
-				onComplete?.Invoke();
-			});
-			seq.OnKill(() =>
 			{
 				mIsAnimating = false;
 				mActiveTween = null;
