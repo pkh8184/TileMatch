@@ -441,6 +441,15 @@ namespace TrumpTile.GameMain.Core
 			mLayerIndex = layer;
 			UpdateSortingOrder();
 		}
+		public void SetTileToBonus(TileData bonus)
+		{
+			mTileData = bonus;
+
+			if (mSpriteRenderer != null && mTileData != null)
+			{
+				mSpriteRenderer.sprite = mTileData.sprite;
+			}
+		}
 
 		#endregion
 

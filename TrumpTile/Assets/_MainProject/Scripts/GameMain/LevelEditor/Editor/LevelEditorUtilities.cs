@@ -574,6 +574,7 @@ namespace TrumpTile.LevelEditor.Editor
     new Color(255/255f, 220/255f,   0/255f), // Normal
     new Color(255/255f, 100/255f,   0/255f), // Hard
     new Color(255/255f,   0/255f,   0/255f), // VeryHard
+    new Color(255/255f,   255/255f,   255/255f), // Bonus
 };
                 // 난이도 색상 표시
                 Color diffColor = difficultyColors[(int)level.difficulty]; 

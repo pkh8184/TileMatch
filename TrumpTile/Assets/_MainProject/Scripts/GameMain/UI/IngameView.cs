@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using TMPro;
 using TrumpTile.GameMain.Core;
@@ -26,8 +27,9 @@ namespace TrumpTile.GameMain.UI
         [Header("스테이지 시작 시 표시될 레벨네임 오브젝트들")]
         [SerializeField] private Image mLevelNameBackground;
         [SerializeField] private CanvasGroup mLevelNameCanvasGroup;
+        [SerializeField] private CanvasGroup mBonusLevelNameCanvasGroup;
         [SerializeField] private RectTransform mTopLevelNameRect;
-        [SerializeField] private Image mLevelNameImage;        
+        [SerializeField] private Image mLevelNameImage;              
         [SerializeField] private GameObject[] mEffectObjectArray;
 
         [Header("난이도별 레벨네임 오브젝트 배경")]
@@ -175,7 +177,10 @@ namespace TrumpTile.GameMain.UI
 
             int index = GetLevelDifficultyIndex(levelData.difficulty);
 
-            mLevelNameImage.sprite = mLevelTextBackgroundArray[index];
+            if(index != 3)
+            {
+                mLevelNameImage.sprite = mLevelTextBackgroundArray[index];   
+            }
             Sprite background = mDifficultyLevelBackgroundArray[index];
             mBackgroundImage.sprite = background? background : mDefaultBackgroundSprite; 
 
@@ -187,9 +192,13 @@ namespace TrumpTile.GameMain.UI
             {
                 AudioEvent.Play(EAudioKey.BGM_Ingame_Hard);
             }
-            else
+            else if(index == 2)
             {
                 AudioEvent.Play(EAudioKey.BGM_Ingame_VeryHard);
+            }
+            else
+            {
+                AudioEvent.Play(EAudioKey.BGM_Ingame_Bonus);
             }
 
             bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
@@ -200,8 +209,19 @@ namespace TrumpTile.GameMain.UI
                 mEffectObjectArray[index].SetActive(true);
                 mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
                 mTopLevelNameRect.localScale = Vector3.zero;
-                mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
-                mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = $"LEVEL {GameManager.Instance.CurrentLevel}";
+                if(index == 3)
+                {
+                    mBonusLevelNameCanvasGroup.gameObject.SetActive(true);
+                    mLevelNameCanvasGroup.gameObject.SetActive(false);
+                }
+                else
+                {
+                    mBonusLevelNameCanvasGroup.gameObject.SetActive(false);
+                    mLevelNameCanvasGroup.gameObject.SetActive(true);
+                }
+                mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "" : $"LEVEL {GameManager.Instance.CurrentLevel}";
+                mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "BONUS LEVEL" : $"LEVEL {GameManager.Instance.CurrentLevel}";
+                Debug.Log(mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text);
             }
 
             foreach (var item in mItemButtonConfigArray)
@@ -230,7 +250,7 @@ namespace TrumpTile.GameMain.UI
             }
             else
             {
-                StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber, index));
+                 StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber, index));                
             }
         }
         private void ShowBallon(ItemButtonConfig item)
@@ -277,6 +297,10 @@ namespace TrumpTile.GameMain.UI
         {
             string difficultString = eDifficultyType.ToString();
 
+            if(difficultString.Contains("Bonus"))
+            {
+                return 3;
+            }
             if(difficultString.Contains("Very"))
             {
                 return 2;
@@ -302,7 +326,6 @@ namespace TrumpTile.GameMain.UI
             RefreshButtons();
             GameManager.Instance.LoadingAnimComplete = true;
         }
-
         private IEnumerator Co_PlayLevelNameAnim(int level, int difficultyIndex)
         {
             yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());   
@@ -318,12 +341,17 @@ namespace TrumpTile.GameMain.UI
             {
                 AudioEvent.Play(EAudioKey.SFX_LevelName_Hard);
             }
-            else
+            else if(difficultyIndex == 2)
             {
                 AudioEvent.Play(EAudioKey.SFX_LevelName_VeryHard);
             }
-            sq.Append(mLevelNameCanvasGroup.DOFade(1, 0.5f));
-            RectTransform rt = mLevelNameCanvasGroup.transform.GetComponent<RectTransform>();
+            else
+            {
+                //보너스 레벨 레벨네임 오디오 플레이
+            }
+            CanvasGroup c = difficultyIndex == 3? mBonusLevelNameCanvasGroup : mLevelNameCanvasGroup;
+            sq.Append(c.DOFade(1, 0.5f).From(0));
+            RectTransform rt = c.transform.GetComponent<RectTransform>();
 
             rt.anchoredPosition = Vector2.zero;
             sq.Append(rt.DOPunchScale(Vector3.one * 0.1f, 0.4f, 5, 0.5f));

@@ -15,6 +15,7 @@ namespace TrumpTile.LevelEditor.Editor
 		Normal,
 		Hard,
 		VeryHard,
+		Bonus,
 		Length
 	}
 	
@@ -34,7 +35,8 @@ namespace TrumpTile.LevelEditor.Editor
 		public int levelNumber = 1;
 		public string levelName = "New Level";
 		public EDifficultyType difficulty = EDifficultyType.Easy_Normal;
-
+		public bool createRandomBonusTile;
+		public int bonusTileSet;
 
 		[Header("보드 설정")]
 		public int boardWidth = 8;
