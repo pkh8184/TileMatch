@@ -42,5 +42,7 @@ namespace TrumpTile.GameMain.Core
 		SFX_LevelName_VeryHard,
 		SFX_TileMatch_Hard,
 		SFX_TileMatch_VeryHard,
+		BGM_Ingame_Bonus,
+		SFX_TileMatch_Bonus,
 	}
 }

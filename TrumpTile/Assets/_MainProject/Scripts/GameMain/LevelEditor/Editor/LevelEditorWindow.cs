@@ -374,6 +374,9 @@ namespace TrumpTile.LevelEditor.Editor
 				{
 					mCurrentLevelClone.randomTileRangeByCartegory[i] = EditorGUILayout.IntSlider($"{(ETileCartegory)i}", mCurrentLevelClone.randomTileRangeByCartegory[i], 0, 999);
 				}
+
+				mCurrentLevelClone.createRandomBonusTile = EditorGUILayout.Toggle("CreateRandomBonusTile", mCurrentLevelClone.createRandomBonusTile);
+				mCurrentLevelClone.bonusTileSet = EditorGUILayout.IntSlider("BonusTileSetCount", mCurrentLevelClone.bonusTileSet, 0, mCurrentLevelClone.GetTileCount() / 3);
             }
 			else
 			{

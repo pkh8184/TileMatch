@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.DemiEditor;
+using log4net.Core;
 using TrumpTile.LevelEditor.Editor;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
@@ -38,8 +40,8 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private List<TileData> mAllTileTypes;
 		[SerializeField] private Sprite mDefaultTileBackground;
 		[SerializeField] private Sprite[] mDifficultyTileBackgroundArray = new Sprite[3];
-
-		[Header("Spawn Animation")]
+		[SerializeField] private TileData mBonusTileData;
+		[Header("Spawn Animation")]	
 		[SerializeField] private float mSpawnDelayPerTile = 0.02F;
 		[SerializeField] private float mMaxSpawnDelay = 0.6F;
 
@@ -204,7 +206,11 @@ namespace TrumpTile.GameMain.Core
 			
 			string difficulty = levelData.difficulty.ToString();
 			Sprite difficultyBackground = null;
-			if(difficulty.Contains("Very"))
+			if(difficulty.Contains("Bonus"))
+			{
+				difficultyBackground = mDifficultyTileBackgroundArray[3];
+			}
+			else if(difficulty.Contains("VeryHard"))
 			{
 				difficultyBackground = mDifficultyTileBackgroundArray[2];
 			}
@@ -212,10 +218,11 @@ namespace TrumpTile.GameMain.Core
 			{
 				difficultyBackground = mDifficultyTileBackgroundArray[1];
 			}
-			else if(difficulty.Contains("Normal"))
+			else
 			{
 				difficultyBackground = mDifficultyTileBackgroundArray[0];
 			}
+
 			Sprite tileBackground = difficultyBackground ? difficultyBackground : mDefaultTileBackground;
 
 			SortingManager.SetMaxGridY(mGridHeight);
@@ -258,12 +265,42 @@ namespace TrumpTile.GameMain.Core
                 }
             }
 			
-
+			SetBonusTileRandom(levelData);
 			SetJewerlyTileValid();
 			UpdateAllBlockedStates();
 
 			mIsLevelLoaded = true;
 			Log($"Level loaded: {createdCount} tiles, Grid: {mGridWidth}x{mGridHeight}, Layers: {mMaxLayers}");
+		}
+		private void SetBonusTileRandom(LevelData level)
+		{
+			if(level.difficulty != EDifficultyType.Bonus)
+			{
+				return;
+			}
+			if(!level.createRandomBonusTile)
+			{
+				return;
+			}
+			
+			List<int> random = new List<int>();
+			for(int i = 0; i < mAllTiles.Count; i++)
+			{
+				random.Add(i);
+			}
+			for(int i = 0; i < level.bonusTileSet; i++)
+			{
+				int index = random[Random.Range(0, random.Count)];
+				string id = mAllTiles[index].TileTypeId;
+				List<TileController> targets = mAllTiles.Where(t => t != null && t.TileTypeId == id).Take(3).ToList();
+				foreach(var item in targets)
+				{
+					item.SetTileToBonus(mBonusTileData);
+					int j = mAllTiles.IndexOf(item);
+					random.RemoveAt(j);
+				}
+			}
+
 		}
 
 		private Dictionary<string, TileData> CreateTileDataMap()
@@ -1000,10 +1037,6 @@ namespace TrumpTile.GameMain.Core
 		}
 		public List<TileController> GetBoardTilesContainSlot()
 		{
-			foreach(var item in mAllTiles)
-			{
-				Debug.Log(item.name);
-			}
 			return mAllTiles.Where(t => t != null).ToList();
 		}
 		public void SetSize(int width, int height)
