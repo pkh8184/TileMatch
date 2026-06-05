@@ -1,5 +1,4 @@
 using DG.Tweening;
-using JetBrains.Annotations;
 using System.Collections;
 using TMPro;
 using TrumpTile.GameMain.Core;
@@ -7,7 +6,6 @@ using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
 using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
-using UnityEngine.Localization.SmartFormat.Utilities;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
