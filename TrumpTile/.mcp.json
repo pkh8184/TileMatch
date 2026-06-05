@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "env": {}
+    },
+    "brainstorm": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "brainstorm-mcp"
+      ],
+      "env": {}
+    },
+    "ai-game-developer": {
+      "type": "http",
+      "url": "http://localhost:25257"
+    }
+  }
+}
