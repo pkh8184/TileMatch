@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55b110187722484ea47ac0ed3d64bcb, type: 3}
   m_Name: Level_020
   m_EditorClassIdentifier: 
-  levelNumber: 44
-  levelName: Level_044
-  difficulty: 2
+  levelNumber: 20
+  levelName: Level_020
+  difficulty: 7
+  createRandomBonusTile: 0
+  bonusTileSet: 0
   boardWidth: 7
   boardHeight: 7
   maxLayers: 5
@@ -22,385 +24,490 @@ MonoBehaviour:
   matchCount: 3
   layerList:
   - tilePlacementList:
-    - gridX: 2
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 1
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 1
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_26
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_26
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
+    - gridX: 0
       gridY: 5
       layer: 0
-      tileTypeId: Interior_26
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_45
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 0
       gridY: 3
       layer: 0
-      tileTypeId: Interior_29
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_29
+      tileTypeId: Toy_45
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 2
-      gridY: 5
-      layer: 0
-      tileTypeId: Interior_29
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_28
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_28
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_28
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_35
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_35
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_24
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_35
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-  - tilePlacementList:
-    - gridX: 6
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_37
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_37
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_37
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_37
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_37
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_37
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 5
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_39
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 5
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-  - tilePlacementList:
-    - gridX: 1
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_35
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_35
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 2
-      layer: 0
-      tileTypeId: Interior_35
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_37
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-  - tilePlacementList:
-    - gridX: 3
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_34
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_24
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 4
-      layer: 0
-      tileTypeId: Interior_24
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 3
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-  - tilePlacementList:
-    - gridX: 5
-      gridY: 5
-      layer: 0
-      tileTypeId: Interior_38
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
       gridY: 1
       layer: 0
-      tileTypeId: Interior_38
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 1
+      layer: 0
+      tileTypeId: Bonus
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 1
       gridY: 5
       layer: 0
-      tileTypeId: Interior_37
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Bonus
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 5
       gridY: 1
       layer: 0
-      tileTypeId: Interior_37
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList: []
+  - tilePlacementList:
+    - gridX: 2
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList: []
+  - tilePlacementList:
+    - gridX: 0
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 4
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 2
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 4
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 4
+      layer: 0
+      tileTypeId: Toy_46
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 2
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 5
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 1
+      layer: 0
+      tileTypeId: Toy_45
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 3
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Bonus
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Bonus
       isLocked: 0
       isFrozen: 0
       frozenCount: 0

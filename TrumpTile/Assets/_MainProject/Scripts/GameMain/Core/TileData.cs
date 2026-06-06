@@ -69,7 +69,6 @@ namespace TrumpTile.GameMain.Core
 		Food = 4,
 		Toy = 5,
 		Balls = 6,
-		Gimmick = 7,
 		ETC,
 		Length,
 	
