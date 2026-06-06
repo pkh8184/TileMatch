@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using DG.Tweening;
 using TrumpTile.GameMain.Item;
+using TrumpTile.LevelEditor.Editor;
 namespace TrumpTile.GameMain.Core
 {
 	/// <summary>
@@ -91,7 +92,7 @@ namespace TrumpTile.GameMain.Core
 			InSlot,
 			OnBoard,
 		}
-
+		private EAudioKey mTileMoveAudioKey;
 		#endregion
 
 		#region Properties
@@ -146,7 +147,7 @@ namespace TrumpTile.GameMain.Core
 		//	Initialize(data, 0, 0, layer);
 		//}
 
-		public void Initialize(TileData data, float x, float y, int layer, Sprite tileBackground)
+		public void Initialize(TileData data, float x, float y, int layer, Sprite tileBackground, EDifficultyType eDifficultyType = EDifficultyType.Easy_Normal)
 		{
 			mTileData = data;
 			mGridX = (int)x;
@@ -165,11 +166,32 @@ namespace TrumpTile.GameMain.Core
 			UpdateSortingOrder();
 			SetOverlaysActive(false);
 			EnableCollider(true);
+			SetTileMoveAudioKey(eDifficultyType);
 
 			mOriginalScale = transform.localScale;
 			mSpawnTargetPos = transform.position;
 		}
+		private void SetTileMoveAudioKey(EDifficultyType type)
+		{
+			string difficulty = type.ToString();
 
+			if(difficulty.Contains("Bonus"))
+			{
+				mTileMoveAudioKey = EAudioKey.SFX_TileMove_Bonus;
+			}
+			else if(difficulty.Contains("VeryHard"))
+			{
+				mTileMoveAudioKey = EAudioKey.SFX_TileMove_VeryHard;
+			}
+			else if(difficulty.Contains("Hard"))
+			{
+				mTileMoveAudioKey = EAudioKey.SFX_TileMove_Hard;
+			}
+			else
+			{
+				mTileMoveAudioKey = EAudioKey.SFX_TileMove;
+			}
+		}
 		private void SetupVisual(Sprite tileBackground)
 		{
 			if (mSpriteRenderer != null && mTileData != null)
@@ -466,7 +488,7 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			SetMovingToSlotSorting();
-			AudioEvent.Play(EAudioKey.SFX_TileMove);
+			AudioEvent.Play(mTileMoveAudioKey);
 
 			if (mSelectParticle != null)
 			{
@@ -982,7 +1004,11 @@ namespace TrumpTile.GameMain.Core
 
 				yield return null;
 			}
-
+			if(mTileData.tileTypeId.Contains("Bonus"))
+			{
+				GameManager.Instance.IncreaseBonusGold();
+				EventManager.Inst.ActiveEvent("BonusTileMatch");
+			}
 			Destroy(gameObject);
 		}
 

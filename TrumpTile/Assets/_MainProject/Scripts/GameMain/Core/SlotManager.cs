@@ -8,6 +8,13 @@ using DG.Tweening;
 
 namespace TrumpTile.GameMain.Core
 {
+	public enum EMatchType
+	{
+			Normal,
+			Bonus,
+			Length
+	}
+
 	/// <summary>
 	/// 슬롯 관리자 (수정됨)
 	///
@@ -162,10 +169,6 @@ namespace TrumpTile.GameMain.Core
 			{
 				return false;
 			}
-			if(tile.TileTypeId == "Bonus")
-			{
-				return false;
-			}
 
 			if (mSlotTiles.Count >= mMaxSlots)
 			{
@@ -298,8 +301,6 @@ namespace TrumpTile.GameMain.Core
 		#region Tile Processing
 		private void ProcessTileAddition(TileController newTile, int insertIndex)
 		{
-			AudioEvent.Play(EAudioKey.SFX_TileMove);
-
 			newTile.MoveToSlot(mSlotPositions[insertIndex].position, insertIndex, () => 
 			{
 				newTile.IsArrivedSlot = true;
@@ -528,8 +529,18 @@ namespace TrumpTile.GameMain.Core
 			}
 			for(int i = 1; i < matchedTileList.Count; i += 3)
 			{
-				EffectManager.Instance?.PlayMatchEffect(matchedTileList[i].transform.position);
-				AudioEvent.Play(mMatchAudioKey);
+				if(matchedTileList[i].TileTypeId.Contains("Bonus"))
+				{
+					EffectManager.Instance?.PlayMatchEffect(matchedTileList[i].transform.position, eMatchType : EMatchType.Bonus);
+					GameManager.Instance.IncreaseBonusGoldWithMatch();
+					EventManager.Inst.ActiveEvent("BonusTileMatch");
+					AudioEvent.Play(EAudioKey.SFX_TileMatch_Bonus);
+				}
+				else
+				{
+					EffectManager.Instance?.PlayMatchEffect(matchedTileList[i].transform.position);
+					AudioEvent.Play(mMatchAudioKey);
+				}
 			}
 
 			RerangeSlotsAfterMatch(rerangeIndex);
@@ -824,9 +835,16 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
-
+			if(tile.TileTypeId.Contains("Bonus"))
+			{
+				GameManager.Instance.IncreaseBonusGold();
+				EventManager.Inst.ActiveEvent("BonusTileMatch");
+			}
+			int index = mSlotTiles.IndexOf(tile);
 			mSlotTiles.Remove(tile);
-			RearrangeSlots();
+			BoardManager.Instance.RemoveTileFromBoard(tile);
+			Destroy(tile.gameObject);
+			RerangeSlotsAfterMatch(index);
 
 			Debug.Log($"[SlotManager] Tile removed directly: {tile.Data?.TileID}");
 		}

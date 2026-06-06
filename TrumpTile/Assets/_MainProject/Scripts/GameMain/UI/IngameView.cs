@@ -49,6 +49,9 @@ namespace TrumpTile.GameMain.UI
         [Header("슬롯 관련")]
         [SerializeField] private Button mBonusSlotButton;
         [SerializeField] private TMP_Text mBonusSlotText;
+        [SerializeField] private GameObject mBonusLevelSlotFrame;
+        [SerializeField] private TMP_Text mBonusLevelGoldText;
+        [SerializeField] private RectTransform mBonusLevelGoldRect;
 
         [System.Serializable]
 		private class ItemButtonConfig
@@ -112,6 +115,7 @@ namespace TrumpTile.GameMain.UI
             //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
             EventManager.Inst.AddEvent("ItemCountChanged", RefreshButtons);
             EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
+            EventManager.Inst.AddEvent("BonusTileMatch", OnBonusTileMatched);
             
             PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
         }
@@ -122,11 +126,28 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("TimerSettingComplete", OnTimerSettingComplete);
             EventManager.Inst?.RemoveEvent("ItemCountChanged", RefreshButtons);
             EventManager.Inst?.RemoveEvent("PurchaseItem", PurchaseItem);
+            EventManager.Inst?.RemoveEvent("BonusTileMatch", OnBonusTileMatched);
 
             if(PlayerDataManager.Inst != null)
             {
                 PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;   
             }
+        }
+        private void OnBonusTileMatched()
+        {
+            Sequence sq = DOTween.Sequence();
+
+            mBonusLevelGoldRect.localScale = Vector3.one;
+
+            sq.Append(mBonusLevelGoldRect.DOScale(Vector3.one * 1.3f, 0.1f).SetEase(Ease.OutBack));
+            float val = GameManager.Instance.BonusLevelGold - 3;
+            sq.Join(DOTween.To(() => val, x =>
+            {
+                val = x;
+                mBonusLevelGoldText.text = Mathf.RoundToInt(x).ToString();
+            }, GameManager.Instance.BonusLevelGold, 0.2f));
+            sq.Append(mBonusLevelGoldRect.DOScale(Vector3.one, 0.1f).SetEase(Ease.InBack));
+
         }
         private void PurchaseItem(object id)
         {
@@ -166,6 +187,8 @@ namespace TrumpTile.GameMain.UI
         {
             var (levelData, isRetry) = ((LevelData, bool))obj;   
 
+            mBonusLevelGoldText.text = GameManager.Instance.BonusLevelGold.ToString();
+
             if(isRetry)
             {
                 mBonusSlotButton.gameObject.SetActive(true);
@@ -198,6 +221,7 @@ namespace TrumpTile.GameMain.UI
             }
             else
             {
+                mBonusLevelSlotFrame.SetActive(true);
                 AudioEvent.Play(EAudioKey.BGM_Ingame_Bonus);
             }
 
@@ -347,8 +371,9 @@ namespace TrumpTile.GameMain.UI
             }
             else
             {
-                //보너스 레벨 레벨네임 오디오 플레이
+                AudioEvent.Play(EAudioKey.SFX_LevelName_Bonus);
             }
+
             CanvasGroup c = difficultyIndex == 3? mBonusLevelNameCanvasGroup : mLevelNameCanvasGroup;
             sq.Append(c.DOFade(1, 0.5f).From(0));
             RectTransform rt = c.transform.GetComponent<RectTransform>();
@@ -357,11 +382,19 @@ namespace TrumpTile.GameMain.UI
             sq.Append(rt.DOPunchScale(Vector3.one * 0.1f, 0.4f, 5, 0.5f));
             sq.AppendInterval(0.5f);
 
-            float targetX = -(Screen.width / 2f + rt.rect.width);
-            sq.AppendCallback(() => AudioEvent.Play(EAudioKey.SFX_LevelName_02));
-            sq.Append(rt.DOAnchorPosX(targetX, 0.5f).SetEase(Ease.InQuad));
-            sq.Append(mLevelNameBackground.DOFade(0, 0.3f));
+            yield return sq.WaitForCompletion();
 
+            if(difficultyIndex == 3)
+            {
+                yield return StartCoroutine(Co_BonusLevelNameFadeOutAnim(rt));
+            }
+            else
+            {
+                yield return StartCoroutine(Co_LevelNameFadeOutAnim(rt));
+            }
+
+            sq = DOTween.Sequence();
+            sq.Append(mLevelNameBackground.DOFade(0, 0.3f));
             sq.AppendInterval(0.3f);
             sq.Append(mTopLevelNameRect.DOScale(1, 0.3f).SetEase(Ease.OutBounce));
             sq.OnComplete(() => GameManager.Instance.LoadingAnimComplete = true);
@@ -398,6 +431,26 @@ namespace TrumpTile.GameMain.UI
             }
 
             mLevelNameBackground.gameObject.SetActive(false);
+        }
+        private IEnumerator Co_LevelNameFadeOutAnim(RectTransform rt)
+        {
+            Sequence sq = DOTween.Sequence();
+
+            float targetX = -(Screen.width / 2f + rt.rect.width);
+
+            sq.AppendCallback(() => AudioEvent.Play(EAudioKey.SFX_LevelName_02));
+            sq.Append(rt.DOAnchorPosX(targetX, 0.5f).SetEase(Ease.InQuad));
+
+            yield return sq.WaitForCompletion();
+        }
+        private IEnumerator Co_BonusLevelNameFadeOutAnim(RectTransform rt)
+        {
+            Sequence sq = DOTween.Sequence();
+
+            rt.anchoredPosition = Vector2.zero;
+            sq.Append(rt.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack));
+
+            yield return sq.WaitForCompletion();
         }
         private IEnumerator Co_TimerTextProgress()
         {

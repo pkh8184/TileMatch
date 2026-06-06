@@ -245,7 +245,7 @@ namespace TrumpTile.GameMain.Core
                             Debug.LogWarning($"[BoardManager] TileData not found: {placement.tileTypeId}");
                             continue;
                         }
-                        CreateTile(data, placement.gridX, placement.gridY, i, tileBackground, createdCount, spawnAnimType);
+                        CreateTile(data, placement.gridX, placement.gridY, i, tileBackground, createdCount, spawnAnimType, levelData.difficulty);
                         createdCount++;
                     }
                 }
@@ -297,7 +297,7 @@ namespace TrumpTile.GameMain.Core
 				{
 					item.SetTileToBonus(mBonusTileData);
 					int j = mAllTiles.IndexOf(item);
-					random.RemoveAt(j);
+					random.Remove(j);
 				}
 			}
 
@@ -324,7 +324,7 @@ namespace TrumpTile.GameMain.Core
 			return map;
 		}
 
-		private TileController CreateTile(TileData data, float x, float y, int layer, Sprite tileBackground, int spawnIndex = 0, ESpawnAnimType animType = ESpawnAnimType.Random)
+		private TileController CreateTile(TileData data, float x, float y, int layer, Sprite tileBackground, int spawnIndex = 0, ESpawnAnimType animType = ESpawnAnimType.Random, EDifficultyType  eDifficultyType = EDifficultyType.Easy_Normal)
 		{
 			if (mTilePrefab == null)
 			{
@@ -344,7 +344,7 @@ namespace TrumpTile.GameMain.Core
 			TileController tile = Instantiate(mTilePrefab, position, Quaternion.identity, transform);
 			tile.name += count.ToString();
 			tile.transform.localScale = mTileScale;
-			tile.Initialize(data, x, y, layer, tileBackground);
+			tile.Initialize(data, x, y, layer, tileBackground, eDifficultyType);
 
 			float spawnDelay = Mathf.Min(spawnIndex * mSpawnDelayPerTile, mMaxSpawnDelay);
 			tile.PlaySpawnAnimation(spawnDelay, animType);
@@ -621,11 +621,6 @@ namespace TrumpTile.GameMain.Core
 			UpdateAllBlockedStates();
 
 			Log($"Tile removed from board: {tile.TileTypeId}");
-
-			if (bProcessBonus)
-			{
-				ProcessBonusTile(tile);
-			}
 		}
 		public void RemoveTileFromBoardBeforeAdd(TileController tile, bool bProcessBonus = true)
 		{
@@ -642,11 +637,6 @@ namespace TrumpTile.GameMain.Core
 			UpdateAllBlockedStates();
 
 			Log($"Tile removed from board: {tile.TileTypeId}");
-
-			if (bProcessBonus)
-			{
-				ProcessBonusTile(tile);
-			}
 		}
 
 		#endregion

@@ -89,7 +89,8 @@ namespace TrumpTile.GameMain.Core
 		private int mComboCount;
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
-
+		private int mBonusLevelGold;
+		public int BonusLevelGold => mBonusLevelGold;
 		// 부활 관련
 		private bool mbIsTimeOut;
 		private int mCurrentReviveCount = 0;
@@ -248,6 +249,8 @@ namespace TrumpTile.GameMain.Core
 				: levelNumber - 1;
 
 			CurrentState = EGameState.Loading;
+
+			mBonusLevelGold = 0;
 
 			LoadingAnimComplete = false;
       		tutorialComplete = false;
@@ -440,7 +443,14 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Match Handler
-
+		public void IncreaseBonusGold()
+		{
+			mBonusLevelGold++;
+		}
+		public void IncreaseBonusGoldWithMatch()
+		{
+			mBonusLevelGold += 3;
+		}
 		private void OnMatchHandler(int matchedCount)
 		{
 			mComboCount++;

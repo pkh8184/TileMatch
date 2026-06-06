@@ -20,7 +20,9 @@ namespace TrumpTile.GameMain.UI
         [Header("버튼들")]
         [SerializeField] private Button mRewardButton;
         [SerializeField] private Button mMainButton;
-
+        [Header("보너스 레벨 관련")]
+        [SerializeField] private GameObject mBonusLevelFrame;
+        [SerializeField] private TMP_Text mGoldText;
         private RectTransform mRewardButtonRect;
         private RectTransform mMainButtonRect;
 
@@ -53,6 +55,19 @@ namespace TrumpTile.GameMain.UI
         {
             base.Show();
             
+            bool bBonusLevel = GameManager.Instance.LevelDifficulty.ToString().Contains("Bonus");
+            RectTransform rt = mBonusLevelFrame.GetComponent<RectTransform>();
+
+            if(bBonusLevel)
+            {
+                mBonusLevelFrame.SetActive(true);
+                rt.localScale = Vector2.zero;
+            }
+            else
+            {
+                mBonusLevelFrame.SetActive(false);
+            }
+
             AudioEvent.Play(EAudioKey.SFX_StageClear);
             mbAnimProgress = true;
 
@@ -74,7 +89,18 @@ namespace TrumpTile.GameMain.UI
             }, GameManager.Instance.ElapsedTime, 0.3f));
 
             seq.Append(mClearTextCanvasGroup.DOFade(1, 0.3f));
-
+            if(bBonusLevel)
+            {
+                mGoldText.text = "+0";
+                seq.Append(rt.DOScale(1.1f, 0.15f));
+                seq.Append(rt.DOScale(1f, 0.15f));
+                float val = 0;
+                seq.Join(DOTween.To(() => val, x =>
+                {
+                    val = x;
+                    mGoldText.text = "+" + Mathf.RoundToInt(x).ToString();
+                }, GameManager.Instance.BonusLevelGold, 0.3f));
+            }
             seq.Append(mRewardButtonRect.DOScale(1.1f, 0.15f));
             seq.Append(mRewardButtonRect.DOScale(1f, 0.15f));
 

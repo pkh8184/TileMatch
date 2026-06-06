@@ -254,22 +254,33 @@ namespace TrumpTile.GameMain.Core
 
 		#region Match Effect
 
-		public void PlayMatchEffect(Vector3 position, int suitIndex = 0, int comboLevel = 1)
+		public void PlayMatchEffect(Vector3 position, int suitIndex = 0, int comboLevel = 1, EMatchType eMatchType = EMatchType.Normal)
 		{
 			Debug.Log($"[EffectManager] PlayMatchEffect at {position}");
 
 			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
-			if(difficulty.Contains("VeryHard"))
+			if(eMatchType == EMatchType.Bonus)
 			{
-				mMatchEffectPrefab = mMatchEffectArray[2];
-			}
-			else if(difficulty.Contains("Hard"))
-			{
-				mMatchEffectPrefab = mMatchEffectArray[1];
+				mMatchEffectPrefab = mMatchEffectArray[4];
 			}
 			else
 			{
-				mMatchEffectPrefab = mMatchEffectArray[0];
+				if(difficulty.Contains("Bonus"))
+				{
+					mMatchEffectPrefab = mMatchEffectArray[3];
+				}
+				else if(difficulty.Contains("VeryHard"))
+				{
+					mMatchEffectPrefab = mMatchEffectArray[2];
+				}
+				else if(difficulty.Contains("Hard"))
+				{
+					mMatchEffectPrefab = mMatchEffectArray[1];
+				}
+				else
+				{
+					mMatchEffectPrefab = mMatchEffectArray[0];
+				}	
 			}
 			
 			if (mMatchEffectPrefab != null)
