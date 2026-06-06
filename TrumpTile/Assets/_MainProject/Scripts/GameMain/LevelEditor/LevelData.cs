@@ -95,9 +95,9 @@ namespace TrumpTile.LevelEditor.Editor
 			{
 				foreach (TilePlacement placement in layerWrapper.tilePlacementList)
 				{
-					if(placement.tileTypeId == "Bonus" || placement.tileTypeId == "Jewerly")
+					if(placement.tileTypeId == "Jewerly")
 					{
-						continue; // 보너스 타일은 매치용 타일에서 제외
+						continue; // 쥬얼리 타일은 매치 체크에서 제외
 					}
 					if (!typeCount.ContainsKey(placement.tileTypeId))
 					{
