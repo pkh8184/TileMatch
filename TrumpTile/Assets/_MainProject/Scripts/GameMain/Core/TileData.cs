@@ -1,8 +1,42 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
 {
+	[Serializable]
+	public class GimmickData
+	{
+		public ETileType TileType;
+		public GameObject SpinePrefab;
+
+		public virtual object GetGimmcikMetadata()
+		{
+			return (TileType, SpinePrefab);
+		}
+	}
+	[Serializable]
+	public class AddedGimmickData : GimmickData
+	{
+		public Sprite Sprite;
+
+		public override object GetGimmcikMetadata()
+		{
+			return (TileType, SpinePrefab, Sprite);
+		}
+
+	}
+	[Serializable]
+	public class MultipleAddedGimmickData : AddedGimmickData
+	{
+		public List<(int,int,int)> LinkedTileList = new List<(int, int, int)>();
+
+		public override object GetGimmcikMetadata()
+		{
+			return (TileType, SpinePrefab, Sprite, LinkedTileList);
+		}
+	}
+
     public enum ECardSuit
 	{
         Spade = 0,    // ♠
@@ -35,9 +69,19 @@ namespace TrumpTile.GameMain.Core
 		Food = 4,
 		Toy = 5,
 		Balls = 6,
+		Gimmick = 7,
 		ETC,
 		Length,
 	
+	}
+	public enum ETileType
+	{
+		Normal = 0,
+		Blind,
+		Chain,
+		Vine,
+		Camera,
+		Length
 	}
 	/// <summary>
 	/// 타일(카드) 데이터
@@ -63,10 +107,12 @@ namespace TrumpTile.GameMain.Core
 			return tileTypeId == other.tileTypeId;
 		}
 
-		[Header("Card Info")]
+		[Header("Tile Info")]
 		public ETileCartegory tileCartegory;
-		public ECardSuit suit;
-		public ECardRank rank;
+
+		[SerializeReference, SubclassSelector]
+		public GimmickData gimmickData = new GimmickData();
+		
 
 		[Header("Visual")]
 		public Sprite sprite;
