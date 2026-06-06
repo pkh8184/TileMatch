@@ -35,6 +35,7 @@ namespace TrumpTile.GameMain.Core
 		[Header("Game Rules")]
 		[SerializeField] private int mMatchCount = 3;
 		[SerializeField] private int mMaxSlots = 6;
+		[SerializeField] private float mTargetIdleTime = 7;
 
 		[Header("Star Config")]
 		[SerializeField] private StarConfig mStarConfig;
@@ -64,7 +65,7 @@ namespace TrumpTile.GameMain.Core
 		public EGameState CurrentState { get; private set; }
 		private EDifficultyType mELevelDifficulty;
 		public EDifficultyType LevelDifficulty => mELevelDifficulty;
-
+		public bool IsIdleProcess;
 		//로딩 애니메이션 완료 체크
 		public bool LoadingAnimComplete { get; set; }
 
@@ -83,6 +84,8 @@ namespace TrumpTile.GameMain.Core
 		private bool mIsTimerFrozen = false;
 		private string mTimerString;
 		private float mCurrentTime;
+		private float mCurrentIdleTime;
+		public float CurrentIdleTime => mCurrentIdleTime;
 
 		// 점수 및 통계
 		private int mCurrentScore;
@@ -151,6 +154,31 @@ namespace TrumpTile.GameMain.Core
 
 		private void Update()
 		{
+			if(CurrentState == EGameState.Playing)
+			{
+				if(Input.GetMouseButtonDown(0))
+				{
+					IsIdleProcess = false;
+					mCurrentIdleTime = 0;
+				}
+				else
+				{
+					if(IsIdleProcess)
+					{
+						return;
+					}
+					if(mCurrentIdleTime >= mTargetIdleTime)
+					{
+						IsIdleProcess = true;
+						mCurrentIdleTime = 0;
+						BoardManager.Instance.ShowHint();				
+					}
+					else
+					{
+						mCurrentIdleTime += Time.deltaTime;
+					}
+				}
+			}
 			if (CurrentState == EGameState.Playing && !mIsTimerFrozen)
 			{
 				if(!mbLevelTestMode)

@@ -40,6 +40,7 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private GameObject mBlockedOverlay;
 		[SerializeField] private GameObject mFrozenOverlay;
 		[SerializeField] private GameObject mLockedOverlay;
+		[SerializeField] private ParticleSystem mHintParticle;
 
 		[Header("Animation Settings")]
 		[SerializeField] private float mMoveSpeed = 15F;
@@ -1034,7 +1035,12 @@ namespace TrumpTile.GameMain.Core
 
 		public void ShowHint()
 		{
-			StartCoroutine(HintCoroutine());
+			if(mHintParticle.isPlaying)
+			{
+				mHintParticle.Stop();
+			}
+			mHintParticle.Play();
+			//StartCoroutine(HintCoroutine());
 		}
 
 		private IEnumerator HintCoroutine()

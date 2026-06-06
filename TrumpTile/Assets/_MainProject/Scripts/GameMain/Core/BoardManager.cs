@@ -5,6 +5,7 @@ using TrumpTile.LevelEditor.Editor;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Tilemaps;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -52,6 +53,7 @@ namespace TrumpTile.GameMain.Core
 
 		[SerializeField] private List<TileController> mAllTiles = new List<TileController>();
 		private Dictionary<Vector3, TileController> mTileGridMap = new Dictionary<Vector3, TileController>();
+		private Dictionary<string, List<TileController>> mTileIdGroupMap = new Dictionary<string, List<TileController>>();
 
 		private int mGridWidth;
 		private int mOriginWidth;
@@ -355,6 +357,12 @@ namespace TrumpTile.GameMain.Core
 
 			Vector3 gridPos = new Vector3(x, y, layer);
 			mTileGridMap[gridPos] = tile;
+
+			if(!mTileIdGroupMap.ContainsKey(data.tileTypeId))
+			{
+				mTileIdGroupMap[data.tileTypeId] = new List<TileController>();
+			}
+			mTileIdGroupMap[data.tileTypeId].Add(tile);
 
 			return tile;
 		}
@@ -832,10 +840,16 @@ namespace TrumpTile.GameMain.Core
 
 			yield return null;
 
+			mTileIdGroupMap.Clear();
 			for (int i = 0; i < boardTiles.Count && i < dataList.Count; i++)
 			{
 				boardTiles[i].SetTileData(dataList[i]);
 				boardTiles[i].transform.rotation = Quaternion.identity;
+				if(!mTileIdGroupMap.ContainsKey(boardTiles[i].TileTypeId))
+				{
+					mTileIdGroupMap[boardTiles[i].TileTypeId] = new List<TileController>();
+				}
+				mTileIdGroupMap[boardTiles[i].TileTypeId].Add(boardTiles[i]);
 			}
 
 			UpdateAllBlockedStates();
@@ -937,7 +951,7 @@ namespace TrumpTile.GameMain.Core
 					offsetY = mTileScale.x / 2f;
 				}
 			}
-			Vector3 offsetPos = new Vector3(offsetX, offsetY, 0);
+			Vector3 offsetPos = new Vector3(offsetX, offsetY + 0.1f * (layer / 2), 0);
 			return mBoardMap[(int)x,(int)y,layer] + offsetPos;
 		}
 
@@ -1052,5 +1066,115 @@ namespace TrumpTile.GameMain.Core
             }
         }
         #endregion
+
+		public void ShowHint()
+		{
+			if(SlotManager.Instance.GetAllSlotTiles().Count == 0)
+			{
+				ShowHintOnBoard();
+			}
+			else
+			{
+				ShowHintOnBoardWithSlot();
+			}
+		}
+		private void ShowHintOnBoard()
+		{
+			List<TileController> hintList = new List<TileController>();
+			for(int i = mAllTiles.Count - 1; i >= 0; i--)
+			{
+				hintList = GetHintTileList(mAllTiles[i], 2);
+				if(hintList == null || hintList.Count < 2)
+				{
+					continue;
+				}
+
+				hintList.Add(mAllTiles[i]);
+				break;
+			}
+			if(hintList == null || hintList.Count < 2)
+			{
+				GameManager.Instance.IsIdleProcess = false;
+				return;
+			}
+
+			foreach(var item in hintList)
+			{
+				item.ShowHint();
+			}
+			GameManager.Instance.IsIdleProcess = false;
+		}
+		private void ShowHintOnBoardWithSlot()
+		{
+			List<TileController> hintList = new List<TileController>();
+			for(int i = 0; i < SlotManager.Instance.GetAllSlotTiles().Count; i++)
+			{
+				TileController tile = SlotManager.Instance.GetAllSlotTiles()[i];
+
+				int findCount = 2;
+
+				if(i + 1 < SlotManager.Instance.GetAllSlotTiles().Count)
+				{
+					if(tile.TileTypeId == SlotManager.Instance.GetAllSlotTiles()[i + 1].TileTypeId)
+					{
+						findCount = 1;
+					}
+				}
+				hintList = GetHintTileList(tile, findCount);
+				if(hintList == null || hintList.Count < findCount)
+				{
+					continue;
+				}
+
+				for(int j = i; j < i + (3 - findCount); j++)
+				{
+					hintList.Add(SlotManager.Instance.GetAllSlotTiles()[j]);
+				}
+				break;
+			}
+
+			if(hintList.Count >= 3)
+			{
+				foreach(var item in hintList)
+				{
+					item.ShowHint();
+				}
+				GameManager.Instance.IsIdleProcess = false;
+				return;
+			}
+			
+			ShowHintOnBoard();
+		}
+		private List<TileController> GetHintTileList(TileController tile, int findCount)
+		{
+			string id = tile.TileTypeId;
+
+			if(!mTileIdGroupMap.ContainsKey(id))
+			{
+				return null;
+			}
+
+			List<TileController> value = new List<TileController>();
+
+			int count = 0;
+			foreach(var item in mTileIdGroupMap[id])
+			{
+				if(item == tile)
+				{
+					continue;
+				}
+				if(item.IsSelectable)
+				{
+					count++;
+					value.Add(item);
+					if(count >= findCount)
+					{
+						break;
+					}
+				}
+			}
+
+			return value;
+		}
     }
 }
