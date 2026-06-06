@@ -478,7 +478,7 @@ namespace TrumpTile.GameMain.Core
 		}
 		public void OnGameOver()
 		{
-			if (CurrentState == EGameState.GameOver)
+			if (CurrentState == EGameState.GameOver || CurrentState == EGameState.GameClear)
 			{
 				return;
 			}
@@ -551,7 +551,7 @@ namespace TrumpTile.GameMain.Core
 		}
 		public void LevelClear()
 		{
-			if (CurrentState == EGameState.GameClear)
+			if (CurrentState == EGameState.GameClear || CurrentState == EGameState.GameOver)
 			{
 				return;
 			}
@@ -563,6 +563,7 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.GameClear;
 
 			AudioManager.Inst.SetBGMVolume(0.2f);
+			PlayerDataManager.Inst.AddGold(mBonusLevelGold);
 			ItemManager.Inst.SaveItemCountsToServer();
 			UIManager.Instance?.DisableItemButtons();
 

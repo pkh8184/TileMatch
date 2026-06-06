@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
+using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -42,6 +44,8 @@ namespace TrumpTile.GameMain.UI
         private CanvasGroup mLeftElementsRectCanvasGroup;
         private CanvasGroup mRightElementsRectCanvasGroup;
         private List<CanvasGroup> mSizeAdjustElementRectCanvasGroupList = new List<CanvasGroup>();
+
+        private bool mbIsCurrentStageBonus;
         public override void Initialize()
         {
             base.Initialize();
@@ -70,6 +74,8 @@ namespace TrumpTile.GameMain.UI
 
             mRightElementsRectCanvasGroup = mRightElementsRect.GetComponent<CanvasGroup>();
             mRightElementsRectCanvasGroup.alpha = 0;
+
+            Debug.Log(string.Format("Level_{0:D3}", PlayerDataManager.Inst?.CurrentStage));
         }
         protected override void SubscribeEvent()
         {
@@ -84,7 +90,23 @@ namespace TrumpTile.GameMain.UI
         protected override void Refresh()
         {
             mGoldText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.Gold);
-            mCurrentStageText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
+
+            // 임시 (테이블로 교체해야함)
+            LevelData level;
+            Addressables.LoadAssetAsync<LevelData>(string.Format("Level_{0:D3}",PlayerDataManager.Inst?.CurrentStage)).Completed += handle => {
+                if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    level = handle.Result;
+                    if(level.difficulty.ToString().Contains("Bonus"))
+                    {
+                        mCurrentStageText.text = "BONUS";  
+                    }
+                    else
+                    {
+                        mCurrentStageText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
+                    }
+                }
+            };
         }
         
         protected override void RefreshLocalData()

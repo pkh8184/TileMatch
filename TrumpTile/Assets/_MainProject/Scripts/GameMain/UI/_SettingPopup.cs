@@ -55,12 +55,12 @@ namespace TrumpTile.GameMain.UI
 
             mTermsButton.onClick.AddListener(() =>
             {
-                //Application.OpenURL("이용약관 URL");
+                Application.OpenURL("https://pkh8184.github.io/AcidHomePage/#/project/housetilematch/terms");
             });
 
             mPolicyButton.onClick.AddListener(() =>
             {
-                //Application.OpenURL("이용약관 URL");
+                Application.OpenURL("https://pkh8184.github.io/AcidHomePage/#/project/housetilematch/privacy");
             });
 
             mShareButton.onClick.AddListener(() =>
