@@ -112,7 +112,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -225,8 +225,8 @@ ParticleSystem:
         m_RotationOrder: 4
     startColor:
       serializedVersion: 2
-      minMaxState: 0
-      minColor: {r: 1, g: 1, b: 1, a: 1}
+      minMaxState: 2
+      minColor: {r: 1, g: 0.92855203, b: 0, a: 1}
       maxColor: {r: 1, g: 0.64289945, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
@@ -292,7 +292,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.05
-      minScalar: 0.15
+      minScalar: 0.08
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4848,7 +4848,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e653836c30661fe419b8992e230ca189, type: 2}
+  - {fileID: 2100000, guid: 150aee38b5d848b42b75593618992bb7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5195,8 +5195,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1
-      minScalar: 2
+      scalar: 0
+      minScalar: 0
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -9935,7 +9935,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -14993,8 +14993,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.2
-      minScalar: 0.8
+      scalar: 0.8
+      minScalar: 0.4
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -15439,7 +15439,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.25
+      value: 0.0001
       mode: 0
       spread: 0
       speed:
@@ -15668,7 +15668,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 15
+        scalar: 30
         minScalar: 16
         maxCurve:
           serializedVersion: 2
