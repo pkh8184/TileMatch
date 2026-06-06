@@ -1107,15 +1107,16 @@ namespace TrumpTile.GameMain.Core
 		private void ShowHintOnBoardWithSlot()
 		{
 			List<TileController> hintList = new List<TileController>();
-			for(int i = 0; i < SlotManager.Instance.GetAllSlotTiles().Count; i++)
+			List<TileController> slotList = SlotManager.Instance.GetAllSlotTiles();
+			for(int i = 0; i < slotList.Count; i++)
 			{
-				TileController tile = SlotManager.Instance.GetAllSlotTiles()[i];
+				TileController tile = slotList[i];
 
 				int findCount = 2;
 
-				if(i + 1 < SlotManager.Instance.GetAllSlotTiles().Count)
+				if(i + 1 < slotList.Count)
 				{
-					if(tile.TileTypeId == SlotManager.Instance.GetAllSlotTiles()[i + 1].TileTypeId)
+					if(tile.TileTypeId == slotList[i + 1].TileTypeId)
 					{
 						findCount = 1;
 					}
@@ -1128,7 +1129,7 @@ namespace TrumpTile.GameMain.Core
 
 				for(int j = i; j < i + (3 - findCount); j++)
 				{
-					hintList.Add(SlotManager.Instance.GetAllSlotTiles()[j]);
+					hintList.Add(slotList[j]);
 				}
 				break;
 			}

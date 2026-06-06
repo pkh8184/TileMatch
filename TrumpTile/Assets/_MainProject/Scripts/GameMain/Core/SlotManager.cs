@@ -651,7 +651,7 @@ namespace TrumpTile.GameMain.Core
 					center += tile.transform.position;
 					if (tile.Data != null)
 					{
-						suitIndex = (int)tile.Data.suit;
+						//suitIndex = (int)tile.Data.suit;
 					}
 				}
 			}
