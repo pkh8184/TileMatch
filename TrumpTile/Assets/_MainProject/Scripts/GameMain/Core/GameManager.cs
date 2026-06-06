@@ -163,20 +163,19 @@ namespace TrumpTile.GameMain.Core
 				}
 				else
 				{
-					if(IsIdleProcess)
+					if(!IsIdleProcess)
 					{
-						return;
-					}
-					if(mCurrentIdleTime >= mTargetIdleTime)
-					{
-						IsIdleProcess = true;
-						mCurrentIdleTime = 0;
-						BoardManager.Instance.ShowHint();				
-					}
-					else
-					{
-						mCurrentIdleTime += Time.deltaTime;
-					}
+						if(mCurrentIdleTime >= mTargetIdleTime)
+						{
+							IsIdleProcess = true;
+							mCurrentIdleTime = 0;
+							BoardManager.Instance.ShowHint();				
+						}
+						else
+						{
+							mCurrentIdleTime += Time.deltaTime;
+						}
+					}		
 				}
 			}
 			if (CurrentState == EGameState.Playing && !mIsTimerFrozen)
