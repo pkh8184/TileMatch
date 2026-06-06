@@ -47,60 +47,42 @@ namespace TrumpTile.GameMain.Item
 		public IEnumerator Execute(Action onComplete)
 		{
 			//List<IGrouping<string, TileController>> groups = mBoardManager.GetBoardTiles()
-			List<IGrouping<string, TileController>> groups = mBoardManager.GetBoardTilesContainSlot()
-				.Where(t => t != null && t.Data != null)
-				.GroupBy(t => t.Data.TileID)
-				.Where(g => g.Count() >= mMatchCount)
-				.ToList();
+			// List<IGrouping<string, TileController>> groups = mBoardManager.GetBoardTilesContainSlot()
+			// 	.Where(t => t != null && t.Data != null)
+			// 	.GroupBy(t => t.Data.TileID)
+			// 	.Where(g => g.Count() >= mMatchCount)
+			// 	.ToList();
 
-			if (groups.Count == 0)
+			List<int> random = new List<int>();
+			for(int i = 0; i < mBoardManager.GetBoardTilesContainSlot().Count; i++)
+			{
+				random.Add(i);
+			}
+			List<TileController> setsTiles = new List<TileController>();
+			int setsToRemove = Mathf.Min(3, mBoardManager.GetBoardTilesContainSlot().Count / 3);
+
+			for(int i = 0; i < setsToRemove; i++)
+			{
+				int index = random[UnityEngine.Random.Range(0, random.Count)];
+				string id = mBoardManager.GetBoardTilesContainSlot()[index].TileTypeId;
+
+				List<TileController> targets = mBoardManager.GetBoardTilesContainSlot().Where(t => t != null && t.TileTypeId == id).Take(3).ToList();
+				foreach(var item in targets)
+				{
+					setsTiles.Add(item);
+					int j = mBoardManager.GetBoardTilesContainSlot().IndexOf(item);
+					Debug.Log("선택된 타일 인덱스 : " + j.ToString());
+					random.Remove(j);
+				}
+			}
+			if (setsTiles.Count == 0)
 			{
 				onComplete?.Invoke();
 				yield break;
 			}
-
-			int setsToRemove = Mathf.Min(3, groups.Count);
 			Vector3 center = Vector3.zero;
 
-			List<TileController> setTiles = new List<TileController>();
-
-			for (int i = 0; i < setsToRemove; i++)
-			{
-				//List<TileController> setTiles = groups[i].Take(mMatchCount).ToList();
-				//Vector3 center = ComputeCenter(setTiles);
-				setTiles.AddRange(groups[i].OrderBy(t => t.IsInSlot ? 1 : 0).Take(mMatchCount));
-				//List<TileController> capturedTiles = setTiles;
-
-				// if (mEffectManager != null)
-				// {
-				// 	mEffectManager.PlayBombSpineEffect(center, () =>
-				// 	{
-				// 		foreach (TileController tile in capturedTiles)
-				// 		{
-				// 			if (tile != null)
-				// 			{
-				// 				mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
-				// 				tile.Remove();
-				// 			}
-				// 		}
-				// 	});
-				// }
-				// else
-				// {
-				// 	foreach (TileController tile in capturedTiles)
-				// 	{
-				// 		if (tile != null)
-				// 		{
-				// 			mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
-				// 			tile.Remove();
-				// 		}
-				// 	}
-				// 	pendingCount--;
-				// }
-				//yield return new WaitForSeconds(BOMB_SET_DELAY);
-			}
-
-			List<TileController> capturedTiles = setTiles;
+			List<TileController> capturedTiles = setsTiles;
 			int pendingCount = capturedTiles.Count;
 			if (mEffectManager != null)
 			{
@@ -110,8 +92,15 @@ namespace TrumpTile.GameMain.Item
 					{
 						if (tile != null)
 						{
-							mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
-							tile.Remove();
+							if(tile.IsInSlot)
+							{
+								mSlotManager.RemoveTileDirectly(tile);
+							}
+							else
+							{
+								mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
+								tile.Remove();
+							};
 						}
 						pendingCount--;
 					}
@@ -123,8 +112,15 @@ namespace TrumpTile.GameMain.Item
 				{
 					if (tile != null)
 					{
-						mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
-						tile.Remove();
+						if(tile.IsInSlot)
+						{
+							mSlotManager.RemoveTileDirectly(tile);
+						}
+						else
+						{
+							mBoardManager.RemoveTileFromBoard(tile, bProcessBonus: false);
+							tile.Remove();
+						};
 					}
 					pendingCount--;
 				}
@@ -144,7 +140,7 @@ namespace TrumpTile.GameMain.Item
 
 			onComplete?.Invoke();
 
-			if(BoardManager.Instance.GetAllTiles().Count == 0)
+			if(BoardManager.Instance.GetAllTiles().Count == 0 && SlotManager.Instance.GetAllSlotTiles().Count == 0)
 			{
 				GameManager.Instance.LevelClear();
 			}
