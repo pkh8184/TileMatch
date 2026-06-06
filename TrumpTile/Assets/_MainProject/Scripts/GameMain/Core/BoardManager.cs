@@ -823,8 +823,9 @@ namespace TrumpTile.GameMain.Core
 				tile.SetSelectable(false);
 			}
 
-			List<TileController> dataList = boardTiles
+			List<TileData> dataList = boardTiles
 				.Where(t => t.Data != null)
+				.Select(t => t.Data)
 				.ToList();
 
 			ShuffleList(dataList);

@@ -446,9 +446,9 @@ namespace TrumpTile.GameMain.Core
 			mTileData = data;
 			mbIsJewerly = true;
 		}
-		public void SetTileData(TileController data)
+		public void SetTileData(TileData data)
 		{
-			mTileData = data.Data;
+			mTileData = data;
 
 			if (mSpriteRenderer != null && mTileData != null)
 			{
