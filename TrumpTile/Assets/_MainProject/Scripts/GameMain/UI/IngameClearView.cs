@@ -61,7 +61,7 @@ namespace TrumpTile.GameMain.UI
             if(bBonusLevel)
             {
                 mBonusLevelFrame.SetActive(true);
-                rt.localScale = Vector2.zero;
+                rt.localScale = new Vector2(1, 0);
             }
             else
             {
@@ -88,19 +88,20 @@ namespace TrumpTile.GameMain.UI
                 mTimerText.text = string.Format("{0:D2} : {1:D2}", minutes, seconds);
             }, GameManager.Instance.ElapsedTime, 0.3f));
 
-            seq.Append(mClearTextCanvasGroup.DOFade(1, 0.3f));
             if(bBonusLevel)
             {
-                mGoldText.text = "+0";
-                seq.Append(rt.DOScale(1.1f, 0.15f));
-                seq.Append(rt.DOScale(1f, 0.15f));
+                mGoldText.text = "0";
+                seq.Append(rt.DOScaleY(1f, 0.5f));
                 float val = 0;
-                seq.Join(DOTween.To(() => val, x =>
+                seq.Append(DOTween.To(() => val, x =>
                 {
                     val = x;
-                    mGoldText.text = "+" + Mathf.RoundToInt(x).ToString();
+                    mGoldText.text = Mathf.RoundToInt(x).ToString();
                 }, GameManager.Instance.BonusLevelGold, 0.3f));
             }
+
+            seq.Append(mClearTextCanvasGroup.DOFade(1, 0.3f));
+
             seq.Append(mRewardButtonRect.DOScale(1.1f, 0.15f));
             seq.Append(mRewardButtonRect.DOScale(1f, 0.15f));
 

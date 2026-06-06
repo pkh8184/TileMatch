@@ -623,6 +623,7 @@ namespace TrumpTile.GameMain.Core
 			mTileGridMap.Remove(gridPos);
 
 			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
+			mTileIdGroupMap[tile.TileTypeId].Remove(tile);
 			
 			UpdateAllBlockedStates();
 
@@ -639,7 +640,8 @@ namespace TrumpTile.GameMain.Core
 			mTileGridMap.Remove(gridPos);
 			
 			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
-
+			mTileIdGroupMap[tile.TileTypeId].Remove(tile);
+			
 			UpdateAllBlockedStates();
 
 			Log($"Tile removed from board: {tile.TileTypeId}");
@@ -1164,7 +1166,7 @@ namespace TrumpTile.GameMain.Core
 				{
 					continue;
 				}
-				if(item.IsSelectable)
+				if(!IsTileBlocked(item))
 				{
 					count++;
 					value.Add(item);
