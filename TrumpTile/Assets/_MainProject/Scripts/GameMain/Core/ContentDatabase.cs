@@ -7,7 +7,7 @@ namespace TrumpTile.GameMain.Core
     [CreateAssetMenu(fileName = "ContentDatabase", menuName = "TrumpTile/ContentDatabase")]
     public class ContentDatabase : ScriptableObject
     {
-        [SerializeField] private List<ContentBase> mContentBaseArray;
+       [SerializeReference, SubclassSelector] private List<ContentBase> mContentBaseArray;
 
         private Dictionary<string, ContentBase> mContentMap;
 
@@ -19,6 +19,7 @@ namespace TrumpTile.GameMain.Core
             {
                 mContentMap[item.ContentName] = item;
                 Debug.Log($"컨텐츠 {item.ContentName} 맵에 추가");
+                item.Initialize();
             }
         }
     }   

@@ -3,11 +3,21 @@ using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
 {
-    public class ContentBase : ScriptableObject
+    [System.Serializable]
+    public abstract class ContentBase
     {
+        [Header("컨텐츠 이름")]
         [SerializeField] private string mContentName;
+        [Header("컨텐츠 해금 레벨")]
+        [SerializeField] private int mLevelToUnlock;
+
+        //컨텐츠 잠금 플래그
         protected bool mbIsUnlocked;
+        //레드닷 플래그
+        protected bool mbHasNewthing;
+        
         public string ContentName => mContentName;
+        public bool HasNewThing => mbHasNewthing;
         public void SetUnlock()
         {
             mbIsUnlocked = true;
