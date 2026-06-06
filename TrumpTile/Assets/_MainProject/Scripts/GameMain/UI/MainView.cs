@@ -36,6 +36,9 @@ namespace TrumpTile.GameMain.UI
         [Header("프로필 아바타 및 프레임 스프라이트 리스트")]
         [SerializeField] private List<Sprite> mAvataSpriteList;
         [SerializeField] private List<Sprite> mFrameSpriteList;
+        [Header("스테이지 버튼 스프라이트")]
+        [SerializeField] private Sprite mDefault;
+        [SerializeField] private Sprite mBonus;
 
         [Header("메인씬 로딩 시 연출 효과를 줄 렉트들")]
         [SerializeField] private RectTransform mLeftElementsRect;
@@ -45,7 +48,6 @@ namespace TrumpTile.GameMain.UI
         private CanvasGroup mRightElementsRectCanvasGroup;
         private List<CanvasGroup> mSizeAdjustElementRectCanvasGroupList = new List<CanvasGroup>();
 
-        private bool mbIsCurrentStageBonus;
         public override void Initialize()
         {
             base.Initialize();
@@ -99,10 +101,12 @@ namespace TrumpTile.GameMain.UI
                     level = handle.Result;
                     if(level.difficulty.ToString().Contains("Bonus"))
                     {
+                        mStageStartButton.image.sprite = mBonus;
                         mCurrentStageText.text = "BONUS";  
                     }
                     else
                     {
+                          mStageStartButton.image.sprite = mDefault;
                         mCurrentStageText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
                     }
                 }
