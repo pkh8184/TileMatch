@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -142.8}
+  m_AnchoredPosition: {x: 0, y: -132}
   m_SizeDelta: {x: 860, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9130792106404544505
@@ -752,6 +752,7 @@ GameObject:
   - component: {fileID: 4374667879099935913}
   - component: {fileID: 6467761473951474878}
   - component: {fileID: 7636246000815663541}
+  - component: {fileID: 8260929872066844982}
   m_Layer: 5
   m_Name: Popup_StageFailed
   m_TagString: Untagged
@@ -817,6 +818,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8260929872066844982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7450607235769461069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742451821a1a6134e8845f86e7f12252, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mShowButton: {fileID: 0}
+  mHideButton: {fileID: 0}
+  mShowDuration: 0.3
+  mHideDuration: 0.3
+  mPopupObj: {fileID: 3548898312673794804}
+  mRetryButton: {fileID: 5740039378399463139}
+  mCancleButton: {fileID: 4540464986435139465}
+  mLevelText: {fileID: 1680961643866315312}
 --- !u!1 &8196229964716866235
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,7 +896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -891,7 +912,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1.6
 --- !u!1 &8369719357795587341
 GameObject:
   m_ObjectHideFlags: 0
