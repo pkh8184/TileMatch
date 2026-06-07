@@ -15,6 +15,8 @@ MonoBehaviour:
   levelNumber: 28
   levelName: Level_028
   difficulty: 1
+  createRandomBonusTile: 0
+  bonusTileSet: 0
   boardWidth: 8
   boardHeight: 8
   maxLayers: 5
@@ -22,455 +24,393 @@ MonoBehaviour:
   matchCount: 3
   layerList:
   - tilePlacementList:
-    - gridX: 1
-      gridY: 4
-      layer: 0
-      tileTypeId: Desert_14
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
     - gridX: 3
-      gridY: 5
+      gridY: 2
       layer: 0
-      tileTypeId: Desert_14
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 2
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 1
-      gridY: 5
+      gridY: 2
       layer: 0
-      tileTypeId: Fruit_10
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 3
-      gridY: 4
+    - gridX: 0
+      gridY: 2
       layer: 0
-      tileTypeId: Fruit_10
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 4
-      gridY: 4
+      gridY: 7
       layer: 0
-      tileTypeId: Fruit_10
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 7
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 6
-      gridY: 5
+      gridY: 7
       layer: 0
-      tileTypeId: Fruit_10
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 1
-      gridY: 1
+    - gridX: 7
+      gridY: 7
       layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 2
-      layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 1
-      layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 1
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 1
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 4
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 3
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 5
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 5
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 3
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 4
-      layer: 0
-      tileTypeId: Desert_2
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 3
-      layer: 0
-      tileTypeId: Desert_2
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 1
-      layer: 0
-      tileTypeId: Desert_2
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 6
-      gridY: 2
-      layer: 0
-      tileTypeId: Desert_2
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 1
-      layer: 0
-      tileTypeId: Desert_2
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 3
-      layer: 0
-      tileTypeId: Desert_26
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 3
-      layer: 0
-      tileTypeId: Desert_26
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 4
-      layer: 0
-      tileTypeId: Desert_26
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 3
-      layer: 0
-      tileTypeId: Desert_6
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 5
-      layer: 0
-      tileTypeId: Desert_6
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 2
-      layer: 0
-      tileTypeId: Desert_21
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 2
-      layer: 0
-      tileTypeId: Desert_21
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-  - tilePlacementList:
-    - gridX: 1
-      gridY: 5
-      layer: 0
-      tileTypeId: Fruit_22
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 5
-      layer: 0
-      tileTypeId: Fruit_22
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 5
-      layer: 0
-      tileTypeId: Fruit_22
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 5
-      layer: 0
-      tileTypeId: Desert_14
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 5
-      layer: 0
-      tileTypeId: Desert_14
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 4
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 3
-      layer: 0
-      tileTypeId: Fruit_8
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 2
-      layer: 0
-      tileTypeId: Desert_29
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 1
-      layer: 0
-      tileTypeId: Desert_29
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 3
-      layer: 0
-      tileTypeId: Desert_29
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 4
-      layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 1
-      layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 1
-      layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 1
-      gridY: 2
-      layer: 0
-      tileTypeId: Desert_14
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 1
-      layer: 0
-      tileTypeId: Desert_14
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 1
-      layer: 0
-      tileTypeId: Desert_14
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
   - tilePlacementList:
     - gridX: 2
-      gridY: 5
-      layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 6
-      layer: 0
-      tileTypeId: Fruit_10
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 4
-      gridY: 1
-      layer: 0
-      tileTypeId: Desert_17
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
       gridY: 2
       layer: 0
-      tileTypeId: Desert_17
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 3
-      gridY: 1
-      layer: 0
-      tileTypeId: Desert_21
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
+    - gridX: 1
       gridY: 2
       layer: 0
-      tileTypeId: Desert_21
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 2
-      gridY: 3
+    - gridX: 0
+      gridY: 2
       layer: 0
-      tileTypeId: Desert_26
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 2
-      gridY: 4
-      layer: 0
-      tileTypeId: Desert_26
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 3
-      layer: 0
-      tileTypeId: Desert_29
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 5
-      gridY: 4
-      layer: 0
-      tileTypeId: Desert_29
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 4
       gridY: 6
       layer: 0
-      tileTypeId: Desert_21
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 5
-      gridY: 5
+      gridY: 6
       layer: 0
-      tileTypeId: Desert_14
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
   - tilePlacementList:
-    - gridX: 2
+    - gridX: 6
       gridY: 3
       layer: 0
-      tileTypeId: Desert_21
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 3
       gridY: 3
       layer: 0
-      tileTypeId: Desert_26
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 6
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 6
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 6
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 5
+      gridY: 5
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 3
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 3
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 2
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 4
-      gridY: 3
+      gridY: 0
       layer: 0
-      tileTypeId: Desert_29
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 2
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 0
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
   - tilePlacementList:
     - gridX: 2
-      gridY: 5
+      gridY: 4
       layer: 0
-      tileTypeId: Desert_14
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 5
-      gridY: 5
+    - gridX: 0
+      gridY: 0
       layer: 0
-      tileTypeId: Desert_17
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 1
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 2
-      gridY: 2
+      gridY: 0
       layer: 0
-      tileTypeId: Desert_2
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 3
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 4
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
     - gridX: 5
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 0
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 1
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
       gridY: 2
       layer: 0
-      tileTypeId: Desert_6
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 3
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 6
+      gridY: 5
+      layer: 0
+      tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
   tilePlacements: []
   availableTileTypes: []
+  randomTileRangeByCartegory: 00000000000000000000000000000000000000000000000006000000
   levelBackgroundSprite: {fileID: 21300000, guid: c1c2500649800d94f9330522cc1807fb, type: 3}
-  tileBackgroundSprite: {fileID: 21300000, guid: 26555e7d57d8c41408105c45228e329e, type: 3}
+  tileBackgroundSprite: {fileID: 21300000, guid: 1d0b4e93e86eb1445ae098350f42577f, type: 3}
   initialShuffleCount: 3
   initialUndoCount: 3
   initialHintCount: 3
