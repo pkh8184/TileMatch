@@ -41,6 +41,12 @@ namespace TrumpTile.GameMain.Data
         public ObscuredInt CurrentHousingSubChapter;
         public ObscuredInt CompletedChapterCount;
 
+        // 앨범 수집 데이터
+        public int CurrentAlbumGroupId;
+        public Dictionary<int, List<int>> CollectedPictureIds;
+        public List<int> CompletedAlbumGroupIds;
+        public bool HasPendingAlbumReward;
+
         //로그인 데이터
         public DateTime FirstLoginDate;
         public ObscuredInt MaxStreakLoginCount;
@@ -91,6 +97,66 @@ namespace TrumpTile.GameMain.Data
             UID = dataDictionary["uid"]?.ToString();
             TermsAndConditionVersion = dataDictionary["termsAndConditionVersion"]?.ToString();
 
+            // 앨범 데이터 파싱
+            CollectedPictureIds    = new Dictionary<int, List<int>>();
+            CompletedAlbumGroupIds = new List<int>();
+            HasPendingAlbumReward  = false;
+            CurrentAlbumGroupId    = 1;
+
+            if (dataDictionary.ContainsKey("albumData"))
+            {
+                Dictionary<object, object> albumData = dataDictionary["albumData"] as Dictionary<object, object>;
+                if (albumData != null)
+                {
+                    if (albumData.ContainsKey("currentAlbumGroupId"))
+                    {
+                        CurrentAlbumGroupId = (int)Convert.ToInt64(albumData["currentAlbumGroupId"]);
+                    }
+                    if (albumData.ContainsKey("hasPendingAlbumReward"))
+                    {
+                        HasPendingAlbumReward = albumData["hasPendingAlbumReward"].ToString() == "True";
+                    }
+                    if (albumData.ContainsKey("collectedPictureIds"))
+                    {
+                        Dictionary<object, object> collected = albumData["collectedPictureIds"] as Dictionary<object, object>;
+                        if (collected != null)
+                        {
+                            foreach (KeyValuePair<object, object> pair in collected)
+                            {
+                                if (int.TryParse(pair.Key.ToString(), out int groupId))
+                                {
+                                    List<int> pictureIds = new List<int>();
+                                    if (pair.Value is List<object> idList)
+                                    {
+                                        foreach (object id in idList)
+                                        {
+                                            if (int.TryParse(id.ToString(), out int pid))
+                                            {
+                                                pictureIds.Add(pid);
+                                            }
+                                        }
+                                    }
+                                    CollectedPictureIds[groupId] = pictureIds;
+                                }
+                            }
+                        }
+                    }
+                    if (albumData.ContainsKey("completedAlbumGroupIds"))
+                    {
+                        if (albumData["completedAlbumGroupIds"] is List<object> completedList)
+                        {
+                            foreach (object id in completedList)
+                            {
+                                if (int.TryParse(id.ToString(), out int gid))
+                                {
+                                    CompletedAlbumGroupIds.Add(gid);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             ReadLocalData();
         }
         public UserData()
@@ -117,6 +183,10 @@ namespace TrumpTile.GameMain.Data
             CurrentHousingChapter = 0;
             CurrentHousingSubChapter = 0;
             CompletedChapterCount = 0;
+            CurrentAlbumGroupId    = 1;
+            CollectedPictureIds    = new Dictionary<int, List<int>>();
+            CompletedAlbumGroupIds = new List<int>();
+            HasPendingAlbumReward  = false;
             //로그인 데이터
             FirstLoginDate = DateTime.MinValue;
             MaxStreakLoginCount = 0;

@@ -68,6 +68,10 @@ namespace TrumpTile.GameMain.Data
 		public int SelectedStage => mSelectedStage;
 		public string UID => mUserData?.UID ?? string.Empty;
 		public bool IsExtraSlotUnlocked => PlayerPrefs.GetInt("ExtraSlotUnlocked", 0) == 1;
+		public int                        CurrentAlbumGroupId    => mUserData != null ? mUserData.CurrentAlbumGroupId : 1;
+		public Dictionary<int, List<int>> CollectedPictureIds    => mUserData?.CollectedPictureIds;
+		public List<int>                  CompletedAlbumGroupIds => mUserData?.CompletedAlbumGroupIds;
+		public bool                       HasPendingAlbumReward  => mUserData != null && mUserData.HasPendingAlbumReward;
 
 		#endregion
 
@@ -232,6 +236,69 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 돼지저금통 해금 완료");
 			mUserData.PiggyBankUnlock = true;
 		}
+	#endregion
+
+	#region 앨범 수집
+
+		public bool IsPictureCollected(int albumGroupId, int pictureId)
+		{
+			if (mUserData?.CollectedPictureIds == null)
+			{
+				return false;
+			}
+			return mUserData.CollectedPictureIds.TryGetValue(albumGroupId, out List<int> ids)
+				&& ids.Contains(pictureId);
+		}
+
+		public void AddCollectedPicture(int albumGroupId, int pictureId)
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			if (!mUserData.CollectedPictureIds.ContainsKey(albumGroupId))
+			{
+				mUserData.CollectedPictureIds[albumGroupId] = new List<int>();
+			}
+			if (!mUserData.CollectedPictureIds[albumGroupId].Contains(pictureId))
+			{
+				mUserData.CollectedPictureIds[albumGroupId].Add(pictureId);
+			}
+		}
+
+		public void SetAlbumGroupComplete(int albumGroupId)
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			if (!mUserData.CompletedAlbumGroupIds.Contains(albumGroupId))
+			{
+				mUserData.CompletedAlbumGroupIds.Add(albumGroupId);
+			}
+			mUserData.CurrentAlbumGroupId = albumGroupId + 1;
+		}
+
+		public void SetPendingAlbumReward(bool bHasPending)
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			mUserData.HasPendingAlbumReward = bHasPending;
+		}
+
+		public List<int> GetCollectedPictureIds(int albumGroupId)
+		{
+			if (mUserData?.CollectedPictureIds == null)
+			{
+				return new List<int>();
+			}
+			return mUserData.CollectedPictureIds.TryGetValue(albumGroupId, out List<int> ids)
+				? ids
+				: new List<int>();
+		}
+
 	#endregion
 
 	#region Getters (기존)
