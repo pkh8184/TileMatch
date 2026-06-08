@@ -139,8 +139,8 @@ namespace TrumpTile.GameMain.UI
 		private IEnumerator Co_FlyRewardIcons(TBPictureCollectData picture)
 		{
 			bool bHasItem = picture.HammerRewardCount > 0
-				|| picture.MagicStickRewardCount > 0
-				|| picture.MagicHatRewardCount > 0
+				|| picture.ClockRewardCount > 0
+				|| picture.HatRewardCount > 0
 				|| picture.BombRewardCount > 0;
 
 			List<Tween> tweens = new List<Tween>();
