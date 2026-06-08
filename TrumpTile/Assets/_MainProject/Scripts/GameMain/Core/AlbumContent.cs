@@ -1,4 +1,3 @@
-using TrumpTile.GameMain.Data;
 using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
@@ -38,20 +37,5 @@ namespace TrumpTile.GameMain.Core
 			return EAlbumPictureState.Locked;
 		}
 
-		public static bool IsChapterComplete(TBPictureData[] groupPictures, System.Collections.Generic.List<int> collectedIds)
-		{
-			if (groupPictures == null || groupPictures.Length == 0)
-			{
-				return false;
-			}
-			foreach (TBPictureData picture in groupPictures)
-			{
-				if (collectedIds == null || !collectedIds.Contains(picture.PictureId))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
 	}
 }

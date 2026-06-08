@@ -57,8 +57,8 @@ namespace TrumpTile.GameMain.UI
 			(int collected, int total) = AlbumManager.Inst.GetCurrentProgress();
 			UpdateGauge(collected, total);
 
-			List<(TBPictureData picture, EAlbumPictureState state)> pictureStates
-				= AlbumManager.Inst.GetCurrentGroupPictureStates();
+			List<(TBPictureCollectData picture, EAlbumPictureState state)> pictureStates
+				= AlbumManager.Inst.GetPictureStates();
 
 			for (int i = 0; i < mSlotViewArray.Length; i++)
 			{
@@ -81,16 +81,16 @@ namespace TrumpTile.GameMain.UI
 			mProgressText.text    = $"{collected}/{total}";
 		}
 
-		public void PlayRewardSequence(List<TBPictureData> pendingPictures)
+		public void PlayRewardSequence(List<TBPictureCollectData> pendingPictures)
 		{
 			StartCoroutine(Co_RewardSequence(pendingPictures));
 		}
 
-		private IEnumerator Co_RewardSequence(List<TBPictureData> pendingPictures)
+		private IEnumerator Co_RewardSequence(List<TBPictureCollectData> pendingPictures)
 		{
 			SetInteractable(false);
 
-			foreach (TBPictureData picture in pendingPictures)
+			foreach (TBPictureCollectData picture in pendingPictures)
 			{
 				yield return StartCoroutine(Co_CollectOnePicture(picture));
 			}
@@ -99,7 +99,7 @@ namespace TrumpTile.GameMain.UI
 			SetInteractable(true);
 		}
 
-		private IEnumerator Co_CollectOnePicture(TBPictureData picture)
+		private IEnumerator Co_CollectOnePicture(TBPictureCollectData picture)
 		{
 			// 데이터 먼저 반영 후 게이지 애니메이션
 			AlbumManager.Inst.CollectPicture(picture);
@@ -136,7 +136,7 @@ namespace TrumpTile.GameMain.UI
 			yield return new WaitForSeconds(0.2F);
 		}
 
-		private IEnumerator Co_FlyRewardIcons(TBPictureData picture)
+		private IEnumerator Co_FlyRewardIcons(TBPictureCollectData picture)
 		{
 			bool bHasItem = picture.HammerRewardCount > 0
 				|| picture.MagicStickRewardCount > 0
@@ -157,7 +157,7 @@ namespace TrumpTile.GameMain.UI
 			}
 		}
 
-		private void OnSlotClicked(TBPictureData picture, EAlbumPictureState state)
+		private void OnSlotClicked(TBPictureCollectData picture, EAlbumPictureState state)
 		{
 			switch (state)
 			{

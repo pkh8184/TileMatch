@@ -20,15 +20,13 @@ namespace TrumpTile.GameMain.UI
 			gameObject.SetActive(false);
 		}
 
-		public void Setup(TBPictureData picture)
+		public void Setup(TBPictureCollectData picture)
 		{
-			if (!string.IsNullOrEmpty(picture.PictureBackgroundSrc))
+			// TODO: Addressables.LoadAssetAsync<Sprite>($"Picture_{picture.PictureId}_BG") 로 교체
+			Sprite bg = Resources.Load<Sprite>($"Picture_{picture.PictureId}_BG");
+			if (bg != null)
 			{
-				Sprite bg = Resources.Load<Sprite>(picture.PictureBackgroundSrc);
-				if (bg != null)
-				{
-					mBackgroundImage.sprite = bg;
-				}
+				mBackgroundImage.sprite = bg;
 			}
 
 			// TODO: StringMaster 로컬라이징 연동 후 PictureNameId / PictureDescriptionId로 실제 텍스트 조회

@@ -8,17 +8,15 @@ namespace TrumpTile.GameMain.Core
 	public class AlbumManager : Singleton_GameObject<AlbumManager>
 	{
 		[Header("데이터 테이블")]
-		[SerializeField] private TBAlbumTable   mAlbumTable;
-		[SerializeField] private TBPictureTable mPictureTable;
+		[SerializeField] private TBPictureCollectTable mPictureTable;
 
 		[Header("아이템 ID (TB_Item 기준)")]
-		[SerializeField] private int mHammerItemId     = 1006;
-		[SerializeField] private int mMagicStickItemId = 1005;
-		[SerializeField] private int mMagicHatItemId   = 1007;
-		[SerializeField] private int mBombItemId       = 1008;
+		[SerializeField] private int mHammerItemId = 1006;
+		[SerializeField] private int mClockItemId  = 1005;
+		[SerializeField] private int mHatItemId    = 1007;
+		[SerializeField] private int mBombItemId   = 1008;
 
-		public event System.Action<TBPictureData> OnPictureCollected;
-		public event System.Action<TBAlbumData>   OnChapterCompleted;
+		public event System.Action<TBPictureCollectData> OnPictureCollected;
 
 		private void Awake()
 		{
@@ -32,13 +30,12 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
-			int groupId = PlayerDataManager.Inst.CurrentAlbumGroupId;
-			TBPictureData[] groupPictures = mPictureTable.GetByAlbumGroup(groupId);
+			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
+			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
 
-			foreach (TBPictureData picture in groupPictures)
+			foreach (TBPictureCollectData picture in allPictures)
 			{
-				if (clearedStage >= picture.StageValue
-					&& !PlayerDataManager.Inst.IsPictureCollected(groupId, picture.PictureId))
+				if (clearedStage >= picture.StageValue && !collectedIds.Contains(picture.PictureId))
 				{
 					PlayerDataManager.Inst.SetPendingAlbumReward(true);
 					return;
@@ -46,23 +43,21 @@ namespace TrumpTile.GameMain.Core
 			}
 		}
 
-		public void CheckPendingReward(System.Action<List<TBPictureData>> onPendingFound)
+		public void CheckPendingReward(System.Action<List<TBPictureCollectData>> onPendingFound)
 		{
 			if (mPictureTable == null || PlayerDataManager.Inst == null || !PlayerDataManager.Inst.HasPendingAlbumReward)
 			{
 				return;
 			}
 
-			int groupId = PlayerDataManager.Inst.CurrentAlbumGroupId;
-			TBPictureData[] groupPictures = mPictureTable.GetByAlbumGroup(groupId);
+			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
 			int currentStage = PlayerDataManager.Inst.CurrentStage;
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds(groupId);
+			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
 
-			List<TBPictureData> pendingPictures = new List<TBPictureData>();
-			foreach (TBPictureData picture in groupPictures)
+			List<TBPictureCollectData> pendingPictures = new List<TBPictureCollectData>();
+			foreach (TBPictureCollectData picture in allPictures)
 			{
-				if (currentStage >= picture.StageValue
-					&& !collectedIds.Contains(picture.PictureId))
+				if (currentStage >= picture.StageValue && !collectedIds.Contains(picture.PictureId))
 				{
 					pendingPictures.Add(picture);
 				}
@@ -78,33 +73,21 @@ namespace TrumpTile.GameMain.Core
 			}
 		}
 
-		public void CollectPicture(TBPictureData picture)
+		public void CollectPicture(TBPictureCollectData picture)
 		{
 			if (picture == null || PlayerDataManager.Inst == null)
 			{
 				return;
 			}
 
-			int groupId = picture.AlbumGroupId;
+			PlayerDataManager.Inst.AddCollectedPicture(picture.PictureId);
 
-			PlayerDataManager.Inst.AddCollectedPicture(groupId, picture.PictureId);
+			if (picture.GoldRewardCount > 0)
+			{
+				PlayerDataManager.Inst.AddGold(picture.GoldRewardCount);
+			}
 
 			GrantItemRewards(picture);
-
-			TBPictureData[] groupPictures = mPictureTable.GetByAlbumGroup(groupId);
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds(groupId);
-
-			if (AlbumContent.IsChapterComplete(groupPictures, collectedIds))
-			{
-				TBAlbumData albumData = mAlbumTable.GetById(groupId);
-				if (albumData != null
-					&& !PlayerDataManager.Inst.CompletedAlbumGroupIds.Contains(groupId))
-				{
-					PlayerDataManager.Inst.AddGold(albumData.GoldRewardCount);
-					PlayerDataManager.Inst.SetAlbumGroupComplete(groupId);
-					OnChapterCompleted?.Invoke(albumData);
-				}
-			}
 
 			OnPictureCollected?.Invoke(picture);
 		}
@@ -116,12 +99,11 @@ namespace TrumpTile.GameMain.Core
 				return (0, 0);
 			}
 
-			int groupId = PlayerDataManager.Inst.CurrentAlbumGroupId;
-			TBPictureData[] groupPictures = mPictureTable.GetByAlbumGroup(groupId);
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds(groupId);
+			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
+			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
 
 			int collected = 0;
-			foreach (TBPictureData picture in groupPictures)
+			foreach (TBPictureCollectData picture in allPictures)
 			{
 				if (collectedIds.Contains(picture.PictureId))
 				{
@@ -129,24 +111,23 @@ namespace TrumpTile.GameMain.Core
 				}
 			}
 
-			return (collected, groupPictures.Length);
+			return (collected, allPictures.Length);
 		}
 
-		public List<(TBPictureData picture, EAlbumPictureState state)> GetCurrentGroupPictureStates()
+		public List<(TBPictureCollectData picture, EAlbumPictureState state)> GetPictureStates()
 		{
-			List<(TBPictureData, EAlbumPictureState)> result = new List<(TBPictureData, EAlbumPictureState)>();
+			List<(TBPictureCollectData, EAlbumPictureState)> result = new List<(TBPictureCollectData, EAlbumPictureState)>();
 
 			if (mPictureTable == null || PlayerDataManager.Inst == null)
 			{
 				return result;
 			}
 
-			int groupId = PlayerDataManager.Inst.CurrentAlbumGroupId;
-			TBPictureData[] groupPictures = mPictureTable.GetByAlbumGroup(groupId);
+			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
 			int currentStage = PlayerDataManager.Inst.CurrentStage;
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds(groupId);
+			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
 
-			foreach (TBPictureData picture in groupPictures)
+			foreach (TBPictureCollectData picture in allPictures)
 			{
 				EAlbumPictureState state = AlbumContent.GetPictureState(
 					picture.PictureId, picture.StageValue, currentStage, collectedIds);
@@ -156,19 +137,19 @@ namespace TrumpTile.GameMain.Core
 			return result;
 		}
 
-		private void GrantItemRewards(TBPictureData picture)
+		private void GrantItemRewards(TBPictureCollectData picture)
 		{
 			if (picture.HammerRewardCount > 0)
 			{
 				PlayerDataManager.Inst.AddItemCount(mHammerItemId, picture.HammerRewardCount);
 			}
-			if (picture.MagicStickRewardCount > 0)
+			if (picture.ClockRewardCount > 0)
 			{
-				PlayerDataManager.Inst.AddItemCount(mMagicStickItemId, picture.MagicStickRewardCount);
+				PlayerDataManager.Inst.AddItemCount(mClockItemId, picture.ClockRewardCount);
 			}
-			if (picture.MagicHatRewardCount > 0)
+			if (picture.HatRewardCount > 0)
 			{
-				PlayerDataManager.Inst.AddItemCount(mMagicHatItemId, picture.MagicHatRewardCount);
+				PlayerDataManager.Inst.AddItemCount(mHatItemId, picture.HatRewardCount);
 			}
 			if (picture.BombRewardCount > 0)
 			{

@@ -13,16 +13,16 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private GameObject mAvailableGlow;
 		[SerializeField] private Button     mButton;
 
-		private TBPictureData                               mPictureData;
+		private TBPictureCollectData                               mPictureData;
 		private EAlbumPictureState                          mState;
-		private Action<TBPictureData, EAlbumPictureState>  mOnClick;
+		private Action<TBPictureCollectData, EAlbumPictureState>  mOnClick;
 
 		private void Awake()
 		{
 			mButton.onClick.AddListener(OnClick);
 		}
 
-		public void Setup(TBPictureData picture, EAlbumPictureState state, Action<TBPictureData, EAlbumPictureState> onClick)
+		public void Setup(TBPictureCollectData picture, EAlbumPictureState state, Action<TBPictureCollectData, EAlbumPictureState> onClick)
 		{
 			mPictureData = picture;
 			mState       = state;
@@ -34,9 +34,10 @@ namespace TrumpTile.GameMain.UI
 			bool bShowThumbnail = state == EAlbumPictureState.Collected;
 			mThumbnailImage.gameObject.SetActive(bShowThumbnail);
 
-			if (bShowThumbnail && !string.IsNullOrEmpty(picture.PictureThumbnailSrc))
+			// TODO: Addressables.LoadAssetAsync<Sprite>($"Picture_{picture.PictureId}_Thumb") 로 교체
+			if (bShowThumbnail)
 			{
-				Sprite sprite = Resources.Load<Sprite>(picture.PictureThumbnailSrc);
+				Sprite sprite = Resources.Load<Sprite>($"Picture_{picture.PictureId}_Thumb");
 				if (sprite != null)
 				{
 					mThumbnailImage.sprite = sprite;
