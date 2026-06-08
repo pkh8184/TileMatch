@@ -25,6 +25,15 @@ namespace TrumpTile.Editor
 
 		public async Task RunAsync()
 		{
+			if (EditorApplication.isCompiling)
+			{
+				EditorUtility.DisplayDialog(
+					"컴파일 진행 중",
+					"Unity가 스크립트를 컴파일 중입니다.\n완료 후 다시 실행하세요.",
+					"확인");
+				return;
+			}
+
 			try
 			{
 				await Execute();
