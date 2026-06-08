@@ -114,7 +114,8 @@ namespace TrumpTile.GameMain.Data
                     }
                     if (albumData.ContainsKey("hasPendingAlbumReward"))
                     {
-                        HasPendingAlbumReward = albumData["hasPendingAlbumReward"].ToString() == "True";
+                        bool.TryParse(albumData["hasPendingAlbumReward"]?.ToString(), out bool bPendingReward);
+                        HasPendingAlbumReward = bPendingReward;
                     }
                     if (albumData.ContainsKey("collectedPictureIds"))
                     {
