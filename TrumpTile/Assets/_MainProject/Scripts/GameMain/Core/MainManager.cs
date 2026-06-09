@@ -9,8 +9,12 @@ namespace TrumpTile.GameMain.Core
 {
     public class MainManager : MonoBehaviour
     {
-        private void Awake()
+        private async void Awake()
         {
+            PlayerDataManager.Inst.Initialize();
+
+            await ContentManager.Inst.Initialize();
+
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
             foreach (var item in uiBaseArray)

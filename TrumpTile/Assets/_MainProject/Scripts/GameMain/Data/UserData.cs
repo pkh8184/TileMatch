@@ -53,6 +53,10 @@ namespace TrumpTile.GameMain.Data
         public readonly string UID;
         public readonly string TermsAndConditionVersion;
 
+        //출석체크 관련 데이터
+        public ObscuredInt StreakLoginCount;
+        public ObscuredBool IsFirstLoginToday;
+
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
         {
@@ -120,6 +124,8 @@ namespace TrumpTile.GameMain.Data
             //로그인 데이터
             FirstLoginDate = DateTime.MinValue;
             MaxStreakLoginCount = 0;
+            StreakLoginCount = 1;
+            IsFirstLoginToday = true;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {

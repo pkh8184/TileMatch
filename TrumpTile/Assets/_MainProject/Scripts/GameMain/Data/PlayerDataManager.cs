@@ -68,7 +68,8 @@ namespace TrumpTile.GameMain.Data
 		public int SelectedStage => mSelectedStage;
 		public string UID => mUserData?.UID ?? string.Empty;
 		public bool IsExtraSlotUnlocked => PlayerPrefs.GetInt("ExtraSlotUnlocked", 0) == 1;
-
+		public int StreakLoginCount => mUserData.StreakLoginCount;
+		public bool IsFirstLoginToday => mUserData.IsFirstLoginToday;
 		#endregion
 
 		#region 재화
