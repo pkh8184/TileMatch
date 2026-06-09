@@ -139,7 +139,13 @@ namespace TrumpTile.GameMain.Core
 			ItemManager.Inst.Initialize(mBoardManager, mSlotManager, EffectManager.Instance, this, mMatchCount);
 
 			Debug.Log($"[GameManager] Starting level: {mStartLevel}");
+#if UNITY_EDITOR
+			int level = UnityEditor.EditorPrefs.GetInt("DebugLevelIndex", mStartLevel);
+			await StartLevelAsync(level);
+			UnityEditor.EditorPrefs.DeleteKey("DebugStageIndex");
+#else
 			await StartLevelAsync(mStartLevel);
+#endif
         }
 
 		private void OnDestroy()
