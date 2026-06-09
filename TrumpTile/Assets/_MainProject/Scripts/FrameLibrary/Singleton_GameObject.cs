@@ -29,6 +29,7 @@ namespace TrumpTile.FrameLibrary
 					{
 						GameObject singletonObj = new GameObject(objName);
 						mInst = singletonObj.AddComponent<T>();
+						(mInst as Singleton_GameObject<T>)?.InitOnCreated();
 					}
 				}
 
@@ -39,6 +40,10 @@ namespace TrumpTile.FrameLibrary
 		private void OnApplicationQuit()
 		{
 			mbIsQuitting = true;
+		}
+		protected virtual void InitOnCreated()
+		{
+			
 		}
 	}
 }

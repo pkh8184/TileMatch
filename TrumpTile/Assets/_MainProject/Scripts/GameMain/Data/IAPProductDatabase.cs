@@ -6,10 +6,27 @@ using UnityEngine.Purchasing;
 
 namespace TrumpTile.GameMain.Data
 {
+    public enum ERewardType
+    {
+        Gold,
+        Item,
+        ETC,
+        Length
+    }
+    public class RewardDisplayInfo
+    {
+        public ERewardType Type;
+        public int Amount;
+        public int ItemId;
+    }
     [System.Serializable]
     public abstract class ProductReward
     {
-        public virtual void GrantReward() {}
+        public abstract void GrantReward();
+        public virtual RewardDisplayInfo GetRewardDisplayInfo()
+        {
+            return null;
+        }
     }
     public abstract class ConsumableReward : ProductReward
     {
@@ -22,14 +39,22 @@ namespace TrumpTile.GameMain.Data
         {
             PlayerDataManager.Inst.AddGold(mCount);
         }
+        public override RewardDisplayInfo GetRewardDisplayInfo()
+        {
+            return new RewardDisplayInfo{Type = ERewardType.Gold, Amount = mCount};
+        }
     }
     [System.Serializable]
     public class ItemReward : ConsumableReward
     {
-        [SerializeField] private int itemId;
+        [SerializeField] private int mItemId;
         public override void GrantReward()
         {
-            PlayerDataManager.Inst.AddItemCount(itemId, mCount);
+            PlayerDataManager.Inst.AddItemCount(mItemId, mCount);
+        }
+         public override RewardDisplayInfo GetRewardDisplayInfo()
+        {
+            return new RewardDisplayInfo{Type = ERewardType.Item, Amount = mCount, ItemId = mItemId};
         }
     }
     [System.Serializable]

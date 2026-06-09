@@ -22,6 +22,21 @@ namespace TrumpTile.GameMain.Core
                 item.Initialize();
             }
         }
+        public void Refresh()
+        {
+            if(mContentMap == null)
+            {
+                return;
+            }
+            foreach(var item in mContentMap)
+            {
+                item.Value.Refresh();
+            }
+        }
+        public T GetContentData<T>(string contentName) where T : ContentBase
+        {
+            return mContentMap[contentName] as T;
+        }
     }   
 }
 
