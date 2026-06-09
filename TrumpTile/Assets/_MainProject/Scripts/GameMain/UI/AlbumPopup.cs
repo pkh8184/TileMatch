@@ -18,13 +18,6 @@ namespace TrumpTile.GameMain.UI
 		[Header("사진 슬롯 (그리드)")]
 		[SerializeField] private AlbumSlotView[] mSlotViewArray;
 
-		[Header("보상 연출")]
-		[SerializeField] private GameObject    mGiftBoxObj;
-		[SerializeField] private CanvasGroup   mGiftBoxCanvasGroup;
-		[SerializeField] private GameObject    mRewardIconsObj;
-		[SerializeField] private RectTransform mGoldTargetRect;
-		[SerializeField] private RectTransform mStageButtonTargetRect;
-
 		[Header("다음 챕터 잠금")]
 		[SerializeField] private GameObject mLockIconObj;
 
@@ -77,8 +70,8 @@ namespace TrumpTile.GameMain.UI
 		private void UpdateGauge(int collected, int total)
 		{
 			float ratio = total > 0 ? (float)collected / total : 0F;
-			mProgressSlider.value = ratio;
-			mProgressText.text    = $"{collected}/{total}";
+			if (mProgressSlider != null) mProgressSlider.value = ratio;
+			if (mProgressText != null) mProgressText.text    = $"{collected}/{total}";
 		}
 
 		public void PlayRewardSequence(List<TBPictureCollectData> pendingPictures)
@@ -101,60 +94,14 @@ namespace TrumpTile.GameMain.UI
 
 		private IEnumerator Co_CollectOnePicture(TBPictureCollectData picture)
 		{
-			// 데이터 먼저 반영 후 게이지 애니메이션
 			AlbumManager.Inst.CollectPicture(picture);
 
 			(int collected, int total) = AlbumManager.Inst.GetCurrentProgress();
 			float targetRatio = total > 0 ? (float)collected / total : 0F;
-			yield return mProgressSlider.DOValue(targetRatio, 0.6F).SetEase(Ease.OutQuad).WaitForCompletion();
+			yield return mProgressSlider.DOValue(targetRatio, 0.4F).SetEase(Ease.OutQuad).WaitForCompletion();
 			mProgressText.text = $"{collected}/{total}";
 
-			mGiftBoxObj.SetActive(true);
-			mGiftBoxCanvasGroup.alpha = 0F;
-			mGiftBoxObj.transform.localScale = Vector3.zero;
-
-			Sequence boxSeq = DOTween.Sequence();
-			boxSeq.Append(mGiftBoxCanvasGroup.DOFade(1F, 0.2F));
-			boxSeq.Join(mGiftBoxObj.transform.DOScale(1F, 0.3F).SetEase(Ease.OutBack));
-			boxSeq.Append(mGiftBoxObj.transform.DOShakeRotation(0.5F, 15F, 10));
-			yield return boxSeq.WaitForCompletion();
-
-			mGiftBoxObj.transform.DOPunchScale(Vector3.one * 0.3F, 0.2F);
-			yield return new WaitForSeconds(0.2F);
-			mGiftBoxObj.SetActive(false);
-
-			mRewardIconsObj.SetActive(true);
-			mRewardIconsObj.transform.localScale = Vector3.zero;
-			yield return mRewardIconsObj.transform.DOScale(1F, 0.3F).SetEase(Ease.OutBack).WaitForCompletion();
-			yield return new WaitForSeconds(0.3F);
-
-			yield return StartCoroutine(Co_FlyRewardIcons(picture));
-
-			mRewardIconsObj.SetActive(false);
-
 			RefreshUI();
-			yield return new WaitForSeconds(0.2F);
-		}
-
-		private IEnumerator Co_FlyRewardIcons(TBPictureCollectData picture)
-		{
-			bool bHasItem = picture.HammerRewardCount > 0
-				|| picture.ClockRewardCount > 0
-				|| picture.HatRewardCount > 0
-				|| picture.BombRewardCount > 0;
-
-			List<Tween> tweens = new List<Tween>();
-
-			if (bHasItem && mStageButtonTargetRect != null)
-			{
-				RectTransform iconRect = mRewardIconsObj.GetComponent<RectTransform>();
-				tweens.Add(iconRect.DOMove(mStageButtonTargetRect.position, 0.5F).SetEase(Ease.InQuad));
-			}
-
-			foreach (Tween t in tweens)
-			{
-				yield return t.WaitForCompletion();
-			}
 		}
 
 		private void OnSlotClicked(TBPictureCollectData picture, EAlbumPictureState state)
