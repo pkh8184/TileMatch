@@ -16,7 +16,8 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private TMP_Text mProgressText;
 
 		[Header("사진 슬롯 (그리드)")]
-		[SerializeField] private AlbumSlotView[] mSlotViewArray;
+		[SerializeField] private AlbumSlotView mSlotViewPrefab;
+		[SerializeField] private Transform     mSlotContainer;
 
 		[Header("다음 챕터 잠금")]
 		[SerializeField] private GameObject mLockIconObj;
@@ -53,17 +54,15 @@ namespace TrumpTile.GameMain.UI
 			List<(TBPictureCollectData picture, EAlbumPictureState state)> pictureStates
 				= AlbumManager.Inst.GetPictureStates();
 
-			for (int i = 0; i < mSlotViewArray.Length; i++)
+			foreach (Transform child in mSlotContainer)
 			{
-				if (i < pictureStates.Count)
-				{
-					mSlotViewArray[i].gameObject.SetActive(true);
-					mSlotViewArray[i].Setup(pictureStates[i].picture, pictureStates[i].state, OnSlotClicked);
-				}
-				else
-				{
-					mSlotViewArray[i].gameObject.SetActive(false);
-				}
+				Destroy(child.gameObject);
+			}
+
+			foreach ((TBPictureCollectData picture, EAlbumPictureState state) in pictureStates)
+			{
+				AlbumSlotView slot = Instantiate(mSlotViewPrefab, mSlotContainer);
+				slot.Setup(picture, state, OnSlotClicked);
 			}
 		}
 
