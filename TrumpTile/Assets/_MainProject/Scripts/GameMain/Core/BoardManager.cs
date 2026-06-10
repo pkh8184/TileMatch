@@ -1085,12 +1085,18 @@ namespace TrumpTile.GameMain.Core
 			List<TileController> hintList = new List<TileController>();
 			for(int i = mAllTiles.Count - 1; i >= 0; i--)
 			{
+				TileController tile = mAllTiles[i];
+				if(tile.IsInSlot || IsTileBlocked(tile))
+				{
+					continue;
+				}
+				
 				hintList = GetHintTileList(mAllTiles[i], 2);
 				if(hintList == null || hintList.Count < 2)
 				{
 					continue;
 				}
-
+				
 				hintList.Add(mAllTiles[i]);
 				break;
 			}

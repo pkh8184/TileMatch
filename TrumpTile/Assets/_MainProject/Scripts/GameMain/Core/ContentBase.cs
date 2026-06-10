@@ -9,27 +9,37 @@ namespace TrumpTile.GameMain.Core
         [Header("컨텐츠 이름")]
         [SerializeField] private string mContentName;
         [Header("컨텐츠 해금 레벨")]
-        [SerializeField] private int mLevelToUnlock;
+        [SerializeField] protected int mLevelToUnlock;
 
         //컨텐츠 잠금 플래그
-        protected bool mbIsUnlocked;
+        protected bool mbIsUnlocked = false;
         //레드닷 플래그
-        protected bool mbHasNewthing;
+        protected bool mbHasNewthing = false;
         
         public string ContentName => mContentName;
         public bool HasNewThing => mbHasNewthing;
-        public void SetUnlock()
-        {
-            mbIsUnlocked = true;
-
-            InitOnUnlock();
-        }
+        public bool Unlock => mbIsUnlocked;
         public virtual void Initialize()
         {
             //플레이어 데이터의 컨텐츠 맵에서 컨텐츠 해금 데이터 읽어오기
             //mbIsUnlokced = PlayerDataManager.
+            if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
+            {
+                mbIsUnlocked = true;
+            }
         }
-        protected virtual void InitOnUnlock()
+        public virtual void Refresh()
+        {
+            //모든 컨텐츠는 메인씬에서 접근하기 때문에
+            //메인씬이 호출될 때마다 플레이어의 컨텐츠 관련 정보를 읽어와 갱신해줘야함
+        }
+        public void SetUnlock()
+        {
+            mbIsUnlocked = true;
+
+            OnUnlock();
+        }
+        protected virtual void OnUnlock()
         {
             
         }

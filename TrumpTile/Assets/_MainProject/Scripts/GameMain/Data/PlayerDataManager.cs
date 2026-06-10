@@ -69,7 +69,9 @@ namespace TrumpTile.GameMain.Data
 		public string UID => mUserData?.UID ?? string.Empty;
 		public bool IsExtraSlotUnlocked => PlayerPrefs.GetInt("ExtraSlotUnlocked", 0) == 1;
 		public List<int> CollectedPictureIds   => mUserData?.CollectedPictureIds ?? new List<int>();
-		public bool      HasPendingAlbumReward => mUserData != null && mUserData.HasPendingAlbumReward;
+		public bool HasPendingAlbumReward => mUserData != null && mUserData.HasPendingAlbumReward;
+		public int StreakLoginCount => mUserData.StreakLoginCount;
+		public bool IsFirstLoginToday => mUserData.IsFirstLoginToday;
 
 		#endregion
 

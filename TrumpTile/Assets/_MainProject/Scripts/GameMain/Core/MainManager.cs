@@ -10,8 +10,12 @@ namespace TrumpTile.GameMain.Core
 
 		private readonly WaitForSeconds mAlbumCheckDelay = new WaitForSeconds(0.5F);
 
-		private void Awake()
-		{
+     private async void Awake()
+     {
+      PlayerDataManager.Inst.Initialize();
+
+      await ContentManager.Inst.Initialize();
+            
 			UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 			foreach (UIBase item in uiBaseArray)
 			{
