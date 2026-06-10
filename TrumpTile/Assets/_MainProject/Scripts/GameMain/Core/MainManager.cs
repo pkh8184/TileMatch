@@ -1,4 +1,5 @@
 using System.Collections;
+using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.UI;
 using UnityEngine;
 
@@ -10,19 +11,19 @@ namespace TrumpTile.GameMain.Core
 
 		private readonly WaitForSeconds mAlbumCheckDelay = new WaitForSeconds(0.5F);
 
-     private async void Awake()
-     {
-      PlayerDataManager.Inst.Initialize();
+        private async void Awake()
+        {
+            PlayerDataManager.Inst.Initialize();
 
-      await ContentManager.Inst.Initialize();
-            
-			UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
-			foreach (UIBase item in uiBaseArray)
-			{
-				item.Initialize();
-			}
-			_ = AdManager.Inst;
-		}
+            await ContentManager.Inst.Initialize();
+                
+            UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
+            foreach (UIBase item in uiBaseArray)
+            {
+                item.Initialize();
+            }
+            _ = AdManager.Inst;
+        }
 
 		private IEnumerator Start()
 		{

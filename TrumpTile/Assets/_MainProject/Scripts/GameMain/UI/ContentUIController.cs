@@ -19,7 +19,7 @@ namespace TrumpTile.GameMain.UI
         }
         public void ActiveRedDot(bool isActive)
         {
-            mRedDotObject.SetActive(isActive);
+            if(mRedDotObject != null) mRedDotObject.SetActive(isActive);
         }
     }    
 }

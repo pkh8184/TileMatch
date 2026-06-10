@@ -1228,6 +1228,10 @@ PrefabInstance:
       propertyPath: mShowButton
       value: 
       objectReference: {fileID: 1042861449}
+    - target: {fileID: 4516281368708702980, guid: 0422c8785d45f0b4ca074be00cf02896, type: 3}
+      propertyPath: mProgressSlider
+      value: 
+      objectReference: {fileID: 575012909}
     - target: {fileID: 4855827101376370200, guid: 0422c8785d45f0b4ca074be00cf02896, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1342,6 +1346,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3349179675738958772, guid: 0422c8785d45f0b4ca074be00cf02896, type: 3}
   m_PrefabInstance: {fileID: 151985801}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &151985803 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4516281368708702980, guid: 0422c8785d45f0b4ca074be00cf02896, type: 3}
+  m_PrefabInstance: {fileID: 151985801}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1523a9e98f2c0e64b897acd16a5dff01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &153619181
 GameObject:
   m_ObjectHideFlags: 0
@@ -3561,6 +3576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17af062d3609cc54482354e513f1d475, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mAlbumPopup: {fileID: 151985803}
 --- !u!4 &341146495
 Transform:
   m_ObjectHideFlags: 0
@@ -14762,6 +14778,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 646826502}
   m_CullTransparentMesh: 1
+--- !u!1 &694837081
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 694837083}
+  - component: {fileID: 694837082}
+  m_Layer: 0
+  m_Name: AlbumManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &694837082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 694837081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ae84916c4e54497a1e2a81e4425c85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mPictureTable: {fileID: 11400000, guid: 65d595f26a3f640269b718196895bdd9, type: 2}
+  mHammerItemId: 1006
+  mClockItemId: 1005
+  mHatItemId: 1007
+  mBombItemId: 1008
+--- !u!4 &694837083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 694837081}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &695451722
 GameObject:
   m_ObjectHideFlags: 0
@@ -18744,7 +18809,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.033333335, y: 0.7066667}
   m_AnchorMax: {x: 0.3, y: 0.98}
-  m_AnchoredPosition: {x: 0, y: -0.19999695}
+  m_AnchoredPosition: {x: 0, y: -0.19998169}
   m_SizeDelta: {x: 10, y: 9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1605184448
@@ -29585,60 +29650,23 @@ MonoBehaviour:
   mShowButton: {fileID: 305696992}
   mHideButton: {fileID: 3648895804564504726}
   mContentController:
-    mRedDotObject: {fileID: 1600457644}
+    mRedDotObject: {fileID: 0}
     mRotateAnimConfig:
       angle: {x: 0, y: 0, z: 10}
       duration: 1
       interval: 5
       isLoop: 1
-  mStickerConfigArray:
-  - StickerButton: {fileID: 8068403789738350837}
-    ItemImage: {fileID: 6751697687852991413}
-    ItemCount: {fileID: 3997816135778197078}
-  - StickerButton: {fileID: 8760519179036908926}
-    ItemImage: {fileID: 5310400671142123090}
-    ItemCount: {fileID: 3284615473272575211}
-  - StickerButton: {fileID: 9076933319336223024}
-    ItemImage: {fileID: 3323958934044799038}
-    ItemCount: {fileID: 1665105675875112876}
-  - StickerButton: {fileID: 8577520200298488528}
-    ItemImage: {fileID: 289180736871944312}
-    ItemCount: {fileID: 3410674937331594254}
-  - StickerButton: {fileID: 8084965331721817297}
-    ItemImage: {fileID: 1250374216204526702}
-    ItemCount: {fileID: 6164164661564617387}
-  - StickerButton: {fileID: 6122445486734806388}
-    ItemImage: {fileID: 6644110687602537387}
-    ItemCount: {fileID: 131593976161174368}
-  - StickerButton: {fileID: 9193376010676120106}
-    ItemImage: {fileID: 1982536094924423628}
-    ItemCount: {fileID: 4917589599136008746}
-  - StickerButton: {fileID: 7268105685841272541}
-    ItemImage: {fileID: 4156603452168237909}
-    ItemCount: {fileID: 6353033665862725248}
-  - StickerButton: {fileID: 8514105583330176870}
-    ItemImage: {fileID: 6915723158452633086}
-    ItemCount: {fileID: 4357242872940699562}
-  mRewardSpriteArray:
-  - {fileID: 21300000, guid: ac6c4deb85081844eb981e4a3f95d64b, type: 3}
-  - {fileID: 21300000, guid: aa70f4132725e194987acffbe4cdd401, type: 3}
-  - {fileID: 21300000, guid: 241618448a023d949ba203030c7c1e24, type: 3}
-  - {fileID: 21300000, guid: 48c6df631fcfdc1479fced42d6248a7b, type: 3}
-  - {fileID: 21300000, guid: 1a8c895911b78ac4bb4b441c0dce88ee, type: 3}
-  - {fileID: 21300000, guid: 3820e671400ac3343837940636476098, type: 3}
-  - {fileID: 21300000, guid: f134449407ac6de4a912f534d531d2a5, type: 3}
-  - {fileID: 21300000, guid: c3617bdf3b0264a469a5c9f5e3016a1d, type: 3}
-  - {fileID: 21300000, guid: 9ddc3ea8b3438cb4d95fa50994e7ab19, type: 3}
-  - {fileID: 21300000, guid: 406a05222e40d0f4699be2debeb88871, type: 3}
-  mGold_20: {fileID: 21300000, guid: aa70f4132725e194987acffbe4cdd401, type: 3}
-  mGold_30: {fileID: 21300000, guid: 241618448a023d949ba203030c7c1e24, type: 3}
-  mGold_40: {fileID: 21300000, guid: 48c6df631fcfdc1479fced42d6248a7b, type: 3}
-  mGold_50: {fileID: 21300000, guid: 39279fd30c5c7624c9d0cc78d0be6695, type: 3}
-  mGold_100: {fileID: 21300000, guid: 3820e671400ac3343837940636476098, type: 3}
-  mHammer: {fileID: 21300000, guid: f134449407ac6de4a912f534d531d2a5, type: 3}
-  mClock: {fileID: 21300000, guid: c3617bdf3b0264a469a5c9f5e3016a1d, type: 3}
-  mHat: {fileID: 21300000, guid: 9ddc3ea8b3438cb4d95fa50994e7ab19, type: 3}
-  mBomb: {fileID: 21300000, guid: 406a05222e40d0f4699be2debeb88871, type: 3}
+  mStickerConfigArray: []
+  mRewardSpriteArray: []
+  mGold_20: {fileID: 0}
+  mGold_30: {fileID: 0}
+  mGold_40: {fileID: 0}
+  mGold_50: {fileID: 0}
+  mGold_100: {fileID: 0}
+  mHammer: {fileID: 0}
+  mClock: {fileID: 0}
+  mHat: {fileID: 0}
+  mBomb: {fileID: 0}
 --- !u!114 &4777249165238359752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33286,3 +33314,4 @@ SceneRoots:
   - {fileID: 444586127}
   - {fileID: 22874901}
   - {fileID: 695451724}
+  - {fileID: 694837083}
