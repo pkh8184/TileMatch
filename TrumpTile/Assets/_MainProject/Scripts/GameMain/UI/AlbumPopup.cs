@@ -59,10 +59,10 @@ namespace TrumpTile.GameMain.UI
 				Destroy(child.gameObject);
 			}
 
-			foreach ((TBPictureCollectData picture, EAlbumPictureState state) in pictureStates)
+			for (int i = 0; i < pictureStates.Count; i++)
 			{
 				AlbumSlotView slot = Instantiate(mSlotViewPrefab, mSlotContainer);
-				slot.Setup(picture, state, OnSlotClicked);
+				slot.Setup(pictureStates[i].picture, i + 1, pictureStates[i].state, OnSlotClicked);
 			}
 		}
 

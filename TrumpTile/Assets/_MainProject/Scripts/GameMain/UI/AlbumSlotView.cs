@@ -1,48 +1,68 @@
 using System;
+using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
 	public class AlbumSlotView : MonoBehaviour
 	{
-		[SerializeField] private Image      mThumbnailImage;
-		[SerializeField] private GameObject mLockIcon;
-		[SerializeField] private GameObject mAvailableGlow;
+		[SerializeField] private Image      mAlbumImage;
+		[SerializeField] private GameObject mLockImage;
+		[SerializeField] private TMP_Text   mNumberText;
 		[SerializeField] private Button     mButton;
 
-		private TBPictureCollectData                               mPictureData;
-		private EAlbumPictureState                          mState;
-		private Action<TBPictureCollectData, EAlbumPictureState>  mOnClick;
+		private TBPictureCollectData mPictureData;
+		private EAlbumPictureState   mState;
+		private Action<TBPictureCollectData, EAlbumPictureState> mOnClick;
+		private AsyncOperationHandle<Sprite> mImageHandle;
 
 		private void Awake()
 		{
 			mButton.onClick.AddListener(OnClick);
 		}
 
-		public void Setup(TBPictureCollectData picture, EAlbumPictureState state, Action<TBPictureCollectData, EAlbumPictureState> onClick)
+		private void OnDestroy()
+		{
+			if (mImageHandle.IsValid())
+			{
+				Addressables.Release(mImageHandle);
+			}
+		}
+
+		public void Setup(TBPictureCollectData picture, int number, EAlbumPictureState state, Action<TBPictureCollectData, EAlbumPictureState> onClick)
 		{
 			mPictureData = picture;
 			mState       = state;
 			mOnClick     = onClick;
 
-			mLockIcon.SetActive(state == EAlbumPictureState.Locked);
-			mAvailableGlow.SetActive(state == EAlbumPictureState.Available);
+			mNumberText.text = $"No. {number}";
 
-			bool bShowThumbnail = state == EAlbumPictureState.Collected;
-			mThumbnailImage.gameObject.SetActive(bShowThumbnail);
+			bool bViewable = state != EAlbumPictureState.Locked;
+			mLockImage.SetActive(!bViewable);
+			mAlbumImage.gameObject.SetActive(bViewable);
 
-			// TODO: Addressables.LoadAssetAsync<Sprite>($"Picture_{picture.PictureId}_Thumb") 로 교체
-			if (bShowThumbnail)
+			if (bViewable)
 			{
-				Sprite sprite = Resources.Load<Sprite>($"Picture_{picture.PictureId}_Thumb");
-				if (sprite != null)
-				{
-					mThumbnailImage.sprite = sprite;
-				}
+				LoadAlbumImage(picture.PictureId);
 			}
+		}
+
+		private void LoadAlbumImage(int pictureId)
+		{
+			string key = $"Picture_ThumbNail_{pictureId}";
+			mImageHandle = Addressables.LoadAssetAsync<Sprite>(key);
+			mImageHandle.Completed += handle =>
+			{
+				if (handle.Status == AsyncOperationStatus.Succeeded)
+				{
+					mAlbumImage.sprite = handle.Result;
+				}
+			};
 		}
 
 		private void OnClick()
