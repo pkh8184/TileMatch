@@ -68,8 +68,11 @@ namespace TrumpTile.GameMain.Data
 		public int SelectedStage => mSelectedStage;
 		public string UID => mUserData?.UID ?? string.Empty;
 		public bool IsExtraSlotUnlocked => PlayerPrefs.GetInt("ExtraSlotUnlocked", 0) == 1;
+		public List<int> CollectedPictureIds   => mUserData?.CollectedPictureIds ?? new List<int>();
+		public bool HasPendingAlbumReward => mUserData != null && mUserData.HasPendingAlbumReward;
 		public int StreakLoginCount => mUserData.StreakLoginCount;
 		public bool IsFirstLoginToday => mUserData.IsFirstLoginToday;
+
 		#endregion
 
 		#region 재화
@@ -233,6 +236,45 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 돼지저금통 해금 완료");
 			mUserData.PiggyBankUnlock = true;
 		}
+	#endregion
+
+	#region 앨범 수집
+
+		public bool IsPictureCollected(int pictureId)
+		{
+			if (mUserData?.CollectedPictureIds == null)
+			{
+				return false;
+			}
+			return mUserData.CollectedPictureIds.Contains(pictureId);
+		}
+
+		public void AddCollectedPicture(int pictureId)
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			if (!mUserData.CollectedPictureIds.Contains(pictureId))
+			{
+				mUserData.CollectedPictureIds.Add(pictureId);
+			}
+		}
+
+		public void SetPendingAlbumReward(bool bHasPending)
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			mUserData.HasPendingAlbumReward = bHasPending;
+		}
+
+		public List<int> GetCollectedPictureIds()
+		{
+			return mUserData?.CollectedPictureIds ?? new List<int>();
+		}
+
 	#endregion
 
 	#region Getters (기존)
