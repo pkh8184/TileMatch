@@ -1,5 +1,4 @@
 using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
@@ -44,10 +43,13 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private RectTransform mLeftElementsRect;
         [SerializeField] private RectTransform mRightElementsRect;
         [SerializeField] private RectTransform[] mSizeAdjustElementRectArray;
+        [Header("보상 획득 연출 컴포넌트")]
+        [SerializeField] private RewardAnimator mRewardAnimator;
+
+
         private CanvasGroup mLeftElementsRectCanvasGroup;
         private CanvasGroup mRightElementsRectCanvasGroup;
         private List<CanvasGroup> mSizeAdjustElementRectCanvasGroupList = new List<CanvasGroup>();
-
         public override void Initialize()
         {
             base.Initialize();
@@ -78,16 +80,25 @@ namespace TrumpTile.GameMain.UI
             mRightElementsRectCanvasGroup.alpha = 0;
 
             Debug.Log(string.Format("Level_{0:D3}", PlayerDataManager.Inst?.CurrentStage));
+
+            mRewardAnimator.Initialize();
+            mRewardAnimator.OnPlayStart += () => SetInteractable(false);
+            mRewardAnimator.OnPlayComplete += () => SetInteractable(true);
+            mRewardAnimator.OnGoldArrived += PulseShopButton;
         }
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();
             EventManager.Inst.AddEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
+            EventManager.Inst.AddEvent<RewardDisplayInfo>("GetReward", OnGetReward);
+            EventManager.Inst.AddEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
             EventManager.Inst?.RemoveEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
+            EventManager.Inst?.RemoveEvent<RewardDisplayInfo>("GetReward", OnGetReward);
+            EventManager.Inst?.RemoveEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
         }
         protected override void Refresh()
         {
@@ -106,7 +117,7 @@ namespace TrumpTile.GameMain.UI
                     }
                     else
                     {
-                          mStageStartButton.image.sprite = mDefault;
+                        mStageStartButton.image.sprite = mDefault;
                         mCurrentStageText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.CurrentStageForStageStart);
                     }
                 }
@@ -123,7 +134,21 @@ namespace TrumpTile.GameMain.UI
 
             Debug.Log($"[{name}] Refresh Local Data");
         }
-        
+        private void OnGetReward(RewardDisplayInfo info)
+        {
+            mRewardAnimator.PlayReward(info);
+        }
+        private void OnGetPackageReward(List<ProductReward> rewards)
+        {
+            mRewardAnimator.PlayPackageReward(rewards);
+        }
+        private void PulseShopButton()
+        {
+            Transform shopTransform = mShopButton.transform;
+            shopTransform.DOKill(true);
+            shopTransform.localScale = Vector3.one;
+            shopTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+        }
         private void OnStageButtonClick()
         {
             SceneTransister.Inst.TransistScene("GameScene");
@@ -143,7 +168,7 @@ namespace TrumpTile.GameMain.UI
         {
             bool bCleared = DailyPuzzleManager.Inst.IsTodayCleared;
             mDailyPuzzleButton.interactable = !bCleared;
-
+            mDailyPuzzleButton.GetComponent<CanvasGroup>().alpha = mDailyPuzzleButton.interactable? 1 : 0.5f;
             if (mDailyPuzzleButtonText != null)
             {
                 mDailyPuzzleButtonText.text = bCleared ? "완료" : "일일 퍼즐";

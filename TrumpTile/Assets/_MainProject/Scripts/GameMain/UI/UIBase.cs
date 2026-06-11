@@ -13,7 +13,27 @@ namespace TrumpTile.GameMain.UI
         [Header("View 혹은 Popup을 켜고 끄는 버튼\n(켜거나 끄지 않는 오브젝트인 경우 할당 X)")]
         [SerializeField] protected Button mShowButton;
         [SerializeField] protected Button mHideButton;
-    
+
+        private CanvasGroup mCanvasGroup;
+
+        /// <summary>
+        /// UI 전체의 입력 차단/허용. 연출 진행 중 하위 버튼 클릭을 막을 때 사용.
+        /// 하위 모든 Selectable(버튼/토글)이 한 번에 비활성화됨.
+        /// </summary>
+        protected void SetInteractable(bool interactable)
+        {
+            if (mCanvasGroup == null)
+            {
+                mCanvasGroup = GetComponent<CanvasGroup>();
+                if (mCanvasGroup == null)
+                {
+                    mCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+                }
+            }
+
+            mCanvasGroup.interactable = interactable;
+        }
+
         //씬 매니저가 씬에 존재하는 모든 UIBase를 순회하여 호출
         public virtual void Initialize()
         {
@@ -41,6 +61,13 @@ namespace TrumpTile.GameMain.UI
             {
                 toggle.onValueChanged.AddListener((isOn) => AudioEvent.Play(EAudioKey.SFX_BtnClick));
             }
+            //연출 락 등으로 인터랙터블이 꺼져도 회색으로 변하지 않도록 Disabled 색을 Normal과 동일하게 맞춤
+            foreach(var selectable in GetComponentsInChildren<Selectable>(true))
+            {
+                ColorBlock colors = selectable.colors;
+                colors.disabledColor = colors.normalColor;
+                selectable.colors = colors;
+            }
             //로칼리이제이션 테이블 작성 되면 주석 해제
             //SetTMP_TextIsRTL();
             //EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_LANGUAGE, (obj) => SetTMP_TextIsRTL());
@@ -61,13 +88,13 @@ namespace TrumpTile.GameMain.UI
         protected virtual void SubscribeEvent()
         {
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
-            EventManager.Inst.AddEvent("PurchaseConfirmed", Refresh);
+            //EventManager.Inst.AddEvent("PurchaseConfirmed", Refresh);
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
         }
         protected virtual void UnSubscribeEvent()
         {
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
-            EventManager.Inst?.RemoveEvent("PurchaseConfirmed", Refresh);
+            //EventManager.Inst?.RemoveEvent("PurchaseConfirmed", Refresh);
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
         }
         public void Deinitialize()

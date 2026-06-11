@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
+    [RequireComponent(typeof(CanvasGroup))]
     public class ViewBase : UIBase
     {
         //광고 관리 클래스에서 배너 광고 로드 완료 OnCall 이벤트에 연결
