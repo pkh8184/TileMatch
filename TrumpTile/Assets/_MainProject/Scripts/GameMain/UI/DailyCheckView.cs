@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.DemiEditor;
 using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
@@ -27,22 +29,20 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private StickerButtonConfig[] mStickerConfigArray;
         [Header("보상 스프라이트")]
         [SerializeField] private Sprite[] mRewardSpriteArray;
-        [SerializeField] private Sprite mGold_20;
-        [SerializeField] private Sprite mGold_30;
-        [SerializeField] private Sprite mGold_40;
-        [SerializeField] private Sprite mGold_50;
-        [SerializeField] private Sprite mGold_100;
-        [SerializeField] private Sprite mHammer;
-        [SerializeField] private Sprite mClock;
-        [SerializeField] private Sprite mHat;
-        [SerializeField] private Sprite mBomb;
+        [Header("보상 표시 이미지")]
+        [SerializeField] private Image[] mRewardCircleArray;
+        [Header("해금 팝업 프리팹")]
+        [SerializeField] private GameObject mUnlockPopupPrefab;
         //스티커 뗐는지 체크
         private bool[] mbCheckArray = new bool[9];
         //보상이 위치한 인덱스
         private int[]  mRewardIndexArray = new int[3];
+        //뗀 순서
+        private List<int> mOffOrderIndexList = new List<int>();
         private DailyCheckContent mContentData;
         private ProductReward mTodayReward;
-       // [SerializeField] private 
+
+        private bool mbRewardProgress;
         public override void Initialize()
         {
             base.Initialize();
@@ -65,25 +65,23 @@ namespace TrumpTile.GameMain.UI
 
             InitStickerConfigs();
 
-            Show();
+            if(mContentData.ShowUnlockPopup)
+            {
+                GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);
+                UIBase ui = obj.GetComponent<UIBase>();
+                ui.Initialize();
+                ui.Show();
+            }
+            else
+            {
+                 Show();
+            }
         }
         public override void Hide()
         {
             base.Hide();
 
             mContentController.ActiveRedDot(mContentData.HasNewThing);
-        }
-        protected override void SubscribeEvent()
-        {
-            base.SubscribeEvent();
-
-            EventManager.Inst.AddEvent("DailyCheckRewardConfirm", OnDailyCheckRewadConfirm);
-        }
-        protected override void UnSubscribeEvent()
-        {
-            base.UnSubscribeEvent();
-
-            EventManager.Inst?.RemoveEvent("DailyCheckRewardConfirm", OnDailyCheckRewadConfirm);
         }
         private void InitStickerConfigs()
         {
@@ -100,9 +98,15 @@ namespace TrumpTile.GameMain.UI
 
                 mStickerConfigArray[index].ItemImage.sprite = GetSprite(info);
                 mStickerConfigArray[index].ItemCount.text = "X" + info.Amount.ToString();
+                
+                mStickerConfigArray[index].StickerButton.onClick.RemoveAllListeners();
+
+                mStickerConfigArray[index].StickerButton.onClick.AddListener(() => AudioEvent.Play(EAudioKey.SFX_DailyCheck_StickerOff));
                 mStickerConfigArray[index].StickerButton.onClick.AddListener(() => OnStickerClick(index));
 
                 mRewardIndexArray[i] = index;
+
+                mRewardCircleArray[i].gameObject.SetActive(false);
             }
             int previewIndex = 3;
             foreach(var item in previewRewadList)
@@ -115,6 +119,10 @@ namespace TrumpTile.GameMain.UI
 
                     mStickerConfigArray[index].ItemImage.sprite = GetSprite(info);
                     mStickerConfigArray[index].ItemCount.text = "X" + info.Amount.ToString();
+
+                    mStickerConfigArray[index].StickerButton.onClick.RemoveAllListeners();
+
+                    mStickerConfigArray[index].StickerButton.onClick.AddListener(() => AudioEvent.Play(EAudioKey.SFX_DailyCheck_StickerOff));
                     mStickerConfigArray[index].StickerButton.onClick.AddListener(() => OnStickerClick(index)); 
                     
                     previewIndex++;  
@@ -141,15 +149,27 @@ namespace TrumpTile.GameMain.UI
             }
             return mRewardSpriteArray[index];
         }
-        private void OnDailyCheckRewadConfirm()
+        private void OnDailyCheckRewardConfirm()
         {
+            gameObject.SetActive(false);
             mShowButton.gameObject.SetActive(false);
+                  
+            EventManager.Inst.ActiveEvent("GetReward", mContentData.GetTodayReward().GetRewardDisplayInfo());
         }
         private void OnStickerClick(int index)
         {
+            if(mbRewardProgress)
+            {
+                return;
+            }
+
             mbCheckArray[index] = true;
             
+            mStickerConfigArray[index].StickerButton.interactable = false;
+
             PlayStickerOffAnim(index);
+
+            GrantRewardProgress(index);
         }
         private void PlayStickerOffAnim(int index)
         {
@@ -189,12 +209,14 @@ namespace TrumpTile.GameMain.UI
 
             seq.Insert(popDuration, canvasGroup.DOFade(0f, fallDuration).SetEase(Ease.InQuad));
 
-            seq.OnComplete(() => GrantRewardProgress(index));
+            seq.OnComplete(() => mStickerConfigArray[index].StickerButton.gameObject.SetActive(false));
         }
         private void GrantRewardProgress(int index)
         {
-            mStickerConfigArray[index].StickerButton.gameObject.SetActive(false);
-
+            if(mRewardIndexArray.Contains(index))
+            {
+                mOffOrderIndexList.Add(index);
+            }
             foreach(var item in mRewardIndexArray)
             {
                 if(!mbCheckArray[item])
@@ -202,7 +224,30 @@ namespace TrumpTile.GameMain.UI
                     return;
                 }
             }
-            
+            mbRewardProgress = true;
+
+            Sequence seq = DOTween.Sequence();
+            for(int i = 0; i < 3; i++)
+            {
+                mRewardCircleArray[i].fillAmount = 0;
+
+                RectTransform rt = mRewardCircleArray[i].GetComponent<RectTransform>();
+                rt.SetParent(mStickerConfigArray[mOffOrderIndexList[i]].ItemImage.transform);
+                rt.anchoredPosition = Vector2.zero;
+
+                mRewardCircleArray[i].gameObject.SetActive(true);
+
+                seq.Append(mRewardCircleArray[i].DOFillAmount(1, 0.3f));
+                seq.Append(mRewardCircleArray[i].transform.DOScale(1.1f, 0.15f));
+                seq.Append(mRewardCircleArray[i].transform.DOScale(1f, 0.15f));
+            }
+            seq.AppendInterval(0.5f);
+
+            seq.OnComplete(() =>
+            {
+                OnDailyCheckRewardConfirm();
+                mContentData.DailyCheckRewardProgress();
+            });
         }
     }    
 }

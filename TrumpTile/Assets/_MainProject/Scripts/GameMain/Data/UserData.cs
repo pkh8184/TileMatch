@@ -52,6 +52,7 @@ namespace TrumpTile.GameMain.Data
         //컨텐츠 구독 데이터
         public ObscuredBool SeasonPassUnlock;
         public ObscuredBool PiggyBankUnlock;
+        public ObscuredBool DailyCheckUnlock;
 
         //기타 데이터
         public readonly string UID;
@@ -160,8 +161,9 @@ namespace TrumpTile.GameMain.Data
             //로그인 데이터
             FirstLoginDate = DateTime.MinValue;
             MaxStreakLoginCount = 0;
-            StreakLoginCount = 1;
+            StreakLoginCount = 3;
             IsFirstLoginToday = true;
+            DailyCheckUnlock = false;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {

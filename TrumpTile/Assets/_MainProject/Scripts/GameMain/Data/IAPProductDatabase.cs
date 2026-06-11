@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security;
+using TrumpTile.GameMain.Core;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -38,6 +39,7 @@ namespace TrumpTile.GameMain.Data
         public override void GrantReward()
         {
             PlayerDataManager.Inst.AddGold(mCount);
+                        
         }
         public override RewardDisplayInfo GetRewardDisplayInfo()
         {
@@ -119,6 +121,7 @@ namespace TrumpTile.GameMain.Data
             {
                 item.GrantReward();
             }
+            EventManager.Inst.ActiveEvent("GetPackageReward", mRewardList);
         }
     }
     [System.Serializable]
@@ -144,7 +147,7 @@ namespace TrumpTile.GameMain.Data
         }
         public void GrantReward(string id)
         {
-             foreach(var item in mProductMap)
+            foreach(var item in mProductMap)
             {
                 if(item.Value.ProductId == id)
                 {

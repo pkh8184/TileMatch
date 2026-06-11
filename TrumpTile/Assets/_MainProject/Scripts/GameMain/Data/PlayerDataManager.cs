@@ -236,6 +236,15 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 돼지저금통 해금 완료");
 			mUserData.PiggyBankUnlock = true;
 		}
+		public void UnlockDailyCheck()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 출석체크 해금 완료");
+			mUserData.DailyCheckUnlock = true;
+		}
 	#endregion
 
 	#region 앨범 수집

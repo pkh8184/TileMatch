@@ -37,12 +37,27 @@ namespace TrumpTile.GameMain.Core
             }
             mbIsUnlocked = true;
         }
+        public override void CheckUnlock()
+        {
+            if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
+            {
+                mbIsUnlocked = true;
+
+                if(!PlayerDataManager.Inst.UserData.DailyCheckUnlock)
+                {
+                    PlayerDataManager.Inst.UnlockDailyCheck();
+                    mbShowUnlockPopup = true;
+                }
+                else
+                {
+                    mbShowUnlockPopup = false;
+                }
+            }
+        }
         public void DailyCheckRewardProgress()
         {
             mRewardArray[mStreakCount].GrantReward();
             mbHasNewthing = false;
-
-            EventManager.Inst.ActiveEvent("DailyCheckRewardConfirm");
         }
         public ProductReward GetTodayReward()
         {

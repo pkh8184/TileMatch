@@ -1,9 +1,11 @@
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
+using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
+    [RequireComponent(typeof(CanvasGroup))]
     public class PopupBase : UIBase
     {
         protected static int mOpenPopupCount = 0;
@@ -24,6 +26,7 @@ namespace TrumpTile.GameMain.UI
         }
         public override void Show()
         {
+             SetInteractable(true);
             base.Show();
             mOpenPopupCount++;
             Debug.Log($"Show {this.name}, OpenPopupCount : {mOpenPopupCount}");
@@ -31,6 +34,7 @@ namespace TrumpTile.GameMain.UI
         }
         public override void Hide()
         {
+            SetInteractable(false);
             PlayHideAnim();
         }
 
