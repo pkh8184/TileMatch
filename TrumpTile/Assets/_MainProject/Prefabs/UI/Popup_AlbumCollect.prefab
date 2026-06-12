@@ -637,10 +637,10 @@ RectTransform:
   - {fileID: 1227476680848448562}
   m_Father: {fileID: 2175843366594569264}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.17982924, y: 0.8566113}
-  m_AnchorMax: {x: 0.82017076, y: 0.9230565}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 586}
+  m_SizeDelta: {x: 720, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1211471797018216503
 CanvasRenderer:
@@ -772,12 +772,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 45.45
+  m_fontSize: 59.25
   m_fontSizeBase: 64
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 10
-  m_fontSizeMax: 45.45
+  m_fontSizeMax: 64
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -905,6 +905,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3349179675738958772}
   - component: {fileID: 4516281368708702980}
+  - component: {fileID: 6108669603960003231}
   m_Layer: 5
   m_Name: Popup_AlbumCollect
   m_TagString: Untagged
@@ -956,6 +957,18 @@ MonoBehaviour:
   mSlotViewPrefab: {fileID: 7620714164634020095, guid: d4115d4695eb6411f823b3c810106368, type: 3}
   mSlotContainer: {fileID: 3957221322716326535}
   mLockIconObj: {fileID: 0}
+--- !u!225 &6108669603960003231
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3771439819358615769}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4059443595226072332
 GameObject:
   m_ObjectHideFlags: 0

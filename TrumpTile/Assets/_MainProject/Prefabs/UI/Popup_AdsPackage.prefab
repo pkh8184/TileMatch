@@ -586,13 +586,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1791141293290774762}
   - component: {fileID: 8263312467269052267}
+  - component: {fileID: 6536581575447570471}
   m_Layer: 5
   m_Name: Popup_AdsPackage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1791141293290774762
 RectTransform:
   m_ObjectHideFlags: 0
@@ -633,11 +634,24 @@ MonoBehaviour:
   mPopupObj: {fileID: 4473663098086796225}
   mIconRect: {fileID: 6509021887550330480}
   mContentController:
+    mRedDotObject: {fileID: 0}
     mRotateAnimConfig:
       angle: {x: 0, y: 0, z: 10}
       duration: 1
       interval: 5
       isLoop: 1
+--- !u!225 &6536581575447570471
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4457572725782008912}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4473663098086796225
 GameObject:
   m_ObjectHideFlags: 0
@@ -683,7 +697,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1050, y: 1382}
+  m_SizeDelta: {x: 945, y: 1243.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5021052720547071247
 CanvasRenderer:
@@ -1041,12 +1055,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 53.5
+  m_fontSize: 64
   m_fontSizeBase: 64
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 10
-  m_fontSizeMax: 53.5
+  m_fontSizeMax: 64
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

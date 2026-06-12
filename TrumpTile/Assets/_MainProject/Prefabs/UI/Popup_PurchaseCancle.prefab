@@ -12,13 +12,14 @@ GameObject:
   - component: {fileID: 8332216533765086033}
   - component: {fileID: 4673015891239184512}
   - component: {fileID: 3968025355846614820}
+  - component: {fileID: 6048934482738568386}
   m_Layer: 5
   m_Name: Popup_PurchaseCancle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5292547798385723570
 RectTransform:
   m_ObjectHideFlags: 0
@@ -95,6 +96,18 @@ MonoBehaviour:
   mHideDuration: 0.3
   mPopupObj: {fileID: 4583236713467893747}
   mButton: {fileID: 7298480027601103044}
+--- !u!225 &6048934482738568386
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 977605880428201768}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1305734340214854106
 GameObject:
   m_ObjectHideFlags: 0
@@ -672,12 +685,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72.7
+  m_fontSize: 64
   m_fontSizeBase: 64
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 10
-  m_fontSizeMax: 72.7
+  m_fontSizeMax: 64
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

@@ -278,6 +278,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6682386905520889899}
   - component: {fileID: 8834717164800123634}
+  - component: {fileID: 6792514629472099640}
   m_Layer: 5
   m_Name: Popup_Langage
   m_TagString: Untagged
@@ -333,6 +334,18 @@ MonoBehaviour:
   - {fileID: 8526575584010573370}
   mCurrentLangaugeSprite: {fileID: 21300000, guid: 728e252666683da4284b36fd55da919e, type: 3}
   mDefaultLangaugeSprite: {fileID: 21300000, guid: 6d497dea472e0224099e3e31215d1ffc, type: 3}
+--- !u!225 &6792514629472099640
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 586939730507576105}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1232349380166130197
 GameObject:
   m_ObjectHideFlags: 0
@@ -2803,8 +2816,8 @@ MonoBehaviour:
   m_fontSizeBase: 64
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 10
-  m_fontSizeMax: 45.45
+  m_fontSizeMin: 8
+  m_fontSizeMax: 64
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4185,6 +4198,7 @@ GameObject:
   - component: {fileID: 4125884442728108216}
   - component: {fileID: 6061785272873925517}
   - component: {fileID: 8035432231153254674}
+  - component: {fileID: 7185605585832486380}
   m_Layer: 5
   m_Name: Popup_Setting
   m_TagString: Untagged
@@ -4248,6 +4262,18 @@ MonoBehaviour:
   mAppVersionText: {fileID: 5358697583385050532}
   mShareText: "\uCE5C\uAD6C\uC5D0\uAC8C \uACF5\uC720\uD558\uC138\uC694!"
   mShareURL: https://
+--- !u!225 &7185605585832486380
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431003371556603317}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6684937861969560845
 GameObject:
   m_ObjectHideFlags: 0
