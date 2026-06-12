@@ -35,13 +35,13 @@ namespace TrumpTile.GameMain.Core
             {
                 return;
             }
-            mbIsUnlocked = true;
+            SetUnlock();
         }
         public override void CheckUnlock()
         {
             if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
             {
-                mbIsUnlocked = true;
+                SetUnlock();
 
                 if(!PlayerDataManager.Inst.UserData.DailyCheckUnlock)
                 {

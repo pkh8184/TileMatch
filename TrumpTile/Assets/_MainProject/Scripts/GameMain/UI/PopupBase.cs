@@ -26,10 +26,9 @@ namespace TrumpTile.GameMain.UI
         }
         public override void Show()
         {
-             SetInteractable(true);
             base.Show();
             mOpenPopupCount++;
-            Debug.Log($"Show {this.name}, OpenPopupCount : {mOpenPopupCount}");
+            
             PlayShowAnim();
         }
         public override void Hide()
@@ -42,7 +41,11 @@ namespace TrumpTile.GameMain.UI
         {
             mPopupObj.transform.localScale = Vector2.zero;
 
-            mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack).SetUpdate(true);
+            Sequence seq = DOTween.Sequence();
+            seq.SetUpdate(true);
+            seq.Append(mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack));
+            
+            seq.OnComplete(() => SetInteractable(true));     
         }
         protected virtual void PlayHideAnim()
         {

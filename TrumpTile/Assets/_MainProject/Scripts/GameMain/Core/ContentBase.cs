@@ -24,7 +24,6 @@ namespace TrumpTile.GameMain.Core
         public virtual void Initialize()
         {
             //플레이어 데이터의 컨텐츠 맵에서 컨텐츠 해금 데이터 읽어오기
-            //mbIsUnlokced = PlayerDataManager.
             CheckUnlock();
         }
         public virtual void Refresh()
@@ -37,7 +36,7 @@ namespace TrumpTile.GameMain.Core
         {
             if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
             {
-                mbIsUnlocked = true;
+                SetUnlock();
             }
         }
         protected void SetUnlock()
