@@ -72,6 +72,7 @@ namespace TrumpTile.GameMain.Data
 		public bool HasPendingAlbumReward => mUserData != null && mUserData.HasPendingAlbumReward;
 		public int StreakLoginCount => mUserData.StreakLoginCount;
 		public bool IsFirstLoginToday => mUserData.IsFirstLoginToday;
+		public int RouletteCount => mUserData.RouletteCount;
 
 		#endregion
 
@@ -244,6 +245,15 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 출석체크 해금 완료");
 			mUserData.DailyCheckUnlock = true;
+		}
+		public void UnlockRoulette()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 룰렛 해금 완료");
+			mUserData.RouletteUnlock = true;	
 		}
 	#endregion
 

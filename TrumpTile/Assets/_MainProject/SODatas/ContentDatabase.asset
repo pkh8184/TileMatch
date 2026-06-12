@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mContentBaseArray:
   - rid: 5061743762726454269
+  - rid: 5061743895749591042
   references:
     version: 2
     RefIds:
@@ -92,3 +93,53 @@ MonoBehaviour:
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
         mCount: 50
+    - rid: 5061743895749591042
+      type: {class: RouletteContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
+      data:
+        mContentName: Roulette
+        mLevelToUnlock: 0
+        mRewardConfigArray:
+        - Reward:
+            rid: 5061743895749591043
+          Weight: 31.25
+        - Reward:
+            rid: 5061743895749591044
+          Weight: 10.42
+        - Reward:
+            rid: 5061743895749591045
+          Weight: 10.42
+        - Reward:
+            rid: 5061743895749591046
+          Weight: 31.25
+        - Reward:
+            rid: 5061743895749591047
+          Weight: 4.17
+        - Reward:
+            rid: 5061743895749591048
+          Weight: 2.08
+    - rid: 5061743895749591043
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10
+    - rid: 5061743895749591044
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 30
+    - rid: 5061743895749591045
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 50
+    - rid: 5061743895749591046
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10
+    - rid: 5061743895749591047
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1005
+    - rid: 5061743895749591048
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1007

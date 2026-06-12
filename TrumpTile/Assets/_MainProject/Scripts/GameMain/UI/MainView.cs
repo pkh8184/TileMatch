@@ -6,7 +6,6 @@ using TrumpTile.GameMain.Data;
 using TrumpTile.LevelEditor.Editor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI

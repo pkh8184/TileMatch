@@ -53,6 +53,7 @@ namespace TrumpTile.GameMain.Data
         public ObscuredBool SeasonPassUnlock;
         public ObscuredBool PiggyBankUnlock;
         public ObscuredBool DailyCheckUnlock;
+        public ObscuredBool RouletteUnlock;
 
         //기타 데이터
         public readonly string UID;
@@ -61,6 +62,9 @@ namespace TrumpTile.GameMain.Data
         //출석체크 관련 데이터
         public ObscuredInt StreakLoginCount;
         public ObscuredBool IsFirstLoginToday;
+
+        //룰렛 관련 데이터
+        public ObscuredInt RouletteCount;
 
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
@@ -164,6 +168,8 @@ namespace TrumpTile.GameMain.Data
             StreakLoginCount = 3;
             IsFirstLoginToday = true;
             DailyCheckUnlock = false;
+            RouletteCount = 0;
+            RouletteUnlock = false;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
