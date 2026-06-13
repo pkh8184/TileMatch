@@ -15,6 +15,7 @@ MonoBehaviour:
   mContentBaseArray:
   - rid: 5061743762726454269
   - rid: 5061743895749591042
+  - rid: 5061743913760457041
   references:
     version: 2
     RefIds:
@@ -143,3 +144,52 @@ MonoBehaviour:
       data:
         mCount: 1
         mItemId: 1007
+    - rid: 5061743913760457041
+      type: {class: ExcitTravelContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
+      data:
+        mContentName: ExcitTravel
+        mLevelToUnlock: 0
+        mLimitTime: 432000
+        mCoolTime: 0
+        mPaidRewardIDArray: 00000000010000000a0000000b000000
+        mFreeRewardArray:
+        - rid: 5061743913760457042
+        - rid: 5061743913760457043
+        - rid: 5061743913760457044
+        - rid: 5061743913760457045
+        - rid: 5061743913760457046
+        - rid: 5061743913760457047
+        - rid: 5061743913760457048
+        - rid: 5061743913760457049
+    - rid: 5061743913760457042
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 10
+    - rid: 5061743913760457043
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 50
+    - rid: 5061743913760457044
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 20
+    - rid: 5061743913760457045
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 50
+    - rid: 5061743913760457046
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 30
+    - rid: 5061743913760457047
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 70
+    - rid: 5061743913760457048
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 50
+    - rid: 5061743913760457049
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 100

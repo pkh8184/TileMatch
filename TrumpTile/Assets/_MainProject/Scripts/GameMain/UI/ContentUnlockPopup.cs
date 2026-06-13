@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
-    public class PermanentContentUnlockPopup : PopupBase
+    public class ContentUnlockPopup : PopupBase
     {
         [Header("계속 버튼")]
         [SerializeField] private Button mContinueButton;

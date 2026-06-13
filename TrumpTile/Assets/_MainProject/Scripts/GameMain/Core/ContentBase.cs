@@ -1,8 +1,14 @@
+using Codice.CM.Common;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace TrumpTile.GameMain.Core
 {
+    public class ContentInfo
+    {
+        public float ActiveTime;
+    }
     [System.Serializable]
     public abstract class ContentBase
     {
@@ -38,6 +44,10 @@ namespace TrumpTile.GameMain.Core
             {
                 SetUnlock();
             }
+        }
+        public virtual ContentInfo GetContentInfo()
+        {
+            return new ContentInfo();
         }
         protected void SetUnlock()
         {
