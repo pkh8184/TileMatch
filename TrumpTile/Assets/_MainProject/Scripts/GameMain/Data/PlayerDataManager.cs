@@ -73,6 +73,8 @@ namespace TrumpTile.GameMain.Data
 		public int StreakLoginCount => mUserData.StreakLoginCount;
 		public bool IsFirstLoginToday => mUserData.IsFirstLoginToday;
 		public int RouletteCount => mUserData.RouletteCount;
+		public int ExcitTravelIndex => mUserData.ExcitTravelIndex;
+		public bool IsExcitTravelActive => mUserData.IsExcitTravelActive;
 
 		#endregion
 
@@ -255,6 +257,16 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 룰렛 해금 완료");
 			mUserData.RouletteUnlock = true;	
 		}
+		public void UnlockExcitTravel()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 기차 여행 해금 완료");
+			mUserData.ExcitTravelUnlock = true;	
+		}
+
 	#endregion
 
 	#region 앨범 수집

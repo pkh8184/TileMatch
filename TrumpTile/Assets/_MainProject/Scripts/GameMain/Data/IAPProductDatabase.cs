@@ -101,6 +101,10 @@ namespace TrumpTile.GameMain.Data
         MasterPackage,
         RemoveAds,
         PiggyBank,
+        ExcitTravel_1,
+        ExcitTravel_2,
+        ExcitTravel_3,
+        ExcitTravel_4,
         None
     }
     [System.Serializable]
@@ -122,6 +126,15 @@ namespace TrumpTile.GameMain.Data
                 item.GrantReward();
             }
             EventManager.Inst.ActiveEvent("GetPackageReward", mRewardList);
+        }
+        public List<RewardDisplayInfo> GetRewardDisplayInfos()
+        {
+            List<RewardDisplayInfo> result = new List<RewardDisplayInfo>();
+            foreach(var item in mRewardList)
+            {
+                result.Add(item.GetRewardDisplayInfo());
+            }
+            return result;
         }
     }
     [System.Serializable]
@@ -154,6 +167,10 @@ namespace TrumpTile.GameMain.Data
                     item.Value.GrantReward();
                 }
             }
+        }
+        public List<RewardDisplayInfo> GetPackageInfo(EProductId productId)
+        {
+            return mProductMap[productId].GetRewardDisplayInfos();
         }
 
     }

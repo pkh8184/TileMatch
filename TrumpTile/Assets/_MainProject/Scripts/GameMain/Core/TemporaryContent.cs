@@ -16,11 +16,11 @@ namespace TrumpTile.GameMain.Core
         //컨텐츠 활성화 플래그
         protected bool mbIsActive;
 
-        public override void Initialize()
-        {
-            base.Initialize();
+        public bool IsActive => mbIsActive;
 
-            //플레이어 데이터에서 컨텐츠에 해당하는 시간 정보 읽어와서 활성화 / 비활성화 처리
+        public override ContentInfo GetContentInfo()
+        {
+            return new ContentInfo{ActiveTime = mLimitTime};
         }
     }   
 }

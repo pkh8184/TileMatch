@@ -47,6 +47,7 @@ namespace TrumpTile.GameMain.Data
 
         //로그인 데이터
         public DateTime FirstLoginDate;
+        public DateTime CurrentLoginDate;
         public ObscuredInt MaxStreakLoginCount;
 
         //컨텐츠 구독 데이터
@@ -54,6 +55,7 @@ namespace TrumpTile.GameMain.Data
         public ObscuredBool PiggyBankUnlock;
         public ObscuredBool DailyCheckUnlock;
         public ObscuredBool RouletteUnlock;
+        public ObscuredBool ExcitTravelUnlock;
 
         //기타 데이터
         public readonly string UID;
@@ -65,6 +67,12 @@ namespace TrumpTile.GameMain.Data
 
         //룰렛 관련 데이터
         public ObscuredInt RouletteCount;
+        //기차 여행 관련 데이터
+        public ObscuredInt ExcitTravelIndex;
+        public ObscuredBool IsExcitTravelActive;
+        public DateTime ExcitTravelActiveDate;
+        public DateTime ExcitTravelUnActiveDate;
+
 
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
@@ -170,6 +178,10 @@ namespace TrumpTile.GameMain.Data
             DailyCheckUnlock = false;
             RouletteCount = 0;
             RouletteUnlock = false;
+
+            IsExcitTravelActive = true;
+            ExcitTravelIndex = 0;
+            ExcitTravelUnlock = false;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {

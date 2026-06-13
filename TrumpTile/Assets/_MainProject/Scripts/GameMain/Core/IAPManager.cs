@@ -47,6 +47,10 @@ namespace  TrumpTile.GameMain.Core
 
             return product.metadata.localizedPriceString;
         }
+        public List<RewardDisplayInfo> GetRewardDisplayInfos(EProductId eProductId)
+        {
+            return mProductDatabase.GetPackageInfo(eProductId);
+        }
         private async Task InitializeIAP()
         {
             mStoreController = UnityIAPServices.StoreController();
