@@ -97,9 +97,15 @@ namespace  TrumpTile.GameMain.Core
             var product = order.CartOrdered.Items().First()?.Product;
             string productId = product.definition.id;
 
+            EProductId eProductId = mProductDatabase.GetEProductId(productId);
             mProductDatabase.GrantReward(productId);
 
             EventManager.Inst.ActiveEvent("PurchaseConfirmed");
+
+            if(eProductId == EProductId.RemoveAds)
+            {
+                EventManager.Inst.ActiveEvent("RemoveAdsPurchased");
+            }
         }
         // 구매 실패
         private void OnPurchaseFailed(FailedOrder failedOrder)
