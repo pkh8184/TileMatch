@@ -28,7 +28,7 @@ namespace TrumpTile.GameMain.Core
 
 		[Header("Slot Settings")]
 		[SerializeField] private int mMaxSlots = 6;
-		[SerializeField] private int mBonusSlotCost = 120;
+		[SerializeField] private int mBonusSlotCost = 1000;
 		[SerializeField] private Transform[] mSlotPositions;
 
 
