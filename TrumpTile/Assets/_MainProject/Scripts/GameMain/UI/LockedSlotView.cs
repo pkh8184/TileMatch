@@ -15,7 +15,7 @@ namespace TrumpTile.GameMain.UI
 
         private void Start()
         {
-            bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsExtraSlotUnlocked;
+            bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
             if (bUnlocked)
             {
                 gameObject.SetActive(false);
