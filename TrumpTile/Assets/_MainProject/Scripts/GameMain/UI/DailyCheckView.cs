@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DG.DemiEditor;
 using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Core;
@@ -87,7 +86,7 @@ namespace TrumpTile.GameMain.UI
             List<ProductReward> previewRewadList = mContentData.GetPreviewRewardList();
 
             int[] randomIndexArray = {0,1,2,3,4,5,6,7,8};
-            randomIndexArray.Shuffle();
+        
             for(int i = 0; i < 3; i++)
             {
                 int index = randomIndexArray[i];
