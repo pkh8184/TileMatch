@@ -122,11 +122,26 @@ namespace TrumpTile.GameMain.UI
             mRouletteRect
                 .DOLocalRotate(new Vector3(0f, 0f, endZ), DURATION, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutExpo)        // 초반 빠르게 → 끝에서 확 감속 (룰렛 느낌)
+
                 .OnComplete(() => StartCoroutine(Co_OnSpinComplete()));
 
             mContentData.RouletteRewardProgress();
 
             SetButtonState();
+
+            StartCoroutine(Co_SpinHaptic(DURATION));
+        }
+
+        private IEnumerator Co_SpinHaptic(float duration)
+        {
+            const float INTERVAL = 0.2F;
+            float elapsed = 0F;
+            while (elapsed < duration)
+            {
+                SettingsManager.Inst?.Vibrate(EVibrationStyle.Light);
+                yield return new WaitForSeconds(INTERVAL);
+                elapsed += INTERVAL;
+            }
         }
         private IEnumerator Co_OnSpinComplete()
         {

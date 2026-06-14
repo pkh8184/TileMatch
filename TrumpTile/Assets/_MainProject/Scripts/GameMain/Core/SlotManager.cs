@@ -541,6 +541,7 @@ namespace TrumpTile.GameMain.Core
 					EffectManager.Instance?.PlayMatchEffect(matchedTileList[i].transform.position);
 					AudioEvent.Play(mMatchAudioKey);
 				}
+				SettingsManager.Inst?.Vibrate(EVibrationStyle.Medium);
 			}
 
 			RerangeSlotsAfterMatch(rerangeIndex);

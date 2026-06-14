@@ -88,6 +88,7 @@ namespace TrumpTile.GameMain.Item
 			{
 				mEffectManager.PlayBombSpineEffect(center, () =>
 				{
+					SettingsManager.Inst?.Vibrate(EVibrationStyle.Heavy);
 					foreach (TileController tile in capturedTiles)
 					{
 						if (tile != null)
@@ -108,6 +109,7 @@ namespace TrumpTile.GameMain.Item
 			}
 			else
 			{
+				SettingsManager.Inst?.Vibrate(EVibrationStyle.Heavy);
 				foreach (TileController tile in capturedTiles)
 				{
 					if (tile != null)
@@ -128,9 +130,17 @@ namespace TrumpTile.GameMain.Item
 			AudioEvent.Play(EAudioKey.SFX_Bomb);
 
 			float elapsed = 0F;
+			float hapticElapsed = 0F;
+			const float HAPTIC_INTERVAL = 0.3F;
 			while (pendingCount > 0 && elapsed < TIMEOUT)
 			{
 				elapsed += Time.deltaTime;
+				hapticElapsed += Time.deltaTime;
+				if (hapticElapsed >= HAPTIC_INTERVAL)
+				{
+					hapticElapsed = 0F;
+					SettingsManager.Inst?.Vibrate(EVibrationStyle.Light);
+				}
 				yield return null;
 			}
 

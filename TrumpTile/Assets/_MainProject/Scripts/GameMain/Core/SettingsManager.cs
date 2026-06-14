@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using TrumpTile.FrameLibrary;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.UI;
@@ -14,6 +15,18 @@ namespace TrumpTile.GameMain.Core
 		Vietnamese = 4,
 		Hindi = 5,
 		Arabic = 6
+	}
+
+	/// <summary>
+	/// 진동 스타일 타입
+	/// </summary>
+	public enum EVibrationStyle
+	{
+		Light,    // 짧고 가벼운 - 버튼 탭, 타일 선택
+		Medium,   // 표준 - 타일 매치
+		Heavy,    // 강하고 긴 - 콤보, 특수 이벤트
+		Success,  // 성공 패턴 - 레벨 클리어
+		Fail,     // 실패 패턴 - 게임 오버
 	}
 
 	/// <summary>
@@ -99,6 +112,40 @@ namespace TrumpTile.GameMain.Core
 
 		#region 진동
 
+#if UNITY_IOS && !UNITY_EDITOR
+		[DllImport("__Internal")] private static extern void _HapticLight();
+		[DllImport("__Internal")] private static extern void _HapticMedium();
+		[DllImport("__Internal")] private static extern void _HapticHeavy();
+		[DllImport("__Internal")] private static extern void _HapticSuccess();
+		[DllImport("__Internal")] private static extern void _HapticError();
+#endif
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+		private AndroidJavaObject mAndroidVibrator;
+		private int mAndroidAPILevel = -1;
+
+		private AndroidJavaObject GetAndroidVibrator()
+		{
+			if (mAndroidVibrator == null)
+			{
+				AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+				AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+				mAndroidVibrator = activity.Call<AndroidJavaObject>("getSystemService", "vibrator");
+			}
+			return mAndroidVibrator;
+		}
+
+		private int GetAndroidAPILevel()
+		{
+			if (mAndroidAPILevel < 0)
+			{
+				AndroidJavaClass versionClass = new AndroidJavaClass("android.os.Build$VERSION");
+				mAndroidAPILevel = versionClass.GetStatic<int>("SDK_INT");
+			}
+			return mAndroidAPILevel;
+		}
+#endif
+
 		/// <summary>
 		/// 진동 On/Off 설정
 		/// </summary>
@@ -112,17 +159,95 @@ namespace TrumpTile.GameMain.Core
 		/// <summary>
 		/// 진동 실행 (설정이 켜져있을 때만 동작)
 		/// </summary>
-		public void Vibrate()
+		public void Vibrate(EVibrationStyle style = EVibrationStyle.Medium)
 		{
 			if (!mBVibrationEnabled)
 			{
 				return;
 			}
 
-#if UNITY_ANDROID || UNITY_IOS
-			Handheld.Vibrate();
+#if UNITY_ANDROID && !UNITY_EDITOR
+			VibrateAndroid(style);
+#elif UNITY_IOS && !UNITY_EDITOR
+			VibrateIOS(style);
 #endif
 		}
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+		private void VibrateAndroid(EVibrationStyle style)
+		{
+			AndroidJavaObject vibrator = GetAndroidVibrator();
+			if (vibrator == null)
+			{
+				return;
+			}
+
+			if (GetAndroidAPILevel() >= 26)
+			{
+				AndroidJavaClass vibEffectClass = new AndroidJavaClass("android.os.VibrationEffect");
+				AndroidJavaObject effect = null;
+
+				switch (style)
+				{
+					case EVibrationStyle.Light:
+						effect = vibEffectClass.CallStatic<AndroidJavaObject>("createOneShot", 30L, 80);
+						break;
+					case EVibrationStyle.Medium:
+						effect = vibEffectClass.CallStatic<AndroidJavaObject>("createOneShot", 60L, 160);
+						break;
+					case EVibrationStyle.Heavy:
+						effect = vibEffectClass.CallStatic<AndroidJavaObject>("createOneShot", 100L, 255);
+						break;
+					case EVibrationStyle.Success:
+						long[] successTimings = { 0L, 60L, 80L, 60L };
+						int[] successAmplitudes = { 0, 200, 0, 255 };
+						effect = vibEffectClass.CallStatic<AndroidJavaObject>("createWaveform", successTimings, successAmplitudes, -1);
+						break;
+					case EVibrationStyle.Fail:
+						long[] failTimings = { 0L, 100L, 60L, 80L };
+						int[] failAmplitudes = { 0, 255, 0, 150 };
+						effect = vibEffectClass.CallStatic<AndroidJavaObject>("createWaveform", failTimings, failAmplitudes, -1);
+						break;
+				}
+
+				if (effect != null)
+				{
+					vibrator.Call("vibrate", effect);
+				}
+			}
+			else
+			{
+				vibrator.Call("vibrate", GetFallbackDurationMs(style));
+			}
+		}
+
+		private static long GetFallbackDurationMs(EVibrationStyle style)
+		{
+			switch (style)
+			{
+				case EVibrationStyle.Light:   return 30L;
+				case EVibrationStyle.Medium:  return 60L;
+				case EVibrationStyle.Heavy:   return 100L;
+				case EVibrationStyle.Success: return 150L;
+				case EVibrationStyle.Fail:    return 200L;
+				default:                      return 60L;
+			}
+		}
+#endif
+
+#if UNITY_IOS && !UNITY_EDITOR
+		private void VibrateIOS(EVibrationStyle style)
+		{
+			switch (style)
+			{
+				case EVibrationStyle.Light:   _HapticLight();   break;
+				case EVibrationStyle.Medium:  _HapticMedium();  break;
+				case EVibrationStyle.Heavy:   _HapticHeavy();   break;
+				case EVibrationStyle.Success: _HapticSuccess(); break;
+				case EVibrationStyle.Fail:    _HapticError();   break;
+			}
+		}
+#endif
 
 		#endregion
 
