@@ -147,6 +147,7 @@ namespace TrumpTile.GameMain.UI
             shopTransform.DOKill(true);
             shopTransform.localScale = Vector3.one;
             shopTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+            AudioEvent.Play(EAudioKey.SFX_GetReward_Gold);
         }
         private void OnStageButtonClick()
         {

@@ -56,5 +56,7 @@ namespace TrumpTile.GameMain.Core
 		// 룰렛
 		SFX_Roulette_Spin,
 		SFX_Roulette_Winning,
+
+		SFX_GetReward_Gold,
 	}
 }
