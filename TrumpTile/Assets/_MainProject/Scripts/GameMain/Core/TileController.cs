@@ -353,6 +353,10 @@ namespace TrumpTile.GameMain.Core
 				}
 				EnableCollider(true);
 			}
+			else
+			{
+				SettingsManager.Inst?.Vibrate(EVibrationStyle.Light);
+			}
 		}
 
 		private void OnMouseEnter()

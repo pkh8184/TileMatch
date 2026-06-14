@@ -41,6 +41,7 @@ namespace TrumpTile.GameMain.Item
 					if (bSuccess)
 					{
 						mEffectManager.PlayStrikeLandEffect(landPosition);
+						SettingsManager.Inst?.Vibrate(EVibrationStyle.Heavy);
 					}
 					bActionDone = true;
 				});

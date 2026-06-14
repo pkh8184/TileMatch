@@ -31,6 +31,7 @@ namespace TrumpTile.GameMain.Item
 		public IEnumerator Execute(Action onComplete)
 		{
 			AudioEvent.Play(EAudioKey.SFX_Clock);
+			SettingsManager.Inst?.Vibrate(EVibrationStyle.Medium);
 
 			mbActionDone = false;
 
