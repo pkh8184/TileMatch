@@ -30,6 +30,8 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Image[] mRewardCircleArray;
         [Header("해금 팝업 프리팹")]
         [SerializeField] private GameObject mUnlockPopupPrefab;
+        [Header("동그라미 연출 딜레이")]
+        [SerializeField] private float mCircleAnimDelay = 0.2f;
         //스티커 뗐는지 체크
         private bool[] mbCheckArray = new bool[9];
         //보상이 위치한 인덱스
@@ -86,7 +88,11 @@ namespace TrumpTile.GameMain.UI
             List<ProductReward> previewRewadList = mContentData.GetPreviewRewardList();
 
             int[] randomIndexArray = {0,1,2,3,4,5,6,7,8};
-        
+            for (int i = randomIndexArray.Length - 1; i > 0; i--)
+            {
+                int j = UnityEngine.Random.Range(0, i + 1);
+                (randomIndexArray[i], randomIndexArray[j]) = (randomIndexArray[j], randomIndexArray[i]);
+            }
             for(int i = 0; i < 3; i++)
             {
                 int index = randomIndexArray[i];
@@ -221,9 +227,15 @@ namespace TrumpTile.GameMain.UI
                     return;
                 }
             }
+
+            SetInteractable(false);
+            
             mbRewardProgress = true;
 
             Sequence seq = DOTween.Sequence();
+
+            seq.AppendInterval(mCircleAnimDelay);
+
             for(int i = 0; i < 3; i++)
             {
                 mRewardCircleArray[i].fillAmount = 0;
@@ -244,6 +256,7 @@ namespace TrumpTile.GameMain.UI
             {
                 OnDailyCheckRewardConfirm();
                 mContentData.DailyCheckRewardProgress();
+                SetInteractable(true);
             });
         }
     }    
