@@ -7,5 +7,6 @@ namespace TrumpTile.FirebaseLibrary
         public const string END_STAGE = "endStage";
         public const string PURCHASE_PRODUCT = "purchaseProduct";
         public const string GET_APP_VERSION = "getAppVersion";
+        public const string UPDATE_ALBUM_REWARDED_STAGE = "updateAlbumRewardedStage";
     }
 }

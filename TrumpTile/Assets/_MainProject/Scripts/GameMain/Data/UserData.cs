@@ -42,8 +42,7 @@ namespace TrumpTile.GameMain.Data
         public ObscuredInt CompletedChapterCount;
 
         // 앨범 수집 데이터
-        public List<int> CollectedPictureIds;
-        public bool HasPendingAlbumReward;
+        public int LastAlbumRewardedStage;
 
         //로그인 데이터
         public DateTime FirstLoginDate;
@@ -113,32 +112,14 @@ namespace TrumpTile.GameMain.Data
             TermsAndConditionVersion = dataDictionary["termsAndConditionVersion"]?.ToString();
 
             // 앨범 수집 데이터 파싱
-            CollectedPictureIds   = new List<int>();
-            HasPendingAlbumReward = false;
+            LastAlbumRewardedStage = 0;
 
             if (dataDictionary.ContainsKey("albumData"))
             {
                 Dictionary<object, object> albumData = dataDictionary["albumData"] as Dictionary<object, object>;
-                if (albumData != null)
+                if (albumData != null && albumData.ContainsKey("lastAlbumRewardedStage"))
                 {
-                    if (albumData.ContainsKey("hasPendingAlbumReward"))
-                    {
-                        bool.TryParse(albumData["hasPendingAlbumReward"]?.ToString(), out bool bPendingReward);
-                        HasPendingAlbumReward = bPendingReward;
-                    }
-                    if (albumData.ContainsKey("collectedPictureIds"))
-                    {
-                        if (albumData["collectedPictureIds"] is List<object> idList)
-                        {
-                            foreach (object id in idList)
-                            {
-                                if (int.TryParse(id.ToString(), out int pid))
-                                {
-                                    CollectedPictureIds.Add(pid);
-                                }
-                            }
-                        }
-                    }
+                    LastAlbumRewardedStage = (int)Convert.ToInt64(albumData["lastAlbumRewardedStage"]);
                 }
             }
 
@@ -168,8 +149,7 @@ namespace TrumpTile.GameMain.Data
             CurrentHousingChapter = 0;
             CurrentHousingSubChapter = 0;
             CompletedChapterCount = 0;
-            CollectedPictureIds   = new List<int>();
-            HasPendingAlbumReward = false;
+            LastAlbumRewardedStage = 0;
             //로그인 데이터
             FirstLoginDate = DateTime.MinValue;
             MaxStreakLoginCount = 0;
