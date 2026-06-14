@@ -84,24 +84,6 @@ namespace TrumpTile.GameMain.UI
             mRewardAnimator.OnPlayStart += () => SetInteractable(false);
             mRewardAnimator.OnPlayComplete += () => SetInteractable(true);
             mRewardAnimator.OnGoldArrived += PulseShopButton;
-        }
-        protected override void SubscribeEvent()
-        {
-            base.SubscribeEvent();
-            EventManager.Inst.AddEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
-            EventManager.Inst.AddEvent<RewardDisplayInfo>("GetReward", OnGetReward);
-            EventManager.Inst.AddEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
-        }
-        protected override void UnSubscribeEvent()
-        {
-            base.UnSubscribeEvent();
-            EventManager.Inst?.RemoveEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
-            EventManager.Inst?.RemoveEvent<RewardDisplayInfo>("GetReward", OnGetReward);
-            EventManager.Inst?.RemoveEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
-        }
-        protected override void Refresh()
-        {
-            mGoldText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.Gold);
 
             // 임시 (테이블로 교체해야함)
             LevelData level;
@@ -121,6 +103,24 @@ namespace TrumpTile.GameMain.UI
                     }
                 }
             };
+        }
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
+            EventManager.Inst.AddEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
+            EventManager.Inst.AddEvent<RewardDisplayInfo>("GetReward", OnGetReward);
+            EventManager.Inst.AddEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
+        }
+        protected override void UnSubscribeEvent()
+        {
+            base.UnSubscribeEvent();
+            EventManager.Inst?.RemoveEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
+            EventManager.Inst?.RemoveEvent<RewardDisplayInfo>("GetReward", OnGetReward);
+            EventManager.Inst?.RemoveEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
+        }
+        protected override void Refresh()
+        {
+            mGoldText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.Gold);
         }
         
         protected override void RefreshLocalData()

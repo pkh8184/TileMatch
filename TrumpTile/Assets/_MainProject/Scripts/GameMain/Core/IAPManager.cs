@@ -101,6 +101,7 @@ namespace  TrumpTile.GameMain.Core
             mProductDatabase.GrantReward(productId);
 
             EventManager.Inst.ActiveEvent("PurchaseConfirmed");
+            EventManager.Inst.ActiveEvent("ContentDataRefresh");
 
             if(eProductId == EProductId.RemoveAds)
             {

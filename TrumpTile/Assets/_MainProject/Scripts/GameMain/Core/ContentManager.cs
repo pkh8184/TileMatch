@@ -15,6 +15,10 @@ namespace TrumpTile.GameMain.Core
         {
             DontDestroyOnLoad(gameObject);
         }
+        private void OnDestroy()
+        {
+            EventManager.Inst?.RemoveEvent("ContentDataRefresh", Refresh);
+        }
         protected override void InitOnCreated()
         {
             base.InitOnCreated();
@@ -27,6 +31,8 @@ namespace TrumpTile.GameMain.Core
                     Debug.Log("컨텐츠데이터베이스 읽어옴");
                 }
             };
+
+            EventManager.Inst.AddEvent("ContentDataRefresh", Refresh);
         }
         public async Task Initialize()
         {
@@ -44,6 +50,10 @@ namespace TrumpTile.GameMain.Core
             mContentDatabase.Initialize();   
 
             return;  
+        }
+        private void Refresh()
+        {
+            mContentDatabase.Refresh();
         }
         public T GetContentData<T>(string contentName) where T : ContentBase
         {
