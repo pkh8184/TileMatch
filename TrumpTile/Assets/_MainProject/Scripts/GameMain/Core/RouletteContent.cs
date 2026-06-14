@@ -29,6 +29,7 @@ namespace TrumpTile.GameMain.Core
         public bool IsFree => mbIsFree;
         public int Count => MAX_COUNT - mCurrentCount;
         public int MaxCount => MAX_COUNT;
+        public int FreeCount => FREE_COUNT;
         public override void Initialize()
         {
             base.Initialize();
@@ -113,7 +114,7 @@ namespace TrumpTile.GameMain.Core
             }
 
             mRewardConfigArray[mCurrentRewardIndex].Reward.GrantReward();
-
+            CoreContainer.RewardContainer.AddElement(mRewardConfigArray[mCurrentRewardIndex].Reward);
             mCurrentCount++;
 
             SetIsFree();

@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +29,8 @@ namespace TrumpTile.GameMain.UI
 
         [Header("보상별 회전각도")]
         [SerializeField] private float[] mAnglesByReward;
+        [Header("보상 획득 파티클")]
+        [SerializeField] private ParticleSystem mParticle;
         private RouletteContent mContentData; 
         public override void Initialize()
         {
@@ -107,7 +111,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void SpinRoulette(float targetAngle)
         {
-            const int SPIN_COUNT = 15;     // 도는 바퀴 수
+            const int SPIN_COUNT = 20;     // 도는 바퀴 수
             const float DURATION = 4f;    // 총 연출 시간
 
             // 매번 같은 시작점에서 출발하도록 리셋
@@ -118,21 +122,33 @@ namespace TrumpTile.GameMain.UI
             mRouletteRect
                 .DOLocalRotate(new Vector3(0f, 0f, endZ), DURATION, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutExpo)        // 초반 빠르게 → 끝에서 확 감속 (룰렛 느낌)
-                .OnComplete(() => OnSpinComplete());
-        }
-        private void OnSpinComplete()
-        {
-            SetInteractable(true);
-
-            AudioEvent.Play(EAudioKey.SFX_Roulette_Winning);
+                .OnComplete(() => StartCoroutine(Co_OnSpinComplete()));
 
             mContentData.RouletteRewardProgress();
 
             SetButtonState();
+        }
+        private IEnumerator Co_OnSpinComplete()
+        {
+            mParticle.Play();
+            AudioEvent.Play(EAudioKey.SFX_Roulette_Winning);
 
-            CoreContainer.RewardContainer.AddElement(mContentData.GetProductReward());
+            List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
+            infos.Add(mContentData.GetProductReward().GetRewardDisplayInfo());
 
-            if(!mContentData.CanProgress())
+            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.PopupContent});
+            yield return new WaitForSeconds(1f);
+
+            SetInteractable(true);
+
+            if(mContentData.Count == mContentData.MaxCount - mContentData.FreeCount)
+            {
+                if(!mContentData.IsFree)
+                {
+                    Hide();          
+                }
+            }
+            else if(mContentData.Count == 0)
             {
                 Hide();
                 mShowButton.gameObject.SetActive(false);
