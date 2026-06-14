@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
-    public class TrainTravelView : ViewBase
+    public class TrainTravelView : ViewBase, IPurchasable
     {
         [Header("Show 애니메이션을 위한 참조들")]
         [SerializeField] private ScrollRect mScrollRect;
@@ -29,6 +29,7 @@ namespace TrumpTile.GameMain.UI
         private ExcitTravelContent mContentData;
 
         private float mActiveTime;
+        
         public override void Initialize()
         {
             base.Initialize();
@@ -148,8 +149,10 @@ namespace TrumpTile.GameMain.UI
             }
             mContentData.ConfirmCurrentReward();
         }
-        private void OnPurchaseSuccess()
+        public void OnPurchaseSuccess()
         {
+            if(!gameObject.activeSelf) return;
+
             mContentData.OnPurchaseSuccess();
             
             PeekProgress();

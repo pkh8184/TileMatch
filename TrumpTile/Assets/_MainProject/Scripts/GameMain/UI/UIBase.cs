@@ -8,6 +8,13 @@ using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
+    public interface IPurchasable
+    {
+        /// <summary>
+        /// 이벤트를 일괄 호출하기 때문에, 현재 활성화되지 않은 구매 가능 UI의 경우 그에 대한 가드 처리 구현해야함
+        /// </summary>
+        public void OnPurchaseSuccess();
+    }
     public class UIBase : MonoBehaviour
     {
         [Header("View 혹은 Popup을 켜고 끄는 버튼\n(켜거나 끄지 않는 오브젝트인 경우 할당 X)")]
