@@ -49,5 +49,7 @@ namespace TrumpTile.GameMain.Core
 		SFX_TileMove_VeryHard,
 		SFX_TileMove_Bonus,
 		SFX_DailyCheck_StickerOff,
+		SFX_Roulette_Spin,
+		SFX_Roulette_Winning,
 	}
 }
