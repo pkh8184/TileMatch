@@ -5,9 +5,9 @@ namespace TrumpTile.GameMain.Core
 {
 	public enum EAlbumPictureState
 	{
-		Locked,    // StageValue 미달 또는 이전 챕터 미완성
-		Available, // StageValue 달성, 미수집
-		Collected, // 수집 완료
+		Locked,    // stageValue >= currentStage (스테이지 미달)
+		Available, // lastAlbumRewardedStage < stageValue < currentStage (클리어했으나 보상 미수령)
+		Collected, // stageValue <= lastAlbumRewardedStage (보상 수령 완료)
 	}
 
 	[System.Serializable]
@@ -25,13 +25,13 @@ namespace TrumpTile.GameMain.Core
 			}
 		}
 
-		public static EAlbumPictureState GetPictureState(int pictureId, int stageValue, int currentStage, System.Collections.Generic.List<int> collectedIds)
+		public static EAlbumPictureState GetPictureState(int stageValue, int currentStage, int lastAlbumRewardedStage)
 		{
-			if (collectedIds != null && collectedIds.Contains(pictureId))
+			if (stageValue <= lastAlbumRewardedStage)
 			{
 				return EAlbumPictureState.Collected;
 			}
-			if (currentStage >= stageValue)
+			if (stageValue < currentStage)
 			{
 				return EAlbumPictureState.Available;
 			}

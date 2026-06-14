@@ -539,6 +539,8 @@ GameObject:
   - component: {fileID: 1822307128647293040}
   - component: {fileID: 3975314597389950725}
   - component: {fileID: 2868026714387887880}
+  - component: {fileID: 7693684247306049890}
+  - component: {fileID: 270631826981250319}
   m_Layer: 5
   m_Name: PreviewThumbnail
   m_TagString: Untagged
@@ -604,6 +606,39 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &7693684247306049890
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100095703348998055}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &270631826981250319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100095703348998055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a354ce9b37de4197bca61de7e28ad5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mShowButton: {fileID: 0}
+  mHideButton: {fileID: 9221911451863672111}
+  mShowDuration: 1
+  mHideDuration: 1
+  mPopupObj: {fileID: 3100095703348998055}
+  mBackgroundImage: {fileID: 2868026714387887880}
+  mTitleText: {fileID: 7701388926407441154}
+  mDescriptionText: {fileID: 1927663614057056823}
+  mCloseButton: {fileID: 9221911451863672111}
 --- !u!1 &3288500275477995890
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,6 +857,7 @@ MonoBehaviour:
   mSlotViewPrefab: {fileID: 7620714164634020095, guid: d4115d4695eb6411f823b3c810106368, type: 3}
   mSlotContainer: {fileID: 3957221322716326535}
   mLockIconObj: {fileID: 0}
+  previewPopup: {fileID: 270631826981250319}
 --- !u!225 &6108669603960003231
 CanvasGroup:
   m_ObjectHideFlags: 0

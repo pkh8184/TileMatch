@@ -49,6 +49,20 @@ namespace TrumpTile.FirebaseLibrary
         {
             return await RequestCallableFunctionHaveReturnValue(FirebaseFunctionsNames.PURCHASE_PRODUCT);
         }
+        public static async Task RequestUpdateAlbumRewardedStage(int stage)
+        {
+            try
+            {
+                await FirebaseService.Functions
+                    .GetHttpsCallable(FirebaseFunctionsNames.UPDATE_ALBUM_REWARDED_STAGE)
+                    .CallAsync(new Dictionary<string, object> { { "lastAlbumRewardedStage", stage } });
+            }
+            catch (Exception e)
+            {
+                return;
+            }
+        }
+
         private static async Task<Dictionary<object, object>> RequestCallableFunctionHaveReturnValue(string functionName)
         {
             try

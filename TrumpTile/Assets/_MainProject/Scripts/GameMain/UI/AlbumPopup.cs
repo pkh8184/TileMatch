@@ -22,6 +22,9 @@ namespace TrumpTile.GameMain.UI
 		[Header("다음 챕터 잠금")]
 		[SerializeField] private GameObject mLockIconObj;
 
+		[Header("프리뷰")]
+		[SerializeField] private AlbumPhotoPreviewPopup previewPopup;
+
 		private CanvasGroup mPopupCanvasGroup;
 
 		public override void Initialize()
@@ -87,7 +90,7 @@ namespace TrumpTile.GameMain.UI
 				yield return StartCoroutine(Co_CollectOnePicture(picture));
 			}
 
-			PlayerDataManager.Inst.SetPendingAlbumReward(false);
+			_ = AlbumManager.Inst.SaveAlbumRewardedStage();
 			SetInteractable(true);
 		}
 
@@ -114,11 +117,10 @@ namespace TrumpTile.GameMain.UI
 					Debug.Log("[AlbumPopup] Available: 튜토리얼 가이드 표시.");
 					break;
 				case EAlbumPictureState.Collected:
-					AlbumPhotoPreviewPopup preview = FindObjectOfType<AlbumPhotoPreviewPopup>(true);
-					if (preview != null)
+					if (previewPopup != null)
 					{
-						preview.Setup(picture);
-						preview.Show();
+						previewPopup.Setup(picture);
+						previewPopup.Show();
 					}
 					break;
 			}
