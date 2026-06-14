@@ -374,6 +374,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5896707398550466250}
   - component: {fileID: 4668388659970384912}
+  - component: {fileID: 1227000198239076428}
+  - component: {fileID: 9013165378118938730}
   m_Layer: 5
   m_Name: Popup_PurchaseSlot
   m_TagString: Untagged
@@ -411,6 +413,39 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3828010419356931687}
   m_CullTransparentMesh: 1
+--- !u!114 &1227000198239076428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3828010419356931687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf47b873407648f40ba77ec116732f4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mShowButton: {fileID: 0}
+  mHideButton: {fileID: 5985621364706227083}
+  mShowDuration: 0.3
+  mHideDuration: 0.3
+  mPopupObj: {fileID: 6598166003059966134}
+  mCancleButton: {fileID: 6672402615994380083}
+  mConfirmButton: {fileID: 6191187166864895250}
+  mShopButton: {fileID: 3675616299638395663}
+  mGoldText: {fileID: 1755780420585815511}
+--- !u!225 &9013165378118938730
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3828010419356931687}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3947444558980684736
 GameObject:
   m_ObjectHideFlags: 0
@@ -469,7 +504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.9529412}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.99215686}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -695,7 +730,7 @@ GameObject:
   - component: {fileID: 6811196855986267769}
   - component: {fileID: 6672402615994380083}
   m_Layer: 5
-  m_Name: Btn_Apply
+  m_Name: Btn_Cancle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1133,7 +1168,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 220.65744, y: -100.202736}
+  m_AnchoredPosition: {x: 220.65747, y: -100.20264}
   m_SizeDelta: {x: 280, y: 75.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5224642809256558197
@@ -1419,8 +1454,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uCD94\uAC00 \uC2AC\uB86F\uC744 \n\uAD6C\uB9E4\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C??"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3439ae9660db2b349b741f9f83404e62, type: 2}
-  m_sharedMaterial: {fileID: -7859398832865924947, guid: 3439ae9660db2b349b741f9f83404e62, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0171abc3630fdc74c99253cd26a7fb74, type: 2}
+  m_sharedMaterial: {fileID: -7859398832865924947, guid: 0171abc3630fdc74c99253cd26a7fb74, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
