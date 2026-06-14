@@ -1,3 +1,4 @@
+using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
@@ -13,10 +14,19 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private TMP_Text mDescriptionText;
 		[SerializeField] private Button   mCloseButton;
 
+		private CanvasGroup mPopupCanvasGroup;
+
 		public override void Initialize()
 		{
 			base.Initialize();
 			mCloseButton.onClick.AddListener(Hide);
+
+			mPopupCanvasGroup = mPopupObj.GetComponent<CanvasGroup>();
+			if (mPopupCanvasGroup == null)
+			{
+				mPopupCanvasGroup = mPopupObj.AddComponent<CanvasGroup>();
+			}
+
 			gameObject.SetActive(false);
 		}
 
@@ -32,6 +42,32 @@ namespace TrumpTile.GameMain.UI
 			// TODO: StringMaster 로컬라이징 연동 후 PictureNameId / PictureDescriptionId로 실제 텍스트 조회
 			mTitleText.text       = $"Picture_{picture.PictureId}";
 			mDescriptionText.text = string.Empty;
+		}
+
+		protected override void PlayShowAnim()
+		{
+			mCurrentSeq?.Kill();
+			mPopupObj.transform.localScale = Vector3.one;
+			mPopupCanvasGroup.alpha         = 0F;
+
+			mCurrentSeq = DOTween.Sequence();
+			mCurrentSeq.SetUpdate(true);
+			mCurrentSeq.Append(mPopupCanvasGroup.DOFade(1F, mShowDuration).SetEase(Ease.OutQuad));
+			mCurrentSeq.OnComplete(() => SetInteractable(true));
+		}
+
+		protected override void PlayHideAnim()
+		{
+			mCurrentSeq?.Kill();
+
+			mCurrentSeq = DOTween.Sequence();
+			mCurrentSeq.SetUpdate(true);
+			mCurrentSeq.Append(mPopupCanvasGroup.DOFade(0F, mHideDuration).SetEase(Ease.InQuad));
+			mCurrentSeq.OnComplete(() =>
+			{
+				mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+				gameObject.SetActive(false);
+			});
 		}
 	}
 }

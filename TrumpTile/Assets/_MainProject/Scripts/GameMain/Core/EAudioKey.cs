@@ -49,5 +49,8 @@ namespace TrumpTile.GameMain.Core
 		SFX_TileMove_VeryHard,
 		SFX_TileMove_Bonus,
 		SFX_DailyCheck_StickerOff,
+
+		// SFX - Album
+		SFX_UnlockInteract,
 	}
 }

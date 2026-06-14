@@ -111,7 +111,7 @@ namespace TrumpTile.GameMain.UI
 			switch (state)
 			{
 				case EAlbumPictureState.Locked:
-					Debug.Log("[AlbumPopup] Locked: 아직 수집할 수 없습니다.");
+					AudioEvent.Play(EAudioKey.SFX_UnlockInteract);
 					break;
 				case EAlbumPictureState.Available:
 					Debug.Log("[AlbumPopup] Available: 튜토리얼 가이드 표시.");

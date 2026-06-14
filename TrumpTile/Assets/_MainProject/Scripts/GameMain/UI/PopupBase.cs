@@ -18,7 +18,7 @@ namespace TrumpTile.GameMain.UI
         [Header("Show / Hide 애니메이션을 적용할 실제 팝업창")]
         [SerializeField] protected GameObject mPopupObj;
 
-        private Sequence mCurrentSeq;
+        protected Sequence mCurrentSeq;
 
         public override void Initialize()
         {
@@ -47,7 +47,9 @@ namespace TrumpTile.GameMain.UI
         }
 
         protected virtual void PlayShowAnim()
-        {
+        {   
+            if (mPopupObj == null) return;
+            
             mCurrentSeq?.Kill();
             mPopupObj.transform.localScale = Vector2.zero;
 
@@ -58,7 +60,9 @@ namespace TrumpTile.GameMain.UI
         }
 
         protected virtual void PlayHideAnim()
-        {
+        {   
+            if (mPopupObj == null) return;
+
             mCurrentSeq?.Kill();
 
             mCurrentSeq = DOTween.Sequence();
