@@ -1,6 +1,7 @@
 using UnityEngine;
 using GoogleMobileAds.Api;
 using TrumpTile.FrameLibrary;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -17,12 +18,29 @@ namespace TrumpTile.GameMain.Core
 		private BannerView mBannerView;
 		private bool mbIsInitialized = false;
 
+		private bool IsAdsRemoved => PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
+
         private void Awake()
         {
 			if(mbIsInitialized) return;
 			DontDestroyOnLoad(gameObject);
 			InitializeMobileAds();
         }
+
+		private void OnEnable()
+		{
+			EventManager.Inst?.AddEvent("RemoveAdsPurchased", OnRemoveAdsPurchased);
+		}
+
+		private void OnDisable()
+		{
+			EventManager.Inst?.RemoveEvent("RemoveAdsPurchased", OnRemoveAdsPurchased);
+		}
+
+		private void OnRemoveAdsPurchased()
+		{
+			DestroyBannerAd();
+		}
 
 		private void InitializeMobileAds()
 		{
@@ -49,6 +67,11 @@ namespace TrumpTile.GameMain.Core
 
 		public void LoadBannerAd()
 		{
+			if(IsAdsRemoved)
+			{
+				return;
+			}
+
 			DestroyBannerAd();
 
 			mBannerView = new BannerView(GetBannerAdUnitId(), AdSize.Banner, AdPosition.Bottom);
@@ -57,16 +80,15 @@ namespace TrumpTile.GameMain.Core
 			mBannerView.OnBannerAdLoadFailed += OnBannerAdLoadFailed;
 
 			mBannerView.LoadAd(new AdRequest());
-			//Debug.Log("[AdManager] 배너 광고 로드 요청");
+		}
 
-		//	mBannerView.Hide();
-
-           // EventManager.Inst.ActiveEvent("CompleteLoadAd");
-
-        }
-
-        public void ShowBannerAd()
+		public void ShowBannerAd()
 		{
+			if(IsAdsRemoved)
+			{
+				return;
+			}
+
 			if (mBannerView == null)
 			{
 				Debug.LogWarning("[AdManager] 배너가 없음 - 먼저 LoadBannerAd() 호출 필요");

@@ -67,7 +67,7 @@ namespace TrumpTile.GameMain.Data
 		public int MaxClearedStage => CurrentStage - 1;
 		public int SelectedStage => mSelectedStage;
 		public string UID => mUserData?.UID ?? string.Empty;
-		public bool IsExtraSlotUnlocked => PlayerPrefs.GetInt("ExtraSlotUnlocked", 0) == 1;
+		public bool IsAdsRemoved => mUserData != null && mUserData.RemoveAds;
 		public List<int> CollectedPictureIds   => mUserData?.CollectedPictureIds ?? new List<int>();
 		public bool HasPendingAlbumReward => mUserData != null && mUserData.HasPendingAlbumReward;
 		public int StreakLoginCount => mUserData.StreakLoginCount;
@@ -143,25 +143,6 @@ namespace TrumpTile.GameMain.Data
 				PlayerPrefs.SetInt($"Stage_{level}_Stars", stars);
 				PlayerPrefs.Save();
 			}
-		}
-
-		#endregion
-
-		#region 슬롯 해금
-
-		public bool PurchaseExtraSlot(int goldCost)
-		{
-			if (IsExtraSlotUnlocked)
-			{
-				return false;
-			}
-			if (!UseGold(goldCost))
-			{
-				return false;
-			}
-			PlayerPrefs.SetInt("ExtraSlotUnlocked", 1);
-			PlayerPrefs.Save();
-			return true;
 		}
 
 		#endregion

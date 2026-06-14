@@ -172,6 +172,17 @@ namespace TrumpTile.GameMain.Data
         {
             return mProductMap[productId].GetRewardDisplayInfos();
         }
+        public EProductId GetEProductId(string id)
+        {
+            foreach(KeyValuePair<EProductId, ProductEntry> item in mProductMap)
+            {
+                if(item.Value.ProductId == id)
+                {
+                    return item.Key;
+                }
+            }
+            return EProductId.None;
+        }
 
     }
 }

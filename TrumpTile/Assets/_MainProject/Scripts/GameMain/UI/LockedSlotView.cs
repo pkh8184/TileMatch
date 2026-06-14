@@ -15,11 +15,21 @@ namespace TrumpTile.GameMain.UI
 
         private void Start()
         {
-            bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsExtraSlotUnlocked;
+            bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
             if (bUnlocked)
             {
                 gameObject.SetActive(false);
             }
+        }
+
+        private void OnEnable()
+        {
+            EventManager.Inst?.AddEvent("RemoveAdsPurchased", OnRemoveAdsPurchased);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.Inst?.RemoveEvent("RemoveAdsPurchased", OnRemoveAdsPurchased);
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -29,7 +39,7 @@ namespace TrumpTile.GameMain.UI
                 return;
             }
 
-           mPurchasePopup?.Show();
+            mPurchasePopup?.Show();
         }
 
         /// <summary>
@@ -38,6 +48,12 @@ namespace TrumpTile.GameMain.UI
         public void OnUnlocked()
         {
             gameObject.SetActive(false);
+        }
+
+        private void OnRemoveAdsPurchased()
+        {
+            SlotManager.Instance?.SetSlotCount(7);
+            OnUnlocked();
         }
     }
 }

@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
+using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -11,12 +12,24 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private RectTransform mIconRect;
         [Header("컨텐츠 UI 전용 컴포넌트")]
         [SerializeField] private PermanentContentUIController mContentController;
+        [Header("구매 버튼")]
+        [SerializeField] private Button mPurchaseButton;
         private Sequence mSeq;
         public override void Initialize()
         {
             base.Initialize();
 
             mContentController.PlayShowButtonAnim(mShowButton);
+
+            if(mPurchaseButton != null)
+            {
+                mPurchaseButton.onClick.AddListener(OnPurchaseButtonClick);
+            }
+        }
+
+        private void OnPurchaseButtonClick()
+        {
+            IAPManager.Instance.PurchaseProduct(EProductId.RemoveAds);
         }
         protected override void PlayShowAnim()
         {

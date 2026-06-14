@@ -101,7 +101,8 @@ namespace TrumpTile.GameMain.UI
                     mSlotPurchasePopup.Show();
                 }
             });
-            
+
+            UpdateBonusSlotButtonVisibility();
             RefreshButtons();
 
             mTopLevelNameRect.localScale = Vector3.zero;
@@ -116,7 +117,8 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("ItemCountChanged", RefreshButtons);
             EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
             EventManager.Inst.AddEvent("BonusTileMatch", OnBonusTileMatched);
-            
+            EventManager.Inst.AddEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
+
             PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
         }
         protected override void UnSubscribeEvent()
@@ -127,11 +129,18 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("ItemCountChanged", RefreshButtons);
             EventManager.Inst?.RemoveEvent("PurchaseItem", PurchaseItem);
             EventManager.Inst?.RemoveEvent("BonusTileMatch", OnBonusTileMatched);
+            EventManager.Inst?.RemoveEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
 
             if(PlayerDataManager.Inst != null)
             {
-                PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;   
+                PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;
             }
+        }
+
+        private void UpdateBonusSlotButtonVisibility()
+        {
+            bool bAdsRemoved = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
+            mBonusSlotButton.gameObject.SetActive(!bAdsRemoved);
         }
         private void OnBonusTileMatched()
         {
@@ -191,7 +200,7 @@ namespace TrumpTile.GameMain.UI
 
             if(isRetry)
             {
-                mBonusSlotButton.gameObject.SetActive(true);
+                UpdateBonusSlotButtonVisibility();
                 mBonusSlotButton.transform.localScale = Vector2.one;
                 GameManager.Instance.LoadingAnimComplete = true;
                 GameManager.Instance.tutorialComplete = true;

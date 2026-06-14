@@ -28,7 +28,7 @@ namespace TrumpTile.GameMain.Core
 
 		[Header("Slot Settings")]
 		[SerializeField] private int mMaxSlots = 6;
-		[SerializeField] private int mBonusSlotCost = 120;
+		[SerializeField] private int mBonusSlotCost = 1000;
 		[SerializeField] private Transform[] mSlotPositions;
 
 
@@ -89,9 +89,9 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void Initialize()
 		{
-			bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsExtraSlotUnlocked;
+			bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
 			SetSlotCount(bUnlocked ? 7 : 6);
-			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, ExtraSlotUnlocked: {bUnlocked}");
+			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, IsAdsRemoved: {bUnlocked}");
 			
 			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
 			if(difficulty.Contains("VeryHard"))
