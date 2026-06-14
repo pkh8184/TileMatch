@@ -3,10 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
+using System.Collections.Generic;
 
 namespace TrumpTile.GameMain.UI
 {
-    public class RemoveAdsPopup : PopupBase
+    public class RemoveAdsPopup : PopupBase, IPurchasable
     {
         [Header("오브젝트 애니메이션을 위한 참조")]
         [SerializeField] private RectTransform mIconRect;
@@ -26,7 +27,32 @@ namespace TrumpTile.GameMain.UI
                 mPurchaseButton.onClick.AddListener(OnPurchaseButtonClick);
             }
         }
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
 
+            EventManager.Inst.AddEvent("PurchaseSuccess", OnPurchaseSuccess);
+        }
+        protected override void UnSubscribeEvent()
+        {
+            base.UnSubscribeEvent();
+
+            EventManager.Inst?.RemoveEvent("PurchaseSuccess", OnPurchaseSuccess);
+        }
+        public void OnPurchaseSuccess()
+        {
+            if(!gameObject.activeSelf) return;
+
+            List<ProductReward> rewards = IAPManager.Instance.GetProductRewads(EProductId.RemoveAds);
+            foreach(var item in rewards)
+            {
+                CoreContainer.RewardContainer.AddElement(item);
+            }
+            EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
+            CoreContainer.RewardContainer.Clear();
+
+            Hide();
+        }
         private void OnPurchaseButtonClick()
         {
             IAPManager.Instance.PurchaseProduct(EProductId.RemoveAds);

@@ -10,7 +10,7 @@ using System;
 
 namespace TrumpTile.GameMain.UI
 {
-    public class ShopView : ViewBase
+    public class ShopView : ViewBase, IPurchasable
     {
         [Header("목록에 맞는 제품 생성을 위한 프리팹")]
         [SerializeField] private GameObject mBundlePrefab;
@@ -85,7 +85,7 @@ namespace TrumpTile.GameMain.UI
             IAPManager.Instance.PurchaseProduct(eProductId);
             mCurrentPurchaseProductId = eProductId;
         }
-        private void OnPurchaseSuccess()
+        public void OnPurchaseSuccess()
         {
             if(mCurrentPurchaseProductId == EProductId.None)
             {
