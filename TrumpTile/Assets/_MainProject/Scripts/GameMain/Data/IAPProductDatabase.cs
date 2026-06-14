@@ -125,7 +125,7 @@ namespace TrumpTile.GameMain.Data
             {
                 item.GrantReward();
             }
-            EventManager.Inst.ActiveEvent("GetPackageReward", mRewardList);
+            //EventManager.Inst.ActiveEvent("GetPackageReward", mRewardList);
         }
         public List<RewardDisplayInfo> GetRewardDisplayInfos()
         {
@@ -135,6 +135,10 @@ namespace TrumpTile.GameMain.Data
                 result.Add(item.GetRewardDisplayInfo());
             }
             return result;
+        }
+        public List<ProductReward> GetRewards()
+        {
+            return mRewardList;
         }
     }
     [System.Serializable]
@@ -171,6 +175,10 @@ namespace TrumpTile.GameMain.Data
         public List<RewardDisplayInfo> GetPackageInfo(EProductId productId)
         {
             return mProductMap[productId].GetRewardDisplayInfos();
+        }
+        public List<ProductReward> GetProductRewards(EProductId productId)
+        {
+            return mProductMap[productId].GetRewards();
         }
         public EProductId GetEProductId(string id)
         {
