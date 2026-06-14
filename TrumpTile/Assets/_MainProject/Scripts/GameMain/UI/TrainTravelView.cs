@@ -51,13 +51,6 @@ namespace TrumpTile.GameMain.UI
 
             mContentController.SetLimitTimeText(mActiveTime);
 
-            if(mContentData.ShowUnlockPopup)
-            {
-                GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);
-                UIBase ui = obj.GetComponent<UIBase>();
-                ui.Initialize();
-                ui.Show();
-            }
             CreateRewards();
         }
         public override void Show()
@@ -81,6 +74,8 @@ namespace TrumpTile.GameMain.UI
         {
             base.Hide();
 
+            EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
+            CoreContainer.RewardContainer.Clear();
             AdManager.Inst.ShowBannerAd();
         }
         protected override void SubscribeEvent()
@@ -111,7 +106,7 @@ namespace TrumpTile.GameMain.UI
                 {
                     modifiedIndex = i - modifiedIndex / interval;
                     Debug.Log($"Free index : {i}, {modifiedIndex}");
-                    infos.Add(mContentData.GetRewardDisplayInfos(modifiedIndex));
+                    infos.Add(mContentData.GetRewardDisplayInfo(modifiedIndex));
                     cost = "무료";
                 }
                 else
@@ -143,8 +138,6 @@ namespace TrumpTile.GameMain.UI
                 mRewardUIQueue.Dequeue();
                 mRewardUIQueue.Peek().SetValid();
 
-                gameObject.SetActive(false);
-
                 mContentData.ConfirmCurrentReward();
                 return;
             }
@@ -157,8 +150,6 @@ namespace TrumpTile.GameMain.UI
             mRewardUIQueue.Peek().gameObject.SetActive(false);
             mRewardUIQueue.Dequeue();
             mRewardUIQueue.Peek().SetValid();
-
-            Hide();
         }
     }    
 }
