@@ -40,6 +40,10 @@ namespace TrumpTile.GameMain.Data
 		// 선택한 스테이지 (메인 맵에서 선택한 값, 서버 저장 불필요)
 		private int mSelectedStage = 0;
 
+		[Header("에디터 테스트용 (Firebase 없이 실행 시 적용)")]
+		[SerializeField] private int mTestCurrentStage           = 1;
+		[SerializeField] private int mTestLastAlbumRewardedStage = 0;
+
 		public event Action OnGoldChanged;
 		public event Action<int> OnStageChanged;
 
@@ -55,10 +59,15 @@ namespace TrumpTile.GameMain.Data
 
 		public void Initialize()
 		{
-			if(mUserData != null) return;
+			if (mUserData != null)
+			{
+				return;
+			}
 
 			mUserData = new UserData();
 			mUserData.InitOnlyLoacalData();
+			mUserData.CurrentStage.Value      = mTestCurrentStage;
+			mUserData.LastAlbumRewardedStage  = mTestLastAlbumRewardedStage;
 		}
 		#region 프로퍼티
 

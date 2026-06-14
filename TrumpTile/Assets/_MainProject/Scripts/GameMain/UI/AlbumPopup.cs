@@ -101,7 +101,7 @@ namespace TrumpTile.GameMain.UI
 			(int collected, int total) = AlbumManager.Inst.GetCurrentProgress();
 			float targetRatio = total > 0 ? (float)collected / total : 0F;
 			yield return mProgressSlider.DOValue(targetRatio, 0.4F).SetEase(Ease.OutQuad).WaitForCompletion();
-			mProgressText.text = $"{collected}/{total}";
+			if (mProgressText != null) mProgressText.text = $"{collected}/{total}";
 
 			RefreshUI();
 		}
