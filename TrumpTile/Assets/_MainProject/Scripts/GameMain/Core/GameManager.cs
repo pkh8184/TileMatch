@@ -333,7 +333,6 @@ namespace TrumpTile.GameMain.Core
 
 			mSlotManager?.Initialize();  // 반드시 ResetSlots() 이전
 			mSlotManager?.ResetSlots();
-			mSlotManager?.SetSlotCount(6);
 
             //임시
             EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)(levelData, mbIsRetry));
