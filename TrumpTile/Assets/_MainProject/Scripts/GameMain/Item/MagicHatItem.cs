@@ -50,6 +50,7 @@ namespace TrumpTile.GameMain.Item
 					{
 						// 타일이 중앙에 모인 순간 TileData 교환 (위치는 그대로, 카드 face만 셔플)
 						AudioEvent.Play(EAudioKey.SFX_MagicHat_02);
+						SettingsManager.Inst?.Vibrate(EVibrationStyle.Medium);
 						mBoardManager.StartCoroutine(mBoardManager.ShuffleBoardAnimated());
 					},
 					() =>

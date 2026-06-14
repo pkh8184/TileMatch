@@ -102,6 +102,7 @@ namespace TrumpTile.GameMain.UI
 
             seq.Append(mClearTextCanvasGroup.DOFade(1, 0.3f));
 
+            seq.AppendCallback(() => SettingsManager.Inst?.Vibrate(EVibrationStyle.Medium));
             seq.Append(mRewardButtonRect.DOScale(1.1f, 0.15f));
             seq.Append(mRewardButtonRect.DOScale(1f, 0.15f));
 
