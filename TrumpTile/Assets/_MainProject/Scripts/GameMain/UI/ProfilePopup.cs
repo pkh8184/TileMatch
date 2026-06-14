@@ -148,7 +148,11 @@ namespace TrumpTile.GameMain.UI
             scroll.enabled = false;
 
             sq.Append(mPopupObj.transform.DOScale(1f, mShowDuration).SetEase(Ease.OutBack));
-            sq.OnComplete(() => scroll.enabled = true);
+            sq.OnComplete(() => 
+            {
+                scroll.enabled = true;
+                SetInteractable(true);
+            });
         }
     }
 }
