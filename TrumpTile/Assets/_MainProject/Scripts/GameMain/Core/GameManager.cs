@@ -142,7 +142,7 @@ namespace TrumpTile.GameMain.Core
 #if UNITY_EDITOR
 			int level = UnityEditor.EditorPrefs.GetInt("DebugLevelIndex", mStartLevel);
 			await StartLevelAsync(level);
-			UnityEditor.EditorPrefs.DeleteKey("DebugStageIndex");
+			UnityEditor.EditorPrefs.DeleteKey("DebugLevelIndex");
 #else
 			await StartLevelAsync(mStartLevel);
 #endif

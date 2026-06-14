@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,10 +23,14 @@ namespace TrumpTile.GameMain.UI
         [Header("무료 / 광고 관련 참조")]
         [SerializeField] private GameObject mFreeGroup;
         [SerializeField] private GameObject mAdsGroup;
+        [SerializeField] private GameObject mAdsIcon;
+        [SerializeField] private GameObject mRemoveAdsIcon;
         [SerializeField] private TMP_Text mAdsCount;
 
         [Header("보상별 회전각도")]
         [SerializeField] private float[] mAnglesByReward;
+        [Header("보상 획득 파티클")]
+        [SerializeField] private ParticleSystem mParticle;
         private RouletteContent mContentData; 
         public override void Initialize()
         {
@@ -81,7 +87,16 @@ namespace TrumpTile.GameMain.UI
                 CoreContainer.RewardContainer.Clear();
             }); 
         }
-
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
+            EventManager.Inst.AddEvent("RefreshRouletteData", SetButtonState);
+        }
+        protected override void UnSubscribeEvent()
+        {
+            base.UnSubscribeEvent();
+            EventManager.Inst?.RemoveEvent("RefreshRouletteData", SetButtonState);
+        }
         private void OnRouletteButton()
         {
             if(!mContentData.CanProgress())
@@ -96,18 +111,23 @@ namespace TrumpTile.GameMain.UI
         }
         private void SpinRoulette(float targetAngle)
         {
-            const int SPIN_COUNT = 5;     // 도는 바퀴 수
-            const float DURATION = 5f;    // 총 연출 시간
+            const int SPIN_COUNT = 20;     // 도는 바퀴 수
+            const float DURATION = 4f;    // 총 연출 시간
 
             // 매번 같은 시작점에서 출발하도록 리셋
             mRouletteRect.localRotation = Quaternion.identity;
-
+            AudioEvent.Play(EAudioKey.SFX_Roulette_Spin);
             float endZ = -(360f * SPIN_COUNT) + targetAngle;   // 예: -1866
 
             mRouletteRect
                 .DOLocalRotate(new Vector3(0f, 0f, endZ), DURATION, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutExpo)        // 초반 빠르게 → 끝에서 확 감속 (룰렛 느낌)
-                .OnComplete(() => OnSpinComplete());
+
+                .OnComplete(() => StartCoroutine(Co_OnSpinComplete()));
+
+            mContentData.RouletteRewardProgress();
+
+            SetButtonState();
 
             StartCoroutine(Co_SpinHaptic(DURATION));
         }
@@ -123,17 +143,27 @@ namespace TrumpTile.GameMain.UI
                 elapsed += INTERVAL;
             }
         }
-        private void OnSpinComplete()
+        private IEnumerator Co_OnSpinComplete()
         {
+            mParticle.Play();
+            AudioEvent.Play(EAudioKey.SFX_Roulette_Winning);
+
+            List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
+            infos.Add(mContentData.GetProductReward().GetRewardDisplayInfo());
+
+            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.PopupContent});
+            yield return new WaitForSeconds(1f);
+
             SetInteractable(true);
 
-            mContentData.RouletteRewardProgress();
-
-            SetButtonState();
-
-            CoreContainer.RewardContainer.AddElement(mContentData.GetProductReward());
-
-            if(!mContentData.CanProgress())
+            if(mContentData.Count == mContentData.MaxCount - mContentData.FreeCount)
+            {
+                if(!mContentData.IsFree)
+                {
+                    Hide();          
+                }
+            }
+            else if(mContentData.Count == 0)
             {
                 Hide();
                 mShowButton.gameObject.SetActive(false);
@@ -141,7 +171,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void SetButtonState()
         {
-            if(mContentData.IsFree)
+            if(mContentData.Count == mContentData.MaxCount)
             {
                 mFreeGroup.SetActive(true);
                 mAdsGroup.SetActive(false);
@@ -150,6 +180,17 @@ namespace TrumpTile.GameMain.UI
             {
                 mFreeGroup.SetActive(false);
                 mAdsGroup.SetActive(true);
+
+                if(mContentData.IsFree)
+                {
+                    mRemoveAdsIcon.SetActive(true);
+                    mAdsIcon.SetActive(false);
+                }
+                else
+                {
+                    mRemoveAdsIcon.SetActive(false);
+                    mAdsIcon.SetActive(true);
+                }
 
                 mAdsCount.text = $"({mContentData.Count}/3)";
             }

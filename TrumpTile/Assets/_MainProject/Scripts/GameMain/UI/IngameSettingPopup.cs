@@ -58,7 +58,8 @@ namespace TrumpTile.GameMain.UI
         {
             mPopupObj.SetActive(true);
             GameManager.Instance.PauseGame();
-            StartCoroutine(Co_PlayShowAnim());  
+            StartCoroutine(Co_PlayShowAnim());
+            SetInteractable(true);
         }
         private void OnExitButtonClick()
         {

@@ -28,6 +28,8 @@ namespace TrumpTile.GameMain.Core
         private bool mbIsFree = true;
         public bool IsFree => mbIsFree;
         public int Count => MAX_COUNT - mCurrentCount;
+        public int MaxCount => MAX_COUNT;
+        public int FreeCount => FREE_COUNT;
         public override void Initialize()
         {
             base.Initialize();
@@ -35,10 +37,9 @@ namespace TrumpTile.GameMain.Core
             mbIsFree = true;
             
             mCurrentCount = PlayerDataManager.Inst.RouletteCount;
-            if(mCurrentCount >= FREE_COUNT)
-            {
-                mbIsFree = false;
-            }
+
+            SetIsFree();
+
             if(mCurrentCount < MAX_COUNT)
             {
                 mbHasNewthing = true;
@@ -60,6 +61,13 @@ namespace TrumpTile.GameMain.Core
                     mbShowUnlockPopup = false;
                 }
             }
+        }
+        public override void Refresh()
+        {
+            base.Refresh();
+
+            SetIsFree();
+            EventManager.Inst.ActiveEvent("RefreshRouletteData");
         }
         public int GetRewardIndex()
         {
@@ -106,16 +114,28 @@ namespace TrumpTile.GameMain.Core
             }
 
             mRewardConfigArray[mCurrentRewardIndex].Reward.GrantReward();
-
+            CoreContainer.RewardContainer.AddElement(mRewardConfigArray[mCurrentRewardIndex].Reward);
             mCurrentCount++;
 
-            if(mCurrentCount >= FREE_COUNT)
-            {
-                mbIsFree = false;
-            }
+            SetIsFree();
+
             if(mCurrentCount >= MAX_COUNT)
             {
                 mbHasNewthing = false;
+            }
+        }
+        private void SetIsFree()
+        {
+            if(mCurrentCount >= FREE_COUNT)
+            {
+                if(!PlayerDataManager.Inst.IsAdsRemoved)
+                {
+                    mbIsFree = false;
+                }
+                else
+                {
+                    mbIsFree = true;
+                }
             }
         }
     }   

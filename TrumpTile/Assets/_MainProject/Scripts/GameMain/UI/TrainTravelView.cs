@@ -24,7 +24,7 @@ namespace TrumpTile.GameMain.UI
         [Header("보상 프리팹 부모 스크롤뷰 트랜스폼")]
         [SerializeField] private Transform mRewardParent;
 
-        private Queue<ExcitTravelRewardUI> mRewardUIQueue = new Queue<ExcitTravelRewardUI>();
+        private List<ExcitTravelRewardUI> mRewardUIList = new List<ExcitTravelRewardUI>();
         private Sequence mShowAnimSeq; 
         private ExcitTravelContent mContentData;
 
@@ -51,13 +51,6 @@ namespace TrumpTile.GameMain.UI
 
             mContentController.SetLimitTimeText(mActiveTime);
 
-            if(mContentData.ShowUnlockPopup)
-            {
-                GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);
-                UIBase ui = obj.GetComponent<UIBase>();
-                ui.Initialize();
-                ui.Show();
-            }
             CreateRewards();
         }
         public override void Show()
@@ -81,6 +74,8 @@ namespace TrumpTile.GameMain.UI
         {
             base.Hide();
 
+            EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
+            CoreContainer.RewardContainer.Clear();
             AdManager.Inst.ShowBannerAd();
         }
         protected override void SubscribeEvent()
@@ -102,6 +97,8 @@ namespace TrumpTile.GameMain.UI
             int interval = mContentData.GetPaidInterval();
             string cost = "무료";
             List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
+
+            int count = 0;
             for(int i = start; i < max; i++)
             {
                 int modifiedIndex = i + 1;
@@ -110,14 +107,12 @@ namespace TrumpTile.GameMain.UI
                 if(isFree)
                 {
                     modifiedIndex = i - modifiedIndex / interval;
-                    Debug.Log($"Free index : {i}, {modifiedIndex}");
-                    infos.Add(mContentData.GetRewardDisplayInfos(modifiedIndex));
+                    infos.Add(mContentData.GetRewardDisplayInfo(modifiedIndex));
                     cost = "무료";
                 }
                 else
                 {
                     modifiedIndex = modifiedIndex / interval - 1;
-                    Debug.Log($"Paid index : {i}, {modifiedIndex}");
                     EProductId id = mContentData.GetProductId(modifiedIndex);
                     infos = IAPManager.Instance.GetRewardDisplayInfos(id);
                     cost = IAPManager.Instance.GetProductPrice(id);
@@ -127,25 +122,28 @@ namespace TrumpTile.GameMain.UI
 
                 ui.Initialize(isFree, infos, OnConfirmButtonClick, cost);
 
-                mRewardUIQueue.Enqueue(ui);
+                mRewardUIList.Add(ui);
+
+                if(count >= 3)
+                {
+                    ui.gameObject.SetActive(false);
+                }
 
                 infos.Clear();
+
+                count++;
             }
 
-            mRewardUIQueue.Peek().SetValid();
+            mRewardUIList[0].SetValid();
         }
         private void OnConfirmButtonClick()
         {
-            ExcitTravelRewardUI peek = mRewardUIQueue.Peek();
+            ExcitTravelRewardUI peek = mRewardUIList[0];
             if(peek.IsFree)
             {
-                peek.gameObject.SetActive(false);
-                mRewardUIQueue.Dequeue();
-                mRewardUIQueue.Peek().SetValid();
-
-                gameObject.SetActive(false);
-
                 mContentData.ConfirmCurrentReward();
+                PeekProgress();
+
                 return;
             }
             mContentData.ConfirmCurrentReward();
@@ -154,11 +152,36 @@ namespace TrumpTile.GameMain.UI
         {
             mContentData.OnPurchaseSuccess();
             
-            mRewardUIQueue.Peek().gameObject.SetActive(false);
-            mRewardUIQueue.Dequeue();
-            mRewardUIQueue.Peek().SetValid();
+            PeekProgress();
+        }
+        private void PeekProgress()
+        {
+            SetInteractable(false);
 
-            Hide();
+            Sequence seq = DOTween.Sequence();
+            seq.Append(mRewardUIList[0].transform.DOScale(0, 0.5f).SetEase(Ease.InBack));
+
+            if(mRewardUIList.Count >= 4)
+            {
+                mRewardUIList[3].transform.localScale = Vector2.zero;
+                mRewardUIList[3].gameObject.SetActive(true);
+                seq.Insert(0.25f, mRewardUIList[3].transform.DOScale(1, 0.5f).SetEase(Ease.OutBack));   
+            }
+
+            seq.OnComplete(() =>
+            {
+                mRewardUIList[0].gameObject.SetActive(false);
+                mRewardUIList.RemoveAt(0);
+                if(mRewardUIList.Count == 0)
+                {
+                    Hide();
+                }
+                else
+                {
+                    mRewardUIList[0].SetValid(); 
+                    SetInteractable(true);
+                }
+            });
         }
     }    
 }

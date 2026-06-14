@@ -279,8 +279,9 @@ namespace TrumpTile.GameMain.UI
                     ShowRewardCountText(countText, itemInfos[i].Amount, pos);
                 }
 
-                seq.Insert(0.1f * i, cover.DOScale(1.1f, 0.2f));
-                seq.Append(cover.DOScale(1f, 0.1f));
+                //아이템은 강조를 위해 1.2배로 키워서 유지(풀 반환 시 1로 초기화)
+                seq.Insert(0.1f * i, cover.DOScale(1.3f, 0.2f));
+                seq.Append(cover.DOScale(1.2f, 0.1f));
             }
 
             //개수 텍스트들: 커버 팝업 후 위로 떠오르며 사라짐(기존 연출과 동일)
@@ -317,10 +318,23 @@ namespace TrumpTile.GameMain.UI
                     .OnComplete(() => {
                         cover.gameObject.SetActive(false);
                         cover.anchoredPosition = Vector2.zero;
+                        PulseTarget(target);
                     }));
             }
 
             yield return moveSeq.WaitForCompletion();
+        }
+
+        //아이템이 도착할 때마다 도착지점 렉트를 살짝 두근거리게 한다.
+        //직전 펄스를 DOComplete로 끝내 원래 스케일에서 시작하므로 연속 도착에도 스케일이 누적되지 않는다.
+        private void PulseTarget(RectTransform target)
+        {
+            if(target == null)
+            {
+                return;
+            }
+            target.DOComplete();
+            target.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
         }
 
         private ItemSpriteConfig FindItemConfig(int itemId)

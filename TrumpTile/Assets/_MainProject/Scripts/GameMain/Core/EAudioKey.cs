@@ -52,5 +52,11 @@ namespace TrumpTile.GameMain.Core
 
 		// SFX - Album
 		SFX_UnlockInteract,
+
+		// 룰렛
+		SFX_Roulette_Spin,
+		SFX_Roulette_Winning,
+
+		SFX_GetReward_Gold,
 	}
 }

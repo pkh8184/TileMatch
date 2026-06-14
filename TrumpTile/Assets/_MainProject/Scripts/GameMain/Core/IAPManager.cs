@@ -51,6 +51,10 @@ namespace  TrumpTile.GameMain.Core
         {
             return mProductDatabase.GetPackageInfo(eProductId);
         }
+        public List<ProductReward> GetProductRewads(EProductId eProductId)
+        {
+            return mProductDatabase.GetProductRewards(eProductId);
+        }
         private async Task InitializeIAP()
         {
             mStoreController = UnityIAPServices.StoreController();
@@ -101,6 +105,7 @@ namespace  TrumpTile.GameMain.Core
             mProductDatabase.GrantReward(productId);
 
             EventManager.Inst.ActiveEvent("PurchaseConfirmed");
+            EventManager.Inst.ActiveEvent("ContentDataRefresh");
 
             if(eProductId == EProductId.RemoveAds)
             {

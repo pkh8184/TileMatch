@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Data;
+using TrumpTile.GameMain.UI;
 using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
@@ -70,18 +71,34 @@ namespace TrumpTile.GameMain.Core
             {
                 modifiedIndex = mCurrentIndex - modifiedIndex / PAID_INTERVAL;
                 mFreeRewardArray[modifiedIndex].GrantReward();
-                EventManager.Inst.ActiveEvent("GetReward", mFreeRewardArray[modifiedIndex].GetRewardDisplayInfo());
 
+                List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
+                infos.Add(mFreeRewardArray[modifiedIndex].GetRewardDisplayInfo());
+
+                EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
+                CoreContainer.RewardContainer.AddElement(mFreeRewardArray[modifiedIndex]);
                 mCurrentIndex++;
             }
         }
         public void OnPurchaseSuccess()
         {
+            int modifiedIndex = mCurrentIndex + 1;
+            modifiedIndex = modifiedIndex / PAID_INTERVAL - 1;
+
+            List<RewardDisplayInfo> infos = IAPManager.Instance.GetRewardDisplayInfos(mPaidRewardIDArray[modifiedIndex]);
+            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
+
+            List<ProductReward> rewards = IAPManager.Instance.GetProductRewads(mPaidRewardIDArray[modifiedIndex]);
+            foreach(var item in rewards)
+            {
+                CoreContainer.RewardContainer.AddElement(item);   
+            }
+
             mCurrentIndex++;
             if(mCurrentIndex >= MAX_REWARD_COUNT)
             {
                 mbHasNewthing = false;
-            }   
+            }
         }
         public int GetRewardCount()
         {
@@ -91,7 +108,7 @@ namespace TrumpTile.GameMain.Core
         {
             return PAID_INTERVAL;
         }
-        public RewardDisplayInfo GetRewardDisplayInfos(int index)
+        public RewardDisplayInfo GetRewardDisplayInfo(int index)
         {
             return mFreeRewardArray[index].GetRewardDisplayInfo();
         }

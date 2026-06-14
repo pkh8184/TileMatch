@@ -26,6 +26,8 @@ namespace TrumpTile.GameMain.UI
             public Button button;
         }
         [SerializeField] private PurchaseButtonConfig[] mPurchaseButtonCofigArray;
+
+        private EProductId mCurrentPurchaseProductId = EProductId.None;
         public override void Initialize()
         {
             base.Initialize();
@@ -68,7 +70,7 @@ namespace TrumpTile.GameMain.UI
             base.SubscribeEvent();
 
             EventManager.Inst.AddEvent("AccessShopView", Show);
-            EventManager.Inst.AddEvent("PurchaseSuccess", Hide);
+            EventManager.Inst.AddEvent("PurchaseSuccess", OnPurchaseSuccess);
            // EventManager.Inst.AddEvent("ShopView", Show);    
         }
         protected override void UnSubscribeEvent()
@@ -76,11 +78,29 @@ namespace TrumpTile.GameMain.UI
             base.UnSubscribeEvent();
 
             EventManager.Inst?.RemoveEvent("AccessShopView", Show);
-            EventManager.Inst?.RemoveEvent("PurchaseSuccess", Hide);
+            EventManager.Inst?.RemoveEvent("PurchaseSuccess", OnPurchaseSuccess);
         }
         private void OnPurchaeButtonClick(EProductId eProductId)
         {
             IAPManager.Instance.PurchaseProduct(eProductId);
+            mCurrentPurchaseProductId = eProductId;
+        }
+        private void OnPurchaseSuccess()
+        {
+            if(mCurrentPurchaseProductId == EProductId.None)
+            {
+                return;
+            }
+
+            List<ProductReward> rewards = IAPManager.Instance.GetProductRewads(mCurrentPurchaseProductId);
+            foreach(var item in rewards)
+            {
+                CoreContainer.RewardContainer.AddElement(item);
+            }
+            EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
+            CoreContainer.RewardContainer.Clear();
+
+            Hide();
         }
         private IEnumerator Co_PlayPackageShowAnim(ScrollRect scroll)
         {
