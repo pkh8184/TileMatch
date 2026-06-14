@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using TrumpTile.FirebaseLibrary;
 using TrumpTile.FrameLibrary;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
@@ -23,41 +25,27 @@ namespace TrumpTile.GameMain.Core
 			DontDestroyOnLoad(gameObject);
 		}
 
-		public void OnStageClear(int clearedStage)
+		public void CheckPendingReward(System.Action<List<TBPictureCollectData>> onPendingFound)
 		{
 			if (mPictureTable == null || PlayerDataManager.Inst == null)
 			{
 				return;
 			}
 
-			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
+			int currentStage          = PlayerDataManager.Inst.CurrentStage;
+			int lastAlbumRewardedStage = PlayerDataManager.Inst.LastAlbumRewardedStage;
 
-			foreach (TBPictureCollectData picture in allPictures)
-			{
-				if (clearedStage >= picture.StageValue && !collectedIds.Contains(picture.PictureId))
-				{
-					PlayerDataManager.Inst.SetPendingAlbumReward(true);
-					return;
-				}
-			}
-		}
-
-		public void CheckPendingReward(System.Action<List<TBPictureCollectData>> onPendingFound)
-		{
-			if (mPictureTable == null || PlayerDataManager.Inst == null || !PlayerDataManager.Inst.HasPendingAlbumReward)
+			if (lastAlbumRewardedStage >= currentStage - 1)
 			{
 				return;
 			}
 
 			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
-			int currentStage = PlayerDataManager.Inst.CurrentStage;
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
-
 			List<TBPictureCollectData> pendingPictures = new List<TBPictureCollectData>();
+
 			foreach (TBPictureCollectData picture in allPictures)
 			{
-				if (currentStage >= picture.StageValue && !collectedIds.Contains(picture.PictureId))
+				if (picture.StageValue > lastAlbumRewardedStage && picture.StageValue < currentStage)
 				{
 					pendingPictures.Add(picture);
 				}
@@ -67,10 +55,6 @@ namespace TrumpTile.GameMain.Core
 			{
 				onPendingFound?.Invoke(pendingPictures);
 			}
-			else
-			{
-				PlayerDataManager.Inst.SetPendingAlbumReward(false);
-			}
 		}
 
 		public void CollectPicture(TBPictureCollectData picture)
@@ -79,8 +63,6 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
-
-			PlayerDataManager.Inst.AddCollectedPicture(picture.PictureId);
 
 			if (picture.GoldRewardCount > 0)
 			{
@@ -92,6 +74,19 @@ namespace TrumpTile.GameMain.Core
 			OnPictureCollected?.Invoke(picture);
 		}
 
+		public async Task SaveAlbumRewardedStage()
+		{
+			if (PlayerDataManager.Inst == null)
+			{
+				return;
+			}
+
+			int stage = PlayerDataManager.Inst.CurrentStage - 1;
+			PlayerDataManager.Inst.SetLastAlbumRewardedStage(stage);
+
+			await FirebaseFunctionsService.RequestUpdateAlbumRewardedStage(stage);
+		}
+
 		public (int collected, int total) GetCurrentProgress()
 		{
 			if (mPictureTable == null || PlayerDataManager.Inst == null)
@@ -99,13 +94,13 @@ namespace TrumpTile.GameMain.Core
 				return (0, 0);
 			}
 
-			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
+			TBPictureCollectData[] allPictures    = mPictureTable.GetAll();
+			int lastAlbumRewardedStage             = PlayerDataManager.Inst.LastAlbumRewardedStage;
 
 			int collected = 0;
 			foreach (TBPictureCollectData picture in allPictures)
 			{
-				if (collectedIds.Contains(picture.PictureId))
+				if (picture.StageValue <= lastAlbumRewardedStage)
 				{
 					collected++;
 				}
@@ -123,14 +118,14 @@ namespace TrumpTile.GameMain.Core
 				return result;
 			}
 
-			TBPictureCollectData[] allPictures = mPictureTable.GetAll();
-			int currentStage = PlayerDataManager.Inst.CurrentStage;
-			List<int> collectedIds = PlayerDataManager.Inst.GetCollectedPictureIds();
+			TBPictureCollectData[] allPictures    = mPictureTable.GetAll();
+			int currentStage                       = PlayerDataManager.Inst.CurrentStage;
+			int lastAlbumRewardedStage             = PlayerDataManager.Inst.LastAlbumRewardedStage;
 
 			foreach (TBPictureCollectData picture in allPictures)
 			{
 				EAlbumPictureState state = AlbumContent.GetPictureState(
-					picture.PictureId, picture.StageValue, currentStage, collectedIds);
+					picture.StageValue, currentStage, lastAlbumRewardedStage);
 				result.Add((picture, state));
 			}
 

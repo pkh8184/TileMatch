@@ -769,7 +769,6 @@ namespace TrumpTile.GameMain.Core
 			Debug.Log($"[GameManager] SaveLevelProgress - Level: {level}, Stars: {stars}");
 
 			PlayerDataManager.Inst.ClearStage(level, stars);
-			AlbumManager.Inst?.OnStageClear(level);
 			Debug.Log($"[GameManager] Saved - NextStage: {PlayerDataManager.Inst.CurrentStage}");
 		}
 

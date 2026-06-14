@@ -22,6 +22,9 @@ namespace TrumpTile.GameMain.UI
 		[Header("다음 챕터 잠금")]
 		[SerializeField] private GameObject mLockIconObj;
 
+		[Header("프리뷰")]
+		[SerializeField] private AlbumPhotoPreviewPopup previewPopup;
+
 		private CanvasGroup mPopupCanvasGroup;
 
 		public override void Initialize()
@@ -87,7 +90,7 @@ namespace TrumpTile.GameMain.UI
 				yield return StartCoroutine(Co_CollectOnePicture(picture));
 			}
 
-			PlayerDataManager.Inst.SetPendingAlbumReward(false);
+			_ = AlbumManager.Inst.SaveAlbumRewardedStage();
 			SetInteractable(true);
 		}
 
@@ -98,7 +101,7 @@ namespace TrumpTile.GameMain.UI
 			(int collected, int total) = AlbumManager.Inst.GetCurrentProgress();
 			float targetRatio = total > 0 ? (float)collected / total : 0F;
 			yield return mProgressSlider.DOValue(targetRatio, 0.4F).SetEase(Ease.OutQuad).WaitForCompletion();
-			mProgressText.text = $"{collected}/{total}";
+			if (mProgressText != null) mProgressText.text = $"{collected}/{total}";
 
 			RefreshUI();
 		}
@@ -108,17 +111,16 @@ namespace TrumpTile.GameMain.UI
 			switch (state)
 			{
 				case EAlbumPictureState.Locked:
-					Debug.Log("[AlbumPopup] Locked: 아직 수집할 수 없습니다.");
+					AudioEvent.Play(EAudioKey.SFX_UnlockInteract);
 					break;
 				case EAlbumPictureState.Available:
 					Debug.Log("[AlbumPopup] Available: 튜토리얼 가이드 표시.");
 					break;
 				case EAlbumPictureState.Collected:
-					AlbumPhotoPreviewPopup preview = FindObjectOfType<AlbumPhotoPreviewPopup>(true);
-					if (preview != null)
+					if (previewPopup != null)
 					{
-						preview.Setup(picture);
-						preview.Show();
+						previewPopup.Setup(picture);
+						previewPopup.Show();
 					}
 					break;
 			}

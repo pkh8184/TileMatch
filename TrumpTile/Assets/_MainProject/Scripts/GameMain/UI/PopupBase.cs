@@ -17,46 +17,62 @@ namespace TrumpTile.GameMain.UI
 
         [Header("Show / Hide 애니메이션을 적용할 실제 팝업창")]
         [SerializeField] protected GameObject mPopupObj;
+
+        protected Sequence mCurrentSeq;
+
         public override void Initialize()
         {
             base.Initialize();
 
-            //로드된 씬에는 모든 팝업이 닫혀있기 때문에 그에 맞춘 처리
             mOpenPopupCount = 0;
         }
+
         public override void Show()
         {
             base.Show();
             mOpenPopupCount++;
-            
+
             PlayShowAnim();
         }
+
         public override void Hide()
         {
             SetInteractable(false);
             PlayHideAnim();
         }
 
-        protected virtual void PlayShowAnim()
+        protected virtual void OnDestroy()
         {
+            mCurrentSeq?.Kill();
+        }
+
+        protected virtual void PlayShowAnim()
+        {   
+            if (mPopupObj == null) return;
+            
+            mCurrentSeq?.Kill();
             mPopupObj.transform.localScale = Vector2.zero;
 
-            Sequence seq = DOTween.Sequence();
-            seq.SetUpdate(true);
-            seq.Append(mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack));
-            
-            seq.OnComplete(() => SetInteractable(true));     
+            mCurrentSeq = DOTween.Sequence();
+            mCurrentSeq.SetUpdate(true);
+            mCurrentSeq.Append(mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack));
+            mCurrentSeq.OnComplete(() => SetInteractable(true));
         }
+
         protected virtual void PlayHideAnim()
-        {
-            Sequence seq = DOTween.Sequence();
-            seq.SetUpdate(true);
-            seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
-            seq.OnComplete(() =>
+        {   
+            if (mPopupObj == null) return;
+
+            mCurrentSeq?.Kill();
+
+            mCurrentSeq = DOTween.Sequence();
+            mCurrentSeq.SetUpdate(true);
+            mCurrentSeq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
+            mCurrentSeq.OnComplete(() =>
             {
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
-            });         
+            });
         }
     }
 }

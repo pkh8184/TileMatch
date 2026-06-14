@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using TrumpTile.GameMain.Core;
 
@@ -7,34 +6,32 @@ namespace TrumpTile.Tests
 	public class AlbumSystemTests
 	{
 		[Test]
-		public void GetPictureState_WhenCollected_ReturnsCollected()
+		public void GetPictureState_WhenStageRewarded_ReturnsCollected()
 		{
-			List<int> collected = new List<int> { 101 };
-			EAlbumPictureState state = AlbumContent.GetPictureState(101, stageValue: 5, currentStage: 3, collected);
+			EAlbumPictureState state = AlbumContent.GetPictureState(stageValue: 5, currentStage: 10, lastAlbumRewardedStage: 5);
 			Assert.AreEqual(EAlbumPictureState.Collected, state);
 		}
 
 		[Test]
-		public void GetPictureState_WhenStageMetAndNotCollected_ReturnsAvailable()
+		public void GetPictureState_WhenStageClearedButNotRewarded_ReturnsAvailable()
 		{
-			List<int> collected = new List<int>();
-			EAlbumPictureState state = AlbumContent.GetPictureState(101, stageValue: 5, currentStage: 5, collected);
+			EAlbumPictureState state = AlbumContent.GetPictureState(stageValue: 5, currentStage: 6, lastAlbumRewardedStage: 0);
 			Assert.AreEqual(EAlbumPictureState.Available, state);
 		}
 
 		[Test]
-		public void GetPictureState_WhenStageNotMet_ReturnsLocked()
+		public void GetPictureState_WhenStageNotCleared_ReturnsLocked()
 		{
-			List<int> collected = new List<int>();
-			EAlbumPictureState state = AlbumContent.GetPictureState(101, stageValue: 10, currentStage: 5, collected);
+			EAlbumPictureState state = AlbumContent.GetPictureState(stageValue: 10, currentStage: 5, lastAlbumRewardedStage: 0);
 			Assert.AreEqual(EAlbumPictureState.Locked, state);
 		}
 
 		[Test]
-		public void GetPictureState_WhenCollectedListNull_DoesNotThrow()
+		public void GetPictureState_WhenStageValueEqualsCurrentStage_ReturnsLocked()
 		{
-			EAlbumPictureState state = AlbumContent.GetPictureState(101, stageValue: 3, currentStage: 5, null);
-			Assert.AreEqual(EAlbumPictureState.Available, state);
+			// currentStage = lastClearedStage + 1 이므로, stageValue == currentStage 는 아직 미클리어
+			EAlbumPictureState state = AlbumContent.GetPictureState(stageValue: 5, currentStage: 5, lastAlbumRewardedStage: 0);
+			Assert.AreEqual(EAlbumPictureState.Locked, state);
 		}
 	}
 }

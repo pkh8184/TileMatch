@@ -40,6 +40,10 @@ namespace TrumpTile.GameMain.Data
 		// 선택한 스테이지 (메인 맵에서 선택한 값, 서버 저장 불필요)
 		private int mSelectedStage = 0;
 
+		[Header("에디터 테스트용 (Firebase 없이 실행 시 적용)")]
+		[SerializeField] private int mTestCurrentStage           = 1;
+		[SerializeField] private int mTestLastAlbumRewardedStage = 0;
+
 		public event Action OnGoldChanged;
 		public event Action<int> OnStageChanged;
 
@@ -55,10 +59,15 @@ namespace TrumpTile.GameMain.Data
 
 		public void Initialize()
 		{
-			if(mUserData != null) return;
+			if (mUserData != null)
+			{
+				return;
+			}
 
 			mUserData = new UserData();
 			mUserData.InitOnlyLoacalData();
+			mUserData.CurrentStage.Value      = mTestCurrentStage;
+			mUserData.LastAlbumRewardedStage  = mTestLastAlbumRewardedStage;
 		}
 		#region 프로퍼티
 
@@ -68,8 +77,7 @@ namespace TrumpTile.GameMain.Data
 		public int SelectedStage => mSelectedStage;
 		public string UID => mUserData?.UID ?? string.Empty;
 		public bool IsAdsRemoved => mUserData != null && mUserData.RemoveAds;
-		public List<int> CollectedPictureIds   => mUserData?.CollectedPictureIds ?? new List<int>();
-		public bool HasPendingAlbumReward => mUserData != null && mUserData.HasPendingAlbumReward;
+		public int LastAlbumRewardedStage => mUserData != null ? mUserData.LastAlbumRewardedStage : 0;
 		public int StreakLoginCount => mUserData.StreakLoginCount;
 		public bool IsFirstLoginToday => mUserData.IsFirstLoginToday;
 		public int RouletteCount => mUserData.RouletteCount;
@@ -252,39 +260,13 @@ namespace TrumpTile.GameMain.Data
 
 	#region 앨범 수집
 
-		public bool IsPictureCollected(int pictureId)
-		{
-			if (mUserData?.CollectedPictureIds == null)
-			{
-				return false;
-			}
-			return mUserData.CollectedPictureIds.Contains(pictureId);
-		}
-
-		public void AddCollectedPicture(int pictureId)
+		public void SetLastAlbumRewardedStage(int stage)
 		{
 			if (mUserData == null)
 			{
 				return;
 			}
-			if (!mUserData.CollectedPictureIds.Contains(pictureId))
-			{
-				mUserData.CollectedPictureIds.Add(pictureId);
-			}
-		}
-
-		public void SetPendingAlbumReward(bool bHasPending)
-		{
-			if (mUserData == null)
-			{
-				return;
-			}
-			mUserData.HasPendingAlbumReward = bHasPending;
-		}
-
-		public List<int> GetCollectedPictureIds()
-		{
-			return mUserData?.CollectedPictureIds ?? new List<int>();
+			mUserData.LastAlbumRewardedStage = stage;
 		}
 
 	#endregion

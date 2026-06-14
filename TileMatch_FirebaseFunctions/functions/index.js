@@ -27,7 +27,7 @@ setGlobalOptions({
 
 //#region variable
 //Functions 버전입니다.
-const VERSION = 1;
+const VERSION = 2;
 
 //모든 유저가 서버 검증을 위해 공용으로 참조할 collection의 경로명입니다. 
 const clearTimePath = "minTimeRequiredClearStage";
@@ -291,6 +291,28 @@ exports.endStage = onCall(async (request) =>{
     }  
 })
 
+///앨범 보상 수령 완료 단계를 업데이트하는 onCall 함수입니다.
+///클라이언트에서 앨범 보상 팝업이 완료된 후 호출합니다.
+///lastAlbumRewardedStage 값을 갱신하여 다음 세션에서 중복 보상을 방지합니다.
+exports.updateAlbumRewardedStage = onCall(async (request) => {
+    const docRef = getDoc(request);
+    const doc = await docRef.get();
+    checkDocExists(doc);
+
+    const { lastAlbumRewardedStage } = request.data;
+
+    const currentValue = doc.data().albumData?.lastAlbumRewardedStage ?? 0;
+    if (lastAlbumRewardedStage <= currentValue) {
+        return { lastAlbumRewardedStage: currentValue };
+    }
+
+    await docRef.update({
+        "albumData.lastAlbumRewardedStage": lastAlbumRewardedStage
+    });
+
+    return { lastAlbumRewardedStage };
+});
+
 ///상품 구매 요청 onCall 함수입니다.
 ///구글 영수증 토큰과 상품 넘버를 클라이언트에게 넘겨받습니다.
 ///영수증 유효성을 검사하여 비정상적인 구매 요청을 방지합니다.
@@ -469,6 +491,9 @@ function getDefaultUserData() {
             usedStarCount: 0,
             completedChapterCount: 0,
             isProgressLastChapter: false
+        },
+        albumData: {
+            lastAlbumRewardedStage: 0
         },
         loginData: {
             firstLoginDate: FieldValue.serverTimestamp(),
