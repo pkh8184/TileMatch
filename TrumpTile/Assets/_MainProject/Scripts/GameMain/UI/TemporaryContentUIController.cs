@@ -42,8 +42,6 @@ namespace TrumpTile.GameMain.UI
         }
         public void SetLimitTimeText(float time)
         {
-            if(mLimitTimeText == null || mShowButtonLimitTimeText == null) return;
-
             int totalTime = (int)time;
 
             int day = totalTime / 86400;
@@ -54,8 +52,8 @@ namespace TrumpTile.GameMain.UI
 
             string result = dayString + hourString;
             
-            mLimitTimeText.text = result;
-            mShowButtonLimitTimeText.text = result;
+            if(mLimitTimeText != null) mLimitTimeText.text = result;
+            if(mShowButtonLimitTimeText != null) mShowButtonLimitTimeText.text = result;
         }
     }    
 }
