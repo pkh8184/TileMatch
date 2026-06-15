@@ -71,6 +71,13 @@ namespace TrumpTile.GameMain.Data
         public ObscuredBool IsExcitTravelActive;
         public DateTime ExcitTravelActiveDate;
         public DateTime ExcitTravelUnActiveDate;
+        
+        //돼지저금통 관련 데이터
+        public ObscuredBool PiggyBankPurchase;
+        public ObscuredInt PiggyBankStageClearCount;
+        public ObscuredBool IsPiggyBankActive;
+        public DateTime PiggyBankActiveDate;
+        public DateTime PiggyBankUnActiveDate;
 
 
         //딕셔너리 파싱 생성자
@@ -162,6 +169,11 @@ namespace TrumpTile.GameMain.Data
             IsExcitTravelActive = true;
             ExcitTravelIndex = 0;
             ExcitTravelUnlock = false;
+
+            PiggyBankPurchase = false;
+            PiggyBankStageClearCount = 0;
+            IsPiggyBankActive = true;
+            PiggyBankUnlock = false;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
