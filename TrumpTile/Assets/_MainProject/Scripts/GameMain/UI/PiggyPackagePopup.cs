@@ -42,6 +42,8 @@ namespace TrumpTile.GameMain.UI
             mShowAnimSeq.Append(mPigRect.DOAnchorPos(Vector2.zero, 0.1f).SetEase(Ease.InQuad));
             mShowAnimSeq.Join(mLeftGoldRect.DOAnchorPos(Vector2.zero, 0.1f).SetEase(Ease.InQuad));
             mShowAnimSeq.Join(mRightGoldRect.DOAnchorPos(Vector2.zero, 0.1f).SetEase(Ease.InQuad));
+
+            mShowAnimSeq.OnComplete(() => SetInteractable(true));
         }
     }    
 }
