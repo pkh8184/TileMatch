@@ -281,8 +281,8 @@ namespace TrumpTile.GameMain.Core
 
 		#region Input
 
-		private void OnMouseDown()
-		{		
+		public void TrySelect()
+		{
 			if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.Playing)
 			{
 				return;
