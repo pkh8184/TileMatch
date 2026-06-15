@@ -230,8 +230,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -0.0000011921456}
+  m_AnchoredPosition: {x: -1.4211121, y: 0}
+  m_SizeDelta: {x: -2.8422, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &314604155
 GameObject:
@@ -330,6 +330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c6491a54d5c0b84295930dcf601a29c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mTestCurrentStage: 1
+  mTestLastAlbumRewardedStage: 0
 --- !u!4 &433102400
 Transform:
   m_ObjectHideFlags: 0
@@ -728,6 +730,7 @@ GameObject:
   - component: {fileID: 661511416}
   - component: {fileID: 661511418}
   - component: {fileID: 661511419}
+  - component: {fileID: 661511420}
   m_Layer: 5
   m_Name: TitleView
   m_TagString: Untagged
@@ -790,6 +793,18 @@ MonoBehaviour:
   mLoadingSlider: {fileID: 947923544}
   mVersionCheckPopup: {fileID: 725408123}
   mVersionText: {fileID: 1680478217}
+--- !u!225 &661511420
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661511415}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &725408119
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,6 +817,7 @@ GameObject:
   - component: {fileID: 725408122}
   - component: {fileID: 725408121}
   - component: {fileID: 725408123}
+  - component: {fileID: 725408124}
   m_Layer: 5
   m_Name: PublicPopup_VersionCheck
   m_TagString: Untagged
@@ -884,6 +900,18 @@ MonoBehaviour:
   mShowDuration: 0.3
   mHideDuration: 0.3
   mPopupObj: {fileID: 765565552500207749}
+--- !u!225 &725408124
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 725408119}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &762488258
 GameObject:
   m_ObjectHideFlags: 0
