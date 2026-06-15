@@ -24,7 +24,7 @@ namespace TrumpTile.GameMain.UI
         [Header("탭하여 계속 텍스트")]
         [SerializeField] private GameObject mTapText;
         private int mCurrentCount;
-        private CanvasGroup mCanvasGroup;
+        private CanvasGroup mRewardCanvasGroup;
 
         private bool mbIsAnim;
         private bool mbComplete;
@@ -37,8 +37,8 @@ namespace TrumpTile.GameMain.UI
             mTapText.SetActive(false);
 
             mRewardObject.SetActive(false);
-            mCanvasGroup = mRewardObject.GetComponent<CanvasGroup>();
-            mCanvasGroup.alpha = 0;
+            mRewardCanvasGroup = mRewardObject.GetComponent<CanvasGroup>();
+            mRewardCanvasGroup.alpha = 0;
 
             mTapButton.onClick.AddListener(Tap);
 
@@ -112,7 +112,7 @@ namespace TrumpTile.GameMain.UI
 
             mSeq = DOTween.Sequence();
             mSeq.Append(mRewardObject.transform.DOScale(1, 1f).SetEase(Ease.OutBack));
-            mSeq.Join(mCanvasGroup.DOFade(1, 1f));
+            mSeq.Join(mRewardCanvasGroup.DOFade(1, 1f));
 
             mSeq.Append(mGoldText.transform.DOScale(1, 0.5f).SetEase(Ease.OutBack));
 
