@@ -326,6 +326,15 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
+			// 슬롯이 꽉 찬 경우(매치 타일 비행 중 포함) 보드에서 빼기 전에 막아 제자리 복귀 글리치 방지
+			if (SlotManager.Instance != null && SlotManager.Instance.CurrentTileCount >= SlotManager.Instance.MaxSlots)
+			{
+				if(mbIsShake) return;
+				PlayShakeAnimation();
+				AudioEvent.Play(EAudioKey.SFX_Reject);
+				return;
+			}
+
 			HandleTileSelected();
 		}
 
