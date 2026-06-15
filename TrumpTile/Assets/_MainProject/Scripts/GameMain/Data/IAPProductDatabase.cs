@@ -80,7 +80,7 @@ namespace TrumpTile.GameMain.Data
     {
         public override void GrantReward()
         {
-            PlayerDataManager.Inst.UnlockPiggyBank();
+            PlayerDataManager.Inst.PurchasePiggyBank();
         }
     }
 

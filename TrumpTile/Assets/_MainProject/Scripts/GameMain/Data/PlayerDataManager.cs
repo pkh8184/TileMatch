@@ -83,7 +83,9 @@ namespace TrumpTile.GameMain.Data
 		public int RouletteCount => mUserData.RouletteCount;
 		public int ExcitTravelIndex => mUserData.ExcitTravelIndex;
 		public bool IsExcitTravelActive => mUserData.IsExcitTravelActive;
-
+		public int PiggyBankStageClearCount => mUserData.PiggyBankStageClearCount;
+		public bool IsPiggyBankActive => mUserData.IsPiggyBankActive;
+		public bool PiggyBankPurchase => mUserData.PiggyBankPurchase;
 		#endregion
 
 		#region 재화
@@ -136,6 +138,11 @@ namespace TrumpTile.GameMain.Data
 				OnStageChanged?.Invoke(mUserData.CurrentStage.Value);
 			}
 			SaveStageStars(level, stars);
+
+			if(mUserData.IsPiggyBankActive)
+			{
+				mUserData.PiggyBankStageClearCount++;
+			}
 		}
 
 		public int GetStageStars(int level)
@@ -207,7 +214,7 @@ namespace TrumpTile.GameMain.Data
 			{
 				return;
 			}
-			Debug.Log("[PlayerDataManager] 광고 제거 해금 완료");
+			Debug.Log("[PlayerDataManager] 광고 제거 구독 완료");
 			mUserData.RemoveAds = true;
 		}
 		public void UnlockSeasonPass()
@@ -227,6 +234,15 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 돼지저금통 해금 완료");
 			mUserData.PiggyBankUnlock = true;
+		}
+		public void PurchasePiggyBank()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 돼지저금통 구매 완료");
+			mUserData.PiggyBankPurchase = true;
 		}
 		public void UnlockDailyCheck()
 		{
@@ -270,7 +286,35 @@ namespace TrumpTile.GameMain.Data
 		}
 
 	#endregion
+	#region 돼지저금통 시작 / 종료
+		public void StartPiggyBankContent()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 돼지저금통 컨텐트 시작");
+			mUserData.IsPiggyBankActive = true;
 
+			//캐싱해놓은 서버 기준 현재 시간 적용하기
+			//mUserData.PiggyBankActiveDate = 서버 기준 시간;
+		}
+		public void EndPiggyBankContent()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 돼지저금통 컨텐트 종료");
+			mUserData.IsPiggyBankActive = false;
+
+			mUserData.PiggyBankPurchase = false;
+			mUserData.PiggyBankStageClearCount = 0;
+
+			//캐싱해놓은 서버 기준 현재 시간 적용하기
+			//mUserData.PiggyBankUnActiveDate = 서버 기준 시간;
+		}
+	#endregion
 	#region Getters (기존)
 
 		public (bool BGMOn, bool SFXOn, bool HapticOn) GetUserSoundSettingDatas()
