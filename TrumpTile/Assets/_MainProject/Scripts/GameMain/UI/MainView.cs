@@ -18,6 +18,7 @@ namespace TrumpTile.GameMain.UI
 
         [Header("일일 퍼즐")]
         [SerializeField] private Button mDailyPuzzleButton;
+        [SerializeField] private CanvasGroup mDailyPuzzleButtonCanvasGroup;
         [SerializeField] private TMP_Text mDailyPuzzleButtonText;
 
         [Header("MainView 텍스트")]
@@ -59,7 +60,9 @@ namespace TrumpTile.GameMain.UI
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
             mDailyPuzzleButton.onClick.AddListener(OnDailyPuzzleButtonClick);
             mDailyPuzzleButton.interactable = false;
-            //InitializeDailyPuzzleAsync();
+            mDailyPuzzleButton.transform.localScale = Vector3.zero;
+            mDailyPuzzleButtonCanvasGroup.alpha = 0;
+            InitializeDailyPuzzleAsync();
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
 
             mLeftElementsRect.anchoredPosition = Vector2.left * 250;
@@ -168,7 +171,7 @@ namespace TrumpTile.GameMain.UI
         {
             bool bCleared = DailyPuzzleManager.Inst.IsTodayCleared;
             mDailyPuzzleButton.interactable = !bCleared;
-            mDailyPuzzleButton.GetComponent<CanvasGroup>().alpha = mDailyPuzzleButton.interactable? 1 : 0.5f;
+            mDailyPuzzleButtonCanvasGroup.alpha = mDailyPuzzleButton.interactable ? 1F : 0.5F;
             if (mDailyPuzzleButtonText != null)
             {
                 mDailyPuzzleButtonText.text = bCleared ? "완료" : "일일 퍼즐";
@@ -201,6 +204,10 @@ namespace TrumpTile.GameMain.UI
                 seq.Join(mSizeAdjustElementRectCanvasGroupList[i].DOFade(1, 0.7f / 1.5f));
                 i++;
             }
+
+            float targetAlpha = mDailyPuzzleButton.interactable ? 1F : 0.5F;
+            seq.Join(mDailyPuzzleButton.transform.DOScale(Vector3.one, 0.5f / 1.5f));
+            seq.Join(mDailyPuzzleButtonCanvasGroup.DOFade(targetAlpha, 0.7f / 1.5f));
         }
     }
 }

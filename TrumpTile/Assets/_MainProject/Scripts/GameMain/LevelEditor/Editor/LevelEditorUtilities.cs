@@ -557,6 +557,9 @@ namespace TrumpTile.LevelEditor.Editor
             if (!path.EndsWith(".asset"))
                 return;
 
+            if (AssetDatabase.GetMainAssetTypeAtPath(path) != typeof(LevelData))
+                return;
+
             LevelData level = AssetDatabase.LoadAssetAtPath<LevelData>(path);
 
             if (level == null)
