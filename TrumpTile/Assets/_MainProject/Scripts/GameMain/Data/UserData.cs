@@ -55,6 +55,7 @@ namespace TrumpTile.GameMain.Data
         public ObscuredBool DailyCheckUnlock;
         public ObscuredBool RouletteUnlock;
         public ObscuredBool ExcitTravelUnlock;
+        public ObscuredBool GemCollectionUnlock;
 
         //기타 데이터
         public readonly string UID;
@@ -78,7 +79,13 @@ namespace TrumpTile.GameMain.Data
         public ObscuredBool IsPiggyBankActive;
         public DateTime PiggyBankActiveDate;
         public DateTime PiggyBankUnActiveDate;
-
+        
+        //보석 수집 관련 데이터
+        public ObscuredBool IsGemCollectionActive;
+        public DateTime GemCollectionActiveDate;
+        public DateTime GemCollectionUnActiveDate;
+        public ObscuredInt GemCollectionIndex;
+        public ObscuredInt GemCount;
 
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
@@ -174,6 +181,11 @@ namespace TrumpTile.GameMain.Data
             PiggyBankStageClearCount = 0;
             IsPiggyBankActive = true;
             PiggyBankUnlock = false;
+
+            IsGemCollectionActive = true;
+            GemCollectionUnlock = false;
+            GemCollectionIndex = 0;
+            GemCount = 0;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
