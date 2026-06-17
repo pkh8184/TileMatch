@@ -43,6 +43,15 @@ namespace TrumpTile.GameMain.UI
         [Header("골드 스프라이트")]
         [SerializeField] private Sprite mGoldSprite;
 
+        [Header("젬이 날아갈 타겟 (GemCollection 슬라이더 등 직접 지정)")]
+        [SerializeField] private RectTransform mGemTargetRect;
+        [Header("젬 스프라이트")]
+        [SerializeField] private Sprite mGemSprite;
+        [Header("젬 카운트 텍스트 (할당 시 카운트업, 비우면 생략)")]
+        [SerializeField] private TMP_Text mGemText;
+        [Header("한 번에 생성할 젬 커버 최대 개수")]
+        [SerializeField] private int mMaxGemCover = 10;
+
         [Header("아이템 ID → 스프라이트 매핑")]
         [SerializeField] private ItemSpriteConfig[] mItemSpriteConfig;
 
@@ -57,6 +66,10 @@ namespace TrumpTile.GameMain.UI
         public event Action OnPlayComplete;
         /// <summary>골드 코인이 타겟에 도착할 때마다 호출 (샵 버튼 두근거림 등에 사용)</summary>
         public event Action OnGoldArrived;
+        /// <summary>젬이 타겟에 도착할 때마다 호출 (슬라이더 두근거림 등에 사용)</summary>
+        public event Action OnGemArrived;
+        /// <summary>젬 카운트업 진행 중 보간된 현재 값으로 호출 (GemCollection 슬라이더 연동용)</summary>
+        public event Action<int> OnGemValueChanged;
 
         /// <summary>커버 풀 생성. 뷰 Initialize에서 1회 호출.</summary>
         public void Initialize()
@@ -86,6 +99,27 @@ namespace TrumpTile.GameMain.UI
         {
             OnPlayStart?.Invoke();
             StartCoroutine(Co_PlaySingleReward(info));
+        }
+
+        /// <summary>골드만 단독 획득 연출 (보너스 레벨 골드 등). 골드량만 받아 기존 골드 연출을 재사용.</summary>
+        public void PlayGoldReward(int amount)
+        {
+            PlayReward(new RewardDisplayInfo { Type = ERewardType.Gold, Amount = amount });
+        }
+
+        /// <summary>
+        /// 젬만 단독 획득 연출. 젬 개수만 받음 (골드 단독 연출과 동일한 형태).
+        /// 생성 위치는 골드와 동일하고, 도착 위치는 mGemTargetRect.
+        /// 커버는 최대 mMaxGemCover(기본 10)개까지 생성하며, 그 이상 획득해도 개수 연출은 10개로 고정.
+        /// 도착 시 타겟을 두근거리게 하고(OnGemArrived도 호출), 골드와 동일하게 PlayerDataManager의
+        /// 현재 보유량 기준으로 (보유량-amount)→보유량 카운트업하며 mGemText / OnGemValueChanged(슬라이더 연동)를 갱신한다.
+        /// (호출 전에 젬이 이미 적립된 상태를 전제로 함 — 골드 연출과 동일한 계약)
+        /// </summary>
+        public void PlayGemReward(int amount)
+        {
+            OnPlayStart?.Invoke();
+            int current = PlayerDataManager.Inst.GemCollectionCount;
+            StartCoroutine(Co_GetGemReward(amount, current - amount, current));
         }
 
         /// <summary>패키지 보상(골드 + 아이템 여러 종류) 연출. 골드 먼저, 그다음 아이템.</summary>
@@ -250,6 +284,77 @@ namespace TrumpTile.GameMain.UI
             {
                 yield return countTween.WaitForCompletion();
             }
+        }
+
+        private IEnumerator Co_GetGemReward(int amount, int fromValue, int toValue)
+        {
+            //최대 mMaxGemCover개까지만 생성 (10개 초과 획득 시에도 10개만 연출)
+            int max = Mathf.Clamp(amount, 0, mMaxGemCover);
+
+            Sequence seq = DOTween.Sequence();
+            for(int i = 0; i < max; i++)
+            {
+                float randX = UnityEngine.Random.Range(-50, 50);
+                float randY = UnityEngine.Random.Range(-50, 50);
+
+                mRewardCoverPool[i].GetComponent<Image>().sprite = mGemSprite;
+                mRewardCoverPool[i].anchoredPosition += new Vector2(randX, randY);
+                mRewardCoverPool[i].localScale = Vector2.zero;
+                mRewardCoverPool[i].gameObject.SetActive(true);
+
+                seq.Insert(0.1f * i, mRewardCoverPool[i].DOScale(1.1f, 0.2f));
+                seq.Append(mRewardCoverPool[i].DOScale(1f, 0.1f));
+            }
+
+            //획득 수량(+N) 텍스트는 골드와 동일하게 중앙 표시 후 위로 떠오르며 사라짐
+            ShowRewardCountText(amount);
+            TMP_Text gemCountText = GetCountText(0);
+            if(gemCountText != null)
+            {
+                seq.Append(gemCountText.DOFade(0, 0.5f));
+                gemCountText.rectTransform.anchoredPosition = Vector2.zero;
+                seq.Join(gemCountText.rectTransform.DOLocalMoveY(50, 0.5f));
+            }
+
+            yield return seq.WaitForCompletion();
+
+            Sequence moveSeq = DOTween.Sequence();
+            for(int i = 0; i < max; i++)
+            {
+                RectTransform gem = mRewardCoverPool[i];
+                moveSeq.Insert(0.1f * i, gem.DOMove(mGemTargetRect.position, 0.3f).SetEase(Ease.InQuad)
+                    .OnComplete(() => {
+                        OnGemArrived?.Invoke();
+                        PulseTarget(mGemTargetRect);
+                        gem.gameObject.SetActive(false);
+                        gem.anchoredPosition = Vector2.zero;
+                    }));
+            }
+
+            //골드 갱신과 동일하게 카운트업: mGemText 텍스트 + OnGemValueChanged(슬라이더) 갱신
+            Tween countTween = null;
+            if(fromValue != toValue)
+            {
+                float val = fromValue;
+                countTween = DOTween.To(() => val, x =>
+                {
+                    val = x;
+                    int current = Mathf.RoundToInt(x);
+                    if(mGemText != null)
+                    {
+                        mGemText.text = current.ToString();
+                    }
+                    OnGemValueChanged?.Invoke(current);
+                }, toValue, 0.3f + 0.1f * max).SetDelay(0.31f);
+            }
+
+            yield return moveSeq.WaitForCompletion();
+            if(countTween != null)
+            {
+                yield return countTween.WaitForCompletion();
+            }
+
+            OnPlayComplete?.Invoke();
         }
 
         private IEnumerator Co_GetItemReward(List<RewardDisplayInfo> itemInfos)
