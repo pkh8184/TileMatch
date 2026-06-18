@@ -170,12 +170,12 @@ namespace TrumpTile.GameMain.UI
             mBonusLevelGoldRect.localScale = Vector3.one;
 
             sq.Append(mBonusLevelGoldRect.DOScale(Vector3.one * 1.3f, 0.1f).SetEase(Ease.OutBack));
-            float val = GameManager.Instance.BonusLevelGold - 3;
+            float val = CoreContainer.GetGoldCount - 3;
             sq.Join(DOTween.To(() => val, x =>
             {
                 val = x;
                 mBonusLevelGoldText.text = Mathf.RoundToInt(x).ToString();
-            }, GameManager.Instance.BonusLevelGold, 0.2f));
+            }, CoreContainer.GetGoldCount, 0.2f));
             sq.Append(mBonusLevelGoldRect.DOScale(Vector3.one, 0.1f).SetEase(Ease.InBack));
 
         }
@@ -217,8 +217,8 @@ namespace TrumpTile.GameMain.UI
         {
             var (levelData, isRetry) = ((LevelData, bool))obj;   
 
-            mBonusLevelGoldText.text = GameManager.Instance.BonusLevelGold.ToString();
-
+            mBonusLevelGoldText.text = CoreContainer.GetGoldCount.ToString();
+            mGemCountText.text = CoreContainer.GetGemCount.ToString();
             if(isRetry)
             {
                 UpdateBonusSlotButtonVisibility();

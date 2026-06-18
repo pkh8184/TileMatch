@@ -92,8 +92,6 @@ namespace TrumpTile.GameMain.Core
 		private int mComboCount;
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
-		private int mBonusLevelGold;
-		public int BonusLevelGold => mBonusLevelGold;
 		// 부활 관련
 		private bool mbIsTimeOut;
 		private int mCurrentReviveCount = 0;
@@ -282,6 +280,8 @@ namespace TrumpTile.GameMain.Core
 
 		private async Task StartLevelAsync(int levelNumber)
 		{
+			CoreContainer.GetGemCount = 0;
+			CoreContainer.GetGoldCount = 0;
 			int maxLevel = MaxLevel;
 			mCurrentLevelIndex = maxLevel > 0
 				? Mathf.Clamp(levelNumber - 1, 0, maxLevel - 1)
@@ -289,7 +289,6 @@ namespace TrumpTile.GameMain.Core
 
 			CurrentState = EGameState.Loading;
 
-			mBonusLevelGold = 0;
 
 			LoadingAnimComplete = false;
       		tutorialComplete = false;
@@ -483,11 +482,11 @@ namespace TrumpTile.GameMain.Core
 		#region Match Handler
 		public void IncreaseBonusGold()
 		{
-			mBonusLevelGold++;
+			CoreContainer.GetGoldCount++;
 		}
 		public void IncreaseBonusGoldWithMatch()
 		{
-			mBonusLevelGold += 3;
+			CoreContainer.GetGoldCount += 3;
 		}
 		private void OnMatchHandler(int matchedCount)
 		{
@@ -601,7 +600,8 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.GameClear;
 
 			AudioManager.Inst.SetBGMVolume(0.2f);
-			PlayerDataManager.Inst.AddGold(mBonusLevelGold);
+			PlayerDataManager.Inst.AddGold(CoreContainer.GetGoldCount);
+			PlayerDataManager.Inst.AddGemCount(CoreContainer.GetGemCount);
 			ItemManager.Inst.SaveItemCountsToServer();
 			UIManager.Instance?.DisableItemButtons();
 
