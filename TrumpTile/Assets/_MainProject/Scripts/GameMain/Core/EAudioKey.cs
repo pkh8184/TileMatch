@@ -58,5 +58,12 @@ namespace TrumpTile.GameMain.Core
 		SFX_Roulette_Winning,
 
 		SFX_GetReward_Gold,
+
+		// 보석 수집
+		SFX_Ingame_Collect_Gem,
+		SFX_Ingame_GemBox_Open,
+		SFX_Ingame_GemBox_Interaction,
+		SFX_Main_GemCollection_GaugeUp,
+		SFX_Main_GemCollection_GaugeUp_Complete,
 	}
 }
