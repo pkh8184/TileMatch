@@ -112,12 +112,9 @@ namespace TrumpTile.GameMain.UI
 
             mTopLevelNameRect.localScale = Vector3.zero;
 
-            if(GameManager.Instance.IsGemCollectActive)
-            {
-                mGemCollectionUI.SetActive(true);
-                mGemCountText = mGemCollectionUI.GetComponentInChildren<TMP_Text>();
-                mGemCountText.text = "x0";
-            }
+            mGemCollectionUI.SetActive(GameManager.Instance.IsGemCollectActive);
+            mGemCountText = mGemCollectionUI.GetComponentInChildren<TMP_Text>();
+            mGemCountText.text = "x0";
         }
         protected override void SubscribeEvent()
         {
