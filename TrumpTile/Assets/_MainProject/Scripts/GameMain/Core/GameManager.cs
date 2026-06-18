@@ -57,6 +57,8 @@ namespace TrumpTile.GameMain.Core
 		[Header("빌드 테스트용 참조")]
 		[SerializeField] private GameObject mBuildTestObject;
 		[SerializeField] private TMP_Text mBuildTestText;
+		[Header("젬 생성 테스트")]
+		[SerializeField] private bool mbGemTest;
 		private float mTimerLogAccumulator = 0F;
 		private bool mbIsRetry = false;
 
@@ -116,11 +118,17 @@ namespace TrumpTile.GameMain.Core
 			
 			PlayerDataManager.Inst?.Initialize();
 
-			// if(!ContentManager.Inst.GetContentData<GemCollectContent>("GemCollection").IsActive)
-			// {
-			// 	IsGemCollectActive = true;
-			// }
-			IsGemCollectActive = true;
+			if(ContentManager.Inst.GetContentData<GemCollectContent>("GemCollection") == null)
+			{
+				IsGemCollectActive = mbGemTest;
+			}
+			else
+			{
+				if(ContentManager.Inst.GetContentData<GemCollectContent>("GemCollection").IsActive)
+				{
+					IsGemCollectActive = true;
+				}	
+			}
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 

@@ -14,6 +14,7 @@ namespace TrumpTile.GameMain.Core
         private List<(int,int,int)> mOriginIndexList;
         private RectTransform mTargetRect;
         private bool mbIsAnim;
+        private Sequence mSeq;
         public void Initialize(int count, List<(int,int,int)> checkList, List<(int,int,int)> originList, int layer, Vector3 pos, Vector3 scale)
         {
             mGemCount = count;
@@ -26,7 +27,7 @@ namespace TrumpTile.GameMain.Core
             transform.position = pos;
             transform.localScale = scale;
 
-            for(int i = 1; i < 5; i++)
+            for(int i = 1; i < mSpriteRendererArray.Length - 1; i++)
             {
                 if(i <= mGemCount)
                 {
@@ -38,6 +39,25 @@ namespace TrumpTile.GameMain.Core
                 }
             }
             mTargetRect = GameObject.Find("Gem").transform.GetChild(0).GetComponent<RectTransform>();
+        }
+        public void InputInteraction()
+        {
+            if(mbIsAnim)
+            {
+                return;
+            }
+            if(mSeq != null && mSeq.active)
+            {
+                mSeq.Kill();
+            }
+            transform.rotation = Quaternion.identity;
+            mSeq = DOTween.Sequence();
+
+            mSeq.Append(transform.DORotate(new Vector3(0, 0, 10f), 0.1f).SetRelative().SetEase(Ease.InOutSine));
+            mSeq.Append(transform.DORotate(new Vector3(0, 0, -20f), 0.2f).SetRelative().SetEase(Ease.InOutSine));
+            mSeq.Append(transform.DORotate(new Vector3(0, 0, 10f), 0.1f).SetRelative().SetEase(Ease.InOutSine));
+
+            AudioEvent.Play(EAudioKey.SFX_Ingame_GemBox_Interaction);
         }
         public void CheckCanCollect()
         {
@@ -63,6 +83,7 @@ namespace TrumpTile.GameMain.Core
             seq.Append(transform.DORotate(new Vector3(0, 0, 10f), 0.1f).SetRelative().SetEase(Ease.InOutSine));
             seq.AppendInterval(0.1f);
 
+            seq.AppendCallback(() => AudioEvent.Play(EAudioKey.SFX_Ingame_GemBox_Open));
             Transform cover = mSpriteRendererArray[mSpriteRendererArray.Length - 1].transform;
             seq.Append(cover.DORotate(new Vector3(0, 0, -20f), 0.3f).SetRelative());
             seq.Join(cover.DOLocalMove(new Vector3(0.7f, 0.7f, 0), 0.3f));
@@ -80,7 +101,7 @@ namespace TrumpTile.GameMain.Core
 
             Sequence seq = DOTween.Sequence();
 
-            for(int i = 1; i <= mGemCount; i++)
+            for(int i = mGemCount; i >= 1; i--)
             {
                 Transform gem = mSpriteRendererArray[i].transform;
                 gem.SetParent(null);
@@ -92,6 +113,7 @@ namespace TrumpTile.GameMain.Core
                     gem.gameObject.SetActive(false);
                     CoreContainer.GetGemCount++;
                     EventManager.Inst.ActiveEvent("CollectGem");
+                    AudioEvent.Play(EAudioKey.SFX_Ingame_Collect_Gem);
                 });
             }
             seq.Append(mSpriteRendererArray[0].DOFade(0, 0.3f));

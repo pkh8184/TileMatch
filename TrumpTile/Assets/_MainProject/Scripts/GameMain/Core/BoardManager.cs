@@ -371,7 +371,7 @@ namespace TrumpTile.GameMain.Core
 
 				FindBlockTiles(tile.GridX + 1, tile.GridY - 1, tile.LayerIndex, checkList, originList);
 
-				gem.Initialize(gemCount, checkList, originList, tile.GetLayerSortingOrder() - 10, gemPos, gemScale);
+				gem.Initialize(gemCount, checkList, originList, tile.GetLayerSortingOrder() - 18, gemPos, gemScale);
 
 				mGemTileList.Add(gem);
 				gem.gameObject.name += tile.LayerIndex;
@@ -1268,6 +1268,7 @@ namespace TrumpTile.GameMain.Core
 
 			mAllTiles.Clear();
 			mTileGridMap.Clear();
+			mTileIdGroupMap.Clear();
 			mIsLevelLoaded = false;
 			mIsShuffling = false;
 			mLastPlacedTilePosition = Vector3.zero;
@@ -1438,6 +1439,10 @@ namespace TrumpTile.GameMain.Core
 			int count = 0;
 			foreach(var item in mTileIdGroupMap[id])
 			{
+				if(item == null)
+				{
+					continue;
+				}
 				if(item == tile)
 				{
 					continue;

@@ -57,6 +57,10 @@ namespace TrumpTile.GameMain.Core
         }
         public T GetContentData<T>(string contentName) where T : ContentBase
         {
+            if(mContentDatabase == null)
+            {
+                return null;
+            }
             return mContentDatabase.GetContentData<T>(contentName);
         }
     }    

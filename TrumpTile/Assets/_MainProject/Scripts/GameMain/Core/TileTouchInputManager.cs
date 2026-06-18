@@ -50,14 +50,16 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
-			foreach(var item in hits)
-			{
-				Debug.Log(item.name);
-			}
+			
 			TileController topTile = hits[0].GetComponent<TileController>();
 			if (topTile != null)
 			{
 				topTile.TrySelect();
+			}
+			GemTile gemTile = hits[0].GetComponent<GemTile>();
+			if(gemTile != null)
+			{
+				gemTile.InputInteraction();
 			}
 		}
 	}
