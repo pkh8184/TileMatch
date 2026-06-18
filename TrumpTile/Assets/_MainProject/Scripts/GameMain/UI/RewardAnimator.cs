@@ -2,18 +2,15 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
 {
-    /// <summary>
-    /// 보상(골드/아이템/패키지) 획득 연출 컴포넌트.
-    /// 뷰에 부착하고 PlayReward / PlayPackageReward 호출로 사용.
-    /// 뷰별로 달라지는 처리(입력 잠금, 버튼 두근거림 등)는 이벤트로 위임한다.
-    /// </summary>
     public class RewardAnimator : MonoBehaviour
     {
         [Serializable]
@@ -21,8 +18,6 @@ namespace TrumpTile.GameMain.UI
         {
             public int ItemId;
             public Sprite sprite;
-            [Tooltip("이 아이템이 날아갈 도착 위치. 비우면 공용 mItemTargetRect 사용")]
-            public RectTransform target;
         }
 
         [Header("커버 풀")]
@@ -33,45 +28,29 @@ namespace TrumpTile.GameMain.UI
         [Header("획득 카운트(+N) 텍스트 — 아이템 종류 수만큼 + 여유분(권장 5개) 할당")]
         [SerializeField] private TMP_Text[] mRewardCountTexts;
 
-        [Header("골드 HUD 텍스트 (할당 시 골드 카운트업, 비우면 생략)")]
-        [SerializeField] private TMP_Text mGoldText;
-
-        [Header("코인이 날아갈 타겟")]
-        [SerializeField] private RectTransform mGoldTargetRect;
-        [Header("아이템 공용 도착 타겟 (ItemSpriteConfig.target 미지정 시 폴백)")]
-        [SerializeField] private RectTransform mItemTargetRect;
+        // 골드
         [Header("골드 스프라이트")]
         [SerializeField] private Sprite mGoldSprite;
+        [Header("골드가 날아갈 타겟")]
+        [SerializeField] private RectTransform mGoldTargetRect;
 
-        [Header("젬이 날아갈 타겟 (GemCollection 슬라이더 등 직접 지정)")]
-        [SerializeField] private RectTransform mGemTargetRect;
-        [Header("젬 스프라이트")]
-        [SerializeField] private Sprite mGemSprite;
-        [Header("젬 카운트 텍스트 (할당 시 카운트업, 비우면 생략)")]
-        [SerializeField] private TMP_Text mGemText;
-        [Header("한 번에 생성할 젬 커버 최대 개수")]
-        [SerializeField] private int mMaxGemCover = 10;
-
-        [Header("아이템 ID → 스프라이트 매핑")]
-        [SerializeField] private ItemSpriteConfig[] mItemSpriteConfig;
-
+        // 아이템
+        [Header("아이템 스프라이트")]
+        [SerializeField] private Sprite[] mItemSpriteArray;
         [Header("아이템 종류가 여러개일 때 커버 사이 가로 간격")]
         [SerializeField] private float mItemRewardSpacing = 100f;
+        [Header("아이템이 날아갈 타겟 렉트")]
+        [SerializeField] private RectTransform mItemTargetRect;
+
+        // 젬
+        [Header("젬 스프라이트")]
+        [SerializeField] private Sprite mGemSprite;
+        [Header("젬이 날아갈 타겟 렉트")]
+        [SerializeField] private RectTransform mGemTargetRect;
 
         private List<RectTransform> mRewardCoverPool = new List<RectTransform>();
 
-        /// <summary>연출 시작 시 호출 (입력 잠금 등에 사용)</summary>
-        public event Action OnPlayStart;
-        /// <summary>연출 종료 시 호출 (입력 잠금 해제 등에 사용)</summary>
-        public event Action OnPlayComplete;
-        /// <summary>골드 코인이 타겟에 도착할 때마다 호출 (샵 버튼 두근거림 등에 사용)</summary>
-        public event Action OnGoldArrived;
-        /// <summary>젬이 타겟에 도착할 때마다 호출 (슬라이더 두근거림 등에 사용)</summary>
-        public event Action OnGemArrived;
-        /// <summary>젬 카운트업 진행 중 보간된 현재 값으로 호출 (GemCollection 슬라이더 연동용)</summary>
-        public event Action<int> OnGemValueChanged;
-
-        /// <summary>커버 풀 생성. 뷰 Initialize에서 1회 호출.</summary>
+        private bool mbIsPlaying;
         public void Initialize()
         {
             for(int i = 0; i < mPoolSize; i++)
@@ -93,146 +72,43 @@ namespace TrumpTile.GameMain.UI
                 }
             }
         }
-
-        /// <summary>단일 보상(골드 또는 아이템) 연출.</summary>
-        public void PlayReward(RewardDisplayInfo info)
+        public void PlayRewardAnim(Action OnPlayStart, Action OnPlayComplete)
         {
-            OnPlayStart?.Invoke();
-            StartCoroutine(Co_PlaySingleReward(info));
-        }
+            if(mbIsPlaying)
+            {
+                return;
+            }
+            
+            mbIsPlaying = true;
 
-        /// <summary>골드만 단독 획득 연출 (보너스 레벨 골드 등). 골드량만 받아 기존 골드 연출을 재사용.</summary>
-        public void PlayGoldReward(int amount)
-        {
-            PlayReward(new RewardDisplayInfo { Type = ERewardType.Gold, Amount = amount });
+            StartCoroutine(Co_PlayRewardAnim(OnPlayStart, OnPlayComplete));
         }
-
-        /// <summary>
-        /// 젬만 단독 획득 연출. 젬 개수만 받음 (골드 단독 연출과 동일한 형태).
-        /// 생성 위치는 골드와 동일하고, 도착 위치는 mGemTargetRect.
-        /// 커버는 최대 mMaxGemCover(기본 10)개까지 생성하며, 그 이상 획득해도 개수 연출은 10개로 고정.
-        /// 도착 시 타겟을 두근거리게 하고(OnGemArrived도 호출), 골드와 동일하게 PlayerDataManager의
-        /// 현재 보유량 기준으로 (보유량-amount)→보유량 카운트업하며 mGemText / OnGemValueChanged(슬라이더 연동)를 갱신한다.
-        /// (호출 전에 젬이 이미 적립된 상태를 전제로 함 — 골드 연출과 동일한 계약)
-        /// </summary>
-        public void PlayGemReward(int amount)
-        {
-            OnPlayStart?.Invoke();
-            int current = PlayerDataManager.Inst.GemCollectionCount;
-            StartCoroutine(Co_GetGemReward(amount, current - amount, current));
-        }
-
-        /// <summary>패키지 보상(골드 + 아이템 여러 종류) 연출. 골드 먼저, 그다음 아이템.</summary>
-        public void PlayPackageReward(List<ProductReward> rewards)
+        private IEnumerator Co_PlayRewardAnim(Action OnPlayStart, Action OnPlayComplete)
         {
             OnPlayStart?.Invoke();
 
-            int totalGold = 0;
-            List<RewardDisplayInfo> itemInfos = new List<RewardDisplayInfo>();
-            Dictionary<int, RewardDisplayInfo> itemLookup = new Dictionary<int, RewardDisplayInfo>();
-            foreach(ProductReward reward in rewards)
-            {
-                RewardDisplayInfo info = reward.GetRewardDisplayInfo();
-                if(info == null)
-                {
-                    continue;
-                }
-                if(info.Type == ERewardType.Gold)
-                {
-                    //골드는 여러 개로 들어와도 하나로 합산
-                    totalGold += info.Amount;
-                }
-                else if(info.Type == ERewardType.Item)
-                {
-                    //같은 종류 아이템은 ItemId 기준으로 개수만 합산, 커버는 한 번만 펼침
-                    if(itemLookup.TryGetValue(info.ItemId, out RewardDisplayInfo existing))
-                    {
-                        existing.Amount += info.Amount;
-                    }
-                    else
-                    {
-                        itemLookup.Add(info.ItemId, info);
-                        itemInfos.Add(info);
-                    }
-                }
-            }
+            yield return StartCoroutine(Co_GoldAnim());
 
-            //합산한 골드를 단일 연출용 정보로 변환 (없으면 비움)
-            List<RewardDisplayInfo> goldInfos = new List<RewardDisplayInfo>();
-            if(totalGold > 0)
-            {
-                goldInfos.Add(new RewardDisplayInfo { Type = ERewardType.Gold, Amount = totalGold });
-            }
+            yield return StartCoroutine(Co_ItemAnim());
 
-            StartCoroutine(Co_GetPackageReward(goldInfos, itemInfos));
-        }
-
-        private IEnumerator Co_PlaySingleReward(RewardDisplayInfo info)
-        {
-            if(info.Type == ERewardType.Gold)
-            {
-                ShowRewardCountText(info.Amount);
-                yield return Co_GetGoldReward(info.Amount);
-            }
-            else
-            {
-                //아이템 개수 텍스트는 Co_GetItemReward 내부에서 종류별 위치에 표시
-                yield return Co_GetItemReward(new List<RewardDisplayInfo>{ info });
-            }
+            yield return StartCoroutine(Co_GemAnim());
 
             OnPlayComplete?.Invoke();
-        }
 
-        private IEnumerator Co_GetPackageReward(List<RewardDisplayInfo> goldInfos, List<RewardDisplayInfo> itemInfos)
+            mbIsPlaying = false;
+        }
+        private IEnumerator Co_GoldAnim()
         {
-            //골드 먼저 기존 방식으로 지급 연출
-            foreach(var gold in goldInfos)
+            int amount = CoreContainer.RewardContainer.UseGold();
+            if(amount <= 0)
             {
-                ShowRewardCountText(gold.Amount);
-                yield return Co_GetGoldReward(gold.Amount);
+                yield break;
             }
 
-            //아이템: 종류별로 개수가 다를 수 있으므로 카운트 텍스트는 Co_GetItemReward 내부에서 종류별로 표시
-            if(itemInfos.Count > 0)
-            {
-                yield return Co_GetItemReward(itemInfos);
-            }
-
-            OnPlayComplete?.Invoke();
-        }
-
-        //골드/단일 보상용: 0번 텍스트를 중앙에 표시
-        private void ShowRewardCountText(int amount)
-        {
-            TMP_Text text = GetCountText(0);
-            if(text != null)
-            {
-                ShowRewardCountText(text, amount, Vector2.zero);
-            }
-        }
-
-        //지정한 텍스트를 지정 위치에 표시 (아이템 종류별)
-        private void ShowRewardCountText(TMP_Text text, int amount, Vector2 anchoredPos)
-        {
-            text.gameObject.SetActive(true);
-            text.text = "+" + amount.ToString();
-            text.color = Color.white;
-            text.rectTransform.anchoredPosition = anchoredPos;
-        }
-
-        private TMP_Text GetCountText(int index)
-        {
-            if(mRewardCountTexts == null || index < 0 || index >= mRewardCountTexts.Length)
-            {
-                return null;
-            }
-            return mRewardCountTexts[index];
-        }
-
-        private IEnumerator Co_GetGoldReward(int amount)
-        {
             Sequence seq = DOTween.Sequence();
+
             int max = Mathf.Min(20, amount / 10);
+
             for(int i = 0; i < max; i++)
             {
                 float randX = UnityEngine.Random.Range(-50,50);
@@ -246,56 +122,121 @@ namespace TrumpTile.GameMain.UI
                 seq.Insert(0.1f * i, mRewardCoverPool[i].DOScale(1.1f, 0.2f));
                 seq.Append(mRewardCoverPool[i].DOScale(1f, 0.1f));
             }
-            TMP_Text goldCountText = GetCountText(0);
-            if(goldCountText != null)
-            {
-                seq.Append(goldCountText.DOFade(0, 0.5f));
-                goldCountText.rectTransform.anchoredPosition = Vector2.zero;
-                seq.Join(goldCountText.rectTransform.DOLocalMoveY(50, 0.5f));
-            }
+
+            mRewardCountTexts[0].text = "+" + amount;
+            mRewardCountTexts[0].gameObject.SetActive(true);
+            mRewardCountTexts[0].rectTransform.anchoredPosition = Vector2.zero;
+            mRewardCountTexts[0].color = Color.white;
+
+            seq.Append(mRewardCountTexts[0].DOFade(0, 0.5f));
+            seq.Join(mRewardCountTexts[0].rectTransform.DOLocalMoveY(50, 0.5f));
 
             yield return seq.WaitForCompletion();
 
             Sequence moveSeq = DOTween.Sequence();
+
             for(int i = 0; i < max; i++)
             {
                 RectTransform coin = mRewardCoverPool[i];
                 moveSeq.Insert(0.1f * i, coin.DOMove(mGoldTargetRect.position, 0.3f).SetEase(Ease.InQuad)
                     .OnComplete(() => {
-                        OnGoldArrived?.Invoke();
                         coin.gameObject.SetActive(false);
                         coin.anchoredPosition = Vector2.zero;
+                        EventManager.Inst.ActiveEvent("GoldRewardArrived");
                     }));
             }
 
-            Tween countTween = null;
-            if(mGoldText != null)
-            {
-                float val = PlayerDataManager.Inst.Gold - amount;
-                countTween = DOTween.To(() => val, x =>
-                {
-                    val = x;
-                    mGoldText.text = Mathf.RoundToInt(x).ToString();
-                }, PlayerDataManager.Inst.Gold, 0.3f + 0.1f * max).SetDelay(0.31f);
-            }
+            float duration = 0.1f * (max - 1) + 0.3f;
+            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent("RefreshGoldText", (duration, amount)));
 
             yield return moveSeq.WaitForCompletion();
-            if(countTween != null)
-            {
-                yield return countTween.WaitForCompletion();
-            }
         }
-
-        private IEnumerator Co_GetGemReward(int amount, int fromValue, int toValue)
+        private IEnumerator Co_ItemAnim()
         {
-            //최대 mMaxGemCover개까지만 생성 (10개 초과 획득 시에도 10개만 연출)
-            int max = Mathf.Clamp(amount, 0, mMaxGemCover);
+            int[] items = CoreContainer.RewardContainer.UseItem();
+            int sum = items.Sum();
+            if(sum <= 0)
+            {
+                yield break;
+            }
+            int count = items.Count(x => x > 0);
+            //종류 수만큼 컨테이너 위치에서 가로로 펼쳐 오프셋(가운데 정렬)
+            float startX = -(count - 1) * 0.5f * mItemRewardSpacing;
+            
+            int interval = 0;
 
             Sequence seq = DOTween.Sequence();
+
+            for(int i = 0; i < items.Length; i++)
+            {
+                if(items[i] <= 0)
+                {
+                    continue;
+                }
+                RectTransform cover = mRewardCoverPool[interval];
+                cover.GetComponent<Image>().sprite = mItemSpriteArray[i];
+
+                Vector2 pos = new Vector2(startX + mItemRewardSpacing * interval, 0f);
+                cover.anchoredPosition = pos;
+                cover.localScale = Vector2.zero;
+                cover.gameObject.SetActive(true);
+
+                mRewardCountTexts[interval].text = "+" + items[i];
+                mRewardCountTexts[interval].gameObject.SetActive(true);
+                mRewardCountTexts[interval].rectTransform.anchoredPosition = pos;
+                mRewardCountTexts[interval].color = Color.white;
+
+                float t = 0.1f * interval;
+
+                seq.Insert(t, cover.DOScale(1.3f, 0.2f));
+                seq.Insert(t + 0.2f, cover.DOScale(1.2f, 0.1f));
+
+                seq.Insert(t + 0.3f, mRewardCountTexts[interval].DOFade(0, 0.5f));
+                seq.Insert(t + 0.3f, mRewardCountTexts[interval].rectTransform.DOLocalMoveY(50, 0.5f));
+
+                interval++;
+            }
+            yield return seq.WaitForCompletion();
+
+            interval = 0;
+            Sequence moveSeq = DOTween.Sequence();
+
+            for(int i = 0; i < items.Length; i++)
+            {
+                if(items[i] <= 0)
+                {
+                    continue;
+                }
+
+                RectTransform cover = mRewardCoverPool[interval];
+                //아이템 종류별 타겟 위치로 이동(종류별 미지정 시 공용 타겟)
+                moveSeq.Insert(0.1f * interval, cover.DOMove(mItemTargetRect.position, 0.3f).SetEase(Ease.InQuad)
+                    .OnComplete(() => {
+                        cover.gameObject.SetActive(false);
+                        cover.anchoredPosition = Vector2.zero;
+                        EventManager.Inst.ActiveEvent("ItemRewardArrived");
+                    }));
+
+                interval++;
+            }
+            yield return moveSeq.WaitForCompletion();
+        }
+        private IEnumerator Co_GemAnim()
+        {
+            int amount = CoreContainer.RewardContainer.UseGem();
+            if(amount <= 0)
+            {
+                yield break;
+            }
+
+            Sequence seq = DOTween.Sequence();
+
+            int max = Mathf.Min(10, amount);
+
             for(int i = 0; i < max; i++)
             {
-                float randX = UnityEngine.Random.Range(-50, 50);
-                float randY = UnityEngine.Random.Range(-50, 50);
+                float randX = UnityEngine.Random.Range(-30,30);
+                float randY = UnityEngine.Random.Range(-30,30);
 
                 mRewardCoverPool[i].GetComponent<Image>().sprite = mGemSprite;
                 mRewardCoverPool[i].anchoredPosition += new Vector2(randX, randY);
@@ -306,162 +247,32 @@ namespace TrumpTile.GameMain.UI
                 seq.Append(mRewardCoverPool[i].DOScale(1f, 0.1f));
             }
 
-            //획득 수량(+N) 텍스트는 골드와 동일하게 중앙 표시 후 위로 떠오르며 사라짐
-            ShowRewardCountText(amount);
-            TMP_Text gemCountText = GetCountText(0);
-            if(gemCountText != null)
-            {
-                seq.Append(gemCountText.DOFade(0, 0.5f));
-                gemCountText.rectTransform.anchoredPosition = Vector2.zero;
-                seq.Join(gemCountText.rectTransform.DOLocalMoveY(50, 0.5f));
-            }
+            mRewardCountTexts[0].text = "+" + amount;
+            mRewardCountTexts[0].gameObject.SetActive(true);
+            mRewardCountTexts[0].rectTransform.anchoredPosition = Vector2.zero;
+            mRewardCountTexts[0].color = Color.white;
+
+            seq.Append(mRewardCountTexts[0].DOFade(0, 0.5f));
+            seq.Join(mRewardCountTexts[0].rectTransform.DOLocalMoveY(50, 0.5f));
 
             yield return seq.WaitForCompletion();
 
             Sequence moveSeq = DOTween.Sequence();
+
             for(int i = 0; i < max; i++)
             {
-                RectTransform gem = mRewardCoverPool[i];
-                moveSeq.Insert(0.1f * i, gem.DOMove(mGemTargetRect.position, 0.3f).SetEase(Ease.InQuad)
+                RectTransform coin = mRewardCoverPool[i];
+                moveSeq.Insert(0.1f * i, coin.DOMove(mGemTargetRect.position, 0.3f).SetEase(Ease.InQuad)
                     .OnComplete(() => {
-                        OnGemArrived?.Invoke();
-                        PulseTarget(mGemTargetRect);
-                        gem.gameObject.SetActive(false);
-                        gem.anchoredPosition = Vector2.zero;
+                        coin.gameObject.SetActive(false);
+                        coin.anchoredPosition = Vector2.zero;
+                        EventManager.Inst.ActiveEvent("GemRewardArrived");
                     }));
             }
 
-            //골드 갱신과 동일하게 카운트업: mGemText 텍스트 + OnGemValueChanged(슬라이더) 갱신
-            Tween countTween = null;
-            if(fromValue != toValue)
-            {
-                float val = fromValue;
-                countTween = DOTween.To(() => val, x =>
-                {
-                    val = x;
-                    int current = Mathf.RoundToInt(x);
-                    if(mGemText != null)
-                    {
-                        mGemText.text = current.ToString();
-                    }
-                    OnGemValueChanged?.Invoke(current);
-                }, toValue, 0.3f + 0.1f * max).SetDelay(0.31f);
-            }
+            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent("RefreshGemUI", amount));
 
             yield return moveSeq.WaitForCompletion();
-            if(countTween != null)
-            {
-                yield return countTween.WaitForCompletion();
-            }
-
-            OnPlayComplete?.Invoke();
-        }
-
-        private IEnumerator Co_GetItemReward(List<RewardDisplayInfo> itemInfos)
-        {
-            int count = itemInfos.Count;
-            //종류 수만큼 컨테이너 위치에서 가로로 펼쳐 오프셋(가운데 정렬)
-            float startX = -(count - 1) * 0.5f * mItemRewardSpacing;
-
-            Sequence seq = DOTween.Sequence();
-            for(int i = 0; i < count; i++)
-            {
-                RectTransform cover = mRewardCoverPool[i];
-                ItemSpriteConfig config = FindItemConfig(itemInfos[i].ItemId);
-                if(config != null && config.sprite != null)
-                {
-                    cover.GetComponent<Image>().sprite = config.sprite;
-                }
-                Vector2 pos = new Vector2(startX + mItemRewardSpacing * i, 0f);
-                cover.anchoredPosition = pos;
-                cover.localScale = Vector2.zero;
-                cover.gameObject.SetActive(true);
-
-                //아이템 종류별 개수 텍스트를 해당 커버 위치에 표시
-                TMP_Text countText = GetCountText(i);
-                if(countText != null)
-                {
-                    ShowRewardCountText(countText, itemInfos[i].Amount, pos);
-                }
-
-                //아이템은 강조를 위해 1.2배로 키워서 유지(풀 반환 시 1로 초기화)
-                seq.Insert(0.1f * i, cover.DOScale(1.3f, 0.2f));
-                seq.Append(cover.DOScale(1.2f, 0.1f));
-            }
-
-            //개수 텍스트들: 커버 팝업 후 위로 떠오르며 사라짐(기존 연출과 동일)
-            bool bFirstFade = true;
-            for(int i = 0; i < count; i++)
-            {
-                TMP_Text countText = GetCountText(i);
-                if(countText == null)
-                {
-                    continue;
-                }
-                Tween fade = countText.DOFade(0, 0.5f);
-                if(bFirstFade)
-                {
-                    seq.Append(fade);
-                    bFirstFade = false;
-                }
-                else
-                {
-                    seq.Join(fade);
-                }
-                seq.Join(countText.rectTransform.DOAnchorPosY(countText.rectTransform.anchoredPosition.y + 50f, 0.5f));
-            }
-
-            yield return seq.WaitForCompletion();
-
-            Sequence moveSeq = DOTween.Sequence();
-            for(int i = 0; i < count; i++)
-            {
-                RectTransform cover = mRewardCoverPool[i];
-                //아이템 종류별 타겟 위치로 이동(종류별 미지정 시 공용 타겟)
-                RectTransform target = GetItemTarget(itemInfos[i].ItemId);
-                moveSeq.Insert(0.1f * i, cover.DOMove(target.position, 0.3f).SetEase(Ease.InQuad)
-                    .OnComplete(() => {
-                        cover.gameObject.SetActive(false);
-                        cover.anchoredPosition = Vector2.zero;
-                        PulseTarget(target);
-                    }));
-            }
-
-            yield return moveSeq.WaitForCompletion();
-        }
-
-        //아이템이 도착할 때마다 도착지점 렉트를 살짝 두근거리게 한다.
-        //직전 펄스를 DOComplete로 끝내 원래 스케일에서 시작하므로 연속 도착에도 스케일이 누적되지 않는다.
-        private void PulseTarget(RectTransform target)
-        {
-            if(target == null)
-            {
-                return;
-            }
-            target.DOComplete();
-            target.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
-        }
-
-        private ItemSpriteConfig FindItemConfig(int itemId)
-        {
-            foreach(var config in mItemSpriteConfig)
-            {
-                if(config.ItemId == itemId)
-                {
-                    return config;
-                }
-            }
-            return null;
-        }
-
-        private RectTransform GetItemTarget(int itemId)
-        {
-            ItemSpriteConfig config = FindItemConfig(itemId);
-            if(config != null && config.target != null)
-            {
-                return config.target;
-            }
-            return mItemTargetRect;
         }
     }
 }

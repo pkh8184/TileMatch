@@ -75,7 +75,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.Hide();
 
-            EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
+            EventManager.Inst.ActiveEvent("PlayRewardAnim");
             CoreContainer.RewardContainer.Clear();
             AdManager.Inst.ShowBannerAd();
         }

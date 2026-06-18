@@ -76,7 +76,7 @@ namespace TrumpTile.GameMain.Core
                 infos.Add(mFreeRewardArray[modifiedIndex].GetRewardDisplayInfo());
 
                 EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
-                CoreContainer.RewardContainer.AddElement(mFreeRewardArray[modifiedIndex]);
+                CoreContainer.RewardContainer.AddReward(mFreeRewardArray[modifiedIndex].GetRewardDisplayInfo());
                 mCurrentIndex++;
             }
         }
@@ -88,10 +88,9 @@ namespace TrumpTile.GameMain.Core
             List<RewardDisplayInfo> infos = IAPManager.Instance.GetRewardDisplayInfos(mPaidRewardIDArray[modifiedIndex]);
             EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
 
-            List<ProductReward> rewards = IAPManager.Instance.GetProductRewads(mPaidRewardIDArray[modifiedIndex]);
-            foreach(var item in rewards)
+            foreach(var item in infos)
             {
-                CoreContainer.RewardContainer.AddElement(item);   
+                CoreContainer.RewardContainer.AddReward(item);   
             }
 
             mCurrentIndex++;

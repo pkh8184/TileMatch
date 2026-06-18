@@ -83,7 +83,7 @@ namespace TrumpTile.GameMain.UI
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
 
-                EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
+                EventManager.Inst.ActiveEvent("PlayRewardAnim");
                 CoreContainer.RewardContainer.Clear();
             }); 
         }

@@ -86,7 +86,7 @@ namespace TrumpTile.GameMain.Core
             for(int i = 0; i <= mCurrentCheckPoint; i++)
             {
                 mRewardArray[i].GrantReward();
-                CoreContainer.RewardContainer.AddElement(mRewardArray[i]);
+                CoreContainer.RewardContainer.AddReward(mRewardArray[i].GetRewardDisplayInfo());
             }
             PlayerDataManager.Inst.EndPiggyBankContent();
         }

@@ -62,12 +62,12 @@ namespace TrumpTile.GameMain.UI
         {
             if(!gameObject.activeSelf) return;
 
-            List<ProductReward> rewards = IAPManager.Instance.GetProductRewads(EProductId.RemoveAds);
+            List<RewardDisplayInfo> rewards = IAPManager.Instance.GetRewardDisplayInfos(EProductId.RemoveAds);
             foreach(var item in rewards)
             {
-                CoreContainer.RewardContainer.AddElement(item);
+                CoreContainer.RewardContainer.AddReward(item);
             }
-            EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
+            EventManager.Inst.ActiveEvent("PlayRewardAnim");
             CoreContainer.RewardContainer.Clear();
 
             Hide();

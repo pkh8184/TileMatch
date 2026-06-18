@@ -56,6 +56,8 @@ namespace TrumpTile.GameMain.UI
         {
             base.Hide();
 
+            mCurrentPurchaseProductId = EProductId.None;
+
             if(GameManager.Instance != null)
             {
                 if(!PopupBase.IsAnyPopupOpen)
@@ -87,18 +89,21 @@ namespace TrumpTile.GameMain.UI
         }
         public void OnPurchaseSuccess()
         {
+            if(!gameObject.activeSelf)
+            {
+                return;    
+            }
             if(mCurrentPurchaseProductId == EProductId.None)
             {
                 return;
             }
 
-            List<ProductReward> rewards = IAPManager.Instance.GetProductRewads(mCurrentPurchaseProductId);
+            List<RewardDisplayInfo> rewards = IAPManager.Instance.GetRewardDisplayInfos(mCurrentPurchaseProductId);
             foreach(var item in rewards)
             {
-                CoreContainer.RewardContainer.AddElement(item);
+                CoreContainer.RewardContainer.AddReward(item);
             }
-            EventManager.Inst.ActiveEvent("GetPackageReward", CoreContainer.RewardContainer.GetContainer());
-            CoreContainer.RewardContainer.Clear();
+            EventManager.Inst.ActiveEvent("PlayRewardAnim");
 
             Hide();
         }

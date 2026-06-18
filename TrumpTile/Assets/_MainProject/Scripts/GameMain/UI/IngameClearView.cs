@@ -97,7 +97,7 @@ namespace TrumpTile.GameMain.UI
                 {
                     val = x;
                     mGoldText.text = Mathf.RoundToInt(x).ToString();
-                }, CoreContainer.GetGoldCount, 0.3f));
+                }, CoreContainer.RewardContainer.Gold, 0.3f));
             }
 
             seq.Append(mClearTextCanvasGroup.DOFade(1, 0.3f));

@@ -62,6 +62,7 @@ namespace TrumpTile.GameMain.UI
             mDailyPuzzleButton.interactable = false;
             mDailyPuzzleButton.transform.localScale = Vector3.zero;
             mDailyPuzzleButtonCanvasGroup.alpha = 0;
+
             InitializeDailyPuzzleAsync();
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
 
@@ -81,12 +82,7 @@ namespace TrumpTile.GameMain.UI
             mRightElementsRectCanvasGroup = mRightElementsRect.GetComponent<CanvasGroup>();
             mRightElementsRectCanvasGroup.alpha = 0;
 
-            Debug.Log(string.Format("Level_{0:D3}", PlayerDataManager.Inst?.CurrentStage));
-
             mRewardAnimator.Initialize();
-            mRewardAnimator.OnPlayStart += () => SetInteractable(false);
-            mRewardAnimator.OnPlayComplete += () => SetInteractable(true);
-            mRewardAnimator.OnGoldArrived += PulseShopButton;
 
             // 임시 (테이블로 교체해야함)
             LevelData level;
@@ -111,15 +107,19 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
             EventManager.Inst.AddEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
-            EventManager.Inst.AddEvent<RewardDisplayInfo>("GetReward", OnGetReward);
-            EventManager.Inst.AddEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
+            EventManager.Inst.AddEvent("PlayRewardAnim", PlayRewardAnim);
+            EventManager.Inst.AddEvent("GoldRewardArrived", PulseShopButton);
+            EventManager.Inst.AddEvent<(float,int)>("RefreshGoldText", GoldTextProgress);
+            EventManager.Inst.AddEvent("ItemRewardArrived", PulseStageButton);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
             EventManager.Inst?.RemoveEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
-            EventManager.Inst?.RemoveEvent<RewardDisplayInfo>("GetReward", OnGetReward);
-            EventManager.Inst?.RemoveEvent<List<ProductReward>>("GetPackageReward", OnGetPackageReward);
+            EventManager.Inst?.RemoveEvent("PlayRewardAnim", PlayRewardAnim);
+            EventManager.Inst?.RemoveEvent("GoldRewardArrived", PulseShopButton);
+            EventManager.Inst?.RemoveEvent<(float,int)>("RefreshGoldText", GoldTextProgress);
+            EventManager.Inst?.RemoveEvent("ItemRewardArrived", PulseStageButton);
         }
         protected override void Refresh()
         {
@@ -136,13 +136,9 @@ namespace TrumpTile.GameMain.UI
 
             Debug.Log($"[{name}] Refresh Local Data");
         }
-        private void OnGetReward(RewardDisplayInfo info)
+        private void PlayRewardAnim()
         {
-            mRewardAnimator.PlayReward(info);
-        }
-        private void OnGetPackageReward(List<ProductReward> rewards)
-        {
-            mRewardAnimator.PlayPackageReward(rewards);
+            mRewardAnimator.PlayRewardAnim(() => SetInteractable(false), () => SetInteractable(true));
         }
         private void PulseShopButton()
         {
@@ -151,6 +147,25 @@ namespace TrumpTile.GameMain.UI
             shopTransform.localScale = Vector3.one;
             shopTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
             AudioEvent.Play(EAudioKey.SFX_GetReward_Gold);
+        }
+        private void PulseStageButton()
+        {
+            Transform stageTransform = mStageStartButton.transform;
+            stageTransform.DOKill(true);
+            stageTransform.localScale = Vector3.one;
+            stageTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+        }
+        private void GoldTextProgress((float, int) data)
+        {
+            float duration = data.Item1;
+            int amount = data.Item2;
+            
+            int value = PlayerDataManager.Inst.Gold - amount;
+
+            DOTween.To(() => value, x =>
+            {
+                mGoldText.text = x.ToString();
+            },PlayerDataManager.Inst.Gold, duration);
         }
         private void OnStageButtonClick()
         {
@@ -208,6 +223,12 @@ namespace TrumpTile.GameMain.UI
             float targetAlpha = mDailyPuzzleButton.interactable ? 1F : 0.5F;
             seq.Join(mDailyPuzzleButton.transform.DOScale(Vector3.one, 0.5f / 1.5f));
             seq.Join(mDailyPuzzleButtonCanvasGroup.DOFade(targetAlpha, 0.7f / 1.5f));
+
+            seq.OnComplete(() => RewardProgress());
+        }
+        private void RewardProgress()
+        {
+            //mRewardAnimator.PlayGemReward(10);
         }
     }
 }

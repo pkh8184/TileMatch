@@ -288,8 +288,7 @@ namespace TrumpTile.GameMain.Core
 
 		private async Task StartLevelAsync(int levelNumber)
 		{
-			CoreContainer.GetGemCount = 0;
-			CoreContainer.GetGoldCount = 0;
+			CoreContainer.RewardContainer.Clear();
 			int maxLevel = MaxLevel;
 			mCurrentLevelIndex = maxLevel > 0
 				? Mathf.Clamp(levelNumber - 1, 0, maxLevel - 1)
@@ -490,11 +489,11 @@ namespace TrumpTile.GameMain.Core
 		#region Match Handler
 		public void IncreaseBonusGold()
 		{
-			CoreContainer.GetGoldCount++;
+			CoreContainer.RewardContainer.AddGold(1);
 		}
 		public void IncreaseBonusGoldWithMatch()
 		{
-			CoreContainer.GetGoldCount += 3;
+			CoreContainer.RewardContainer.AddGold(3);
 		}
 		private void OnMatchHandler(int matchedCount)
 		{
@@ -608,8 +607,8 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.GameClear;
 
 			AudioManager.Inst.SetBGMVolume(0.2f);
-			PlayerDataManager.Inst.AddGold(CoreContainer.GetGoldCount);
-			PlayerDataManager.Inst.AddGemCount(CoreContainer.GetGemCount);
+			PlayerDataManager.Inst.AddGold(CoreContainer.RewardContainer.Gold);
+			PlayerDataManager.Inst.AddGemCount(CoreContainer.RewardContainer.Gem);
 			ItemManager.Inst.SaveItemCountsToServer();
 			UIManager.Instance?.DisableItemButtons();
 

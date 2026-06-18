@@ -76,8 +76,9 @@ namespace TrumpTile.GameMain.Core
             {
                 item.GrantReward();
 
-                infos.Add(item.GetRewardDisplayInfo());
-                CoreContainer.RewardContainer.AddElement(item);
+                RewardDisplayInfo info = item.GetRewardDisplayInfo();
+                infos.Add(info);
+                CoreContainer.RewardContainer.AddReward(info);
             }
             EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
             

@@ -114,7 +114,7 @@ namespace TrumpTile.GameMain.Core
             }
 
             mRewardConfigArray[mCurrentRewardIndex].Reward.GrantReward();
-            CoreContainer.RewardContainer.AddElement(mRewardConfigArray[mCurrentRewardIndex].Reward);
+            CoreContainer.RewardContainer.AddReward(mRewardConfigArray[mCurrentRewardIndex].Reward.GetRewardDisplayInfo());
             mCurrentCount++;
 
             SetIsFree();

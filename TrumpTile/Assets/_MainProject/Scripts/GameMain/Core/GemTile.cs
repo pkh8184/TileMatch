@@ -111,7 +111,7 @@ namespace TrumpTile.GameMain.Core
                 seq.InsertCallback((0.1f * (i-1)) + 0.4f, () =>
                 {
                     gem.gameObject.SetActive(false);
-                    CoreContainer.GetGemCount++;
+                    CoreContainer.RewardContainer.AddGem(1);
                     EventManager.Inst.ActiveEvent("CollectGem");
                     AudioEvent.Play(EAudioKey.SFX_Ingame_Collect_Gem);
                 });
