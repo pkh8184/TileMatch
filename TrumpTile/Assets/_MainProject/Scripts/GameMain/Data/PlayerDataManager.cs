@@ -86,6 +86,9 @@ namespace TrumpTile.GameMain.Data
 		public int PiggyBankStageClearCount => mUserData.PiggyBankStageClearCount;
 		public bool IsPiggyBankActive => mUserData.IsPiggyBankActive;
 		public bool PiggyBankPurchase => mUserData.PiggyBankPurchase;
+		public bool IsGemCollectionActive => mUserData.IsGemCollectionActive;
+		public int GemCollectionIndex => mUserData.GemCollectionIndex;
+		public int GemCollectionCount => mUserData.GemCount;
 		#endregion
 
 		#region 재화
@@ -235,15 +238,6 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 돼지저금통 해금 완료");
 			mUserData.PiggyBankUnlock = true;
 		}
-		public void PurchasePiggyBank()
-		{
-			if(mUserData == null)
-			{
-				return;
-			}
-			Debug.Log("[PlayerDataManager] 돼지저금통 구매 완료");
-			mUserData.PiggyBankPurchase = true;
-		}
 		public void UnlockDailyCheck()
 		{
 			if(mUserData == null)
@@ -271,6 +265,15 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 기차 여행 해금 완료");
 			mUserData.ExcitTravelUnlock = true;	
 		}
+		public void UnlockGemCollection()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 보석 수집 해금 완료");
+			mUserData.GemCollectionUnlock = true;	
+		}
 
 	#endregion
 
@@ -286,7 +289,16 @@ namespace TrumpTile.GameMain.Data
 		}
 
 	#endregion
-	#region 돼지저금통 시작 / 종료
+	#region 돼지저금통 관련
+		public void PurchasePiggyBank()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 돼지저금통 구매 완료");
+			mUserData.PiggyBankPurchase = true;
+		}
 		public void StartPiggyBankContent()
 		{
 			if(mUserData == null)
@@ -313,6 +325,34 @@ namespace TrumpTile.GameMain.Data
 
 			//캐싱해놓은 서버 기준 현재 시간 적용하기
 			//mUserData.PiggyBankUnActiveDate = 서버 기준 시간;
+		}
+	#endregion
+	#region 보석 수집 관련
+		public void AddGemCount(int value)
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.GemCount += value;
+			if(mUserData.GemCount < 0) mUserData.GemCount = 0;
+		}
+		public void SetGemCount(int value)
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.GemCount = value;
+			if(mUserData.GemCount < 0) mUserData.GemCount = 0;
+		}
+		public void SetGemIndex(int value)
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.GemCollectionIndex = value;
 		}
 	#endregion
 	#region Getters (기존)

@@ -1029,6 +1029,10 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Utility
+		public int GetLayerSortingOrder()
+		{
+			return mBackgroundRenderer.sortingOrder;
+		}
 
 		public void StopAnimation()
 		{

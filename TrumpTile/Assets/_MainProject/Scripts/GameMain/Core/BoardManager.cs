@@ -29,8 +29,6 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] [Tooltip("보드 최대 크기가 6일 때 타일 사이즈")] private float mTileSize_6;
 		[SerializeField] [Tooltip("보드 최대 크기가 7일 때 타일 사이즈")] private float mTileSize_7;
 		[SerializeField] [Tooltip("보드 최대 크기가 8일 때 타일 사이즈")] private float mTileSize_8;
-		private float mTilePosOffsetX;
-		private float mTilePosOffsetY;
 		private float mMaxBoardSize;
 		private Vector3 mTileScale;
 
@@ -60,8 +58,6 @@ namespace TrumpTile.GameMain.Core
 		private int mGridHeight;
 		private int mOriginHeight;
 		private int mMaxLayers;
-		private float mBoardPivotX;
-		private float mBoardPivotY;
 
 		private Vector3[,,] mBoardMap;
 
@@ -72,7 +68,17 @@ namespace TrumpTile.GameMain.Core
 
 		[Header("LayerList 기반으로 레벨 생성(기존 레벨들은 false로 해줘야 생성 가능)")]
 		[SerializeField] private bool mbCreateTileByLayerList = false;
-
+		[Header("보석 수집 타일 프리팹")]
+		[SerializeField] private GameObject mGemTilePrefab;
+		[Header("보석 수집 타일 최소 / 최대 개수")]
+		[SerializeField] private int mGemTileMinCount = 1;
+		[SerializeField] private int mGemTileMaxCount = 4;
+		[Header("보석 수집 타일 하나당 보석 최소 / 최대 개수")]
+		[SerializeField] private int mGemMinCount = 1;
+		[SerializeField] private int mGemMaxCount = 4;
+		private List<GemTile> mGemTileList = new List<GemTile>();
+		private Vector3 mGemPos = Vector3.one * 10;
+		private Vector3 mGemOverlapTilePos = Vector3.one * 100;
 		// 마지막으로 배치된 타일 위치 저장
 		private Vector3 mLastPlacedTilePosition = Vector3.zero;
 
@@ -268,10 +274,200 @@ namespace TrumpTile.GameMain.Core
 			SetBonusTileRandom(levelData);
 			SetJewerlyTileValid();
 			UpdateAllBlockedStates();
+			CreateGemTile();
 
 			mIsLevelLoaded = true;
 			Log($"Level loaded: {createdCount} tiles, Grid: {mGridWidth}x{mGridHeight}, Layers: {mMaxLayers}");
 		}
+		private void CreateGemTile()
+		{
+			if(!GameManager.Instance.IsGemCollectActive)
+			{
+				return;
+			}
+			if(mGemTileList.Count > 0)
+			{
+				foreach(var item in mGemTileList)
+				{
+					Destroy(item.gameObject);
+				}
+			}
+			mGemTileList.Clear();
+
+			int createCount = Random.Range(mGemTileMinCount, mGemTileMaxCount + 1);
+
+			List<TileController> validTiles = new List<TileController>();
+			foreach(var item in mAllTiles)
+			{
+				if(item.GridX == mGridWidth - 1)
+				{
+					continue;
+				}
+				if(item.GridY == 0)
+				{
+					continue;
+				}
+				if(item.LayerIndex == 0)
+				{
+					continue;
+				}
+
+				validTiles.Add(item);
+			}
+			ShuffleList(validTiles);
+			List<TileController> prevTileList = new List<TileController>();
+			for(int i = 0; i < createCount; i++)
+			{
+				int gemCount = Random.Range(mGemMinCount, mGemMaxCount + 1);
+
+				TileController tile;
+				int add = 0;
+				while(true)
+				{   				
+					if(i + add >= validTiles.Count)
+					{
+						Debug.Log("더이상 유효한 젬 타일을 만들 수 없습니다");
+						return;
+					}
+					bool isOverlap = false;
+					tile = validTiles[i + add];
+					foreach(var item in prevTileList)
+					{
+						if(tile.LayerIndex == item.LayerIndex)
+						{
+							if(Mathf.Abs(tile.GridX - item.GridX) < 2 && Mathf.Abs(tile.GridY - item.GridY) < 2)
+							{
+								add++;
+								isOverlap = true;
+								break;
+							}
+						}
+					}
+					if(isOverlap)
+					{
+						continue;
+					}
+					break;
+				}
+				
+				prevTileList.Add(tile);
+				GemTile gem = Instantiate(mGemTilePrefab, transform).GetComponent<GemTile>();
+
+				Vector3 gemPos = GridToWorldPosition(tile.GridX,tile.GridY,tile.LayerIndex);
+				gemPos += Vector3.right * (mTileScale.x / 2);
+				gemPos += Vector3.down * (mTileScale.y / 2);
+				gemPos += Vector3.forward * 0.01f;
+
+				Vector3 gemScale = mTileScale * 2 - Vector3.forward;
+
+				List<(int,int,int)> checkList = new List<(int, int, int)>();
+				List<(int,int,int)> originList = new List<(int, int, int)>();
+				
+				FindBlockTiles(tile.GridX, tile.GridY, tile.LayerIndex, checkList, originList);
+
+				FindBlockTiles(tile.GridX + 1, tile.GridY, tile.LayerIndex, checkList, originList);
+
+				FindBlockTiles(tile.GridX, tile.GridY - 1, tile.LayerIndex, checkList, originList);
+
+				FindBlockTiles(tile.GridX + 1, tile.GridY - 1, tile.LayerIndex, checkList, originList);
+
+				gem.Initialize(gemCount, checkList, originList, tile.GetLayerSortingOrder() - 10, gemPos, gemScale);
+
+				mGemTileList.Add(gem);
+				gem.gameObject.name += tile.LayerIndex;
+			}
+
+		}
+		private void FindBlockTiles(int x, int y, int layerIndex, List<(int,int,int)> blockIndexList, List<(int,int,int)> originList)
+		{
+			originList.Add((x,y,layerIndex));
+			if(mBoardMap[x,y,layerIndex] == Vector3.zero)
+			{
+				mBoardMap[x,y,layerIndex] = mGemPos;
+			}
+			else
+			{
+				mBoardMap[x,y,layerIndex] = mGemOverlapTilePos;
+			}
+			int tileX = x;
+			int tileY = y;
+			int layer = layerIndex;
+					
+			int rangeX = 0;
+			if(mOriginWidth == 8)
+			{
+				if(layer % 2 == 0)
+				{
+					rangeX = -1;
+				}
+				else
+				{
+					rangeX = 1;
+				}
+			}
+			else
+			{
+				if(layer % 2 == 0)
+				{
+					rangeX = 1;
+				}
+				else
+				{
+					rangeX = -1;
+				}
+			}
+			int rangeY = 0;
+			if(mOriginHeight == 8)
+			{
+				if(layer % 2 == 0)
+				{
+					rangeY = -1;
+				}
+				else
+				{
+					rangeY = 1;
+				}
+			}
+			else
+			{
+				if(layer % 2 == 0)
+				{
+					rangeY = 1;
+				}
+				else
+				{
+					rangeY = -1;
+				}
+			}
+			int count = 1;
+			for(int i = layer + 1; i < MaxLayers; i++)
+			{
+				if(count % 2 == 0)
+				{
+					blockIndexList.Add((tileX, tileY, i));
+				}
+				else
+				{
+					blockIndexList.Add((tileX, tileY, i));
+					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					{
+						blockIndexList.Add((tileX + rangeX, tileY, i));
+					}
+					if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+					{
+						blockIndexList.Add((tileX, tileY + rangeY, i));
+					}
+					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					{
+						if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+						{
+							blockIndexList.Add((tileX + rangeX, tileY + rangeY, i));
+						}
+					}
+				}
+				count++;
+			}
+		}	
 		private void SetBonusTileRandom(LevelData level)
 		{
 			if(level.difficulty != EDifficultyType.Bonus)
@@ -596,6 +792,15 @@ namespace TrumpTile.GameMain.Core
 
 		public void UpdateAllBlockedStates()
 		{
+			foreach(var item in mGemTileList)
+			{
+				if(!item.gameObject.activeSelf)
+				{
+					continue;
+				}
+				item.CheckCanCollect();
+			}
+
 			foreach (TileController tile in mAllTiles)
 			{
 				if (tile != null && !tile.IsInSlot)
@@ -622,11 +827,19 @@ namespace TrumpTile.GameMain.Core
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap.Remove(gridPos);
 
-			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
+			if(mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] == mGemOverlapTilePos)
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = mGemPos;
+			}
+			else
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
+			}
+
 			mTileIdGroupMap[tile.TileTypeId].Remove(tile);
 			
 			UpdateAllBlockedStates();
-
+			
 			Log($"Tile removed from board: {tile.TileTypeId}");
 		}
 		public void RemoveTileFromBoardBeforeAdd(TileController tile, bool bProcessBonus = true)
@@ -639,7 +852,15 @@ namespace TrumpTile.GameMain.Core
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap.Remove(gridPos);
 			
-			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
+			if(mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] == mGemOverlapTilePos)
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = mGemPos;
+			}
+			else
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.zero;
+			}
+			
 			mTileIdGroupMap[tile.TileTypeId].Remove(tile);
 			
 			UpdateAllBlockedStates();
@@ -660,7 +881,14 @@ namespace TrumpTile.GameMain.Core
 
 			Vector3Int origGridPos = new Vector3Int(origX, origY, origLayer);
 
-			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.one;
+			if(mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] == mGemPos)
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = mGemOverlapTilePos;
+			}
+			else
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.one;
+			}
 
 			if (!mTileGridMap.ContainsKey(origGridPos))
 			{
@@ -761,7 +989,14 @@ namespace TrumpTile.GameMain.Core
 			Vector3Int gridPos = new Vector3Int(tile.GridX, tile.GridY, tile.LayerIndex);
 			mTileGridMap[gridPos] = tile;
 			
-			mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.one;
+			if(mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] == mGemPos)
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = mGemOverlapTilePos;
+			}
+			else
+			{
+				mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] = Vector3.one;
+			}
 
 			mLastPlacedTilePosition = tile.transform.position;
 
@@ -930,6 +1165,41 @@ namespace TrumpTile.GameMain.Core
 		#endregion
 
 		#region Utility
+		public bool CheckBoardMapEmpty(List<(int,int,int)> checkList, List<(int,int,int)> originList, GemTile self)
+		{
+			foreach(var item in originList)
+			{
+				int x = item.Item1;
+				int y = item.Item2;
+				int layer = item.Item3;
+
+				if(mBoardMap[x,y,layer] != Vector3.zero && mBoardMap[x,y,layer] != mGemPos)
+				{
+					Debug.Log($"오리진 인덱스에 아직 타일 있음({x},{y},{layer})");
+					return false;
+				}
+			}
+			foreach(var item in checkList)
+			{
+				int x = item.Item1;
+				int y = item.Item2;
+				int layer = item.Item3;
+				
+				if(mBoardMap[x,y,layer] != Vector3.zero)
+				{
+					return false;
+				}
+			}
+			foreach(var item in originList)
+			{
+				int x = item.Item1;
+				int y = item.Item2;
+				int layer = item.Item3;
+
+				mBoardMap[x,y,layer] = Vector3.zero;
+			}
+			return true;
+		}
 		public Vector3 GridToWorldPosition(float x, float y, int layer)
 		{
 			float offsetX = 0;
