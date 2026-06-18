@@ -285,6 +285,14 @@ namespace TrumpTile.GameMain.Core
 			{
 				return;
 			}
+			if(mGemTileList.Count > 0)
+			{
+				foreach(var item in mGemTileList)
+				{
+					Destroy(item.gameObject);
+				}
+			}
+			mGemTileList.Clear();
 
 			int createCount = Random.Range(mGemTileMinCount, mGemTileMaxCount + 1);
 

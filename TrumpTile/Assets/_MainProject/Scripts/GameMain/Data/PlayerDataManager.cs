@@ -328,6 +328,15 @@ namespace TrumpTile.GameMain.Data
 		}
 	#endregion
 	#region 보석 수집 관련
+		public void AddGemCount(int value)
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.GemCount += value;
+			if(mUserData.GemCount < 0) mUserData.GemCount = 0;
+		}
 		public void SetGemCount(int value)
 		{
 			if(mUserData == null)
