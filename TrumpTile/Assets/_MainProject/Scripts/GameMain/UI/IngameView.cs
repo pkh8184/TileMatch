@@ -78,6 +78,11 @@ namespace TrumpTile.GameMain.UI
         private Sequence mBallonSequence;
         private float mBallonBaseY;
         private bool mbBallonBaseYCached;
+        [Header("보석 수집 UI")]
+        [SerializeField] private GameObject mGemCollectionUI;
+        private TMP_Text mGemCountText;
+
+
         public override void Initialize()
         {
             base.Initialize();
@@ -106,6 +111,13 @@ namespace TrumpTile.GameMain.UI
             RefreshButtons();
 
             mTopLevelNameRect.localScale = Vector3.zero;
+
+            if(GameManager.Instance.IsGemCollectActive)
+            {
+                mGemCollectionUI.SetActive(true);
+                mGemCountText = mGemCollectionUI.GetComponentInChildren<TMP_Text>();
+                mGemCountText.text = "x0";
+            }
         }
         protected override void SubscribeEvent()
         {
@@ -118,6 +130,7 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
             EventManager.Inst.AddEvent("BonusTileMatch", OnBonusTileMatched);
             EventManager.Inst.AddEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
+            EventManager.Inst.AddEvent("CollectGem", CollectGem);
 
             PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
         }
@@ -130,13 +143,21 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("PurchaseItem", PurchaseItem);
             EventManager.Inst?.RemoveEvent("BonusTileMatch", OnBonusTileMatched);
             EventManager.Inst?.RemoveEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
+            EventManager.Inst?.RemoveEvent("CollectGem", CollectGem);
 
             if(PlayerDataManager.Inst != null)
             {
                 PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;
             }
         }
-
+        private void CollectGem()
+        {
+            mGemCountText.text = "x" + CoreContainer.GetGemCount.ToString();
+            Transform gemTransform = mGemCollectionUI.transform;
+            gemTransform.DOKill(true);
+            gemTransform.localScale = Vector3.one;
+            gemTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+        }
         private void UpdateBonusSlotButtonVisibility()
         {
             bool bAdsRemoved = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;

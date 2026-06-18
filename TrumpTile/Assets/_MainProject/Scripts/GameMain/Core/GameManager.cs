@@ -102,7 +102,7 @@ namespace TrumpTile.GameMain.Core
 		// 튜토리얼 체크
 		public bool tutorialComplete { get; set; }
 		public bool IsTimerFrozen => mIsTimerFrozen;
-
+		public bool IsGemCollectActive {get; private set;}
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
 		public event System.Action<int> OnComboChanged;
@@ -115,8 +115,14 @@ namespace TrumpTile.GameMain.Core
 			Instance = this;
 
 			tutorialComplete = false;
-
+			
 			PlayerDataManager.Inst?.Initialize();
+
+			// if(!ContentManager.Inst.GetContentData<GemCollectContent>("GemCollection").IsActive)
+			// {
+			// 	IsGemCollectActive = true;
+			// }
+			IsGemCollectActive = true;
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
