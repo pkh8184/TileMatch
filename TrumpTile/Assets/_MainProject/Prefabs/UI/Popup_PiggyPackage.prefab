@@ -6347,7 +6347,7 @@ RectTransform:
   m_Father: {fileID: 2740866893634072778}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12827,7 +12827,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7080103166841032783
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19010,15 +19010,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3759362856164780996, guid: 94ea33c77aae55a45bd0a19a3f173f50, type: 3}
       propertyPath: InitialModule.startColor.minColor.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3759362856164780996, guid: 94ea33c77aae55a45bd0a19a3f173f50, type: 3}
       propertyPath: InitialModule.startColor.minColor.g
-      value: 0.43595994
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3759362856164780996, guid: 94ea33c77aae55a45bd0a19a3f173f50, type: 3}
       propertyPath: InitialModule.startColor.minColor.r
-      value: 0.6981132
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3759362856164780996, guid: 94ea33c77aae55a45bd0a19a3f173f50, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 6999019470295490409, guid: 94ea33c77aae55a45bd0a19a3f173f50, type: 3}
       propertyPath: m_LocalScale.x
@@ -19076,6 +19080,10 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7686026668387704995, guid: 94ea33c77aae55a45bd0a19a3f173f50, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f790d085a444cfa4b8e94a6becd24248, type: 2}
     - target: {fileID: 7722829554564655650, guid: 94ea33c77aae55a45bd0a19a3f173f50, type: 3}
       propertyPath: m_Name
       value: Fx_PiggyBank_Boom
