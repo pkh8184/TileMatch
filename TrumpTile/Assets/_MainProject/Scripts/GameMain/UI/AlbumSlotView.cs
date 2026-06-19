@@ -15,7 +15,9 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private Image         mAlbumImage;
 		[SerializeField] private GameObject    mLockImage;
 		[SerializeField] private RectTransform mLockIcon;		// 흔들 자물쇠 아이콘(텍스트와 분리)
-		[SerializeField] private TMP_Text      mNumberText;
+		[SerializeField] private TMP_Text[]    mTitleTexts;
+		[SerializeField] private TMP_Text[]    mNumberTexts;
+		[SerializeField] private TMP_Text[]    mStageTexts;
 		[SerializeField] private Button        mButton;
 
 		private TBPictureCollectData mPictureData;
@@ -42,9 +44,13 @@ namespace TrumpTile.GameMain.UI
 			mState       = state;
 			mOnClick     = onClick;
 
-			mNumberText.text = $"No. {number}";
+			bool bViewable  = state != EAlbumPictureState.Locked;
+			string titleText = bViewable ? LocalizeManager.Inst.GetString(picture.PictureNameId) : string.Empty;
 
-			bool bViewable = state != EAlbumPictureState.Locked;
+			foreach (TMP_Text text in mTitleTexts)  text.text = titleText;
+			foreach (TMP_Text text in mNumberTexts) text.text = $"No. {number}";
+			foreach (TMP_Text text in mStageTexts)  text.text = $"Stage. {picture.StageValue}";
+
 			mLockImage.SetActive(!bViewable);
 			mAlbumImage.gameObject.SetActive(bViewable);
 
