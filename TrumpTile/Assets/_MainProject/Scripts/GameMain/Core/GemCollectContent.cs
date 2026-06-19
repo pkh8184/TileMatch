@@ -43,6 +43,7 @@ namespace TrumpTile.GameMain.Core
             base.Refresh();
 
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
+            Debug.Log($"[GemCollectContent] 현재 젬 개수 : {mCurrentGemCount}");
         }
         public override void CheckUnlock()
         {
@@ -80,7 +81,7 @@ namespace TrumpTile.GameMain.Core
                 infos.Add(info);
                 CoreContainer.RewardContainer.AddReward(info);
             }
-            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
+            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.Custom, target = new Vector2(235, 79), parentName = "Contents_GemCollect"});
             
             mCurrentGemCount -= mRequiredGemCountArray[mCurrentIndex];
             PlayerDataManager.Inst.SetGemCount(mCurrentGemCount);
@@ -95,6 +96,10 @@ namespace TrumpTile.GameMain.Core
         public int GetCurrentRequiredGem()
         {
             return mRequiredGemCountArray[mCurrentIndex];
+        }
+        public int GetNextRequiredGem(int step)
+        {
+            return mRequiredGemCountArray[mCurrentIndex + step];
         }
         public int GetCurrentIndex()
         {

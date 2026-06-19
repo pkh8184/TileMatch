@@ -13,12 +13,15 @@ namespace TrumpTile.GameMain.UI
     {
         ViewContent,
         PopupContent,
+        Custom,
         None
     }
     public class MiniRewardPayload
     {
         public List<RewardDisplayInfo> Infos;
         public EMiniRewardAnimType Type = EMiniRewardAnimType.None;
+        public Vector2 target = Vector2.zero;
+        public string parentName;
     }
     public class MiniRewardAnimator : MonoBehaviour
     {
@@ -64,13 +67,17 @@ namespace TrumpTile.GameMain.UI
             {
                 transformName = "Canvas_View";
             }
-            else
+            else if(payload.Type == EMiniRewardAnimType.PopupContent)
             {
                 transformName = "Canvas_Popup";
             }
-            PlayAnim(GameObject.Find(transformName).transform, payload.Infos);
+            else
+            {
+                transformName = payload.parentName;
+            }
+            PlayAnim(GameObject.Find(transformName).transform, payload.Infos, payload.target);
         }
-        private void PlayAnim(Transform parent, List<RewardDisplayInfo> info)
+        private void PlayAnim(Transform parent, List<RewardDisplayInfo> info, Vector2 target)
         {
             int count = info.Count;
             float pivot = count % 2 == 1? 0 : -(mPlacementWidth / 2);
@@ -86,8 +93,9 @@ namespace TrumpTile.GameMain.UI
             }
 
             transform.SetParent(parent);
+            Vector2 pos = target == Vector2.zero? Vector2.up * mStartPosY : target;
 
-            mRect.anchoredPosition = Vector2.up * mStartPosY;
+            mRect.anchoredPosition = pos;
             mCanvasGroup.alpha = 1;
             for(int i = 0; i < count; i++)
             {
@@ -99,7 +107,7 @@ namespace TrumpTile.GameMain.UI
             }
 
             animSeq = DOTween.Sequence();
-            animSeq.Append(mRect.DOAnchorPosY(mStartPosY + 100f , mDuration));
+            animSeq.Append(mRect.DOAnchorPosY(pos.y + 100f , mDuration));
             animSeq.Join(mCanvasGroup.DOFade(0, mDuration));
         }
     }   
