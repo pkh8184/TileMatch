@@ -109,6 +109,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnRefreshLanguage()
         {
+            Refresh();
             SetTMP_TextIsRTL();
         }
 
