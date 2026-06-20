@@ -41,7 +41,7 @@ namespace TrumpTile.GameMain.Data
 		private int mSelectedStage = 0;
 
 		[Header("에디터 테스트용 (Firebase 없이 실행 시 적용)")]
-		[SerializeField] private int mTestCurrentStage           = 1;
+		[SerializeField] private int mTestCurrentStage = 1;
 		[SerializeField] private int mTestLastAlbumRewardedStage = 0;
 
 		public event Action OnGoldChanged;
@@ -66,13 +66,13 @@ namespace TrumpTile.GameMain.Data
 
 			mUserData = new UserData();
 			mUserData.InitOnlyLoacalData();
-			mUserData.CurrentStage.Value      = mTestCurrentStage;
+			mUserData.CurrentStage = mTestCurrentStage;
 			mUserData.LastAlbumRewardedStage  = mTestLastAlbumRewardedStage;
 		}
 		#region 프로퍼티
 
-		public int Gold => mUserData != null ? mUserData.Gold.Value : 0;
-		public int CurrentStage => mUserData != null ? mUserData.CurrentStage.Value : 1;
+		public int Gold => mUserData != null ? mUserData.Gold : 0;
+		public int CurrentStage => mUserData != null ? mUserData.CurrentStage : 1;
 		public int MaxClearedStage => CurrentStage - 1;
 		public int SelectedStage => mSelectedStage;
 		public string UID => mUserData?.UID ?? string.Empty;
@@ -101,7 +101,7 @@ namespace TrumpTile.GameMain.Data
 			{
 				return;
 			}
-			mUserData.Gold.Value += amount;
+			mUserData.Gold += amount;
 			OnGoldChanged?.Invoke();
 		}
 
@@ -111,7 +111,7 @@ namespace TrumpTile.GameMain.Data
 			{
 				return false;
 			}
-			mUserData.Gold.Value -= amount;
+			mUserData.Gold -= amount;
 			OnGoldChanged?.Invoke();
 			return true;
 		}
@@ -137,8 +137,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			if (level >= CurrentStage)
 			{
-				mUserData.CurrentStage.Value = level + 1;
-				OnStageChanged?.Invoke(mUserData.CurrentStage.Value);
+				mUserData.CurrentStage = level + 1;
+				OnStageChanged?.Invoke(mUserData.CurrentStage);
 			}
 			SaveStageStars(level, stars);
 
@@ -173,8 +173,8 @@ namespace TrumpTile.GameMain.Data
 			{
 				return 0;
 			}
-			ObscuredInt count;
-			return mUserData.ItemCounts.TryGetValue(itemId, out count) ? count.Value : 0;
+			int count;
+			return mUserData.ItemCounts.TryGetValue(itemId, out count) ? count : 0;
 		}
 
 		public void SetItemCount(int itemId, int count)
@@ -201,9 +201,9 @@ namespace TrumpTile.GameMain.Data
 			{
 				return result;
 			}
-			foreach (KeyValuePair<int, ObscuredInt> pair in mUserData.ItemCounts)
+			foreach (KeyValuePair<int, int> pair in mUserData.ItemCounts)
 			{
-				result[pair.Key] = pair.Value.Value;
+				result[pair.Key] = pair.Value;
 			}
 			return result;
 		}
@@ -479,10 +479,10 @@ namespace TrumpTile.GameMain.Data
 			switch (ePlayerDataType)
 			{
 				case EPlayerDataType.Gold:
-					data = mUserData.Gold.Value.ToString("N0");
+					data = mUserData.Gold.ToString("N0");
 					break;
 				case EPlayerDataType.Star:
-					data = mUserData.Star.Value.ToString("N0");
+					data = mUserData.Star.ToString("N0");
 					break;
 				case EPlayerDataType.Bomb:
 					data = GetItemCount(1008).ToString("N0");

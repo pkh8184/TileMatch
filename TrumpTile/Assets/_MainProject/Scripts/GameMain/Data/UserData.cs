@@ -22,24 +22,24 @@ namespace TrumpTile.GameMain.Data
         public int LocaleIndex;
 
         //광고 제거 여부
-        public ObscuredBool RemoveAds;
+        public bool RemoveAds;
 
         //스테이지 관련 데이터
-        public ObscuredInt CurrentStage;
-        public ObscuredInt FirstTryClearCount;
-        public ObscuredInt MaxStreakClearStageCount;
+        public int CurrentStage;
+        public int FirstTryClearCount;
+        public int MaxStreakClearStageCount;
 
         //재화 데이터
-        public ObscuredInt Gold;
-        public ObscuredInt Star;
+        public int Gold;
+        public int Star;
 
         //아이템 데이터 (key: ItemId, value: 보유 개수)
-        public Dictionary<int, ObscuredInt> ItemCounts;
+        public Dictionary<int, int> ItemCounts;
 
         //하우징 데이터
-        public ObscuredInt CurrentHousingChapter;
-        public ObscuredInt CurrentHousingSubChapter;
-        public ObscuredInt CompletedChapterCount;
+        public int CurrentHousingChapter;
+        public int CurrentHousingSubChapter;
+        public int CompletedChapterCount;
 
         // 앨범 수집 데이터
         public int LastAlbumRewardedStage;
@@ -47,45 +47,45 @@ namespace TrumpTile.GameMain.Data
         //로그인 데이터
         public DateTime FirstLoginDate;
         public DateTime CurrentLoginDate;
-        public ObscuredInt MaxStreakLoginCount;
+        public int MaxStreakLoginCount;
 
         //컨텐츠 구독 데이터
-        public ObscuredBool SeasonPassUnlock;
-        public ObscuredBool PiggyBankUnlock;
-        public ObscuredBool DailyCheckUnlock;
-        public ObscuredBool RouletteUnlock;
-        public ObscuredBool ExcitTravelUnlock;
-        public ObscuredBool GemCollectionUnlock;
+        public bool SeasonPassUnlock;
+        public bool PiggyBankUnlock;
+        public bool DailyCheckUnlock;
+        public bool RouletteUnlock;
+        public bool ExcitTravelUnlock;
+        public bool GemCollectionUnlock;
 
         //기타 데이터
         public readonly string UID;
         public readonly string TermsAndConditionVersion;
 
         //출석체크 관련 데이터
-        public ObscuredInt StreakLoginCount;
-        public ObscuredBool IsFirstLoginToday;
+        public int StreakLoginCount;
+        public bool IsFirstLoginToday;
 
         //룰렛 관련 데이터
-        public ObscuredInt RouletteCount;
+        public int RouletteCount;
         //기차 여행 관련 데이터
-        public ObscuredInt ExcitTravelIndex;
-        public ObscuredBool IsExcitTravelActive;
+        public int ExcitTravelIndex;
+        public bool IsExcitTravelActive;
         public DateTime ExcitTravelActiveDate;
         public DateTime ExcitTravelUnActiveDate;
         
         //돼지저금통 관련 데이터
-        public ObscuredBool PiggyBankPurchase;
-        public ObscuredInt PiggyBankStageClearCount;
-        public ObscuredBool IsPiggyBankActive;
+        public bool PiggyBankPurchase;
+        public int PiggyBankStageClearCount;
+        public bool IsPiggyBankActive;
         public DateTime PiggyBankActiveDate;
         public DateTime PiggyBankUnActiveDate;
         
         //보석 수집 관련 데이터
-        public ObscuredBool IsGemCollectionActive;
+        public bool IsGemCollectionActive;
         public DateTime GemCollectionActiveDate;
         public DateTime GemCollectionUnActiveDate;
-        public ObscuredInt GemCollectionIndex;
-        public ObscuredInt GemCount;
+        public int GemCollectionIndex;
+        public int GemCount;
 
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
@@ -102,7 +102,7 @@ namespace TrumpTile.GameMain.Data
             Star = (int)Convert.ToInt64(currencyData["star"]);
 
             Dictionary<object, object> itemData = dataDictionary["item"] as Dictionary<object, object>;
-            ItemCounts = new Dictionary<int, ObscuredInt>();
+            ItemCounts = new Dictionary<int, int>();
             foreach (KeyValuePair<object, object> pair in itemData)
             {
                 if (int.TryParse(pair.Key.ToString(), out int itemId))
@@ -152,7 +152,7 @@ namespace TrumpTile.GameMain.Data
             FirstTryClearCount = 0;
             MaxStreakClearStageCount = 0;
 
-            ItemCounts = new Dictionary<int, ObscuredInt>();
+            ItemCounts = new Dictionary<int, int>();
             ItemCounts[1005] = 0;
             ItemCounts[1006] = 0;
             ItemCounts[1007] = 0;
