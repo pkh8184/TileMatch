@@ -2,7 +2,6 @@ using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
-using UnityEngine.Localization.Settings;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -75,9 +74,7 @@ namespace TrumpTile.GameMain.UI
                 colors.disabledColor = colors.normalColor;
                 selectable.colors = colors;
             }
-            //로칼리이제이션 테이블 작성 되면 주석 해제
-            //SetTMP_TextIsRTL();
-            //EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_LANGUAGE, (obj) => SetTMP_TextIsRTL());
+            SetTMP_TextIsRTL();
         }
 
         public virtual void Show()
@@ -97,32 +94,44 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
             //EventManager.Inst.AddEvent("PurchaseConfirmed", Refresh);
             EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
+            EventManager.Inst.AddEvent(RequestEventKeys.REFRESH_LANGUAGE, OnRefreshLanguage);
         }
         protected virtual void UnSubscribeEvent()
         {
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_DATA, Refresh);
             //EventManager.Inst?.RemoveEvent("PurchaseConfirmed", Refresh);
             EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA, RefreshLocalData);
+            EventManager.Inst?.RemoveEvent(RequestEventKeys.REFRESH_LANGUAGE, OnRefreshLanguage);
         }
         public void Deinitialize()
         {
             UnSubscribeEvent();
         }
+        private void OnRefreshLanguage()
+        {
+            Refresh();
+            SetTMP_TextIsRTL();
+        }
+
         /// <summary>
-        /// 현재 언어가 아랍어로 설정된 경우 TMP_Text의 IsRTL을 true로 해줌. 
+        /// 현재 언어가 아랍어로 설정된 경우 TMP_Text의 IsRTL을 true로 해줌.
         /// 오른쪽에서부터 텍스트 시작
         /// </summary>
         private void SetTMP_TextIsRTL()
         {
-            if(LocalizationSettings.SelectedLocale.Identifier.Code != "ar")
+            if (SettingsManager.Inst == null)
             {
                 return;
             }
 
-            foreach(TMP_Text text in GetComponentsInChildren<TMP_Text>(true))
+            bool bIsRTL = SettingsManager.Inst.Language == ELanguage.Arabic;
+            foreach (TMP_Text text in GetComponentsInChildren<TMP_Text>(true))
             {
-                if (text.GetComponent<IgnoreRTL>() != null) continue;
-                text.isRightToLeftText = true;
+                if (text.GetComponent<IgnoreRTL>() != null)
+                {
+                    continue;
+                }
+                text.isRightToLeftText = bIsRTL;
             }
         }
     }

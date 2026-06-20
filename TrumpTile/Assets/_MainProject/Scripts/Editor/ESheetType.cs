@@ -10,5 +10,7 @@ namespace TrumpTile.Editor
 		TBItem,
 		[SheetName("TB_PictureCollect")]
 		TBPictureCollect,
+		[SheetName("TB_StringMaster")]
+		TBStringMaster,
 	}
 }

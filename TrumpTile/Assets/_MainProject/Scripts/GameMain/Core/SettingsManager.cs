@@ -261,6 +261,7 @@ namespace TrumpTile.GameMain.Core
 			mLanguage = language;
 			PlayerPrefs.SetInt(KEY_LANGUAGE, (int)language);
 			PlayerPrefs.Save();
+			EventManager.Inst?.ActiveEvent(RequestEventKeys.REFRESH_LANGUAGE);
 			Debug.Log($"[SettingsManager] Language changed to {language}");
 		}
 

@@ -1,5 +1,6 @@
 using DG.Tweening;
 using TMPro;
+using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,9 +40,8 @@ namespace TrumpTile.GameMain.UI
 				mBackgroundImage.sprite = bg;
 			}
 
-			// TODO: StringMaster 로컬라이징 연동 후 PictureNameId / PictureDescriptionId로 실제 텍스트 조회
-			mTitleText.text       = $"Picture_{picture.PictureId}";
-			mDescriptionText.text = string.Empty;
+			mTitleText.text       = LocalizeManager.Inst.GetString(picture.PictureNameId);
+			mDescriptionText.text = LocalizeManager.Inst.GetString(picture.PictureDescriptionId);
 		}
 
 		protected override void PlayShowAnim()
