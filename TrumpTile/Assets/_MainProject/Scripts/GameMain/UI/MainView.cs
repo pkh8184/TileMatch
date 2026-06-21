@@ -45,9 +45,10 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private RectTransform[] mSizeAdjustElementRectArray;
         [Header("보상 획득 연출 컴포넌트")]
         [SerializeField] private RewardAnimator mRewardAnimator;
-        [Header("챔피언스 리그 활성화 시 적용할 스프라이트")]
+        [Header("챔피언스 리그 활성화 / 비활성화 시 적용할 스프라이트")]
         [SerializeField] private Sprite mChampionsBackgroundSprite;
         [SerializeField] private Sprite mChampionsStageButtonSprite;
+        [SerializeField] private Sprite mDefaultBackgroundSprite;
         [Header("배경")]
         [SerializeField] private Image mBackgroundImage;
         private CanvasGroup mLeftElementsRectCanvasGroup;
@@ -94,6 +95,13 @@ namespace TrumpTile.GameMain.UI
                 mCurrentStageText.text = "챌린지 " + PlayerDataManager.Inst.ChampionsLevel.ToString();
                 mBackgroundImage.sprite = mChampionsBackgroundSprite;
                 return;
+            }
+            else
+            {
+                mStageStartButton.image.sprite = mDefault;
+                mStageStartButton.image.pixelsPerUnitMultiplier = 3;
+                mCurrentStageText.text = "LEVEL " + PlayerDataManager.Inst.CurrentStage.ToString();
+                mBackgroundImage.sprite = mDefaultBackgroundSprite;
             }
 
             // 임시 (테이블로 교체해야함)
