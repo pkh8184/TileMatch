@@ -81,6 +81,8 @@ namespace TrumpTile.GameMain.UI
             mCurrentCost = config.cost;
             mItemImage.sprite = config.itemIcon;
             mCurrentItemID = config.itemId;
+
+            RefreshGoldData();
         }
         private void PurchaseProgress()
         {
