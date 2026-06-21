@@ -76,6 +76,8 @@ namespace TrumpTile.GameMain.Data
         public int GemCollectionIndex;
         public int GemCount;
 
+        //챔피언스 리그 관련 데이터
+        public int ChampionsLevel;
         public EncryptedUserData(UserData data)
         {
             RemoveAds = data.RemoveAds;
@@ -145,6 +147,8 @@ namespace TrumpTile.GameMain.Data
             GemCollectionUnActiveDate = data.GemCollectionUnActiveDate.ToUniversalTime().Ticks;
             GemCollectionIndex = data.GemCollectionIndex;
             GemCount = data.GemCount;
+
+            ChampionsLevel = data.ChampionsLevel;
         }
     }
     [Serializable]
@@ -217,7 +221,9 @@ namespace TrumpTile.GameMain.Data
         public DateTime GemCollectionUnActiveDate;
         public int GemCollectionIndex;
         public int GemCount;
-
+        
+        //챔피언스 리그 관련 데이터
+        public int ChampionsLevel;
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
         {
@@ -313,6 +319,8 @@ namespace TrumpTile.GameMain.Data
             GemCollectionUnlock = false;
             GemCollectionIndex = 0;
             GemCount = 0;
+
+            ChampionsLevel = 0;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
@@ -411,6 +419,8 @@ namespace TrumpTile.GameMain.Data
             GemCollectionIndex = data.GemCollectionIndex;
             GemCount = data.GemCount;
 
+            ChampionsLevel = data.ChampionsLevel;
+            
             LoadUnEncryptedData();
         }
     }

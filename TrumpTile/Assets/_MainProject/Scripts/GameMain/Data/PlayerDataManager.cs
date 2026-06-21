@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TrumpTile.FrameLibrary;
 using System.IO;
+using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.GameMain.Data
 {
@@ -105,6 +106,7 @@ namespace TrumpTile.GameMain.Data
 		public bool IsGemCollectionActive => mUserData.IsGemCollectionActive;
 		public int GemCollectionIndex => mUserData.GemCollectionIndex;
 		public int GemCollectionCount => mUserData.GemCount;
+		public int ChampionsLevel => mUserData.ChampionsLevel;
 		#endregion
 
 		#region 재화
@@ -162,8 +164,19 @@ namespace TrumpTile.GameMain.Data
 			{
 				mUserData.PiggyBankStageClearCount++;
 			}
+			if(CurrentStage >= CoreData.MAX_STAGE)
+			{
+				mUserData.ChampionsLevel = 1;
+			}
 		}
-
+		public void ClearChampionsStage()
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			mUserData.ChampionsLevel++;
+		}
 		public int GetStageStars(int level)
 		{
 			return PlayerPrefs.GetInt($"Stage_{level}_Stars", 0);
