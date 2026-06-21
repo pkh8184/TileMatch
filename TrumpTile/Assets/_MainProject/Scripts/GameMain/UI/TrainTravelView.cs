@@ -76,7 +76,6 @@ namespace TrumpTile.GameMain.UI
             base.Hide();
 
             EventManager.Inst.ActiveEvent("PlayRewardAnim");
-            CoreContainer.RewardContainer.Clear();
             AdManager.Inst.ShowBannerAd();
         }
         protected override void SubscribeEvent()
@@ -178,6 +177,7 @@ namespace TrumpTile.GameMain.UI
                 if(mRewardUIList.Count == 0)
                 {
                     Hide();
+                    mShowButton.gameObject.SetActive(false);
                 }
                 else
                 {

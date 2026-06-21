@@ -42,12 +42,13 @@ namespace TrumpTile.GameMain.Core
         {
             base.Refresh();
 
+            mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
             Debug.Log($"[GemCollectContent] 현재 젬 개수 : {mCurrentGemCount}");
         }
         public override void CheckUnlock()
         {
-            if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
+            if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
 
@@ -88,6 +89,10 @@ namespace TrumpTile.GameMain.Core
 
             mCurrentIndex++;
             PlayerDataManager.Inst.SetGemIndex(mCurrentIndex);
+            if(mCurrentIndex >= MAX_INDEX)
+            {
+                PlayerDataManager.Inst.UnActiveGemCollection();
+            }
         }
         public int GetCurrentGem()
         {
@@ -99,19 +104,23 @@ namespace TrumpTile.GameMain.Core
         }
         public int GetNextRequiredGem(int step)
         {
+            if(mCurrentIndex + step >= MAX_INDEX)
+            {
+                return 0;
+            }
             return mRequiredGemCountArray[mCurrentIndex + step];
         }
         public int GetCurrentIndex()
         {
             return mCurrentIndex;
         }
-        public ProductReward[] GetCurrentRewards()
-        {
-            return mRewardArray[mCurrentIndex].RewardArray;
-        }
         public GemCollectionReward[] GetRewards()
         {
             return mRewardArray;
+        }
+        public bool IsProgressEnd()
+        {
+            return mCurrentIndex >= MAX_INDEX;
         }
     }   
 }

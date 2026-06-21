@@ -2081,15 +2081,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 82177052837884629, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -594.79004
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 447756059625652475, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.517
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 447756059625652475, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3086806782398367759, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: m_Pivot.x
@@ -2172,33 +2172,13 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-      propertyPath: mSlider
-      value: 
-      objectReference: {fileID: 262647658}
-    - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: mShowButton
       value: 
       objectReference: {fileID: 944242584}
     - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-      propertyPath: mGiftBoxSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 658e89696b4ec8442b7ad37750389290, type: 3}
-    - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: mMainViewSlider
       value: 
       objectReference: {fileID: 1453297540}
-    - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-      propertyPath: mSliderRewardIcon
-      value: 
-      objectReference: {fileID: 1624538987}
-    - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-      propertyPath: mSliderRewardCount
-      value: 
-      objectReference: {fileID: 234638903}
-    - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-      propertyPath: mSliderProgressText
-      value: 
-      objectReference: {fileID: 1556514727}
     - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: mMainViewGemTransform
       value: 
@@ -2223,14 +2203,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Popup_GemCollection
       objectReference: {fileID: 0}
-    - target: {fileID: 4501623971737561501, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8974011488413393247, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 658e89696b4ec8442b7ad37750389290, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2241,33 +2213,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3086806782398367759, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
   m_PrefabInstance: {fileID: 234638901}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &234638903 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8534254299313584513, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-  m_PrefabInstance: {fileID: 234638901}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &252299415 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4125884442728108216, guid: 4c296dbbf430dda4ba51894227575963, type: 3}
   m_PrefabInstance: {fileID: 5671206401200680207}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &262647658 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8678660632254381968, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-  m_PrefabInstance: {fileID: 234638901}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &262841952
 GameObject:
   m_ObjectHideFlags: 0
@@ -8303,17 +8253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54c97562548929f468d66b60584f3d9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1556514727 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5755074178138535692, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-  m_PrefabInstance: {fileID: 234638901}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1600457644
 GameObject:
   m_ObjectHideFlags: 0
@@ -8466,17 +8405,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1605184446}
   m_CullTransparentMesh: 1
---- !u!114 &1624538987 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8974011488413393247, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
-  m_PrefabInstance: {fileID: 234638901}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1648338847
 GameObject:
   m_ObjectHideFlags: 0

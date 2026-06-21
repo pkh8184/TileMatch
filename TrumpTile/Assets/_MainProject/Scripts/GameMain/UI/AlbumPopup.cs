@@ -42,6 +42,47 @@ namespace TrumpTile.GameMain.UI
 		{
 			base.Show();
 			RefreshUI();
+			StartCoroutine(Co_ResetScrollToTop());
+		}
+        protected override void PlayShowAnim()
+        {
+            if (mPopupObj == null) return;
+
+            ScrollRect scroll = GetComponentInChildren<ScrollRect>();
+            if (scroll != null)
+            {
+                scroll.enabled = false;
+            }
+
+            mCurrentSeq?.Kill();
+            mPopupObj.transform.localScale = Vector2.zero;
+
+            mCurrentSeq = DOTween.Sequence();
+            mCurrentSeq.SetUpdate(true);
+            mCurrentSeq.Append(mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack));
+            mCurrentSeq.OnComplete(() =>
+			{
+				SetInteractable(true);
+				if (scroll != null)
+				{
+					scroll.enabled = true;
+				}
+			});
+        }
+		private IEnumerator Co_ResetScrollToTop()
+		{
+			// 슬롯 Destroy/재생성과 활성화 직후 레이아웃 패스가 한 번 돈 뒤에 위치를 잡아야 함
+			yield return null;
+
+			ScrollRect scroll = GetComponentInChildren<ScrollRect>();
+			if (scroll == null)
+			{
+				yield break;
+			}
+			Canvas.ForceUpdateCanvases();
+			LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);
+			scroll.velocity = Vector2.zero; // Inertia가 켜져 있어 닫을 때 남은 관성 제거
+			scroll.verticalNormalizedPosition = 1f;
 		}
 
 		private void RefreshUI()

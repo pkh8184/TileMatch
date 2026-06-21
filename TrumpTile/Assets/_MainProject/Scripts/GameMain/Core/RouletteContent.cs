@@ -47,7 +47,7 @@ namespace TrumpTile.GameMain.Core
         }   
         public override void CheckUnlock()
         {
-            if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
+            if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
 

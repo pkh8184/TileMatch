@@ -157,7 +157,7 @@ namespace TrumpTile.GameMain.UI
             gameObject.SetActive(false);
             mShowButton.gameObject.SetActive(false);
                   
-            EventManager.Inst.ActiveEvent("GetReward", mContentData.GetTodayReward().GetRewardDisplayInfo());
+            EventManager.Inst.ActiveEvent("PlayRewardAnim");
         }
         private void OnStickerClick(int index)
         {
@@ -254,8 +254,8 @@ namespace TrumpTile.GameMain.UI
 
             seq.OnComplete(() =>
             {
-                OnDailyCheckRewardConfirm();
                 mContentData.DailyCheckRewardProgress();
+                OnDailyCheckRewardConfirm();
                 SetInteractable(true);
             });
         }

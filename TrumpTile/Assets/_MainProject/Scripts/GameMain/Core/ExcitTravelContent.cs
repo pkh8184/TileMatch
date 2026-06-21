@@ -43,7 +43,7 @@ namespace TrumpTile.GameMain.Core
 
         public override void CheckUnlock()
         {
-            if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
+            if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
 
@@ -78,6 +78,7 @@ namespace TrumpTile.GameMain.Core
                 EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
                 CoreContainer.RewardContainer.AddReward(mFreeRewardArray[modifiedIndex].GetRewardDisplayInfo());
                 mCurrentIndex++;
+                PlayerDataManager.Inst.IncreaseExcitTravelIndex();
             }
         }
         public void OnPurchaseSuccess()
@@ -94,8 +95,10 @@ namespace TrumpTile.GameMain.Core
             }
 
             mCurrentIndex++;
+            PlayerDataManager.Inst.IncreaseExcitTravelIndex();
             if(mCurrentIndex >= MAX_REWARD_COUNT)
             {
+                PlayerDataManager.Inst.UnActiveExcitTravel();
                 mbHasNewthing = false;
             }
         }
