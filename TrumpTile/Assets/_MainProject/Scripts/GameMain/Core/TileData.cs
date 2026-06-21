@@ -64,11 +64,12 @@ namespace TrumpTile.GameMain.Core
 	{
 		Fruit = 0,
 		Desert = 1,
-		Interior = 2,
-		Tools = 3,
-		Food = 4,
+		Food = 2,
+		Interior = 3,
+		Tools = 4,
 		Toy = 5,
 		Balls = 6,
+		Sports = 7,
 		ETC,
 		Length,
 	
