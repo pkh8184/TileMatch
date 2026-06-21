@@ -289,10 +289,11 @@ namespace TrumpTile.GameMain.Data
             //로그인 데이터
             FirstLoginDate = DateTime.Now;
             CurrentLoginDate = DateTime.Now;
-            LogoutDate = DateTime.MinValue;
+            LogoutDate = DateTime.Now;
             
-            MaxStreakLoginCount = 0;
-            StreakLoginCount = 0;
+            MaxStreakLoginCount = 1;
+            StreakLoginCount = 1;
+            
             IsFirstLoginToday = true;
             DailyCheckUnlock = false;
 

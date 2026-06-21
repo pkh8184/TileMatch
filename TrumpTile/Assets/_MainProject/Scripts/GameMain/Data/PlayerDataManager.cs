@@ -343,7 +343,33 @@ namespace TrumpTile.GameMain.Data
 			//mUserData.PiggyBankUnActiveDate = 서버 기준 시간;
 		}
 	#endregion
+	#region 기차 여행 관련
+		public void IncreaseExcitTravelIndex()
+		{
+			mUserData.ExcitTravelIndex++;
+		}
+		public void ActiveExcitTravel()
+		{
+			mUserData.IsExcitTravelActive = true;
+			mUserData.ExcitTravelActiveDate = DateTime.Now;
+		}
+		public void UnActiveExcitTravel()
+		{
+			mUserData.IsExcitTravelActive = false;
+			mUserData.ExcitTravelUnActiveDate = DateTime.Now;
+		}
+	#endregion
 	#region 보석 수집 관련
+		public void ActiveGemCollection()
+		{
+			mUserData.IsGemCollectionActive = true;
+			mUserData.GemCollectionUnActiveDate = DateTime.Now;	
+		}
+		public void UnActiveGemCollection()
+		{
+			mUserData.IsGemCollectionActive = false;
+			mUserData.GemCollectionUnActiveDate = DateTime.Now;
+		}
 		public void AddGemCount(int value)
 		{
 			if(mUserData == null)

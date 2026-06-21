@@ -107,8 +107,8 @@ namespace TrumpTile.GameMain.UI
         {
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                CoreContainer.RewardContainer.AddGem(20);
-                PlayerDataManager.Inst.AddGemCount(20);
+                CoreContainer.RewardContainer.AddGem(500);
+                PlayerDataManager.Inst.AddGemCount(500);
                 EventManager.Inst.ActiveEvent("ContentDataRefresh");
 
                 PlayRewardAnim();

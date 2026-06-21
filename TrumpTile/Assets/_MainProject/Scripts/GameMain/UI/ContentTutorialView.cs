@@ -20,9 +20,16 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private float mImageRectDuration; 
         [SerializeField] private float mArrowImageDuration;
 
+        private Sequence seq;
         public override void Show()
         {
             base.Show();
+    
+            if(seq != null && seq.active)
+            {
+                seq.Kill();
+            }
+            seq = DOTween.Sequence();
 
             foreach(var item in mImageRectArray)
             {
@@ -32,19 +39,17 @@ namespace TrumpTile.GameMain.UI
             {
                 item.color = new Color(1,1,1,0);
             }
-
-            Sequence sq = DOTween.Sequence();
             
             int index = 0;
             while(true)
             {
                 if(index < mImageRectArray.Length)
                 {
-                    sq.Append(mImageRectArray[index].DOScale(1, mImageRectDuration));
+                    seq.Append(mImageRectArray[index].DOScale(1, mImageRectDuration));
                 }
                 if(index < mArrowImageArray.Length)
                 {
-                    sq.Append(mArrowImageArray[index].DOFade(1, mArrowImageDuration));
+                    seq.Append(mArrowImageArray[index].DOFade(1, mArrowImageDuration));
                 }
                 index++;
                 if(index >= mImageRectArray.Length && index >= mArrowImageArray.Length)

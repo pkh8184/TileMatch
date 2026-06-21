@@ -104,6 +104,10 @@ namespace TrumpTile.GameMain.UI
                 gem -= goal;
                 count++;
                 goal = mContentData.GetNextRequiredGem(count);
+                if(goal == 0)
+                {
+                    break;
+                }
             }
             int start = mContentData.GetCurrentGem() - amount;
 
@@ -119,7 +123,14 @@ namespace TrumpTile.GameMain.UI
                     mMainViewSliderProgressText.text = $"{x}/{mContentData.GetCurrentRequiredGem()}";
                 }, mContentData.GetCurrentRequiredGem(), 0.5f));
                 seq.AppendCallback(() => mContentData.RewardProgress());
-                
+
+                if(goal == 0 && i == count - 1)
+                {
+                    seq.Append(mShowButton.transform.parent.DOScale(0, 0.3f).SetEase(Ease.InBack));
+                    seq.AppendCallback(() => EventManager.Inst.ActiveEvent("PlayRewardAnim"));
+                    yield break;
+                }
+
                 seq.Append(mMainViewSliderRewardIcon.transform.DOScale(0, 0.3f).SetEase(Ease.InBack));
                 seq.JoinCallback(() => AudioEvent.Play(EAudioKey.SFX_Main_GemCollection_GaugeUp_Complete));
                 seq.AppendCallback(() =>
