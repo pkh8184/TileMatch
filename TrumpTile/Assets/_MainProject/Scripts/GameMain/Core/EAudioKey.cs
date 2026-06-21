@@ -65,5 +65,13 @@ namespace TrumpTile.GameMain.Core
 		SFX_Ingame_GemBox_Interaction,
 		SFX_Main_GemCollection_GaugeUp,
 		SFX_Main_GemCollection_GaugeUp_Complete,
+
+		//챔피언스 리그
+		BGM_Main_Champions,
+		BGM_Ingame_Champions,
+		SFX_Ingame_Match_Champions,
+		SFX_Ingame_TileMove_Champions,
+		SFX_Ingame_TileReject_Champions
+
 	}
 }
