@@ -38,7 +38,7 @@ namespace TrumpTile.GameMain.Core
         }
         public override void CheckUnlock()
         {
-            if(PlayerDataManager.Inst.CurrentStage > mLevelToUnlock)
+            if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
 
@@ -57,6 +57,7 @@ namespace TrumpTile.GameMain.Core
         {
             mRewardArray[mStreakCount].GrantReward();
             mbHasNewthing = false;
+            CoreContainer.RewardContainer.AddReward(mRewardArray[mStreakCount].GetRewardDisplayInfo());
         }
         public ProductReward GetTodayReward()
         {
