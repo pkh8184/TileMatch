@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using TrumpTile.FrameLibrary;
+using System.IO;
 
 namespace TrumpTile.GameMain.Data
 {
@@ -51,23 +52,39 @@ namespace TrumpTile.GameMain.Data
 		{
 			DontDestroyOnLoad(gameObject);
 		}
+		private void OnApplicationQuit()
+        {
+            SaveUserData();
+        }
+        private void OnApplicationPause(bool pause)
+        {
+            if(pause)
+			{
+				SaveUserData();
+			}
+        }
+        protected override void InitOnCreated()
+        {
+            base.InitOnCreated();
 
-		public void Initialize(Dictionary<object, object> dictionary)
+			LoadUserData();
+        }
+        public void Initialize(Dictionary<object, object> dictionary)
 		{
-			mUserData = new UserData(dictionary);
+			//mUserData = new UserData(dictionary);
 		}
 
 		public void Initialize()
 		{
-			if (mUserData != null)
-			{
-				return;
-			}
+			// if (mUserData != null)
+			// {
+			// 	return;
+			// }
 
-			mUserData = new UserData();
-			mUserData.InitOnlyLoacalData();
-			mUserData.CurrentStage = mTestCurrentStage;
-			mUserData.LastAlbumRewardedStage  = mTestLastAlbumRewardedStage;
+			// mUserData = new UserData();
+			// mUserData.InitOnlyLoacalData();
+			// mUserData.CurrentStage = mTestCurrentStage;
+			// mUserData.LastAlbumRewardedStage  = mTestLastAlbumRewardedStage;
 		}
 		#region 프로퍼티
 
@@ -75,7 +92,6 @@ namespace TrumpTile.GameMain.Data
 		public int CurrentStage => mUserData != null ? mUserData.CurrentStage : 1;
 		public int MaxClearedStage => CurrentStage - 1;
 		public int SelectedStage => mSelectedStage;
-		public string UID => mUserData?.UID ?? string.Empty;
 		public bool IsAdsRemoved => mUserData != null && mUserData.RemoveAds;
 		public int LastAlbumRewardedStage => mUserData != null ? mUserData.LastAlbumRewardedStage : 0;
 		public int StreakLoginCount => mUserData.StreakLoginCount;
@@ -508,27 +524,12 @@ namespace TrumpTile.GameMain.Data
 				case EPlayerDataType.CurrentStageForStageStart:
 					data = "LEVEL " + mUserData.CurrentStage.ToString();
 					break;
-				case EPlayerDataType.CurrentHousingChapter:
-					data = mUserData.CurrentHousingChapter.ToString();
-					break;
-				case EPlayerDataType.CurrentHousingSubChapter:
-					data = mUserData.CurrentHousingSubChapter.ToString();
-					break;
-				case EPlayerDataType.CompletedChapterCount:
-					data = mUserData.CompletedChapterCount.ToString();
-					break;
 				case EPlayerDataType.MaxStreakLoginCount:
 					data = mUserData.MaxStreakLoginCount.ToString();
 					break;
 				case EPlayerDataType.FirstLoginDate:
 					string date = mUserData.FirstLoginDate.ToString().Substring(0, 10);
 					data = "플레이 시작 시점 : " + date;
-					break;
-				case EPlayerDataType.UID:
-					data = mUserData.UID;
-					break;
-				case EPlayerDataType.TermsAndConditionVersion:
-					data = mUserData.TermsAndConditionVersion.ToString();
 					break;
 				default:
 					break;
@@ -544,5 +545,48 @@ namespace TrumpTile.GameMain.Data
 			mUserData.NickName = nickName;
             PlayerPrefs.SetString("NickName", nickName);
         }
+		private void LoadUserData()
+		{
+			string encryptedText = PlayerPrefs.GetString("UserData", "");
+			if(!string.IsNullOrEmpty(encryptedText) && DataEncryptor.TryDecrypt(encryptedText, out string json))
+			{
+				EncryptedUserData data = JsonUtility.FromJson<EncryptedUserData>(json);
+				mUserData = new UserData();
+				mUserData.FromEncryptedUserData(data);
+			}
+			else
+			{
+				mUserData = new UserData();
+			}
+		}
+		private void SaveUserData()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			EncryptedUserData userData = mUserData.ToEncryptedUserData();
+			string json = JsonUtility.ToJson(userData);
+
+			string encryptedText = DataEncryptor.Encrypt(json);
+			if(!string.IsNullOrEmpty(encryptedText))
+			{
+				PlayerPrefs.SetString("UserData", encryptedText);
+				PlayerPrefs.Save();
+			}
+		}
+		public void LoadUserDataForDebug()
+		{
+			bool debugMode = Debug.isDebugBuild;
+#if UNITY_EDITOR
+			debugMode = true;
+#endif
+			if(!debugMode)
+			{
+				return;
+			}
+
+			LoadUserData();
+		}
 	}
 }
