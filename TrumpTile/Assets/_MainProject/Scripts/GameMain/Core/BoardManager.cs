@@ -212,7 +212,11 @@ namespace TrumpTile.GameMain.Core
 			
 			string difficulty = levelData.difficulty.ToString();
 			Sprite difficultyBackground = null;
-			if(difficulty.Contains("Bonus"))
+			if(levelData.ChampionsLevel)
+			{
+				difficultyBackground = mDifficultyTileBackgroundArray[4];
+			}
+			else if(difficulty.Contains("Bonus"))
 			{
 				difficultyBackground = mDifficultyTileBackgroundArray[3];
 			}

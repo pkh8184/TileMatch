@@ -14,6 +14,7 @@ namespace TrumpTile.GameMain.Data
 		public const string STAGE_TABLE_ADDRESS = "StageTable";
 		public const string ITEM_TABLE_ADDRESS = "ItemTable";
 		public const string LEVEL_ADDRESS_FORMAT = "Level_{0:D3}";
+		public const string CHAMPIONS_LEVEL_ADDRESS_FORMAT = "ChampionsLevel_";
 
 		public static DataManager Instance { get; private set; }
 
@@ -132,7 +133,27 @@ namespace TrumpTile.GameMain.Data
 			Debug.LogWarning("[DataManager] Daily LevelData load failed");
 			return null;
 		}
+		public async Task<LevelData> LoadChampionsLevelAsync(int levelNumber)
+		{
+			if (mCurrentLevelHandle.IsValid())
+			{
+				Addressables.Release(mCurrentLevelHandle);
+				mCurrentLevelData = null;
+			}
 
+			string address = CHAMPIONS_LEVEL_ADDRESS_FORMAT + levelNumber.ToString();
+			mCurrentLevelHandle = Addressables.LoadAssetAsync<LevelData>(address);
+			await mCurrentLevelHandle.Task;
+
+			if (mCurrentLevelHandle.Status == AsyncOperationStatus.Succeeded)
+			{
+				mCurrentLevelData = mCurrentLevelHandle.Result;
+				return mCurrentLevelData;
+			}
+
+			Debug.LogWarning($"[DataManager] LevelData load failed: {address}");
+			return null;
+		}
 		/// <summary>
 		/// 현재 레벨 데이터 해제
 		/// </summary>

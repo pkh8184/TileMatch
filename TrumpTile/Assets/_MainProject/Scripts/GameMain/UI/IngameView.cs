@@ -225,7 +225,10 @@ namespace TrumpTile.GameMain.UI
             }
 
             int index = GetLevelDifficultyIndex(levelData.difficulty);
-
+            if(GameManager.Instance.IsChampionsMode)
+            {
+                index = 4;
+            }
             if(index != 3)
             {
                 mLevelNameImage.sprite = mLevelTextBackgroundArray[index];   
@@ -245,10 +248,14 @@ namespace TrumpTile.GameMain.UI
             {
                 AudioEvent.Play(EAudioKey.BGM_Ingame_VeryHard);
             }
-            else
+            else if(index == 3)
             {
                 mBonusLevelSlotFrame.SetActive(true);
                 AudioEvent.Play(EAudioKey.BGM_Ingame_Bonus);
+            }
+            else
+            {
+                AudioEvent.Play(EAudioKey.BGM_Ingame_Champions);
             }
 
             bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
@@ -256,7 +263,10 @@ namespace TrumpTile.GameMain.UI
             if (!bIsDailyMode)
             {
                 mLevelNameBackground.gameObject.SetActive(true);
-                mEffectObjectArray[index].SetActive(true);
+                if(index < 4)
+                {
+                      mEffectObjectArray[index].SetActive(true);
+                }
                 mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
                 mTopLevelNameRect.localScale = Vector3.zero;
                 if(index == 3)
@@ -269,14 +279,13 @@ namespace TrumpTile.GameMain.UI
                     mBonusLevelNameCanvasGroup.gameObject.SetActive(false);
                     mLevelNameCanvasGroup.gameObject.SetActive(true);
                 }
-                mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "" : $"LEVEL {GameManager.Instance.CurrentLevel}";
-                mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "BONUS LEVEL" : $"LEVEL {GameManager.Instance.CurrentLevel}";
-                Debug.Log(mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text);
+                mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "" : index == 4? $"CHALLENGE {PlayerDataManager.Inst.ChampionsLevel}" : $"LEVEL {levelData.levelNumber}";
+                mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "BONUS LEVEL" : index == 4? $"CHALLENGE {PlayerDataManager.Inst.ChampionsLevel}" : $"LEVEL {levelData.levelNumber}";
             }
 
             foreach (var item in mItemButtonConfigArray)
             {
-                if(levelData.levelNumber >= item.ingameItemConfig.unlockLevel)
+                if(GameManager.Instance.IsChampionsMode || levelData.levelNumber >= item.ingameItemConfig.unlockLevel)
                 {
                     item.unlockObject.SetActive(true);
                     item.lockObject.SetActive(false);
@@ -300,7 +309,7 @@ namespace TrumpTile.GameMain.UI
             }
             else
             {
-                 StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber, index));                
+                StartCoroutine(Co_PlayLevelNameAnim(levelData.levelNumber, index));                
             }
         }
         private void ShowBallon(ItemButtonConfig item)
@@ -395,9 +404,13 @@ namespace TrumpTile.GameMain.UI
             {
                 AudioEvent.Play(EAudioKey.SFX_LevelName_VeryHard);
             }
-            else
+            else if(difficultyIndex == 3)
             {
                 AudioEvent.Play(EAudioKey.SFX_LevelName_Bonus);
+            }
+            else
+            {
+                
             }
 
             CanvasGroup c = difficultyIndex == 3? mBonusLevelNameCanvasGroup : mLevelNameCanvasGroup;
@@ -427,6 +440,13 @@ namespace TrumpTile.GameMain.UI
 
             yield return sq.WaitForCompletion();
             
+            if(GameManager.Instance.IsChampionsMode)
+            {
+                GameManager.Instance.tutorialComplete = true;
+                mLevelNameBackground.gameObject.SetActive(false);
+                yield break;;
+            }
+
             int itemId = 0;
             int index = 0;
             foreach(var item in mItemButtonConfigArray)
@@ -455,7 +475,6 @@ namespace TrumpTile.GameMain.UI
             {
                 GameManager.Instance.tutorialComplete = true;
             }
-
             mLevelNameBackground.gameObject.SetActive(false);
         }
         private IEnumerator Co_LevelNameFadeOutAnim(RectTransform rt)
@@ -480,7 +499,7 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_TimerTextProgress()
         {
-            while(true)
+            while(GameManager.Instance.CurrentState != GameManager.EGameState.GameOver || GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
             {
                 mTimerText.text = GameManager.Instance.GetCurrentTimeString();
                 yield return null;
@@ -488,7 +507,7 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_TimePickerProgress()
         {
-             while(true)
+             while(GameManager.Instance.CurrentState != GameManager.EGameState.GameOver || GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
             {
                 float angle = 360f * GameManager.Instance.GetCurrentTimeClamped();
 
@@ -500,7 +519,7 @@ namespace TrumpTile.GameMain.UI
         {
             Image sliderImage = mTimerSlider.fillRect.GetComponent<Image>();
             bool timerShakeStart = false;
-            while (true)
+            while (GameManager.Instance.CurrentState != GameManager.EGameState.GameOver || GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
             {
                 float t = GameManager.Instance.GetCurrentTimeClamped();
                 if(t <= 0.2f)

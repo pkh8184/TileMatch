@@ -103,6 +103,11 @@ namespace TrumpTile.GameMain.Core
 		public bool tutorialComplete { get; set; }
 		public bool IsTimerFrozen => mIsTimerFrozen;
 		public bool IsGemCollectActive {get; private set;}
+
+		// 챔피언스 리그 모드 체크
+		private bool mbIsChampionsMode;
+		public bool IsChampionsMode => mbIsChampionsMode;
+
 		// 이벤트
 		public event System.Action<int> OnScoreChanged;
 		public event System.Action<int> OnComboChanged;
@@ -301,12 +306,13 @@ namespace TrumpTile.GameMain.Core
       		tutorialComplete = false;
 			mStarCount = 0;
 
-			if(levelNumber <= 5)
+			if(levelNumber <= 5 && !mbIsChampionsMode)
 			{
 				FreeReviveStage = true;
 			}
 
 			LevelData levelData;
+			
 			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
 				AssetReferenceT<LevelData> assetRef = DailyPuzzleManager.Inst.GetTodayAssetRef();
@@ -318,8 +324,13 @@ namespace TrumpTile.GameMain.Core
 				}
 				else
 				{
+					FreeReviveStage = false;
 					levelData = await DataManager.Instance.LoadDailyLevelAsync(assetRef);
 				}
+			}
+			else if(mbIsChampionsMode)
+			{
+				levelData = await DataManager.Instance.LoadChampionsLevelAsync(levelNumber);
 			}
 			else
 			{
@@ -372,7 +383,7 @@ namespace TrumpTile.GameMain.Core
             //임시
             EventManager.Inst.ActiveEvent("TimerSettingComplete");
 
-            UIManager.Instance?.UpdateLevel(CurrentLevel);
+           // UIManager.Instance?.UpdateLevel(CurrentLevel);
 			UIManager.Instance?.UpdateScore(mCurrentScore);
 			UIManager.Instance?.RefreshAllItemButtons();
 			OnScoreChanged?.Invoke(mCurrentScore);
@@ -384,7 +395,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				tutorialComplete = true;
 			}
-      
+
 			await WaitUntill(() => tutorialComplete);
 
 			Debug.Log("게임 시작");
@@ -456,7 +467,6 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
 			DailyPuzzleManager.Inst?.ExitDailyMode();
-
 			//AudioEvent.Play(EAudioKey.BGM_Main);
 			
 			AudioManager.Inst.SetBGMVolume(1f);
@@ -470,6 +480,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				SceneTransister.Inst.TransistScene("MainScene");
 			}
+			Destroy(Instance);
 		}
 
 		#endregion
@@ -779,8 +790,14 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		private void SaveLevelProgress(int level, int stars)
 		{
-			Debug.Log($"[GameManager] SaveLevelProgress - Level: {level}, Stars: {stars}");
+			if(mbIsChampionsMode)
+			{
+				Debug.Log($"[GameManager] ClearChampionsLevel Progress, Next Level : {PlayerDataManager.Inst.ChampionsLevel + 1}");
+				PlayerDataManager.Inst.ClearChampionsStage();
+				return;
+			}
 
+			Debug.Log($"[GameManager] SaveLevelProgress - Level: {level}, Stars: {stars}");
 			PlayerDataManager.Inst.ClearStage(level, stars);
 			Debug.Log($"[GameManager] Saved - NextStage: {PlayerDataManager.Inst.CurrentStage}");
 		}
@@ -792,6 +809,17 @@ namespace TrumpTile.GameMain.Core
 		{
 			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
+				return;
+			}
+
+			if(PlayerDataManager.Inst.CurrentStage >= CoreData.MAX_STAGE)
+			{
+				mbIsChampionsMode = true;
+				mStartLevel = PlayerDataManager.Inst.ChampionsLevel % CoreData.CHAMPIONS_INTERVAL;
+				if(mStartLevel <= 0)
+				{
+					mStartLevel = 1;
+				}
 				return;
 			}
 

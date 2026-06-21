@@ -28,7 +28,14 @@ namespace TrumpTile.GameMain.Core
 		private IEnumerator Start()
 		{
 			yield return StartCoroutine(SceneTransister.Inst.Co_PlayFadeInAnim());
-			AudioEvent.Play(EAudioKey.BGM_Main);
+			if(PlayerDataManager.Inst.CurrentStage >= CoreData.MAX_STAGE)
+            {
+                AudioEvent.Play(EAudioKey.BGM_Main_Champions);
+			}
+			else
+			{
+				AudioEvent.Play(EAudioKey.BGM_Main);
+			}
 			EventManager.Inst.ActiveEvent("MainSceneLoadComplete");
 
 			yield return mAlbumCheckDelay;

@@ -97,7 +97,10 @@ namespace TrumpTile.GameMain.UI
             {
                 return;
             }
-
+            if(GameManager.Instance != null)
+            {
+                return;
+            }
             List<RewardDisplayInfo> rewards = IAPManager.Instance.GetRewardDisplayInfos(mCurrentPurchaseProductId);
             foreach(var item in rewards)
             {

@@ -71,6 +71,8 @@ namespace TrumpTile.LevelEditor.Editor
 		[Header("특수 설정")]
 		public List<SpecialTileConfig> specialTiles = new();
 		public List<ObstacleConfig> obstacles = new();
+		[Header("챔피언스 리그에 사용할지 결정할 플래그 (인스펙터에서 적용)")]
+		public bool ChampionsLevel;
 
 		/// <summary>
 		/// 레벨이 유효한지 검증
