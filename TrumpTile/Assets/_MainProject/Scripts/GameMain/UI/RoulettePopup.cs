@@ -119,12 +119,12 @@ namespace TrumpTile.GameMain.UI
             AudioEvent.Play(EAudioKey.SFX_Roulette_Spin);
             float endZ = -(360f * SPIN_COUNT) + targetAngle;   // 예: -1866
 
-            mRouletteRect
+            Sequence seq = DOTween.Sequence();
+            seq.Append(mRouletteRect
                 .DOLocalRotate(new Vector3(0f, 0f, endZ), DURATION, RotateMode.FastBeyond360)
-                .SetEase(Ease.OutExpo)        // 초반 빠르게 → 끝에서 확 감속 (룰렛 느낌)
-
-                .OnComplete(() => StartCoroutine(Co_OnSpinComplete()));
-
+                .SetEase(Ease.OutQuart));
+                
+            seq.OnComplete(() => StartCoroutine(Co_OnSpinComplete()));
             mContentData.RouletteRewardProgress();
 
             SetButtonState();
