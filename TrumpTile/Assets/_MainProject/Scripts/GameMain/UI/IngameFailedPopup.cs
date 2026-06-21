@@ -25,7 +25,11 @@ namespace TrumpTile.GameMain.UI
                 Hide();
                 GameManager.Instance.RestartLevel();
             });
-            mCancleButton.onClick.AddListener(GameManager.Instance.GoToMainMenu);
+            mCancleButton.onClick.AddListener(() => 
+            {
+                CoreContainer.RewardContainer.Clear();
+                GameManager.Instance.GoToMainMenu();
+            });
         }
         public override void Show()
         {

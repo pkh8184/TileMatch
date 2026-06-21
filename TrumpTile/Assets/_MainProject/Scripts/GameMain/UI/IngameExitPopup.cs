@@ -57,6 +57,7 @@ namespace TrumpTile.GameMain.UI
         private void OnConfirmButton()
         {
             mOpenPopupCount = 0;
+            CoreContainer.RewardContainer.Clear();
             GameManager.Instance.GoToMainMenu();
         }
     }    
