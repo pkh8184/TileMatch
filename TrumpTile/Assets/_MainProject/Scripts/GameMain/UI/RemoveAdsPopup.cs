@@ -34,6 +34,11 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();
 
+            if(PlayerDataManager.Inst.IsAdsRemoved)
+            {
+                mShowButton.gameObject.SetActive(false);
+                return;
+            }
             mContentController.PlayShowButtonAnim(mShowButton);
 
             if(mPurchaseButton != null)
