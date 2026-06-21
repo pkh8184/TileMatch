@@ -176,7 +176,11 @@ namespace TrumpTile.GameMain.Core
 		{
 			string difficulty = type.ToString();
 
-			if(difficulty.Contains("Bonus"))
+			if(GameManager.Instance.IsChampionsMode)
+			{
+				mTileMoveAudioKey = EAudioKey.SFX_Ingame_TileMove_Champions;
+			}
+			else if(difficulty.Contains("Bonus"))
 			{
 				mTileMoveAudioKey = EAudioKey.SFX_TileMove_Bonus;
 			}

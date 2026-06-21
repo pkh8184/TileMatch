@@ -94,7 +94,11 @@ namespace TrumpTile.GameMain.Core
 			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, IsAdsRemoved: {bUnlocked}");
 			
 			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
-			if(difficulty.Contains("VeryHard"))
+			if(GameManager.Instance.IsChampionsMode)
+			{
+				mMatchAudioKey = EAudioKey.SFX_Ingame_Match_Champions;
+			}
+			else if(difficulty.Contains("VeryHard"))
 			{
 				mMatchAudioKey = EAudioKey.SFX_TileMatch_VeryHard;
 			}
