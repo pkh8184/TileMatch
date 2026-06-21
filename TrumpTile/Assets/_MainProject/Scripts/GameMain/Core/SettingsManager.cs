@@ -369,14 +369,14 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
-			string uid = PlayerDataManager.Inst.UID;
-			if (string.IsNullOrEmpty(uid))
-			{
-				return;
-			}
+			// string uid = PlayerDataManager.Inst.UID;
+			// if (string.IsNullOrEmpty(uid))
+			// {
+			// 	return;
+			// }
 
-			GUIUtility.systemCopyBuffer = uid;
-			Debug.Log($"[SettingsManager] UID copied: {uid}");
+			// GUIUtility.systemCopyBuffer = uid;
+			// Debug.Log($"[SettingsManager] UID copied: {uid}");
 		}
 
 		#endregion
