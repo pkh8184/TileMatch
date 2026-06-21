@@ -45,8 +45,11 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private RectTransform[] mSizeAdjustElementRectArray;
         [Header("보상 획득 연출 컴포넌트")]
         [SerializeField] private RewardAnimator mRewardAnimator;
-
-
+        [Header("챔피언스 리그 활성화 시 적용할 스프라이트")]
+        [SerializeField] private Sprite mChampionsBackgroundSprite;
+        [SerializeField] private Sprite mChampionsStageButtonSprite;
+        [Header("배경")]
+        [SerializeField] private Image mBackgroundImage;
         private CanvasGroup mLeftElementsRectCanvasGroup;
         private CanvasGroup mRightElementsRectCanvasGroup;
         private List<CanvasGroup> mSizeAdjustElementRectCanvasGroupList = new List<CanvasGroup>();
@@ -84,6 +87,15 @@ namespace TrumpTile.GameMain.UI
 
             mRewardAnimator.Initialize();
 
+            if(PlayerDataManager.Inst.CurrentStage >= CoreData.MAX_STAGE)
+            {
+                mStageStartButton.image.sprite = mChampionsStageButtonSprite;
+                mStageStartButton.image.pixelsPerUnitMultiplier = 1;
+                mCurrentStageText.text = "챌린지 " + PlayerDataManager.Inst.ChampionsLevel.ToString();
+                mBackgroundImage.sprite = mChampionsBackgroundSprite;
+                return;
+            }
+
             // 임시 (테이블로 교체해야함)
             LevelData level;
             Addressables.LoadAssetAsync<LevelData>(string.Format("Level_{0:D3}",PlayerDataManager.Inst?.CurrentStage)).Completed += handle => {
@@ -102,6 +114,8 @@ namespace TrumpTile.GameMain.UI
                     }
                 }
             };
+
+            AudioEvent.Play(EAudioKey.BGM_Main);
         }
         void Update()
         {
