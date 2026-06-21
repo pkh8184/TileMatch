@@ -271,6 +271,9 @@ namespace TrumpTile.GameMain.Core
                 }
             }
 			
+			// (0,0) 중심에서 가장 먼 타일부터 가까운 타일 순으로 스폰 애니메이션 재생
+			PlaySpawnAnimationsByDistance(spawnAnimType);
+
 			SetBonusTileRandom(levelData);
 			SetJewerlyTileValid();
 			UpdateAllBlockedStates();
@@ -279,6 +282,34 @@ namespace TrumpTile.GameMain.Core
 			mIsLevelLoaded = true;
 			Log($"Level loaded: {createdCount} tiles, Grid: {mGridWidth}x{mGridHeight}, Layers: {mMaxLayers}");
 		}
+
+		/// <summary>
+		/// (0,0) 중심에서 가장 먼 타일부터 가까운 타일 순으로 스폰 애니메이션을 재생한다.
+		/// 거리에 비례해 딜레이를 주어 바깥→안쪽 동심원 형태로 퍼지게 한다.
+		/// </summary>
+		private void PlaySpawnAnimationsByDistance(ESpawnAnimType animType)
+		{
+			float maxDistance = 0F;
+			foreach (TileController tile in mAllTiles)
+			{
+				Vector3 pos = tile.transform.position;
+				float distance = new Vector2(pos.x, pos.y).magnitude;
+				if (distance > maxDistance)
+				{
+					maxDistance = distance;
+				}
+			}
+
+			foreach (TileController tile in mAllTiles)
+			{
+				Vector3 pos = tile.transform.position;
+				float distance = new Vector2(pos.x, pos.y).magnitude;
+				float ratio = maxDistance > 0F ? distance / maxDistance : 0F;   // 0=중심, 1=최외곽
+				float spawnDelay = (1F - ratio) * mMaxSpawnDelay;               // 최외곽=0(먼저), 중심=최대(나중)
+				tile.PlaySpawnAnimation(spawnDelay, animType);
+			}
+		}
+
 		private void CreateGemTile()
 		{
 			if(!GameManager.Instance.IsGemCollectActive)
@@ -542,9 +573,7 @@ namespace TrumpTile.GameMain.Core
 			tile.transform.localScale = mTileScale;
 			tile.Initialize(data, x, y, layer, tileBackground, eDifficultyType);
 
-			float spawnDelay = Mathf.Min(spawnIndex * mSpawnDelayPerTile, mMaxSpawnDelay);
-			tile.PlaySpawnAnimation(spawnDelay, animType);
-
+			// 스폰 애니메이션은 전체 생성 후 PlaySpawnAnimationsByDistance 에서 거리순으로 재생한다.
 			mAllTiles.Add(tile);
 			if(data.tileTypeId == "Jewerly")
 			{
