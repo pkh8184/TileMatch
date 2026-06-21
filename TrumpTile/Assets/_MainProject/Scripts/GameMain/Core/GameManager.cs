@@ -467,7 +467,6 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
 			DailyPuzzleManager.Inst?.ExitDailyMode();
-
 			//AudioEvent.Play(EAudioKey.BGM_Main);
 			
 			AudioManager.Inst.SetBGMVolume(1f);
@@ -481,6 +480,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				SceneTransister.Inst.TransistScene("MainScene");
 			}
+			Destroy(Instance);
 		}
 
 		#endregion
