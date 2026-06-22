@@ -3,6 +3,8 @@ using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 namespace TrumpTile.GameMain.UI
@@ -15,7 +17,8 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private TMP_Text mDescriptionText;
 		[SerializeField] private Button   mCloseButton;
 
-		private CanvasGroup mPopupCanvasGroup;
+		private CanvasGroup                  mPopupCanvasGroup;
+		private AsyncOperationHandle<Sprite> mBgImageHandle;
 
 		public override void Initialize()
 		{
@@ -31,14 +34,34 @@ namespace TrumpTile.GameMain.UI
 			gameObject.SetActive(false);
 		}
 
+		protected override void OnDestroy()
+		{
+			base.OnDestroy();
+			if (mBgImageHandle.IsValid())
+			{
+				Addressables.Release(mBgImageHandle);
+			}
+		}
+
 		public void Setup(TBPictureCollectData picture)
 		{
-			// TODO: Addressables.LoadAssetAsync<Sprite>($"Picture_{picture.PictureId}_BG") 로 교체
-			Sprite bg = Resources.Load<Sprite>($"Picture_{picture.PictureId}_BG");
-			if (bg != null)
+			if (mBgImageHandle.IsValid())
 			{
-				mBackgroundImage.sprite = bg;
+				Addressables.Release(mBgImageHandle);
 			}
+
+			ClearBackgroundImage();
+
+			string key = $"Picture_{picture.PictureId}";
+			mBgImageHandle = Addressables.LoadAssetAsync<Sprite>(key);
+			mBgImageHandle.Completed += handle =>
+			{
+				if (handle.Status == AsyncOperationStatus.Succeeded && mBackgroundImage != null)
+				{
+					mBackgroundImage.sprite = handle.Result;
+					mBackgroundImage.color  = Color.white;
+				}
+			};
 
 			mTitleText.text       = LocalizeManager.Inst.GetString(picture.PictureNameId);
 			mDescriptionText.text = LocalizeManager.Inst.GetString(picture.PictureDescriptionId);
@@ -66,8 +89,15 @@ namespace TrumpTile.GameMain.UI
 			mCurrentSeq.OnComplete(() =>
 			{
 				mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+				ClearBackgroundImage();
 				gameObject.SetActive(false);
 			});
+		}
+
+		private void ClearBackgroundImage()
+		{
+			mBackgroundImage.sprite = null;
+			mBackgroundImage.color  = Color.black;
 		}
 	}
 }
