@@ -467,6 +467,14 @@ namespace TrumpTile.GameMain.Core
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
 			DailyPuzzleManager.Inst?.ExitDailyMode();
+
+			bool bDidNotClear = CurrentState != EGameState.GameClear;
+			bool bIsDailyOnExit = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+			if (bDidNotClear && !bIsDailyOnExit && !mbIsChampionsMode)
+			{
+				EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_STAGE_FAIL);
+			}
+
 			//AudioEvent.Play(EAudioKey.BGM_Main);
 			
 			AudioManager.Inst.SetBGMVolume(1f);
@@ -800,6 +808,12 @@ namespace TrumpTile.GameMain.Core
 			Debug.Log($"[GameManager] SaveLevelProgress - Level: {level}, Stars: {stars}");
 			PlayerDataManager.Inst.ClearStage(level, stars);
 			Debug.Log($"[GameManager] Saved - NextStage: {PlayerDataManager.Inst.CurrentStage}");
+
+			bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+			if (!bIsDailyMode && !mbIsChampionsMode)
+			{
+				EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_STAGE_CLEAR);
+			}
 		}
 
 		/// <summary>
