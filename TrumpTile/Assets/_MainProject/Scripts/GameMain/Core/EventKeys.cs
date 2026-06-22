@@ -16,5 +16,9 @@ namespace TrumpTile.GameMain.Core
 		public const string AUDIO_PAUSE  = "Audio_Pause";
 		public const string AUDIO_STOP   = "Audio_Stop";
 		public const string AUDIO_RESUME = "Audio_Resume";
+
+		// SpaceTravel Event
+		public const string SPACE_TRAVEL_STAGE_CLEAR = "SpaceTravel_StageClear";
+		public const string SPACE_TRAVEL_STAGE_FAIL  = "SpaceTravel_StageFail";
 	}
 }
