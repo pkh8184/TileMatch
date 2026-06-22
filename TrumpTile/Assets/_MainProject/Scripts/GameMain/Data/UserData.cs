@@ -276,8 +276,6 @@ namespace TrumpTile.GameMain.Data
         }
         public void InitData()
         {
-            LoadUnEncryptedData();
-
             RemoveAds = false;
             CurrentStage = 1;
             FirstTryClearCount = 0;
@@ -333,7 +331,7 @@ namespace TrumpTile.GameMain.Data
         /// <summary>
         /// 로컬에 저장한 데이터 읽어오기
         /// </summary>
-        private void LoadUnEncryptedData()
+        public void LoadUnEncryptedData()
         {
             NickName = PlayerPrefs.GetString("NickName", "USER");
             ProfileImageIndex = PlayerPrefs.GetInt("ProfileImageIndex", 0);

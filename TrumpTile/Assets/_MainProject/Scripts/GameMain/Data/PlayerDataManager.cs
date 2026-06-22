@@ -52,6 +52,7 @@ namespace TrumpTile.GameMain.Data
 		private void Awake()
 		{
 			DontDestroyOnLoad(gameObject);
+			LoadUserData();
 		}
 		private void OnApplicationQuit()
         {
@@ -63,12 +64,6 @@ namespace TrumpTile.GameMain.Data
 			{
 				SaveUserData();
 			}
-        }
-        protected override void InitOnCreated()
-        {
-            base.InitOnCreated();
-
-			LoadUserData();
         }
         public void Initialize(Dictionary<object, object> dictionary)
 		{
@@ -597,6 +592,7 @@ namespace TrumpTile.GameMain.Data
 			{
 				mUserData = new UserData();
 			}
+			mUserData.LoadUnEncryptedData();
 		}
 		private void SaveUserData()
 		{
