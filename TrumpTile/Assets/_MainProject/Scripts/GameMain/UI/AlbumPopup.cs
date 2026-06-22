@@ -12,8 +12,7 @@ namespace TrumpTile.GameMain.UI
 	public class AlbumPopup : PopupBase
 	{
 		[Header("게이지")]
-		[SerializeField] private Slider   mProgressSlider;
-		[SerializeField] private TMP_Text mProgressText;
+		[SerializeField] private TMP_Text mCollectedCountText;
 
 		[Header("사진 슬롯 (그리드)")]
 		[SerializeField] private AlbumSlotView mSlotViewPrefab;
@@ -92,8 +91,8 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
-			(int collected, int total) = AlbumManager.Inst.GetCurrentProgress();
-			UpdateGauge(collected, total);
+			(int collected, int _) = AlbumManager.Inst.GetCurrentProgress();
+			UpdateGauge(collected);
 
 			List<(TBPictureCollectData picture, EAlbumPictureState state)> pictureStates
 				= AlbumManager.Inst.GetPictureStates();
@@ -110,11 +109,9 @@ namespace TrumpTile.GameMain.UI
 			}
 		}
 
-		private void UpdateGauge(int collected, int total)
+		private void UpdateGauge(int collected)
 		{
-			float ratio = total > 0 ? (float)collected / total : 0F;
-			if (mProgressSlider != null) mProgressSlider.value = ratio;
-			if (mProgressText != null) mProgressText.text    = $"{collected}/{total}";
+			if (mCollectedCountText != null) mCollectedCountText.text = $"{collected}";
 		}
 
 		public void PlayRewardSequence(List<TBPictureCollectData> pendingPictures)
@@ -132,17 +129,14 @@ namespace TrumpTile.GameMain.UI
 			}
 
 			_ = AlbumManager.Inst.SaveAlbumRewardedStage();
+			RefreshUI();
 			SetInteractable(true);
 		}
 
 		private IEnumerator Co_CollectOnePicture(TBPictureCollectData picture)
 		{
 			AlbumManager.Inst.CollectPicture(picture);
-
-			(int collected, int total) = AlbumManager.Inst.GetCurrentProgress();
-			float targetRatio = total > 0 ? (float)collected / total : 0F;
-			yield return mProgressSlider.DOValue(targetRatio, 0.4F).SetEase(Ease.OutQuad).WaitForCompletion();
-			if (mProgressText != null) mProgressText.text = $"{collected}/{total}";
+			yield return null;
 
 			RefreshUI();
 		}

@@ -66,7 +66,7 @@ namespace TrumpTile.GameMain.UI
 			mImageHandle = Addressables.LoadAssetAsync<Sprite>(key);
 			mImageHandle.Completed += handle =>
 			{
-				if (handle.Status == AsyncOperationStatus.Succeeded)
+				if (handle.Status == AsyncOperationStatus.Succeeded && mAlbumImage != null)
 				{
 					mAlbumImage.sprite = handle.Result;
 				}
