@@ -499,7 +499,7 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_TimerTextProgress()
         {
-            while(GameManager.Instance.CurrentState != GameManager.EGameState.GameOver || GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
+            while(GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.GameOver && GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
             {
                 mTimerText.text = GameManager.Instance.GetCurrentTimeString();
                 yield return null;
@@ -507,7 +507,7 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_TimePickerProgress()
         {
-             while(GameManager.Instance.CurrentState != GameManager.EGameState.GameOver || GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
+            while(GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.GameOver && GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
             {
                 float angle = 360f * GameManager.Instance.GetCurrentTimeClamped();
 
@@ -519,7 +519,7 @@ namespace TrumpTile.GameMain.UI
         {
             Image sliderImage = mTimerSlider.fillRect.GetComponent<Image>();
             bool timerShakeStart = false;
-            while (GameManager.Instance.CurrentState != GameManager.EGameState.GameOver || GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
+            while (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.EGameState.GameOver && GameManager.Instance.CurrentState != GameManager.EGameState.GameClear)
             {
                 float t = GameManager.Instance.GetCurrentTimeClamped();
                 if(t <= 0.2f)
