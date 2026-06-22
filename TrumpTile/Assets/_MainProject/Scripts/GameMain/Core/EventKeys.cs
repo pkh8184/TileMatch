@@ -20,5 +20,10 @@ namespace TrumpTile.GameMain.Core
 		// SpaceTravel Event
 		public const string SPACE_TRAVEL_STAGE_CLEAR = "SpaceTravel_StageClear";
 		public const string SPACE_TRAVEL_STAGE_FAIL  = "SpaceTravel_StageFail";
+		public const string SPACE_TRAVEL_SHOW_ENTRY    = "SpaceTravel_ShowEntry";
+		public const string SPACE_TRAVEL_SHOW_GATHER   = "SpaceTravel_ShowGather";
+		public const string SPACE_TRAVEL_SHOW_PROGRESS = "SpaceTravel_ShowProgress";
+		public const string SPACE_TRAVEL_SHOW_REWARD   = "SpaceTravel_ShowReward";
+		public const string SPACE_TRAVEL_SET_RED_DOT   = "SpaceTravel_SetRedDot";
 	}
 }

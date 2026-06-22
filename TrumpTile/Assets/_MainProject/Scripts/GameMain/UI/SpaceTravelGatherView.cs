@@ -20,12 +20,12 @@ namespace TrumpTile.GameMain.UI
 		{
 			base.Initialize();
 
-			EventManager.Inst.AddEvent("SpaceTravel_ShowGather", PlayGatherAnim);
+			EventManager.Inst.AddEvent(EventKeys.SPACE_TRAVEL_SHOW_GATHER, PlayGatherAnim);
 		}
 
 		private void OnDestroy()
 		{
-			EventManager.Inst?.RemoveEvent("SpaceTravel_ShowGather", PlayGatherAnim);
+			EventManager.Inst?.RemoveEvent(EventKeys.SPACE_TRAVEL_SHOW_GATHER, PlayGatherAnim);
 		}
 
 		private void PlayGatherAnim()
@@ -53,7 +53,7 @@ namespace TrumpTile.GameMain.UI
 			yield return new WaitForSeconds(mCompletionDelay);
 
 			gameObject.SetActive(false);
-			EventManager.Inst.ActiveEvent("SpaceTravel_ShowProgress");
+			EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_SHOW_PROGRESS);
 		}
 	}
 }

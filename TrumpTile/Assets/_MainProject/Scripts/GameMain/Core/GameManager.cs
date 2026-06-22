@@ -466,10 +466,10 @@ namespace TrumpTile.GameMain.Core
 		public void GoToMainMenu()
 		{
 			Debug.Log("[GameManager] GoToMainMenu called");
+			bool bIsDailyOnExit = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
 			DailyPuzzleManager.Inst?.ExitDailyMode();
 
 			bool bDidNotClear = CurrentState != EGameState.GameClear;
-			bool bIsDailyOnExit = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
 			if (bDidNotClear && !bIsDailyOnExit && !mbIsChampionsMode)
 			{
 				EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_STAGE_FAIL);

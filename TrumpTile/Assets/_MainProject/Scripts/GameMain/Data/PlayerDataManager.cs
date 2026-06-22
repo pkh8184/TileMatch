@@ -429,7 +429,7 @@ namespace TrumpTile.GameMain.Data
 			mUserData.SpaceTravelUnlock = true;
 		}
 
-		public void StartSpaceTravel(int[] eliminationBudget)
+		public void StartSpaceTravel(int[] eliminationBudget, int startFakePlayerCount)
 		{
 			if (mUserData == null)
 			{
@@ -439,7 +439,7 @@ namespace TrumpTile.GameMain.Data
 			mUserData.SpaceTravelState = ESpaceTravelState.Active;
 			mUserData.SpaceTravelStateChangeTime = DateTime.UtcNow;
 			mUserData.SpaceTravelStreakCount = 0;
-			mUserData.SpaceTravelFakePlayerCount = 100;
+			mUserData.SpaceTravelFakePlayerCount = startFakePlayerCount;
 			mUserData.SpaceTravelEliminationBudget = eliminationBudget;
 		}
 

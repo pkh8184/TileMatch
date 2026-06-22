@@ -1,5 +1,4 @@
 using TrumpTile.GameMain.Core;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,9 +10,6 @@ namespace TrumpTile.GameMain.UI
 		[SerializeField] private Button mJoinButton;
 		[Header("닫기 버튼")]
 		[SerializeField] private Button mCloseButton;
-		[Header("이벤트 설명 텍스트")]
-		[SerializeField] private TMP_Text mDescriptionText;
-
 		private SpaceTravelContent mContentData;
 
 		public override void Initialize()
@@ -27,28 +23,33 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
+			if (mContentData.ShowUnlockPopup)
+			{
+				Show();
+			}
+
 			mJoinButton.onClick.AddListener(OnJoinClicked);
 			mCloseButton.onClick.AddListener(OnCloseClicked);
 
-			EventManager.Inst.AddEvent("SpaceTravel_ShowEntry", Show);
+			EventManager.Inst.AddEvent(EventKeys.SPACE_TRAVEL_SHOW_ENTRY, Show);
 		}
 
 		private void OnDestroy()
 		{
-			EventManager.Inst?.RemoveEvent("SpaceTravel_ShowEntry", Show);
+			EventManager.Inst?.RemoveEvent(EventKeys.SPACE_TRAVEL_SHOW_ENTRY, Show);
 		}
 
 		private void OnJoinClicked()
 		{
 			mContentData.StartEvent();
 			Hide();
-			EventManager.Inst.ActiveEvent("SpaceTravel_ShowGather");
+			EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_SHOW_GATHER);
 		}
 
 		private void OnCloseClicked()
 		{
 			Hide();
-			EventManager.Inst.ActiveEvent("SpaceTravel_SetRedDot");
+			EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_SET_RED_DOT);
 		}
 	}
 }

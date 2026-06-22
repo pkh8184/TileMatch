@@ -25,13 +25,13 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
-			EventManager.Inst.AddEvent("SpaceTravel_ShowReward", OnShowReward);
+			EventManager.Inst.AddEvent(EventKeys.SPACE_TRAVEL_SHOW_REWARD, OnShowReward);
 			mClaimButton.onClick.AddListener(OnClaimClicked);
 		}
 
 		private void OnDestroy()
 		{
-			EventManager.Inst?.RemoveEvent("SpaceTravel_ShowReward", OnShowReward);
+			EventManager.Inst?.RemoveEvent(EventKeys.SPACE_TRAVEL_SHOW_REWARD, OnShowReward);
 		}
 
 		private void OnShowReward()
@@ -50,7 +50,7 @@ namespace TrumpTile.GameMain.UI
 		{
 			mContentData.GrantFinalReward();
 			Hide();
-			EventManager.Inst.ActiveEvent("SpaceTravel_ShowProgress");
+			EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_SHOW_PROGRESS);
 			EventManager.Inst.ActiveEvent("PlayRewardAnim");
 		}
 	}

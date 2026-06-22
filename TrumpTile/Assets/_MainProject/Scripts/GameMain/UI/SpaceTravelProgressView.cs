@@ -44,8 +44,8 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
-			EventManager.Inst.AddEvent("SpaceTravel_ShowProgress", RefreshView);
-			EventManager.Inst.AddEvent("SpaceTravel_SetRedDot", SetRedDot);
+			EventManager.Inst.AddEvent(EventKeys.SPACE_TRAVEL_SHOW_PROGRESS, RefreshView);
+			EventManager.Inst.AddEvent(EventKeys.SPACE_TRAVEL_SET_RED_DOT, SetRedDot);
 
 			mLastFakePlayerCount = mContentData.GetFakePlayerCount();
 			RefreshView();
@@ -53,8 +53,8 @@ namespace TrumpTile.GameMain.UI
 
 		private void OnDestroy()
 		{
-			EventManager.Inst?.RemoveEvent("SpaceTravel_ShowProgress", RefreshView);
-			EventManager.Inst?.RemoveEvent("SpaceTravel_SetRedDot", SetRedDot);
+			EventManager.Inst?.RemoveEvent(EventKeys.SPACE_TRAVEL_SHOW_PROGRESS, RefreshView);
+			EventManager.Inst?.RemoveEvent(EventKeys.SPACE_TRAVEL_SET_RED_DOT, SetRedDot);
 		}
 
 		private void RefreshView()

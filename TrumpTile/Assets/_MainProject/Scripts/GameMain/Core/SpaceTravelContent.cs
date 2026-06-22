@@ -86,6 +86,10 @@ namespace TrumpTile.GameMain.Core
 
 		public float GetCooldownTime()
 		{
+			if (mState != ESpaceTravelState.SuccessCooldown && mState != ESpaceTravelState.FailCooldown)
+			{
+				return 0F;
+			}
 			float cooldown = mState == ESpaceTravelState.SuccessCooldown
 				? SUCCESS_COOLDOWN_SECONDS
 				: FAIL_COOLDOWN_SECONDS;
@@ -111,7 +115,7 @@ namespace TrumpTile.GameMain.Core
 				mTargetStreakCount,
 				(min, max) => UnityEngine.Random.Range(min, max)
 			);
-			PlayerDataManager.Inst.StartSpaceTravel(budget);
+			PlayerDataManager.Inst.StartSpaceTravel(budget, mStartFakePlayerCount);
 			mState                  = ESpaceTravelState.Active;
 			mCurrentStreakCount     = 0;
 			mCurrentFakePlayerCount = mStartFakePlayerCount;
@@ -146,7 +150,7 @@ namespace TrumpTile.GameMain.Core
 
 			if (mCurrentStreakCount >= mTargetStreakCount)
 			{
-				EventManager.Inst.ActiveEvent("SpaceTravel_ShowReward");
+				EventManager.Inst.ActiveEvent(EventKeys.SPACE_TRAVEL_SHOW_REWARD);
 			}
 		}
 

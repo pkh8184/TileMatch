@@ -79,6 +79,15 @@ namespace TrumpTile.GameMain.Data
 
         //챔피언스 리그 관련 데이터
         public int ChampionsLevel;
+
+		//우주여행 이벤트 관련 데이터
+		public bool SpaceTravelUnlock;
+		public int SpaceTravelState;
+		public long SpaceTravelStateChangeTime;
+		public int SpaceTravelStreakCount;
+		public int SpaceTravelFakePlayerCount;
+		public int[] SpaceTravelEliminationBudget;
+
         public EncryptedUserData(UserData data)
         {
             RemoveAds = data.RemoveAds;
@@ -150,6 +159,14 @@ namespace TrumpTile.GameMain.Data
             GemCount = data.GemCount;
 
             ChampionsLevel = data.ChampionsLevel;
+
+			//우주여행 이벤트 관련 데이터
+			SpaceTravelUnlock = data.SpaceTravelUnlock;
+			SpaceTravelState = (int)data.SpaceTravelState;
+			SpaceTravelStateChangeTime = data.SpaceTravelStateChangeTime.ToUniversalTime().Ticks;
+			SpaceTravelStreakCount = data.SpaceTravelStreakCount;
+			SpaceTravelFakePlayerCount = data.SpaceTravelFakePlayerCount;
+			SpaceTravelEliminationBudget = data.SpaceTravelEliminationBudget;
         }
     }
     [Serializable]
@@ -436,7 +453,15 @@ namespace TrumpTile.GameMain.Data
             GemCount = data.GemCount;
 
             ChampionsLevel = data.ChampionsLevel;
-            
+
+			//우주여행 이벤트 관련 데이터
+			SpaceTravelUnlock = data.SpaceTravelUnlock;
+			SpaceTravelState = (ESpaceTravelState)data.SpaceTravelState;
+			SpaceTravelStateChangeTime = new DateTime(data.SpaceTravelStateChangeTime, DateTimeKind.Local);
+			SpaceTravelStreakCount = data.SpaceTravelStreakCount;
+			SpaceTravelFakePlayerCount = data.SpaceTravelFakePlayerCount;
+			SpaceTravelEliminationBudget = data.SpaceTravelEliminationBudget;
+
             LoadUnEncryptedData();
         }
     }
