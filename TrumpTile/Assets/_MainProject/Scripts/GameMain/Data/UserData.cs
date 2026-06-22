@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.GameMain.Data
 {
@@ -221,7 +222,15 @@ namespace TrumpTile.GameMain.Data
         public DateTime GemCollectionUnActiveDate;
         public int GemCollectionIndex;
         public int GemCount;
-        
+
+        //우주여행 이벤트 관련 데이터
+        public ObscuredBool SpaceTravelUnlock;
+        public ESpaceTravelState SpaceTravelState;
+        public DateTime SpaceTravelStateChangeTime;
+        public ObscuredInt SpaceTravelStreakCount;
+        public ObscuredInt SpaceTravelFakePlayerCount;
+        public int[] SpaceTravelEliminationBudget;
+
         //챔피언스 리그 관련 데이터
         public int ChampionsLevel;
         //딕셔너리 파싱 생성자
@@ -319,6 +328,13 @@ namespace TrumpTile.GameMain.Data
             GemCollectionUnlock = false;
             GemCollectionIndex = 0;
             GemCount = 0;
+
+            SpaceTravelUnlock = false;
+            SpaceTravelState = ESpaceTravelState.Idle;
+            SpaceTravelStateChangeTime = DateTime.MinValue;
+            SpaceTravelStreakCount = 0;
+            SpaceTravelFakePlayerCount = 0;
+            SpaceTravelEliminationBudget = null;
 
             ChampionsLevel = 0;
         }

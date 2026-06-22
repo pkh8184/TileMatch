@@ -410,6 +410,87 @@ namespace TrumpTile.GameMain.Data
 			mUserData.GemCollectionIndex = value;
 		}
 	#endregion
+	#region 우주여행 이벤트 관련
+
+		public bool IsSpaceTravelUnlocked => mUserData != null && mUserData.SpaceTravelUnlock;
+		public ESpaceTravelState SpaceTravelState => mUserData != null ? mUserData.SpaceTravelState : ESpaceTravelState.Idle;
+		public int SpaceTravelStreakCount => mUserData != null ? mUserData.SpaceTravelStreakCount.Value : 0;
+		public int SpaceTravelFakePlayerCount => mUserData != null ? mUserData.SpaceTravelFakePlayerCount.Value : 0;
+		public DateTime SpaceTravelStateChangeTime => mUserData != null ? mUserData.SpaceTravelStateChangeTime : DateTime.MinValue;
+		public int[] SpaceTravelEliminationBudget => mUserData?.SpaceTravelEliminationBudget;
+
+		public void UnlockSpaceTravel()
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 우주여행 해금 완료");
+			mUserData.SpaceTravelUnlock = true;
+		}
+
+		public void StartSpaceTravel(int[] eliminationBudget)
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 우주여행 시작");
+			mUserData.SpaceTravelState = ESpaceTravelState.Active;
+			mUserData.SpaceTravelStateChangeTime = DateTime.UtcNow;
+			mUserData.SpaceTravelStreakCount = 0;
+			mUserData.SpaceTravelFakePlayerCount = 100;
+			mUserData.SpaceTravelEliminationBudget = eliminationBudget;
+		}
+
+		public void OnSpaceTravelStageClear(int newStreakCount, int newFakePlayerCount)
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			mUserData.SpaceTravelStreakCount = newStreakCount;
+			mUserData.SpaceTravelFakePlayerCount = newFakePlayerCount;
+		}
+
+		public void FailSpaceTravel()
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 우주여행 실패");
+			mUserData.SpaceTravelState = ESpaceTravelState.FailCooldown;
+			mUserData.SpaceTravelStateChangeTime = DateTime.UtcNow;
+			mUserData.SpaceTravelStreakCount = 0;
+		}
+
+		public void CompleteSpaceTravel()
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 우주여행 성공");
+			mUserData.SpaceTravelState = ESpaceTravelState.SuccessCooldown;
+			mUserData.SpaceTravelStateChangeTime = DateTime.UtcNow;
+			mUserData.SpaceTravelStreakCount = 0;
+		}
+
+		public void ResetSpaceTravel()
+		{
+			if (mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 우주여행 리셋");
+			mUserData.SpaceTravelState = ESpaceTravelState.Idle;
+			mUserData.SpaceTravelStreakCount = 0;
+			mUserData.SpaceTravelFakePlayerCount = 0;
+			mUserData.SpaceTravelEliminationBudget = null;
+		}
+
+	#endregion
 	#region Getters (기존)
 
 		public (bool BGMOn, bool SFXOn, bool HapticOn) GetUserSoundSettingDatas()
