@@ -4,18 +4,6 @@ using System.Collections.Generic;
 
 namespace TrumpTile.GameMain.Data
 {
-    // 딕셔너리 직렬화를 위한 래퍼
-    [Serializable]
-    public class ItemDictionaryEntry
-    {
-        public int itemId;
-        public int count;
-    }
-    [Serializable]
-    public class ItemDictionaryWrapper
-    {
-        public List<ItemDictionaryEntry> itemDictionaryList = new List<ItemDictionaryEntry>();
-    }
     [Serializable]
     public class EncryptedUserData
     {
@@ -30,7 +18,10 @@ namespace TrumpTile.GameMain.Data
         //재화 데이터
         public int Gold;
         public int Star;
-        public ItemDictionaryWrapper ItemDictionaryWrapper;
+        public int Hammer;
+        public int Clock;
+        public int Hat;
+        public int Bomb;
 
         // 앨범 수집 데이터
         public int LastAlbumRewardedStage;
@@ -91,18 +82,10 @@ namespace TrumpTile.GameMain.Data
             Gold = data.Gold;
             Star = data.Star;
 
-            //아이템 딕셔너리 -> 리스트 래퍼 변환
-            ItemDictionaryWrapper = new ItemDictionaryWrapper();
-            if (data.ItemCounts != null)
-            {
-                foreach (KeyValuePair<int, int> pair in data.ItemCounts)
-                {
-                    ItemDictionaryEntry entry = new ItemDictionaryEntry();
-                    entry.itemId = pair.Key;
-                    entry.count = pair.Value;
-                    ItemDictionaryWrapper.itemDictionaryList.Add(entry);
-                }
-            }
+            Hammer = data.ItemCounts[1005];
+            Clock = data.ItemCounts[1006];
+            Hat = data.ItemCounts[1007];
+            Bomb = data.ItemCounts[1008];
 
             //앨범 수집 데이터
             LastAlbumRewardedStage = data.LastAlbumRewardedStage;
@@ -364,15 +347,11 @@ namespace TrumpTile.GameMain.Data
             Gold = data.Gold;
             Star = data.Star;
 
-            ItemCounts = new Dictionary<int, int>();
-            if (data.ItemDictionaryWrapper != null)
-            {
-                foreach (ItemDictionaryEntry item in data.ItemDictionaryWrapper.itemDictionaryList)
-                {
-                    ItemCounts[item.itemId] = item.count;
-                }
-            }
-
+            ItemCounts[1005] = data.Hammer;
+            ItemCounts[1006] = data.Clock;
+            ItemCounts[1007] = data.Hat;
+            ItemCounts[1008] = data.Bomb;
+            
             //앨범 수집 데이터
             LastAlbumRewardedStage = data.LastAlbumRewardedStage;
 
