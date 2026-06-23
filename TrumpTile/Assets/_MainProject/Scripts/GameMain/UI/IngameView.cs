@@ -263,9 +263,10 @@ namespace TrumpTile.GameMain.UI
             if (!bIsDailyMode)
             {
                 mLevelNameBackground.gameObject.SetActive(true);
-                if(index < 4)
+                if(index < 5)
                 {
-                      mEffectObjectArray[index].SetActive(true);
+                    mEffectObjectArray[index].transform.SetParent(mLevelNameBackground.transform);
+                    mEffectObjectArray[index].SetActive(true);
                 }
                 mLevelNameBackground.color = new Color(0, 0, 0, 245f / 255f);
                 mTopLevelNameRect.localScale = Vector3.zero;
@@ -279,8 +280,10 @@ namespace TrumpTile.GameMain.UI
                     mBonusLevelNameCanvasGroup.gameObject.SetActive(false);
                     mLevelNameCanvasGroup.gameObject.SetActive(true);
                 }
-                mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "" : index == 4? $"CHALLENGE {PlayerDataManager.Inst.ChampionsLevel}" : $"LEVEL {levelData.levelNumber}";
-                mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "BONUS LEVEL" : index == 4? $"CHALLENGE {PlayerDataManager.Inst.ChampionsLevel}" : $"LEVEL {levelData.levelNumber}";
+                TMP_Text text = mLevelNameCanvasGroup.transform.GetChild(0).GetComponent<TMP_Text>();
+                text.text = index == 3? "" : index == 4? $"Challenge {PlayerDataManager.Inst.ChampionsLevel}" : $"LEVEL {levelData.levelNumber}";
+                text.fontSizeMax = index == 4? 44 : 54;
+                mTopLevelNameRect.transform.GetChild(0).GetComponent<TMP_Text>().text = index == 3? "BONUS LEVEL" : index == 4? $"Challenge {PlayerDataManager.Inst.ChampionsLevel}" : $"LEVEL {levelData.levelNumber}";
             }
 
             foreach (var item in mItemButtonConfigArray)
@@ -410,7 +413,7 @@ namespace TrumpTile.GameMain.UI
             }
             else
             {
-                
+                AudioEvent.Play(EAudioKey.SFX_Ingame_LevelName_Champions);
             }
 
             CanvasGroup c = difficultyIndex == 3? mBonusLevelNameCanvasGroup : mLevelNameCanvasGroup;

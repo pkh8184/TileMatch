@@ -265,7 +265,11 @@ namespace TrumpTile.GameMain.Core
 			}
 			else
 			{
-				if(difficulty.Contains("Bonus"))
+				if(GameManager.Instance.IsChampionsMode)
+				{
+					mMatchEffectPrefab = mMatchEffectArray[5];
+				}
+				else if(difficulty.Contains("Bonus"))
 				{
 					mMatchEffectPrefab = mMatchEffectArray[3];
 				}

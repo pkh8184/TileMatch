@@ -71,7 +71,9 @@ namespace TrumpTile.GameMain.Core
 		BGM_Ingame_Champions,
 		SFX_Ingame_Match_Champions,
 		SFX_Ingame_TileMove_Champions,
-		SFX_Ingame_TileReject_Champions
+		SFX_Ingame_TileReject_Champions,
 
+		SFX_Reward_Gain,
+		SFX_Ingame_LevelName_Champions,
 	}
 }
