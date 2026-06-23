@@ -109,8 +109,7 @@ namespace TrumpTile.GameMain.Core
             }
             if(!mbIsFree)
             {
-                Debug.Log($"[RouletteContent] 보상형 광고 시청. 광고 종료 콜백 대기");
-                //광고 재생
+                AdManager.Inst.ShowRewardedAd(null);
             }
 
             mRewardConfigArray[mCurrentRewardIndex].Reward.GrantReward();

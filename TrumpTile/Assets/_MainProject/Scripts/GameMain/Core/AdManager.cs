@@ -21,6 +21,10 @@ namespace TrumpTile.GameMain.Core
 		private RewardedAd mRewardedAd;
 		private bool mbIsInitialized = false;
 
+		// 광고가 닫힐 때 호출 (bool: 보상 획득 여부)
+		private System.Action<bool> mOnRewardedClosed;
+		private bool mbRewardEarned = false;
+
 		private bool IsAdsRemoved => PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
 
         private void Awake()
@@ -186,39 +190,56 @@ namespace TrumpTile.GameMain.Core
 		}
 
 		/// <summary>
-		/// 리워드 광고 표시. 다 보면 onRewardEarned 콜백 호출
+		/// 리워드 광고 표시.
+		/// onClosed 는 광고가 닫힌 뒤 호출되며, 보상 획득 여부(bool)를 전달한다.
+		/// 광고가 준비되지 않은 경우 즉시 onClosed(false) 호출.
 		/// </summary>
-		public void ShowRewardedAd(System.Action onRewardEarned)
+		public void ShowRewardedAd(System.Action<bool> onClosed)
 		{
 			if (mRewardedAd != null && mRewardedAd.CanShowAd())
 			{
+				mOnRewardedClosed = onClosed;
+				mbRewardEarned = false;
+
 				mRewardedAd.Show((Reward reward) =>
 				{
-					Debug.Log($"[AdManager] 보상 지급: {reward.Amount} {reward.Type}");
-					onRewardEarned?.Invoke();
+					// 보상 획득 (아직 닫히지 않음). 닫힘 처리는 OnAdFullScreenContentClosed 에서
+					mbRewardEarned = true;
 				});
 			}
 			else
 			{
 				Debug.LogWarning("[AdManager] 리워드 광고가 준비되지 않음");
 				LoadRewardedAd(); // 다음을 위해 재로드
+				onClosed?.Invoke(false);
 			}
 		}
 
 		private void RegisterRewardedEventHandlers(RewardedAd ad)
 		{
-			// 광고를 닫으면 다음 광고 미리 로드
+			// 광고를 닫으면 콜백 호출 후 다음 광고 미리 로드
 			ad.OnAdFullScreenContentClosed += () =>
 			{
 				Debug.Log("[AdManager] 리워드 광고 닫힘 - 재로드");
-				LoadRewardedAd();
+				HandleRewardedClosed(mbRewardEarned);
 			};
 
 			ad.OnAdFullScreenContentFailed += (AdError error) =>
 			{
 				Debug.LogWarning($"[AdManager] 리워드 광고 표시 실패: {error.GetMessage()}");
-				LoadRewardedAd();
+				HandleRewardedClosed(false);
 			};
+		}
+
+		private void HandleRewardedClosed(bool bRewardEarned)
+		{
+			// 콜백을 먼저 떼어내 재진입/중복 호출 방지
+			System.Action<bool> onClosed = mOnRewardedClosed;
+			mOnRewardedClosed = null;
+			mbRewardEarned = false;
+
+			LoadRewardedAd();
+			onClosed?.Invoke(bRewardEarned);
 		}
 
 		#endregion

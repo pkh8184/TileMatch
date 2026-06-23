@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -125,7 +126,17 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnRewardButtonClick()
         {
-            Debug.Log($"{mRewardButton.name} 클릭, 리워드 광고 재생 후 보상 획득");
+            if(mbAnimProgress) return;
+
+            AdManager.Inst.ShowRewardedAd((bool done) =>
+            {
+                if(done)
+                {
+                    PlayerDataManager.Inst.AddGold(10);
+                    CoreContainer.RewardContainer.AddGold(10);
+                    GameManager.Instance.GoToMainMenu();
+                }
+            });
         }
         private void OnMainButtonClick()
         {

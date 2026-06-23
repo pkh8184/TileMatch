@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
@@ -63,7 +64,21 @@ namespace TrumpTile.GameMain.UI
             mContentController.PlayShowButtonAnim(mShowButton);
 
             InitStickerConfigs();
+        }
+        protected override void SubscribeEvent()
+        {
+            base.SubscribeEvent();
 
+            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
+        }
+        protected override void UnSubscribeEvent()
+        {
+            base.UnSubscribeEvent();
+
+            EventManager.Inst?.RemoveEvent("RewardAnimDone", InitAfterRewardAnim);
+        }
+        private void InitAfterRewardAnim()
+        {
             if(mContentData.ShowUnlockPopup)
             {
                 GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);

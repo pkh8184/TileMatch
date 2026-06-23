@@ -1,4 +1,5 @@
 using System.Collections;
+using TrumpTile.FrameLibrary;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.UI;
 using UnityEngine;
@@ -10,10 +11,9 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private AlbumPopup mAlbumPopup;
 
 		private readonly WaitForSeconds mAlbumCheckDelay = new WaitForSeconds(0.5F);
-
         private async void Awake()
-        {
-            PlayerDataManager.Inst.Initialize();
+        {         
+			PlayerDataManager.Inst.Initialize();
 
             await ContentManager.Inst.Initialize();
                 
@@ -23,6 +23,8 @@ namespace TrumpTile.GameMain.Core
                 item.Initialize();
             }
             _ = AdManager.Inst;
+
+			EventManager.Inst.AddEvent("RewardAnimDone", CheckAlbumPendingReward);
         }
 
 		private IEnumerator Start()
@@ -38,11 +40,14 @@ namespace TrumpTile.GameMain.Core
 			}
 			EventManager.Inst.ActiveEvent("MainSceneLoadComplete");
 
-			yield return mAlbumCheckDelay;
-			CheckAlbumPendingReward();
+			// yield return mAlbumCheckDelay;
+			// CheckAlbumPendingReward();
 		}
-
-		private void CheckAlbumPendingReward()
+        private void OnDestroy()
+        {
+            EventManager.Inst?.RemoveEvent("RewardAnimDone", CheckAlbumPendingReward);
+        }
+        private void CheckAlbumPendingReward()
 		{
 			if (AlbumManager.Inst == null || mAlbumPopup == null)
 			{

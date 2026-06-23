@@ -51,6 +51,10 @@ namespace TrumpTile.GameMain.UI
 
             mContentUIController.ActiveRedDot(mContentData.HasNewThing);
 
+            mRouletteButton.onClick.AddListener(OnRouletteButton);
+        }
+        private void InitAfterRewardAnim()
+        {
             if(mContentData.ShowUnlockPopup)
             {
                 GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);
@@ -58,8 +62,6 @@ namespace TrumpTile.GameMain.UI
                 ui.Initialize();
                 ui.Show();
             }
-
-            mRouletteButton.onClick.AddListener(OnRouletteButton);
         }
         
         protected override void PlayShowAnim()
@@ -91,11 +93,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
             EventManager.Inst.AddEvent("RefreshRouletteData", SetButtonState);
+            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
             EventManager.Inst?.RemoveEvent("RefreshRouletteData", SetButtonState);
+            EventManager.Inst?.AddEvent("RewardAnimDone", InitAfterRewardAnim);
         }
         private void OnRouletteButton()
         {
@@ -114,18 +118,20 @@ namespace TrumpTile.GameMain.UI
             const int SPIN_COUNT = 20;     // 도는 바퀴 수
             const float DURATION = 4f;    // 총 연출 시간
 
+            mContentData.RouletteRewardProgress();
+
             // 매번 같은 시작점에서 출발하도록 리셋
             mRouletteRect.localRotation = Quaternion.identity;
-            AudioEvent.Play(EAudioKey.SFX_Roulette_Spin);
+
             float endZ = -(360f * SPIN_COUNT) + targetAngle;   // 예: -1866
 
             Sequence seq = DOTween.Sequence();
+            seq.AppendCallback(() => AudioEvent.Play(EAudioKey.SFX_Roulette_Spin));
             seq.Append(mRouletteRect
                 .DOLocalRotate(new Vector3(0f, 0f, endZ), DURATION, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutQuart));
                 
             seq.OnComplete(() => StartCoroutine(Co_OnSpinComplete()));
-            mContentData.RouletteRewardProgress();
 
             SetButtonState();
 

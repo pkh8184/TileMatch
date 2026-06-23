@@ -188,11 +188,14 @@ namespace TrumpTile.GameMain.UI
         }
         private void ReviveWithAds()
         {
-            // 리워드 광고 진행
-            // 리워드 광고 대기
-
-            mbAdsFreeDone = true;
-            OnReviveAfterHide();
+            AdManager.Inst.ShowRewardedAd((bool done) =>
+            {
+                if(done)
+                {
+                    mbAdsFreeDone = true;
+                    OnReviveAfterHide();
+                }
+            });
         }
         private void ReviveWithAdsFree()
         {

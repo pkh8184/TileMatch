@@ -116,6 +116,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.Gold += amount;
 			OnGoldChanged?.Invoke();
+
+			SaveUserData();
 		}
 
 		public bool UseGold(int amount)
@@ -126,6 +128,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.Gold -= amount;
 			OnGoldChanged?.Invoke();
+
+			SaveUserData();
 			return true;
 		}
 

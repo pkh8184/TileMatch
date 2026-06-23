@@ -54,6 +54,8 @@ namespace TrumpTile.GameMain.UI
         private CanvasGroup mLeftElementsRectCanvasGroup;
         private CanvasGroup mRightElementsRectCanvasGroup;
         private List<CanvasGroup> mSizeAdjustElementRectCanvasGroupList = new List<CanvasGroup>();
+
+        private bool mbIsFirstInit;
         public override void Initialize()
         {
             base.Initialize();
@@ -183,7 +185,15 @@ namespace TrumpTile.GameMain.UI
         }
         private void PlayRewardAnim()
         {
-            mRewardAnimator.PlayRewardAnim(() => SetInteractable(false), () => SetInteractable(true));
+            mRewardAnimator.PlayRewardAnim(() => SetInteractable(false), () => 
+            {
+                SetInteractable(true);
+                if(!mbIsFirstInit)
+                {
+                    EventManager.Inst.ActiveEvent("RewardAnimDone");
+                    mbIsFirstInit = true;
+                }
+            });
         }
         private void PulseShopButton()
         {

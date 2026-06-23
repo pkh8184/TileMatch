@@ -46,14 +46,19 @@ namespace TrumpTile.GameMain.UI
             }
             if(!mContentData.Unlock || !mContentData.IsActive)
             {
-                mShowButton.gameObject.SetActive(false);
+                mShowButton.transform.parent.gameObject.SetActive(false);
                 return;
             }
 
-            mShowButton.gameObject.SetActive(true);
+            mShowButton.transform.parent.gameObject.SetActive(true);
 
             mContentController.SetLimitTimeText(mContentData.GetContentInfo().ActiveTime);
 
+            CreateElement();
+            InitCollectGage();
+        }
+        private void InitAfterRewardAnim()
+        {
             if(mContentData.ShowUnlockPopup)
             {
                 GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);
@@ -61,9 +66,6 @@ namespace TrumpTile.GameMain.UI
                 ui.Initialize();
                 ui.Show();
             }
-
-            CreateElement();
-            InitCollectGage();
         }
         protected override void SubscribeEvent()
         {
@@ -71,6 +73,7 @@ namespace TrumpTile.GameMain.UI
 
             EventManager.Inst.AddEvent<int>("RefreshGemUI", RefreshGemUI);
             EventManager.Inst.AddEvent("GemRewardArrived", PulseGemRect);
+            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
         }
         protected override void UnSubscribeEvent()
         {
@@ -78,6 +81,7 @@ namespace TrumpTile.GameMain.UI
 
             EventManager.Inst?.RemoveEvent<int>("RefreshGemUI", RefreshGemUI);
             EventManager.Inst?.RemoveEvent("GemRewardArrived", PulseGemRect);
+            EventManager.Inst?.RemoveEvent("RewardAnimDone", InitAfterRewardAnim);
         }
         private void PulseGemRect()
         {
