@@ -79,6 +79,10 @@ namespace TrumpTile.GameMain.UI
         }
         private void InitAfterRewardAnim()
         {
+            if(!mContentData.Unlock || !mContentData.HasNewThing)
+            {
+                return;
+            }
             if(mContentData.ShowUnlockPopup)
             {
                 GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);
