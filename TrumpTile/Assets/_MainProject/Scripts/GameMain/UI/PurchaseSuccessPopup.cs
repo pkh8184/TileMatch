@@ -29,6 +29,11 @@ namespace TrumpTile.GameMain.UI
             
             EventManager.Inst.RemoveEvent("PurchaseConfirmed", Show);
         }
+        public override void Show()
+        {
+            base.Show();
+            AudioEvent.Play(EAudioKey.SFX_Purchase);
+        }
         protected override void PlayHideAnim()
         {
             Sequence seq = DOTween.Sequence();

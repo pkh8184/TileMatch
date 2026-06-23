@@ -143,7 +143,7 @@ namespace TrumpTile.GameMain.UI
             {
                 mContentData.ConfirmCurrentReward();
                 PeekProgress();
-
+                AudioEvent.Play(EAudioKey.SFX_Reward_Gain);
                 return;
             }
             mContentData.ConfirmCurrentReward();

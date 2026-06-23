@@ -199,6 +199,7 @@ namespace TrumpTile.GameMain.UI
             stageTransform.DOKill(true);
             stageTransform.localScale = Vector3.one;
             stageTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+            AudioEvent.Play(EAudioKey.SFX_GetReward_Gold);
         }
         private void GoldTextProgress((float, int) data)
         {
