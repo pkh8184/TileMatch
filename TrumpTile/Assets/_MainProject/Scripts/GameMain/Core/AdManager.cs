@@ -14,8 +14,11 @@ namespace TrumpTile.GameMain.Core
 		// 테스트용 광고 ID (실제 배포 시 교체 필요)
 		private const string ANDROID_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
 		private const string IOS_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/2934735716";
+		private const string ANDROID_REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+		private const string IOS_REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/1712485313";
 
 		private BannerView mBannerView;
+		private RewardedAd mRewardedAd;
 		private bool mbIsInitialized = false;
 
 		private bool IsAdsRemoved => PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
@@ -49,6 +52,7 @@ namespace TrumpTile.GameMain.Core
 				mbIsInitialized = true;
 				Debug.Log("[AdManager] MobileAds 초기화 완료");
 				LoadBannerAd();
+				LoadRewardedAd();
 			});
 		}
 
@@ -145,11 +149,90 @@ namespace TrumpTile.GameMain.Core
 
 		#endregion
 
+		#region Rewarded
+
+		private string GetRewardedAdUnitId()
+		{
+#if UNITY_ANDROID
+			return ANDROID_REWARDED_AD_UNIT_ID;
+#elif UNITY_IOS
+			return IOS_REWARDED_AD_UNIT_ID;
+#else
+			return "unused";
+#endif
+		}
+
+		public void LoadRewardedAd()
+		{
+			// 기존 광고가 있으면 정리
+			if (mRewardedAd != null)
+			{
+				mRewardedAd.Destroy();
+				mRewardedAd = null;
+			}
+
+			RewardedAd.Load(GetRewardedAdUnitId(), new AdRequest(), (RewardedAd ad, LoadAdError error) =>
+			{
+				if (error != null || ad == null)
+				{
+					Debug.LogWarning($"[AdManager] 리워드 광고 로드 실패: {error?.GetMessage()}");
+					return;
+				}
+
+				Debug.Log("[AdManager] 리워드 광고 로드 성공");
+				mRewardedAd = ad;
+				RegisterRewardedEventHandlers(mRewardedAd);
+			});
+		}
+
+		/// <summary>
+		/// 리워드 광고 표시. 다 보면 onRewardEarned 콜백 호출
+		/// </summary>
+		public void ShowRewardedAd(System.Action onRewardEarned)
+		{
+			if (mRewardedAd != null && mRewardedAd.CanShowAd())
+			{
+				mRewardedAd.Show((Reward reward) =>
+				{
+					Debug.Log($"[AdManager] 보상 지급: {reward.Amount} {reward.Type}");
+					onRewardEarned?.Invoke();
+				});
+			}
+			else
+			{
+				Debug.LogWarning("[AdManager] 리워드 광고가 준비되지 않음");
+				LoadRewardedAd(); // 다음을 위해 재로드
+			}
+		}
+
+		private void RegisterRewardedEventHandlers(RewardedAd ad)
+		{
+			// 광고를 닫으면 다음 광고 미리 로드
+			ad.OnAdFullScreenContentClosed += () =>
+			{
+				Debug.Log("[AdManager] 리워드 광고 닫힘 - 재로드");
+				LoadRewardedAd();
+			};
+
+			ad.OnAdFullScreenContentFailed += (AdError error) =>
+			{
+				Debug.LogWarning($"[AdManager] 리워드 광고 표시 실패: {error.GetMessage()}");
+				LoadRewardedAd();
+			};
+		}
+
+		#endregion
+
 		private void OnDestroy()
 		{
 			if (Inst == this)
 			{
 				DestroyBannerAd();
+				if (mRewardedAd != null)
+				{
+					mRewardedAd.Destroy();
+					mRewardedAd = null;
+				}
 			}
 		}
 	}
