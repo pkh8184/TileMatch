@@ -66,16 +66,31 @@ namespace TrumpTile.GameMain.UI
         public void OnPurchaseSuccess()
         {
             if(!gameObject.activeSelf) return;
-
             List<RewardDisplayInfo> rewards = IAPManager.Instance.GetRewardDisplayInfos(EProductId.RemoveAds);
+            
             foreach(var item in rewards)
             {
                 CoreContainer.RewardContainer.AddReward(item);
             }
-            EventManager.Inst.ActiveEvent("PlayRewardAnim");
-            CoreContainer.RewardContainer.Clear();
 
-            Hide();
+            HideOnPurchase();
+        }
+        private void HideOnPurchase()
+        {   
+            if (mPopupObj == null) return;
+
+            mCurrentSeq?.Kill();
+
+            mCurrentSeq = DOTween.Sequence();
+            mCurrentSeq.SetUpdate(true);
+            mCurrentSeq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
+            mCurrentSeq.OnComplete(() =>
+            {
+                mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+                gameObject.SetActive(false);
+                EventManager.Inst.ActiveEvent("PlayRewardAnim");
+                mShowButton.gameObject.SetActive(false);
+            });
         }
         private void OnPurchaseButtonClick()
         {

@@ -18,6 +18,8 @@ namespace TrumpTile.GameMain.Core
 
         public void AddReward(RewardDisplayInfo info)
         {
+            if(info == null) return;
+            
             if(info.Type == ERewardType.Gold)
             {
                 mGold += info.Amount;
@@ -106,6 +108,10 @@ namespace TrumpTile.GameMain.Core
             bool hasRewards = mGold > 0 || mHammer > 0 || mClock > 0 || mHat > 0 || mBomb > 0 || mGem > 0;
 
             return hasRewards;
+        }
+        public bool HasGoldRewads()
+        {
+            return mGold > 0;
         }
     }    
 }
