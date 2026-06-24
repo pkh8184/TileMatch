@@ -91,7 +91,6 @@ namespace TrumpTile.GameMain.Data
 		public bool IsAdsRemoved => mUserData != null && mUserData.RemoveAds;
 		public int LastAlbumRewardedStage => mUserData != null ? mUserData.LastAlbumRewardedStage : 0;
 		public int StreakLoginCount => mUserData.StreakLoginCount;
-		public bool IsFirstLoginToday => mUserData.IsFirstLoginToday;
 		public int RouletteCount => mUserData.RouletteCount;
 		public int ExcitTravelIndex => mUserData.ExcitTravelIndex;
 		public bool IsExcitTravelActive => mUserData.IsExcitTravelActive;
@@ -265,6 +264,7 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 돼지저금통 해금 완료");
 			mUserData.PiggyBankUnlock = true;
+			StartPiggyBankContent();
 		}
 		public void UnlockDailyCheck()
 		{
@@ -316,6 +316,42 @@ namespace TrumpTile.GameMain.Data
 			mUserData.LastAlbumRewardedStage = stage;
 		}
 
+	#endregion
+	#region 출석체크 관련
+		public bool CanActiveDailyCheck()
+		{
+			if(mUserData == null)
+			{
+				return false;
+			}
+			return !mUserData.IsDailyCheckToday;
+		}
+		private void RefreshStreakLoginCount()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			int day = (mUserData.CurrentLoginDate.Date - mUserData.LogoutDate.Date).Days;
+			if(day == 1)
+			{
+				mUserData.StreakLoginCount++;
+				mUserData.IsDailyCheckToday = false;
+			}
+			else if(day > 1)
+			{
+				mUserData.StreakLoginCount = 1;
+				mUserData.IsDailyCheckToday = false;
+			}
+		}
+		public void SetDailyCheckDone()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.IsDailyCheckToday = true;
+		}
 	#endregion
 	#region 돼지저금통 관련
 		public void PurchasePiggyBank()
@@ -597,6 +633,8 @@ namespace TrumpTile.GameMain.Data
 				mUserData = new UserData();
 			}
 			mUserData.LoadUnEncryptedData();
+
+			RefreshStreakLoginCount();
 		}
 		private void SaveUserData()
 		{

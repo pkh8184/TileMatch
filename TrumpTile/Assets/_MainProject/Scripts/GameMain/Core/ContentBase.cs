@@ -1,6 +1,5 @@
 using TrumpTile.GameMain.Data;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace TrumpTile.GameMain.Core
 {

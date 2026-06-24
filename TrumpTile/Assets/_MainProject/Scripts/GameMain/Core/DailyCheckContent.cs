@@ -11,30 +11,18 @@ namespace TrumpTile.GameMain.Core
         [Header("지급 보상")]
         [SerializeReference, SubclassSelector] private ProductReward[] mRewardArray;
         private int mStreakCount;
+
         public override void Initialize()
         {
             base.Initialize();
-            //유저 데이터에서 출석일수 읽어오기 (마지막 접속 일자와 현재 접속 일자 비교해야함)
-            //유저 데이터에서 오늘자 출석 보상을 받았는지 읽어오기
-            //받았다면 
-            //mbHasNewthing = false;
-            if(!PlayerDataManager.Inst.IsFirstLoginToday)
-            {
-                return;
-            }
 
-            mStreakCount = PlayerDataManager.Inst.StreakLoginCount - 1;
-            mbHasNewthing = true;
+            SetDailyCheckData();
         }
         public override void Refresh()
         {
             base.Refresh();
 
-            if(PlayerDataManager.Inst.CurrentStage < mLevelToUnlock)
-            {
-                return;
-            }
-            SetUnlock();
+            SetDailyCheckData();
         }
         public override void CheckUnlock()
         {
@@ -57,6 +45,7 @@ namespace TrumpTile.GameMain.Core
         {
             mRewardArray[mStreakCount].GrantReward();
             mbHasNewthing = false;
+            PlayerDataManager.Inst.SetDailyCheckDone();
             CoreContainer.RewardContainer.AddReward(mRewardArray[mStreakCount].GetRewardDisplayInfo());
         }
         public ProductReward GetTodayReward()
@@ -78,6 +67,18 @@ namespace TrumpTile.GameMain.Core
                 index--;
             }
             return previewList;
+        }
+        private void SetDailyCheckData()
+        {
+            if(!PlayerDataManager.Inst.CanActiveDailyCheck())
+            {
+                mbHasNewthing = false;
+                return;
+            }
+
+            mStreakCount = PlayerDataManager.Inst.StreakLoginCount - 1;
+            mStreakCount %= mRewardArray.Length;
+            mbHasNewthing = true;
         }
     }    
 }

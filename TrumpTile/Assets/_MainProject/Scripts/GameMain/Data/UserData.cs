@@ -42,7 +42,7 @@ namespace TrumpTile.GameMain.Data
 
         //출석체크 관련 데이터
         public int StreakLoginCount;
-        public bool IsFirstLoginToday;
+        public bool IsDailyCheckToday;
 
         //룰렛 관련 데이터
         public int RouletteCount;
@@ -106,7 +106,7 @@ namespace TrumpTile.GameMain.Data
 
             //출석체크 관련 데이터
             StreakLoginCount = data.StreakLoginCount;
-            IsFirstLoginToday = data.IsFirstLoginToday;
+            IsDailyCheckToday = data.IsDailyCheckToday;
 
             //룰렛 관련 데이터
             RouletteCount = data.RouletteCount;
@@ -180,8 +180,7 @@ namespace TrumpTile.GameMain.Data
 
         //출석체크 관련 데이터
         public int StreakLoginCount;
-        public bool IsFirstLoginToday;
-
+        public bool IsDailyCheckToday;
         //룰렛 관련 데이터
         public int RouletteCount;
 
@@ -281,22 +280,21 @@ namespace TrumpTile.GameMain.Data
             MaxStreakLoginCount = 1;
             StreakLoginCount = 1;
             
-            IsFirstLoginToday = true;
             DailyCheckUnlock = false;
 
             RouletteCount = 0;
             RouletteUnlock = false;
 
-            IsExcitTravelActive = true;
+            IsExcitTravelActive = false;
             ExcitTravelIndex = 0;
             ExcitTravelUnlock = false;
 
             PiggyBankPurchase = false;
             PiggyBankStageClearCount = 0;
-            IsPiggyBankActive = true;
+            IsPiggyBankActive = false;
             PiggyBankUnlock = false;
 
-            IsGemCollectionActive = true;
+            IsGemCollectionActive = false;
             GemCollectionUnlock = false;
             GemCollectionIndex = 0;
             GemCount = 0;
@@ -371,7 +369,7 @@ namespace TrumpTile.GameMain.Data
 
             //출석체크 관련 데이터
             StreakLoginCount = data.StreakLoginCount;
-            IsFirstLoginToday = data.IsFirstLoginToday;
+            IsDailyCheckToday = data.IsDailyCheckToday;
 
             //룰렛 관련 데이터
             RouletteCount = data.RouletteCount;
