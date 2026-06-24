@@ -13,6 +13,7 @@ namespace TrumpTile.GameMain.UI
 	{
 		[Header("게이지")]
 		[SerializeField] private TMP_Text mCollectedCountText;
+		[SerializeField] private TMP_Text mMaxCountText;
 
 		[Header("사진 슬롯 (그리드)")]
 		[SerializeField] private AlbumSlotView mSlotViewPrefab;
@@ -91,8 +92,8 @@ namespace TrumpTile.GameMain.UI
 				return;
 			}
 
-			(int collected, int _) = AlbumManager.Inst.GetCurrentProgress();
-			UpdateGauge(collected);
+			(int collected, int total) = AlbumManager.Inst.GetCurrentProgress();
+			UpdateGauge(collected, total);
 
 			List<(TBPictureCollectData picture, EAlbumPictureState state)> pictureStates
 				= AlbumManager.Inst.GetPictureStates();
@@ -109,9 +110,10 @@ namespace TrumpTile.GameMain.UI
 			}
 		}
 
-		private void UpdateGauge(int collected)
+		private void UpdateGauge(int collected, int total)
 		{
 			if (mCollectedCountText != null) mCollectedCountText.text = $"{collected}";
+			if (mMaxCountText != null) mMaxCountText.text = $"/ {total}";
 		}
 
 		public void PlayRewardSequence(List<TBPictureCollectData> pendingPictures)
