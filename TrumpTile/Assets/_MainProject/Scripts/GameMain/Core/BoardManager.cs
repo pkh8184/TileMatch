@@ -234,6 +234,12 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			Sprite tileBackground = difficultyBackground ? difficultyBackground : mDefaultTileBackground;
+			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				int dailyTileIndex = DailyPuzzleManager.Inst.GetTodayRandomIndex(mDifficultyTileBackgroundArray.Length);
+				Sprite dailyTileSprite = mDifficultyTileBackgroundArray[dailyTileIndex];
+				tileBackground = dailyTileSprite ? dailyTileSprite : mDefaultTileBackground;
+			}
 
 			SortingManager.SetMaxGridY(mGridHeight);
 

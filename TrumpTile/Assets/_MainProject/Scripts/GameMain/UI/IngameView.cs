@@ -233,8 +233,18 @@ namespace TrumpTile.GameMain.UI
             {
                 mLevelNameImage.sprite = mLevelTextBackgroundArray[index];   
             }
-            Sprite background = mDifficultyLevelBackgroundArray[index];
-            mBackgroundImage.sprite = background? background : mDefaultBackgroundSprite; 
+            bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+            Sprite background;
+            if (bIsDailyMode)
+            {
+                int dailyBgIndex = DailyPuzzleManager.Inst.GetTodayRandomIndex(mDifficultyLevelBackgroundArray.Length);
+                background = mDifficultyLevelBackgroundArray[dailyBgIndex];
+            }
+            else
+            {
+                background = mDifficultyLevelBackgroundArray[index];
+            }
+            mBackgroundImage.sprite = background ? background : mDefaultBackgroundSprite; 
 
             if(index == 0)
             {
@@ -257,8 +267,6 @@ namespace TrumpTile.GameMain.UI
             {
                 AudioEvent.Play(EAudioKey.BGM_Ingame_Champions);
             }
-
-            bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
 
             if (!bIsDailyMode)
             {
