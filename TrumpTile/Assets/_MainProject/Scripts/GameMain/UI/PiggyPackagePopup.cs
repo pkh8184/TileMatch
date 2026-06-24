@@ -43,18 +43,6 @@ namespace TrumpTile.GameMain.UI
                 Debug.Log($"[ExcitTravelView] 컨텐츠 데이터 읽어오기에 실패했습니다.");
                 return;
             }
-            if(mContentData.CanGetRewardAfterEndActive)
-            {
-                Show();
-                RewardProgress();
-                return;
-            }
-            if(mContentData.IsFull && mContentData.CanConfirm)
-            {
-                Show();
-                RewardProgress();
-                return;
-            }
 
             if(!mContentData.Unlock || !mContentData.IsActive)
             {
@@ -83,6 +71,7 @@ namespace TrumpTile.GameMain.UI
 
             EventManager.Inst.AddEvent("PurchaseSuccess", OnPurchaseSuccess);
             EventManager.Inst.AddEvent("PiggyRewardConfirm", OnPiggyRewardConfirm);
+            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
         }
         protected override void UnSubscribeEvent()
         {
@@ -90,6 +79,7 @@ namespace TrumpTile.GameMain.UI
 
             EventManager.Inst?.RemoveEvent("PurchaseSuccess", OnPurchaseSuccess);
             EventManager.Inst?.RemoveEvent("PiggyRewardConfirm", OnPiggyRewardConfirm);
+            EventManager.Inst?.RemoveEvent("RewardAnimDone", InitAfterRewardAnim);
         }
         protected override void PlayShowAnim()
         {
@@ -140,6 +130,21 @@ namespace TrumpTile.GameMain.UI
                 EventManager.Inst.ActiveEvent("PlayRewardAnim");
                 CoreContainer.RewardContainer.Clear();
             }); 
+        }
+        private void InitAfterRewardAnim()
+        {
+            if(mContentData.CanGetRewardAfterEndActive)
+            {
+                Show();
+                RewardProgress();
+                return;
+            }
+            if(mContentData.IsFull && mContentData.CanConfirm)
+            {
+                Show();
+                RewardProgress();
+                return;
+            }
         }
         private void PlayProgressAnim()
         {

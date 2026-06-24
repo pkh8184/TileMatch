@@ -54,8 +54,6 @@ namespace TrumpTile.GameMain.UI
         private CanvasGroup mLeftElementsRectCanvasGroup;
         private CanvasGroup mRightElementsRectCanvasGroup;
         private List<CanvasGroup> mSizeAdjustElementRectCanvasGroupList = new List<CanvasGroup>();
-
-        private bool mbIsFirstInit;
         public override void Initialize()
         {
             base.Initialize();
@@ -162,7 +160,12 @@ namespace TrumpTile.GameMain.UI
         }
         protected override void Refresh()
         {
-            mGoldText.text = PlayerDataManager.Inst?.GetDataToString(EPlayerDataType.Gold);
+            int gold = PlayerDataManager.Inst.Gold;
+            if(CoreContainer.RewardContainer.HasGoldRewads())
+            {
+                gold -= CoreContainer.RewardContainer.Gold;
+            }
+            mGoldText.text = gold.ToString();
         }
         
         protected override void RefreshLocalData()
@@ -188,11 +191,8 @@ namespace TrumpTile.GameMain.UI
             mRewardAnimator.PlayRewardAnim(() => SetInteractable(false), () => 
             {
                 SetInteractable(true);
-                if(!mbIsFirstInit)
-                {
-                    EventManager.Inst.ActiveEvent("RewardAnimDone");
-                    mbIsFirstInit = true;
-                }
+                EventManager.Inst.ActiveEvent("RewardAnimDone");
+
             });
         }
         private void PulseShopButton()
