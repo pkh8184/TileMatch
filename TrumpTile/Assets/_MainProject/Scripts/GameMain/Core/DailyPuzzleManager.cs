@@ -15,6 +15,10 @@ namespace TrumpTile.GameMain.Core
 		private const string DAILY_PUZZLE_TABLE_ADDRESS = "DailyPuzzleTable";
 		private const string DAILY_CLEARED_KEY_PREFIX = "DailyCleared_";
 
+		[Header("Debug")]
+		[SerializeField] private bool mbUseDateOverride = false;
+		[SerializeField] private string mDateOverride = "20260625";
+
 		private DailyPuzzleTable mDailyPuzzleTable;
 		private AsyncOperationHandle<DailyPuzzleTable> mTableHandle;
 		private bool mbIsActive = false;
@@ -116,6 +120,10 @@ namespace TrumpTile.GameMain.Core
 
 		public int GetTodayRandomIndex(int arrayLength)
 		{
+			if (mbUseDateOverride && DateTime.TryParseExact(mDateOverride, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime overrideDate))
+			{
+				return CalculateBackgroundIndex(overrideDate, arrayLength);
+			}
 			return CalculateBackgroundIndex(DateTime.Today, arrayLength);
 		}
 	}
