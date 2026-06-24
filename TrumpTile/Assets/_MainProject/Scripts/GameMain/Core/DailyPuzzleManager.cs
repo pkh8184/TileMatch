@@ -107,5 +107,16 @@ namespace TrumpTile.GameMain.Core
 		{
 			mbIsActive = false;
 		}
+
+		public static int CalculateBackgroundIndex(DateTime date, int arrayLength)
+		{
+			int seed = int.Parse(date.ToString("yyyyMMdd"));
+			return new System.Random(seed).Next(0, arrayLength);
+		}
+
+		public int GetTodayRandomIndex(int arrayLength)
+		{
+			return CalculateBackgroundIndex(DateTime.Today, arrayLength);
+		}
 	}
 }
