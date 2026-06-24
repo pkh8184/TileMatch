@@ -27,8 +27,6 @@ namespace TrumpTile.GameMain.Core
                 //첫 활성화인 경우 비활성화 시간 == null 검사 후 활성화
             }
 
-            mbIsActive = true;
-
             mCurrentIndex = PlayerDataManager.Inst.ExcitTravelIndex;
 
             if(mCurrentIndex >= MAX_REWARD_COUNT)
@@ -46,6 +44,8 @@ namespace TrumpTile.GameMain.Core
             if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
+                
+                mbIsActive = true;
 
                 if(!PlayerDataManager.Inst.UserData.ExcitTravelUnlock)
                 {

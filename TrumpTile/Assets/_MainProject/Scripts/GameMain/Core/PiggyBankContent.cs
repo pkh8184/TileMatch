@@ -32,8 +32,6 @@ namespace TrumpTile.GameMain.Core
                 //첫 활성화인 경우 비활성화 시간 == null 검사 후 활성화
             }
 
-            mbIsActive = true;
-
             SetPiggyBankData();
         }
         public override void Refresh()
@@ -47,7 +45,7 @@ namespace TrumpTile.GameMain.Core
             if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
-
+                mbIsActive = true;
                 if(!PlayerDataManager.Inst.UserData.PiggyBankUnlock)
                 {
                     PlayerDataManager.Inst.UnlockPiggyBank();

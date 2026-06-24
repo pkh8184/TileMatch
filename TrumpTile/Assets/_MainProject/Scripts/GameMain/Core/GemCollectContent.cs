@@ -32,9 +32,6 @@ namespace TrumpTile.GameMain.Core
                 //비활성화 시간 - 현재 시간 > 쿨타임 이면 활성화
                 //첫 활성화인 경우 비활성화 시간 == null 검사 후 활성화
             }
-
-            mbIsActive = true;
-
             mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
         }
@@ -51,7 +48,8 @@ namespace TrumpTile.GameMain.Core
             if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
-
+                mbIsActive = true;
+                
                 if(!PlayerDataManager.Inst.UserData.GemCollectionUnlock)
                 {
                     PlayerDataManager.Inst.UnlockGemCollection();
