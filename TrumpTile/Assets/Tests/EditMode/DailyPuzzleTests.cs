@@ -88,12 +88,10 @@ namespace TrumpTile.Tests.EditMode
 		}
 
 		[Test]
-		public void CalculateBackgroundIndex_DifferentDates_MayDiffer()
+		public void CalculateBackgroundIndex_DifferentDates_EachInRange()
 		{
 			int result1 = DailyPuzzleManager.CalculateBackgroundIndex(new DateTime(2026, 6, 24), 5);
 			int result2 = DailyPuzzleManager.CalculateBackgroundIndex(new DateTime(2026, 6, 25), 5);
-			// 날짜가 다르면 시드가 다름 — 결과가 같을 수도 있지만 메서드는 독립적으로 동작해야 함
-			// 값 자체보단 범위 검증
 			Assert.IsTrue(result1 >= 0 && result1 < 5);
 			Assert.IsTrue(result2 >= 0 && result2 < 5);
 		}
