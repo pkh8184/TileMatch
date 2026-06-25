@@ -400,24 +400,24 @@ namespace TrumpTile.GameMain.Data
 		public void ActiveExcitTravel()
 		{
 			mUserData.IsExcitTravelActive = true;
-			mUserData.ExcitTravelActiveDate = DateTime.Now;
+			mUserData.ExcitTravelActiveDate = DateTime.UtcNow;
 		}
 		public void UnActiveExcitTravel()
 		{
 			mUserData.IsExcitTravelActive = false;
-			mUserData.ExcitTravelUnActiveDate = DateTime.Now;
+			mUserData.ExcitTravelUnActiveDate = DateTime.UtcNow;
 		}
 	#endregion
 	#region 보석 수집 관련
 		public void ActiveGemCollection()
 		{
 			mUserData.IsGemCollectionActive = true;
-			mUserData.GemCollectionUnActiveDate = DateTime.Now;	
+			mUserData.GemCollectionUnActiveDate = DateTime.UtcNow;	
 		}
 		public void UnActiveGemCollection()
 		{
 			mUserData.IsGemCollectionActive = false;
-			mUserData.GemCollectionUnActiveDate = DateTime.Now;
+			mUserData.GemCollectionUnActiveDate = DateTime.UtcNow;
 		}
 		public void AddGemCount(int value)
 		{

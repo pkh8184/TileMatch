@@ -91,9 +91,10 @@ namespace TrumpTile.GameMain.Data
             LastAlbumRewardedStage = data.LastAlbumRewardedStage;
 
             //로그인 데이터
-            FirstLoginDate = data.FirstLoginDate.ToUniversalTime().Ticks;
-            CurrentLoginDate = data.CurrentLoginDate.ToUniversalTime().Ticks;
-            LogoutDate = DateTime.Now.ToUniversalTime().Ticks;
+            //로그인 날짜는 "하루 경계" 판정용이라 로컬 기준으로 저장
+            FirstLoginDate = data.FirstLoginDate.Ticks;
+            CurrentLoginDate = data.CurrentLoginDate.Ticks;
+            LogoutDate = DateTime.Now.Ticks;
             MaxStreakLoginCount = data.MaxStreakLoginCount;
 
             //컨텐츠 해금 데이터
@@ -276,7 +277,7 @@ namespace TrumpTile.GameMain.Data
             FirstLoginDate = DateTime.Now;
             CurrentLoginDate = DateTime.Now;
             LogoutDate = DateTime.Now;
-            
+
             MaxStreakLoginCount = 1;
             StreakLoginCount = 1;
             
@@ -377,20 +378,20 @@ namespace TrumpTile.GameMain.Data
             //기차 여행 관련 데이터
             ExcitTravelIndex = data.ExcitTravelIndex;
             IsExcitTravelActive = data.IsExcitTravelActive;
-            ExcitTravelActiveDate = new DateTime(data.ExcitTravelActiveDate, DateTimeKind.Local);
-            ExcitTravelUnActiveDate = new DateTime(data.ExcitTravelUnActiveDate, DateTimeKind.Local);
+            ExcitTravelActiveDate = new DateTime(data.ExcitTravelActiveDate, DateTimeKind.Utc);
+            ExcitTravelUnActiveDate = new DateTime(data.ExcitTravelUnActiveDate, DateTimeKind.Utc);
 
             //돼지저금통 관련 데이터
             PiggyBankPurchase = data.PiggyBankPurchase;
             PiggyBankStageClearCount = data.PiggyBankStageClearCount;
             IsPiggyBankActive = data.IsPiggyBankActive;
-            PiggyBankActiveDate = new DateTime(data.PiggyBankActiveDate, DateTimeKind.Local);
-            PiggyBankUnActiveDate = new DateTime(data.PiggyBankUnActiveDate, DateTimeKind.Local);
+            PiggyBankActiveDate = new DateTime(data.PiggyBankActiveDate, DateTimeKind.Utc);
+            PiggyBankUnActiveDate = new DateTime(data.PiggyBankUnActiveDate, DateTimeKind.Utc);
 
             //보석 수집 관련 데이터
             IsGemCollectionActive = data.IsGemCollectionActive;
-            GemCollectionActiveDate = new DateTime(data.GemCollectionActiveDate, DateTimeKind.Local);
-            GemCollectionUnActiveDate = new DateTime(data.GemCollectionUnActiveDate, DateTimeKind.Local);
+            GemCollectionActiveDate = new DateTime(data.GemCollectionActiveDate, DateTimeKind.Utc);
+            GemCollectionUnActiveDate = new DateTime(data.GemCollectionUnActiveDate, DateTimeKind.Utc);
             GemCollectionIndex = data.GemCollectionIndex;
             GemCount = data.GemCount;
 
