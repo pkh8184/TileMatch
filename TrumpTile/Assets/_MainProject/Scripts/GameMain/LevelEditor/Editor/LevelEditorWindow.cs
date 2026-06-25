@@ -536,67 +536,82 @@ namespace TrumpTile.LevelEditor.Editor
 
             if (GUI.Button(leftBtnRect, "◀"))
             {
-                if (mCurrentLevelClone.levelNumber == 1)
+                LevelData prevLevel = GetAdjacentLevelByNumber(mCurrentLevelClone.levelNumber, false);
+                if (prevLevel != null)
                 {
-                    string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { "Assets/_MainProject/SODatas/Levels" });
-
-                    LevelData lastLevel = AssetDatabase.LoadAssetAtPath<LevelData>(AssetDatabase.GUIDToAssetPath(guids[guids.Length - 1]));
-
-                    mCurrentLevelClone = lastLevel.Clone();
+                    ChangeCurrentLevel(prevLevel);
+                    mCurrentLayer = 0;
                     Repaint();
                 }
-                else
-                {
-                    int prevNumber = mCurrentLevelClone.levelNumber - 1;
-                    while (AssetDatabase.LoadAssetAtPath<LevelData>($"Assets/_MainProject/SODatas/Levels/Level_{prevNumber.ToString("D3")}.asset") == null)
-                    {
-                        prevNumber--;
-                        if (prevNumber < 1)
-                        {
-                            Debug.LogError("[LevelEditor]불러올 수 있는 이전 레벨이 없습니다!");
-                            break;
-                        }
-                    }
-                    LevelData prevLevel = AssetDatabase.LoadAssetAtPath<LevelData>($"Assets/_MainProject/SODatas/Levels/Level_{prevNumber.ToString("D3")}.asset");
-
-                    mCurrentLevelClone = prevLevel.Clone();
-                    Repaint();
-                }
-				mCurrentLayer = 0;
             }
             if (GUI.Button(rightBtnRect, "▶"))
             {
-                string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { "Assets/_MainProject/SODatas/Levels" });
-
-                int maxLevel = AssetDatabase.LoadAssetAtPath<LevelData>(AssetDatabase.GUIDToAssetPath(guids[guids.Length - 1])).levelNumber;
-
-                if (mCurrentLevelClone.levelNumber == maxLevel)
+                LevelData nextLevel = GetAdjacentLevelByNumber(mCurrentLevelClone.levelNumber, true);
+                if (nextLevel != null)
                 {
-                    LevelData nextLevel = AssetDatabase.LoadAssetAtPath<LevelData>(AssetDatabase.GUIDToAssetPath(guids[0]));
-
-                    mCurrentLevelClone = nextLevel.Clone();
+                    ChangeCurrentLevel(nextLevel);
+                    mCurrentLayer = 0;
                     Repaint();
                 }
-                else
-                {
-                    int nextNumber = mCurrentLevelClone.levelNumber + 1;
-                    while (AssetDatabase.LoadAssetAtPath<LevelData>($"Assets/_MainProject/SODatas/Levels/Level_{nextNumber.ToString("D3")}.asset") == null)
-                    {
-                        nextNumber++;
-                        if (nextNumber > maxLevel)
-                        {
-                            Debug.LogError("[LevelEditor]불러올 수 있는 다음 레벨이 없습니다!");
-                            break;
-                        }
-                    }
-                    LevelData nextLevel = AssetDatabase.LoadAssetAtPath<LevelData>($"Assets/_MainProject/SODatas/Levels/Level_{nextNumber.ToString("D3")}.asset");
-
-                    mCurrentLevelClone = nextLevel.Clone();
-                    Repaint();
-                }
-                mCurrentLayer = 0;
             }
-        }		
+        }
+
+        // 레벨 번호 오름차순 기준으로 인접 레벨을 반환한다.
+        // next == true면 현재 번호보다 큰 가장 작은 레벨(없으면 첫 레벨로 순환),
+        // next == false면 현재 번호보다 작은 가장 큰 레벨(없으면 마지막 레벨로 순환).
+        // 번호가 비연속(예: 500 → 5000)이어도 실제 존재하는 레벨만 대상으로 한다.
+        private LevelData GetAdjacentLevelByNumber(int currentNumber, bool next)
+        {
+            List<LevelData> levels = GetAllLevelsSortedByNumber();
+            if (levels.Count == 0)
+            {
+                Debug.LogError("[LevelEditor]불러올 수 있는 레벨이 없습니다!");
+                return null;
+            }
+
+            if (next)
+            {
+                for (int i = 0; i < levels.Count; i++)
+                {
+                    if (levels[i].levelNumber > currentNumber)
+                    {
+                        return levels[i];
+                    }
+                }
+                return levels[0];
+            }
+            else
+            {
+                for (int i = levels.Count - 1; i >= 0; i--)
+                {
+                    if (levels[i].levelNumber < currentNumber)
+                    {
+                        return levels[i];
+                    }
+                }
+                return levels[levels.Count - 1];
+            }
+        }
+
+        // Levels 폴더의 모든 LevelData를 레벨 번호 오름차순으로 정렬해 반환한다.
+        // AssetDatabase.FindAssets의 반환 순서는 보장되지 않으므로 번호로 직접 정렬한다.
+        private List<LevelData> GetAllLevelsSortedByNumber()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { "Assets/_MainProject/SODatas/Levels" });
+
+            List<LevelData> levels = new List<LevelData>();
+            foreach (string guid in guids)
+            {
+                LevelData level = AssetDatabase.LoadAssetAtPath<LevelData>(AssetDatabase.GUIDToAssetPath(guid));
+                if (level != null)
+                {
+                    levels.Add(level);
+                }
+            }
+
+            levels.Sort((a, b) => a.levelNumber.CompareTo(b.levelNumber));
+            return levels;
+        }
 		private void DrawGrid(Rect area)
 		{
 			if (mCurrentLevelClone == null) return;
@@ -1255,11 +1270,18 @@ namespace TrumpTile.LevelEditor.Editor
 			mCurrentLevel.levelName = System.IO.Path.GetFileNameWithoutExtension(path);
 			mCurrentLevel.layerList = new List<LayerDataWrapper>();
 
+			// 파일명(Level_NNN)에서 레벨 번호를 파싱해 원본에도 세팅한다.
+			// 클론에만 세팅하면 저장 시 원본(기본값 1)과 번호가 어긋나 저장 가드에 막힌다.
+			string[] nameTokens = mCurrentLevel.levelName.Split('_');
+			if (nameTokens.Length > 1 && int.TryParse(nameTokens[1], out int parsedLevelNumber))
+			{
+				mCurrentLevel.levelNumber = parsedLevelNumber;
+			}
+
 			LevelEditorUtilities.CreateLevelDataAsset(mCurrentLevel, path);
 
             mCurrentLevelClone = mCurrentLevel.Clone();
 			mCurrentLevelClone.layerList.Add(new LayerDataWrapper());
-			mCurrentLevelClone.levelNumber = int.Parse(mCurrentLevelClone.levelName.Split('_')[1]);
 
             if (mSelectedTiles != null) mSelectedTiles.Clear();
 			if (mUndoHistory != null) mUndoHistory.Clear();
@@ -1280,9 +1302,31 @@ namespace TrumpTile.LevelEditor.Editor
 			if (mRedoHistory != null) mRedoHistory.Clear();
 		}
 
+		// 화살표 이동 등으로 편집 대상 레벨을 교체할 때 사용.
+		// 저장 대상 원본(mCurrentLevel)과 편집 클론(mCurrentLevelClone)을 함께 갱신하고
+		// 이전 레벨의 선택/히스토리 상태를 초기화한다.
+		private void ChangeCurrentLevel(LevelData level)
+		{
+			if (level == null) return;
+
+			mCurrentLevel = level;
+			mCurrentLevelClone = level.Clone();
+
+			if (mSelectedTiles != null) mSelectedTiles.Clear();
+			if (mUndoHistory != null) mUndoHistory.Clear();
+			if (mRedoHistory != null) mRedoHistory.Clear();
+		}
+
 		private void SaveCurrentLevel()
 		{
-			if (mCurrentLevelClone == null) return;
+			if (mCurrentLevelClone == null || mCurrentLevel == null) return;
+
+			// 편집 클론과 저장 대상 원본의 레벨 번호가 다르면 잘못된 에셋을 덮어쓰는 상황이므로 차단한다.
+			if (mCurrentLevel.levelNumber != mCurrentLevelClone.levelNumber)
+			{
+				Debug.LogError($"[LevelEditor]저장 대상 레벨({mCurrentLevel.levelNumber})과 편집 중인 레벨({mCurrentLevelClone.levelNumber})이 일치하지 않아 저장을 중단합니다.");
+				return;
+			}
 
             JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(mCurrentLevelClone), mCurrentLevel);
             EditorUtility.SetDirty(mCurrentLevel);
