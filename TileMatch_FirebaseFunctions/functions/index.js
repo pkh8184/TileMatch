@@ -440,6 +440,67 @@ exports.progressHousing = onCall(async (request) =>{
 
     return updateValue;
 })
+
+///리더보드 조회 onCall 함수입니다.
+///상위 N명의 리더보드 데이터와 내 순위를 반환합니다.
+exports.getLeaderboard = onCall(async (request) => {
+    const uid = getUID(request);
+    const n = (request.data && request.data.n) || 100;
+
+    // 상위 N명 조회 (currentStage 내림차순, stageReachedAt 오름차순)
+    const snapshot = await db.collection("leaderboard")
+        .orderBy("currentStage", "desc")
+        .orderBy("stageReachedAt", "asc")
+        .limit(n)
+        .get();
+
+    let rank = 1;
+    const topN = [];
+    snapshot.forEach(doc => {
+        topN.push({
+            rank: rank++,
+            nickname: doc.data().nickname,
+            profileImageIndex: doc.data().profileImageIndex,
+            profileFrameIndex: doc.data().profileFrameIndex,
+            currentStage: doc.data().currentStage
+        });
+    });
+
+    // 내 leaderboard 문서 조회
+    const myDoc = await db.collection("leaderboard").doc(uid).get();
+
+    if (!myDoc.exists) {
+        return { topN, myEntry: null };
+    }
+
+    const myData = myDoc.data();
+
+    // 나보다 높은 스테이지 유저 수
+    const higherSnap = await db.collection("leaderboard")
+        .where("currentStage", ">", myData.currentStage)
+        .count()
+        .get();
+
+    // 같은 스테이지에서 나보다 먼저 도달한 유저 수
+    const sameEarlierSnap = await db.collection("leaderboard")
+        .where("currentStage", "==", myData.currentStage)
+        .where("stageReachedAt", "<", myData.stageReachedAt)
+        .count()
+        .get();
+
+    const myRank = higherSnap.data().count + sameEarlierSnap.data().count + 1;
+
+    return {
+        topN,
+        myEntry: {
+            rank: myRank,
+            nickname: myData.nickname,
+            profileImageIndex: myData.profileImageIndex,
+            profileFrameIndex: myData.profileFrameIndex,
+            currentStage: myData.currentStage
+        }
+    };
+});
 //#endregion
 
 ////-------------아래부터는 클라이언트 호출 함수가 아닙니다.------------------
