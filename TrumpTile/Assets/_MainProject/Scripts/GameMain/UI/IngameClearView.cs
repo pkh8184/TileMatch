@@ -127,7 +127,7 @@ namespace TrumpTile.GameMain.UI
         private void OnRewardButtonClick()
         {
             if(mbAnimProgress) return;
-
+            mbAnimProgress = true;
             AdManager.Inst.ShowRewardedAd((bool done) =>
             {
                 if(done)
@@ -141,6 +141,7 @@ namespace TrumpTile.GameMain.UI
         private void OnMainButtonClick()
         {
             if(mbAnimProgress) return;
+            mbAnimProgress = true;
             GameManager.Instance.GoToMainMenu();
         }
     }    

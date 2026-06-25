@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 
@@ -109,7 +106,13 @@ namespace TrumpTile.GameMain.Core
             }
             if(!mbIsFree)
             {
-                AdManager.Inst.ShowRewardedAd(null);
+                AdManager.Inst.ShowRewardedAd((bool done) =>
+                {
+                    if(done)
+                    {
+                        AudioEvent.Play(EAudioKey.SFX_Roulette_Spin);
+                    }
+                });
             }
 
             mRewardConfigArray[mCurrentRewardIndex].Reward.GrantReward();

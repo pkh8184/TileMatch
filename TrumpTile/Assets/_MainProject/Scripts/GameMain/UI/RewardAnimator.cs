@@ -51,6 +51,7 @@ namespace TrumpTile.GameMain.UI
         private List<RectTransform> mRewardCoverPool = new List<RectTransform>();
 
         private bool mbIsPlaying;
+
         public void Initialize()
         {
             for(int i = 0; i < mPoolSize; i++)
@@ -84,7 +85,7 @@ namespace TrumpTile.GameMain.UI
             StartCoroutine(Co_PlayRewardAnim(OnPlayStart, OnPlayComplete));
         }
         private IEnumerator Co_PlayRewardAnim(Action OnPlayStart, Action OnPlayComplete)
-        {
+        {  
             OnPlayStart?.Invoke();
 
             yield return StartCoroutine(Co_GoldAnim());
@@ -274,5 +275,6 @@ namespace TrumpTile.GameMain.UI
 
             yield return moveSeq.WaitForCompletion();
         }
+
     }
 }

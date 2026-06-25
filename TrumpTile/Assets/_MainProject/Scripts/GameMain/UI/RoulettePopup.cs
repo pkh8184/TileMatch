@@ -126,7 +126,6 @@ namespace TrumpTile.GameMain.UI
             float endZ = -(360f * SPIN_COUNT) + targetAngle;   // 예: -1866
 
             Sequence seq = DOTween.Sequence();
-            seq.AppendCallback(() => AudioEvent.Play(EAudioKey.SFX_Roulette_Spin));
             seq.Append(mRouletteRect
                 .DOLocalRotate(new Vector3(0f, 0f, endZ), DURATION, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutQuart));
