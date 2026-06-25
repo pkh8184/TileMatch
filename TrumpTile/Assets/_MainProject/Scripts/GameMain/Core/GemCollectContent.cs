@@ -6,6 +6,12 @@ using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
 {
+    public class GemCollectAnimPayload
+    {
+        public List<RewardDisplayInfo> RewardDisplayInfoList;
+        public int CapturedRequiredGemCount;
+        public int CapturedCurrentIndex;
+    }
     [System.Serializable]
     public class GemCollectionReward
     {
@@ -22,18 +28,20 @@ namespace TrumpTile.GameMain.Core
         private const int MAX_INDEX = 15;
         private int mCurrentIndex;
         private int mCurrentGemCount;
-
+        private int mCapturedGemCount;
+        public int CapturedGemCount => mCapturedGemCount;
+        public bool IsMaxIndex => mCurrentIndex >= MAX_INDEX;
+        private List<GemCollectAnimPayload> mPlayloadList;
         public override void Initialize()
         {
             base.Initialize();
 
-            if(!PlayerDataManager.Inst.IsGemCollectionActive)
-            {
-                //비활성화 시간 - 현재 시간 > 쿨타임 이면 활성화
-                //첫 활성화인 경우 비활성화 시간 == null 검사 후 활성화
-            }
+            mbIsActive = PlayerDataManager.Inst.IsGemCollectionActive;
+            
             mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
+
+            RewardProgressForInit();
         }
         public override void Refresh()
         {
@@ -41,7 +49,8 @@ namespace TrumpTile.GameMain.Core
 
             mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
-            Debug.Log($"[GemCollectContent] 현재 젬 개수 : {mCurrentGemCount}");
+
+            RewardProgressForRefresh();
         }
         public override void CheckUnlock()
         {
@@ -61,7 +70,7 @@ namespace TrumpTile.GameMain.Core
                 }
             }
         }
-        public void RewardProgress()
+        private void RewardProgressForInit()
         {
             if(mCurrentIndex >= MAX_INDEX)
             {
@@ -71,26 +80,62 @@ namespace TrumpTile.GameMain.Core
             {
                 return;
             }
-            List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
-            foreach(var item in mRewardArray[mCurrentIndex].RewardArray)
+
+            mPlayloadList = null;
+
+            while(mCurrentGemCount >= mRequiredGemCountArray[mCurrentIndex])
             {
-                item.GrantReward();
-
-                RewardDisplayInfo info = item.GetRewardDisplayInfo();
-                infos.Add(info);
-                CoreContainer.RewardContainer.AddReward(info);
+                foreach(var item in mRewardArray[mCurrentIndex].RewardArray)
+                {
+                    item.GrantReward();
+                }
+                mCurrentGemCount -= mRequiredGemCountArray[mCurrentIndex++];
+                if(mCurrentIndex >= MAX_INDEX)
+                {
+                    Debug.Log("모든 보상 획득");
+                    PlayerDataManager.Inst.UnActiveGemCollection();
+                    return;
+                }
             }
-            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.Custom, target = new Vector2(235, 79), parentName = "Contents_GemCollect"});
-            
-            mCurrentGemCount -= mRequiredGemCountArray[mCurrentIndex];
             PlayerDataManager.Inst.SetGemCount(mCurrentGemCount);
-
-            mCurrentIndex++;
-            PlayerDataManager.Inst.SetGemIndex(mCurrentIndex);
+            PlayerDataManager.Inst.SetGemIndex(mCurrentIndex);        
+        }
+        private void RewardProgressForRefresh()
+        {
             if(mCurrentIndex >= MAX_INDEX)
             {
-                PlayerDataManager.Inst.UnActiveGemCollection();
+                return;
             }
+            if(mCurrentGemCount < mRequiredGemCountArray[mCurrentIndex])
+            {
+                return;
+            }
+            mCapturedGemCount = mCurrentGemCount;
+            mPlayloadList = new List<GemCollectAnimPayload>();
+
+            while(mCurrentGemCount >= mRequiredGemCountArray[mCurrentIndex])
+            {
+                List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
+                foreach(var item in mRewardArray[mCurrentIndex].RewardArray)
+                {
+                    item.GrantReward();
+
+                    RewardDisplayInfo info = item.GetRewardDisplayInfo();
+                    infos.Add(info);
+                }
+
+                mPlayloadList.Add(new GemCollectAnimPayload{RewardDisplayInfoList = infos, CapturedRequiredGemCount = mRequiredGemCountArray[mCurrentIndex], CapturedCurrentIndex = mCurrentIndex});
+               
+                mCurrentGemCount -= mRequiredGemCountArray[mCurrentIndex++];
+                if(mCurrentIndex >= MAX_INDEX)
+                {
+                    Debug.Log("모든 보상 획득");
+                    PlayerDataManager.Inst.UnActiveGemCollection();
+                    return;
+                }
+            }
+            PlayerDataManager.Inst.SetGemCount(mCurrentGemCount);
+            PlayerDataManager.Inst.SetGemIndex(mCurrentIndex);        
         }
         public int GetCurrentGem()
         {
@@ -116,9 +161,9 @@ namespace TrumpTile.GameMain.Core
         {
             return mRewardArray;
         }
-        public bool IsProgressEnd()
+        public List<GemCollectAnimPayload> GetAnimPayload()
         {
-            return mCurrentIndex >= MAX_INDEX;
+            return mPlayloadList;
         }
     }   
 }

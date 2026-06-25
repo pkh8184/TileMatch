@@ -93,53 +93,41 @@ namespace TrumpTile.GameMain.UI
         {   
             transform.GetChild(0).gameObject.SetActive(false);
             transform.GetChild(1).gameObject.SetActive(false);
+            
             gameObject.SetActive(true);
             StartCoroutine(Co_RefreshGemUI(amount));
-            EventManager.Inst.ActiveEvent("StartGemUIRefresh");
         }
         private IEnumerator Co_RefreshGemUI(int amount)
         {
-            int gem = mContentData.GetCurrentGem();
-            int goal = mContentData.GetCurrentRequiredGem();
+            int startValue = mContentData.CapturedGemCount - amount;
 
-            int count = 0;
-            while(gem >= goal)
+            List<GemCollectAnimPayload> animPayloadList = mContentData.GetAnimPayload();
+            if(animPayloadList == null)
             {
-                gem -= goal;
-                count++;
-                goal = mContentData.GetNextRequiredGem(count);
-                if(goal == 0)
-                {
-                    break;
-                }
-            }
-            int start = mContentData.GetCurrentGem() - amount;
 
-            for(int i = 0; i < count; i++)
+                EventManager.Inst.ActiveEvent("PlayRewardAnim");
+                yield break;
+            }
+            for(int i = 0; i < animPayloadList.Count; i++)
             {
                 Sequence seq = DOTween.Sequence();
 
                 AudioEvent.Play(EAudioKey.SFX_Main_GemCollection_GaugeUp);
 
                 seq.Append(mMainViewSlider.DOValue(1, 0.5f));
-                seq.Join(DOTween.To(() => start, x =>
-                {
-                    mMainViewSliderProgressText.text = $"{x}/{mContentData.GetCurrentRequiredGem()}";
-                }, mContentData.GetCurrentRequiredGem(), 0.5f));
-                seq.AppendCallback(() => mContentData.RewardProgress());
 
-                if(goal == 0 && i == count - 1)
+                seq.Join(DOTween.To(() => startValue, x =>
                 {
-                    seq.Append(mShowButton.transform.parent.DOScale(0, 0.3f).SetEase(Ease.InBack));
-                    seq.AppendCallback(() => EventManager.Inst.ActiveEvent("PlayRewardAnim"));
-                    yield break;
-                }
+                    mMainViewSliderProgressText.text = $"{x}/{animPayloadList[i].CapturedRequiredGemCount}";
+                }, animPayloadList[i].CapturedRequiredGemCount, 0.5f));
 
+                seq.AppendCallback(() => EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = animPayloadList[i].RewardDisplayInfoList, Type = EMiniRewardAnimType.Custom, target = new Vector2(235, 79), parentName = "Contents_GemCollect"}));
                 seq.Append(mMainViewSliderRewardIcon.transform.DOScale(0, 0.3f).SetEase(Ease.InBack));
                 seq.JoinCallback(() => AudioEvent.Play(EAudioKey.SFX_Main_GemCollection_GaugeUp_Complete));
+
                 seq.AppendCallback(() =>
                 {
-                    GemCollectionRewardConfig[] configs = mGemRewardUIList[mContentData.GetCurrentIndex()].GetConfigArray();
+                    GemCollectionRewardConfig[] configs = mGemRewardUIList[animPayloadList[i].CapturedCurrentIndex + 1].GetConfigArray();
                     Sprite sprite;
                     string text = "";
                     if(!configs[1].Image.gameObject.activeSelf)
@@ -158,19 +146,31 @@ namespace TrumpTile.GameMain.UI
                 seq.AppendCallback(() =>
                 {
                     mMainViewSlider.value = 0;
-                    start = 0;
+                    startValue = 0;
                 });
 
                 seq.AppendInterval(0.5f);
 
                 yield return seq.WaitForCompletion();
-            }
 
+                foreach(var item in animPayloadList[i].RewardDisplayInfoList)
+                {
+                    CoreContainer.RewardContainer.AddReward(item);
+                }
+            }
             Sequence lastSeq = DOTween.Sequence();
+
+            if(mContentData.IsMaxIndex)
+            {
+                lastSeq.Append(mShowButton.transform.parent.DOScale(0, 0.3f).SetEase(Ease.InBack));
+                lastSeq.AppendCallback(() => mShowButton.transform.parent.gameObject.SetActive(false));
+                EventManager.Inst.ActiveEvent("PlayRewardAnim");
+                yield break;
+            }
 
             AudioEvent.Play(EAudioKey.SFX_Main_GemCollection_GaugeUp);
             lastSeq.Append(mMainViewSlider.DOValue((float)((float)mContentData.GetCurrentGem()/(float)mContentData.GetCurrentRequiredGem()), 0.5f));
-            lastSeq.Join(DOTween.To(() => start, x =>
+            lastSeq.Join(DOTween.To(() => startValue, x =>
             {
                 mMainViewSliderProgressText.text = $"{x}/{mContentData.GetCurrentRequiredGem()}";
             }, mContentData.GetCurrentGem(), 0.5f));
@@ -184,7 +184,6 @@ namespace TrumpTile.GameMain.UI
             InitCollectGage();
             SetElement();
 
-            EventManager.Inst.ActiveEvent("EndGemUIRefresh");
             EventManager.Inst.ActiveEvent("PlayRewardAnim");
         }
         private void CreateElement()

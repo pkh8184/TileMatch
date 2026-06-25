@@ -301,6 +301,7 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 보석 수집 해금 완료");
 			mUserData.GemCollectionUnlock = true;	
+			mUserData.IsGemCollectionActive = true;
 		}
 
 	#endregion

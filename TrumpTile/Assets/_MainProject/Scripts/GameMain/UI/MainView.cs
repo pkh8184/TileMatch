@@ -145,8 +145,6 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("GoldRewardArrived", PulseShopButton);
             EventManager.Inst.AddEvent<(float,int)>("RefreshGoldText", GoldTextProgress);
             EventManager.Inst.AddEvent("ItemRewardArrived", PulseStageButton);
-            EventManager.Inst.AddEvent("StartGemUIRefresh", SetInteractableFalse);
-            EventManager.Inst.AddEvent("EndGemUIRefresh", SetInteractableTrue);
         }
         protected override void UnSubscribeEvent()
         {
@@ -156,8 +154,6 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("GoldRewardArrived", PulseShopButton);
             EventManager.Inst?.RemoveEvent<(float,int)>("RefreshGoldText", GoldTextProgress);
             EventManager.Inst?.RemoveEvent("ItemRewardArrived", PulseStageButton);
-            EventManager.Inst?.RemoveEvent("StartGemUIRefresh", SetInteractableFalse);
-            EventManager.Inst?.RemoveEvent("EndGemUIRefresh", SetInteractableTrue);
         }
         protected override void Refresh()
         {
@@ -179,19 +175,17 @@ namespace TrumpTile.GameMain.UI
 
             Debug.Log($"[{name}] Refresh Local Data");
         }
-        private void SetInteractableTrue()
-        {
-            SetInteractable(true);
-        }
-        private void SetInteractableFalse()
-        {
-            SetInteractable(false);
-        }
         private void PlayRewardAnim()
         {
+            bool bChainsGemRefresh = CoreContainer.RewardContainer.Gem > 0;
             mRewardAnimator.PlayRewardAnim(() => SetInteractable(false), () => 
             {
                 SetInteractable(true);
+                if(bChainsGemRefresh)
+                {
+                    return;
+                }
+
                 if(!mbInitOnSceneLoad)
                 {
                     EventManager.Inst.ActiveEvent("RewardAnimDone");
