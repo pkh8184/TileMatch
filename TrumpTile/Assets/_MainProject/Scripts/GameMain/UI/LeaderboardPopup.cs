@@ -70,14 +70,13 @@ namespace TrumpTile.GameMain.UI
 				mEntryViews.Add(view);
 			}
 
-			if (result.myEntry != null)
+			if (mMyEntryView != null)
 			{
-				mMyEntryView.gameObject.SetActive(true);
-				mMyEntryView.SetData(result.myEntry, true);
-			}
-			else
-			{
-				mMyEntryView.gameObject.SetActive(false);
+				mMyEntryView.gameObject.SetActive(result.myEntry != null);
+				if (result.myEntry != null)
+				{
+					mMyEntryView.SetData(result.myEntry, true);
+				}
 			}
 		}
 
