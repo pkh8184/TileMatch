@@ -57,6 +57,10 @@ namespace TrumpTile.GameMain.Core
                     mbShowUnlockPopup = false;
                 }
             }
+            else
+            {
+                SetLock();
+            }
         }
         public void ConfirmCurrentReward()
         {

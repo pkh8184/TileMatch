@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 
@@ -9,19 +7,17 @@ namespace TrumpTile.GameMain.Core
     public class PiggyBankContent : TemporaryContent
     {
         [Header("보상 목록")]
+        [SerializeReference, SubclassSelector] private ProductReward mDefaultReward;
         [SerializeReference, SubclassSelector] private ProductReward[] mRewardArray;
 
         [Header("스테이지 클리어 요구 횟수")]
-        [SerializeField] private int mFirstRequiredStageClearCount;
-        [SerializeField] private int mSecondRequiredStageClearCount;
+        [SerializeField] private int mRequiredStageClearCount;
         private int mCurrentStageClearCount;
         private bool mbCanConfirm;
-        public bool CanConfirm => mbCanConfirm;
-        
+        public bool CanConfirm => mbCanConfirm;  
         public bool CanGetRewardAfterEndActive => !mbIsActive && mbCanConfirm;
         private bool mbIsFull;
         public bool IsFull => mbIsFull;
-        private int mCurrentCheckPoint;
         public override void Initialize()
         {
             base.Initialize();
@@ -56,32 +52,36 @@ namespace TrumpTile.GameMain.Core
                     mbShowUnlockPopup = false;
                 }
             }
+            else
+            {
+                SetLock();
+            }
         }
         public int GetCurrentStageCount()
         {
             return mCurrentStageClearCount;
         }
-        public int GetCurrentCheckPoint()
-        {
-            return mCurrentCheckPoint;
-        }
         public int GetMaxCount()
         {
-            return mSecondRequiredStageClearCount;
+            return mRequiredStageClearCount;
         }
         public int GetCurrentStackedGold()
         {
             int result = 0;
-            for(int i = 0; i <= mCurrentCheckPoint; i++)
+            for(int i = 0; i < mCurrentStageClearCount; i++)
             {
                 result += mRewardArray[i].GetRewardDisplayInfo().Amount;
             }
-
             return result;
+        }
+        public void PiggyBankDefaultRewardProgress()
+        {
+            mDefaultReward.GrantReward();
+            CoreContainer.RewardContainer.AddReward(mDefaultReward.GetRewardDisplayInfo());
         }
         public void PiggyBankRewardProgress()
         {
-            for(int i = 0; i <= mCurrentCheckPoint; i++)
+            for(int i = 0; i < mCurrentStageClearCount; i++)
             {
                 mRewardArray[i].GrantReward();
                 CoreContainer.RewardContainer.AddReward(mRewardArray[i].GetRewardDisplayInfo());
@@ -94,20 +94,10 @@ namespace TrumpTile.GameMain.Core
 
             mbIsFull = false;
 
-            if(mCurrentStageClearCount >= mSecondRequiredStageClearCount)
+            if(mCurrentStageClearCount >= mRequiredStageClearCount)
             {
-                mCurrentStageClearCount = mSecondRequiredStageClearCount;
+                mCurrentStageClearCount = mRequiredStageClearCount;
                 mbIsFull = true;
-            }
-
-            mCurrentCheckPoint = 0;
-            if(mCurrentStageClearCount >= mFirstRequiredStageClearCount)
-            {
-                mCurrentCheckPoint++;
-                if(mCurrentStageClearCount >= mSecondRequiredStageClearCount)
-                {
-                    mCurrentCheckPoint++;
-                }
             }
 
             if(!PlayerDataManager.Inst.PiggyBankPurchase)

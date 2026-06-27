@@ -53,6 +53,13 @@ namespace TrumpTile.GameMain.Core
 
             OnUnlock();
         }
+        //해금 조건 미달 시 래치된 해금 플래그를 되돌린다.
+        //(데이터 리셋/낮은 진행도 재로드, 에디터 세션 잔존 상태 대응)
+        protected virtual void SetLock()
+        {
+            mbIsUnlocked = false;
+            mbShowUnlockPopup = false;
+        }
         protected virtual void OnUnlock()
         {
             

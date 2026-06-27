@@ -134,7 +134,10 @@ namespace TrumpTile.GameMain.UI
                 count++;
             }
 
-            mRewardUIList[0].SetValid();
+            if(mRewardUIList.Count > 0)
+            {
+                mRewardUIList[0].SetValid();
+            }
         }
         private void OnConfirmButtonClick()
         {

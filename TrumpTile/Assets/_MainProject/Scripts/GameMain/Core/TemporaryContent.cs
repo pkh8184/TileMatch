@@ -22,5 +22,10 @@ namespace TrumpTile.GameMain.Core
         {
             return new ContentInfo{ActiveTime = mLimitTime};
         }
+        protected override void SetLock()
+        {
+            base.SetLock();
+            mbIsActive = false;
+        }
     }   
 }

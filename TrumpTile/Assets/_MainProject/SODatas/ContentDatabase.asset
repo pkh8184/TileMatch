@@ -202,24 +202,23 @@ MonoBehaviour:
         mLevelToUnlock: 7
         mLimitTime: 259200
         mCoolTime: 604800
+        mDefaultReward:
+          rid: 5061744232091877741
         mRewardArray:
-        - rid: 5061743966543676129
         - rid: 5061743966543676130
         - rid: 5061743966543676131
-        mFirstRequiredStageClearCount: 1
-        mSecondRequiredStageClearCount: 2
-    - rid: 5061743966543676129
-      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
-      data:
-        mCount: 1000
+        - rid: 5061744232091877404
+        - rid: 5061744232091877405
+        - rid: 5061744232091877406
+        mRequiredStageClearCount: 5
     - rid: 5061743966543676130
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
-        mCount: 500
+        mCount: 300
     - rid: 5061743966543676131
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
-        mCount: 1000
+        mCount: 300
     - rid: 5061743987175194626
       type: {class: GemCollectContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
       data:
@@ -339,6 +338,22 @@ MonoBehaviour:
         mCount: 2
         mItemId: 1008
     - rid: 5061743987175194661
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1000
+    - rid: 5061744232091877404
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 300
+    - rid: 5061744232091877405
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 300
+    - rid: 5061744232091877406
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 300
+    - rid: 5061744232091877741
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
         mCount: 1000
