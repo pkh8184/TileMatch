@@ -29,7 +29,11 @@ namespace TrumpTile.GameMain.Core
         private int mCurrentIndex;
         private int mCurrentGemCount;
         private int mCapturedGemCount;
+        private int mCapturedIndex;
+        private int mPreviousGemCount;
         public int CapturedGemCount => mCapturedGemCount;
+        public int CapturedIndex => mCapturedIndex;
+        public int PreviousGemCount => mPreviousGemCount;
         public bool IsMaxIndex => mCurrentIndex >= MAX_INDEX;
         private List<GemCollectAnimPayload> mPlayloadList;
         public override void Initialize()
@@ -37,9 +41,12 @@ namespace TrumpTile.GameMain.Core
             base.Initialize();
 
             mbIsActive = PlayerDataManager.Inst.IsGemCollectionActive;
-            
+           
             mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
+            mPreviousGemCount = mCurrentGemCount - CoreContainer.RewardContainer.Gem;
+            mCapturedGemCount = mCurrentGemCount;
+            mCapturedIndex = mCurrentIndex;
 
             RewardProgressForInit();
         }
@@ -49,6 +56,9 @@ namespace TrumpTile.GameMain.Core
 
             mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
+            mPreviousGemCount = mCurrentGemCount - CoreContainer.RewardContainer.Gem;
+            mCapturedGemCount = mCurrentGemCount;
+            mCapturedIndex = mCurrentIndex;
 
             RewardProgressForRefresh();
         }
@@ -110,7 +120,6 @@ namespace TrumpTile.GameMain.Core
             {
                 return;
             }
-            mCapturedGemCount = mCurrentGemCount;
             mPlayloadList = new List<GemCollectAnimPayload>();
 
             while(mCurrentGemCount >= mRequiredGemCountArray[mCurrentIndex])
@@ -141,17 +150,13 @@ namespace TrumpTile.GameMain.Core
         {
             return mCurrentGemCount;
         }
+        public int GetCapturedRequiredGemCount()
+        {
+            return mRequiredGemCountArray[mCapturedIndex];
+        }
         public int GetCurrentRequiredGem()
         {
             return mRequiredGemCountArray[mCurrentIndex];
-        }
-        public int GetNextRequiredGem(int step)
-        {
-            if(mCurrentIndex + step >= MAX_INDEX)
-            {
-                return 0;
-            }
-            return mRequiredGemCountArray[mCurrentIndex + step];
         }
         public int GetCurrentIndex()
         {

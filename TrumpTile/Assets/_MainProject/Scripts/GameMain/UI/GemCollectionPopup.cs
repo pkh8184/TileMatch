@@ -55,7 +55,7 @@ namespace TrumpTile.GameMain.UI
             mContentController.SetLimitTimeText(mContentData.GetContentInfo().ActiveTime);
 
             CreateElement();
-            InitCollectGage();
+            InitCollectGauge();
         }
         private void InitAfterRewardAnim()
         {
@@ -181,7 +181,6 @@ namespace TrumpTile.GameMain.UI
             transform.GetChild(0).gameObject.SetActive(true);
             transform.GetChild(1).gameObject.SetActive(true);
 
-            InitCollectGage();
             SetElement();
 
             EventManager.Inst.ActiveEvent("PlayRewardAnim");
@@ -213,21 +212,23 @@ namespace TrumpTile.GameMain.UI
             }
             mGemRewardUIList[mContentData.GetCurrentIndex()].SetUnlock();
         }
-        private void InitCollectGage()
+        private void InitCollectGauge()
         {
-            int index = mContentData.GetCurrentIndex();
+            int index = mContentData.CapturedIndex;
             int count = mContentData.GetCurrentGem();
-            int countMain = count - CoreContainer.RewardContainer.Gem;
             int goal = mContentData.GetCurrentRequiredGem();
+
+            int countMain = mContentData.PreviousGemCount;
+            int goalMain = mContentData.GetCapturedRequiredGemCount();
 
 
             float value = (float)((float)count/(float)goal);
-            float valueMain = (float)((float)countMain/(float)goal);
+            float valueMain = (float)((float)countMain/(float)goalMain);
             mSlider.value = value;
             mMainViewSlider.value = valueMain;
 
             string progress = $"{count}/{goal}";
-            string progressMain = $"{countMain}/{goal}";
+            string progressMain = $"{countMain}/{goalMain}";
             mSliderProgressText.text = progress;
             mMainViewSliderProgressText.text = progressMain;
 
