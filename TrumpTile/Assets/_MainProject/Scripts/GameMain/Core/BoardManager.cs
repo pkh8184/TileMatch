@@ -831,14 +831,25 @@ namespace TrumpTile.GameMain.Core
 
 		public void UpdateAllBlockedStates()
 		{
-			foreach(var item in mGemTileList)
+			// 상자 위에 상자가 쌓인 경우, 위 상자가 열려 보드맵이 비워지면
+			// 그 아래 상자도 같은 호출 안에서 연쇄 획득되도록 더 이상 열릴 게 없을 때까지 반복한다.
+			bool bCollectedAny;
+			do
 			{
-				if(!item.gameObject.activeSelf)
+				bCollectedAny = false;
+				foreach(var item in mGemTileList)
 				{
-					continue;
+					if(!item.gameObject.activeSelf)
+					{
+						continue;
+					}
+					if(item.CheckCanCollect())
+					{
+						bCollectedAny = true;
+					}
 				}
-				item.CheckCanCollect();
 			}
+			while(bCollectedAny);
 
 			foreach (TileController tile in mAllTiles)
 			{

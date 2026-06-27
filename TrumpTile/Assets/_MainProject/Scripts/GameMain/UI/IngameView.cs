@@ -126,7 +126,7 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
             EventManager.Inst.AddEvent("BonusTileMatch", OnBonusTileMatched);
             EventManager.Inst.AddEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
-            EventManager.Inst.AddEvent("CollectGem", CollectGem);
+            EventManager.Inst.AddEvent<int>("CollectGem", CollectGem);
 
             PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
         }
@@ -139,16 +139,16 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("PurchaseItem", PurchaseItem);
             EventManager.Inst?.RemoveEvent("BonusTileMatch", OnBonusTileMatched);
             EventManager.Inst?.RemoveEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
-            EventManager.Inst?.RemoveEvent("CollectGem", CollectGem);
+            EventManager.Inst?.RemoveEvent<int>("CollectGem", CollectGem);
 
             if(PlayerDataManager.Inst != null)
             {
                 PlayerDataManager.Inst.OnGoldChanged -= RefreshButtons;
             }
         }
-        private void CollectGem()
+        private void CollectGem(int value)
         {
-            mGemCountText.text = "x" + CoreContainer.RewardContainer.Gem;
+            mGemCountText.text = "x" + value.ToString();
             Transform gemTransform = mGemCollectionUI.transform;
             gemTransform.DOKill(true);
             gemTransform.localScale = Vector3.one;

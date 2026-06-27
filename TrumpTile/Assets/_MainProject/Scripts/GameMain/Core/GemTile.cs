@@ -15,6 +15,7 @@ namespace TrumpTile.GameMain.Core
         private RectTransform mTargetRect;
         private bool mbIsAnim;
         private Sequence mSeq;
+        private int mCapturedGemCount;
         public void Initialize(int count, List<(int,int,int)> checkList, List<(int,int,int)> originList, int layer, Vector3 pos, Vector3 scale)
         {
             mGemCount = count;
@@ -59,21 +60,25 @@ namespace TrumpTile.GameMain.Core
 
             AudioEvent.Play(EAudioKey.SFX_Ingame_GemBox_Interaction);
         }
-        public void CheckCanCollect()
+        public bool CheckCanCollect()
         {
             if(mbIsAnim)
             {
-                return;
+                return false;
             }
             if(BoardManager.Instance.CheckBoardMapEmpty(mCheckIndexList, mOriginIndexList, this))
             {
                 mbIsAnim = true;
                 Collect();
+                return true;
             }
+            return false;
         }
         public void Collect()
         {
             PlayCollectAnim();
+            mCapturedGemCount = CoreContainer.RewardContainer.Gem;
+            CoreContainer.RewardContainer.AddGem(mGemCount);
         }
         private void PlayCollectAnim()
         {
@@ -101,6 +106,7 @@ namespace TrumpTile.GameMain.Core
 
             Sequence seq = DOTween.Sequence();
 
+            int gemCount = 0;
             for(int i = mGemCount; i >= 1; i--)
             {
                 Transform gem = mSpriteRendererArray[i].transform;
@@ -110,9 +116,9 @@ namespace TrumpTile.GameMain.Core
                 seq.Join(gem.DOScale(0.08f, 0.4f));
                 seq.InsertCallback((0.1f * (i-1)) + 0.4f, () =>
                 {
+                    gemCount++;
                     gem.gameObject.SetActive(false);
-                    CoreContainer.RewardContainer.AddGem(1);
-                    EventManager.Inst.ActiveEvent("CollectGem");
+                    EventManager.Inst.ActiveEvent("CollectGem", mCapturedGemCount + gemCount);
                     AudioEvent.Play(EAudioKey.SFX_Ingame_Collect_Gem);
                 });
             }
