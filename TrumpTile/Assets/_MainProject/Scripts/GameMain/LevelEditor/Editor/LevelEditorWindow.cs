@@ -1336,13 +1336,18 @@ namespace TrumpTile.LevelEditor.Editor
 		{
 			if (mCurrentLevelClone == null) return;
 
-			mCopiedLevel = mCurrentLevelClone;
+			// 참조만 저장하면 이후 편집이 복사 버퍼까지 바꾸므로, 복사 시점 상태를 깊은 복사로 스냅샷한다.
+			mCopiedLevel = mCurrentLevelClone.Clone();
         }
 		private void PasteLevel()
 		{
-			if(mCopiedLevel == null) return;
+			if(mCopiedLevel == null || mCurrentLevel == null) return;
 
-			mCurrentLevelClone = mCopiedLevel;
+			// 붙여넣기는 레이아웃만 가져오고, 레벨 식별 정보(번호/이름)는 현재 편집 대상(mCurrentLevel)을 유지한다.
+			// 그래야 저장 대상 원본과 번호가 어긋나 저장 가드에 막히지 않는다.
+			mCurrentLevelClone = mCopiedLevel.Clone();
+			mCurrentLevelClone.levelNumber = mCurrentLevel.levelNumber;
+			mCurrentLevelClone.levelName = mCurrentLevel.levelName;
 
             if (mSelectedTiles != null) mSelectedTiles.Clear();
             if (mUndoHistory != null) mUndoHistory.Clear();
