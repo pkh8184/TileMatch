@@ -110,15 +110,32 @@ namespace TrumpTile.GameMain.UI
             SetInteractable(false);
 
             int index = mContentData.GetRewardIndex();
+            CoreContainer.RewardContainer.AddReward(mContentData.GetProductReward().GetRewardDisplayInfo());
 
-            SpinRoulette(mAnglesByReward[index]);
+            ERouletteState state = mContentData.RouletteRewardProgress();
+            if(state == ERouletteState.None)
+            {
+                return;
+            }
+            if(state == ERouletteState.Ads)
+            {
+                AdManager.Inst.ShowRewardedAd((bool done) =>
+                {
+                    if(done)
+                    {
+                        SpinRoulette(mAnglesByReward[index]);     
+                    }
+                });
+            }
+            else
+            {
+                SpinRoulette(mAnglesByReward[index]); 
+            }
         }
         private void SpinRoulette(float targetAngle)
         {
             const int SPIN_COUNT = 20;     // 도는 바퀴 수
             const float DURATION = 4f;    // 총 연출 시간
-
-            mContentData.RouletteRewardProgress();
 
             // 매번 같은 시작점에서 출발하도록 리셋
             mRouletteRect.localRotation = Quaternion.identity;
@@ -126,6 +143,8 @@ namespace TrumpTile.GameMain.UI
             float endZ = -(360f * SPIN_COUNT) + targetAngle;   // 예: -1866
 
             Sequence seq = DOTween.Sequence();
+            
+            AudioEvent.Play(EAudioKey.SFX_Roulette_Spin);
             seq.Append(mRouletteRect
                 .DOLocalRotate(new Vector3(0f, 0f, endZ), DURATION, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutQuart));

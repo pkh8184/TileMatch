@@ -3,6 +3,12 @@ using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
 {
+    public enum ERouletteState
+    {
+        Free,
+        Ads,
+        None
+    }
     [System.Serializable]
     public class RouletteContent : ContentBase
     {
@@ -19,7 +25,6 @@ namespace TrumpTile.GameMain.Core
         private const int MAX_COUNT = 4;
         //룰렛 무료 사용 횟수 (일일)
         private const int FREE_COUNT = 1;
-        private const int REWARD_TYPE = 6;
         private int mCurrentCount = 0;
         private int mCurrentRewardIndex = 0;
         private bool mbIsFree = true;
@@ -97,26 +102,24 @@ namespace TrumpTile.GameMain.Core
         {
             return mCurrentCount < MAX_COUNT;
         }
-        public void RouletteRewardProgress()
+        public ERouletteState RouletteRewardProgress()
         {
             if(mCurrentCount >= MAX_COUNT)
             {
                 Debug.LogError($"[RouletteContent] 룰렛 이용 횟수가 최대치에 도달했습니다.");
-                return;
+                return ERouletteState.None;
             }
+            ERouletteState state = ERouletteState.None;
             if(!mbIsFree)
             {
-                AdManager.Inst.ShowRewardedAd((bool done) =>
-                {
-                    if(done)
-                    {
-                        AudioEvent.Play(EAudioKey.SFX_Roulette_Spin);
-                    }
-                });
+                state = ERouletteState.Ads;
+            }
+            else
+            {
+                state = ERouletteState.Free;
             }
 
             mRewardConfigArray[mCurrentRewardIndex].Reward.GrantReward();
-            CoreContainer.RewardContainer.AddReward(mRewardConfigArray[mCurrentRewardIndex].Reward.GetRewardDisplayInfo());
             mCurrentCount++;
 
             SetIsFree();
@@ -125,6 +128,8 @@ namespace TrumpTile.GameMain.Core
             {
                 mbHasNewthing = false;
             }
+
+            return state;
         }
         private void SetIsFree()
         {
