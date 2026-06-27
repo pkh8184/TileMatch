@@ -64,7 +64,16 @@ namespace TrumpTile.GameMain.UI
             mbPurchaseProgress = true;
 
             PlayerDataManager.Inst.UseGold(SlotManager.Instance.BonusSlotCost);
-            SlotManager.Instance.SetSlotCount(7);
+
+            if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+            {
+                SlotManager.Instance?.SetSlotCount(4);
+            }
+            else
+            {
+                SlotManager.Instance?.SetSlotCount(7);   
+            }
+            
             mSlotButtonObject.SetActive(false);
 
             Hide();

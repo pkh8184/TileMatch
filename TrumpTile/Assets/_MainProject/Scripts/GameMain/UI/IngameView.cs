@@ -49,10 +49,15 @@ namespace TrumpTile.GameMain.UI
         [Header("슬롯 관련")]
         [SerializeField] private Button mBonusSlotButton;
         [SerializeField] private TMP_Text mBonusSlotText;
+        [SerializeField] private GameObject mSlotUI;
+        [Header("보너스 레벨 관련")]
         [SerializeField] private GameObject mBonusLevelSlotFrame;
         [SerializeField] private TMP_Text mBonusLevelGoldText;
         [SerializeField] private RectTransform mBonusLevelGoldRect;
-
+        [Header("데일리 레벨 관련")]
+        [SerializeField] private Button mDailyBonusSlotButton;
+        [SerializeField] private TMP_Text mDailyBonusSlotText;
+        [SerializeField] private GameObject mDailySlotUI;
         [System.Serializable]
 		private class ItemButtonConfig
 		{
@@ -87,9 +92,16 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();
 
+            bool isDaily = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+            mSlotUI.SetActive(!isDaily);
+            mDailySlotUI.SetActive(isDaily);
+            
+
             mLevelNameCanvasGroup.alpha = 0;
-            mSlotPurchasePopup.SetSlotButtonObject(mBonusSlotButton.gameObject);
-            mBonusSlotButton.onClick.AddListener(() =>
+
+            Button button = isDaily? mDailyBonusSlotButton : mBonusSlotButton;
+            mSlotPurchasePopup.SetSlotButtonObject(button.gameObject);
+            button.onClick.AddListener(() =>
             {
                 if (SlotManager.Instance != null && SlotManager.Instance.IsProcessing)
                 {
@@ -157,7 +169,10 @@ namespace TrumpTile.GameMain.UI
         private void UpdateBonusSlotButtonVisibility()
         {
             bool bAdsRemoved = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
-            mBonusSlotButton.gameObject.SetActive(!bAdsRemoved);
+
+            bool isDaily = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+            Button button = isDaily? mDailyBonusSlotButton : mBonusSlotButton;
+            button.gameObject.SetActive(!bAdsRemoved);
         }
         private void OnBonusTileMatched()
         {
@@ -198,8 +213,10 @@ namespace TrumpTile.GameMain.UI
                 item.countText.text = count.ToString();
                 //item.button.image.color = count > 0? Color.white : new Color(200f / 255f,200f / 255f,200f / 255f,128f / 255f);
             }
+            bool isDaily = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
 
-            mBonusSlotText.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
+            TMP_Text text = isDaily? mDailyBonusSlotText : mBonusSlotText;
+            text.color = PlayerDataManager.Inst.Gold >= SlotManager.Instance.BonusSlotCost ? Color.white : Color.red;
         }
         private void OnItemButtonClick(int id)
         {
@@ -217,8 +234,11 @@ namespace TrumpTile.GameMain.UI
             mGemCountText.text = "x" + CoreContainer.RewardContainer.Gem.ToString();
             if(isRetry)
             {
+                bool isDaily = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+                Button button = isDaily? mDailyBonusSlotButton : mBonusSlotButton;
+                
                 UpdateBonusSlotButtonVisibility();
-                mBonusSlotButton.transform.localScale = Vector2.one;
+                button.transform.localScale = Vector2.one;
                 GameManager.Instance.LoadingAnimComplete = true;
                 GameManager.Instance.tutorialComplete = true;
                 return;

@@ -50,7 +50,14 @@ namespace TrumpTile.GameMain.UI
         private IEnumerator UnlockAfterHide()
         {
             yield return new WaitForSeconds(mUnlockDelay);
-            SlotManager.Instance?.SetSlotCount(7);
+            if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+            {
+                SlotManager.Instance?.SetSlotCount(4);
+            }
+            else
+            {
+                SlotManager.Instance?.SetSlotCount(7);   
+            }
             mLockedSlotView?.OnUnlocked();
         }
 

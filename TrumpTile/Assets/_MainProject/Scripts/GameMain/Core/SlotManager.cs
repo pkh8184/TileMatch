@@ -30,7 +30,8 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private int mMaxSlots = 6;
 		[SerializeField] private int mBonusSlotCost = 1000;
 		[SerializeField] private Transform[] mSlotPositions;
-
+		[Header("데일리 퍼즐용 슬롯 셋팅")]
+		[SerializeField] private Transform[] mDailySlotPositions;
 
 		[Header("Animation")]
 		[SerializeField] private float mTileMergeTime = 0.15F;
@@ -90,7 +91,15 @@ namespace TrumpTile.GameMain.Core
 		public void Initialize()
 		{
 			bool bUnlocked = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsAdsRemoved;
-			SetSlotCount(bUnlocked ? 7 : 6);
+			if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			{
+				mSlotPositions = mDailySlotPositions;
+				SetSlotCount(bUnlocked ? 4 : 3);
+			}
+			else
+			{
+				SetSlotCount(bUnlocked ? 7 : 6);
+			}
 			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, IsAdsRemoved: {bUnlocked}");
 			
 			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
