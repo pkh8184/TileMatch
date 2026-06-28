@@ -210,35 +210,44 @@ namespace TrumpTile.GameMain.Core
 				}
             }
 			
-			string difficulty = levelData.difficulty.ToString();
-			Sprite difficultyBackground = null;
-			if(levelData.ChampionsLevel)
+			// string difficulty = levelData.difficulty.ToString();
+			// Sprite difficultyBackground = null;
+			// if(levelData.ChampionsLevel)
+			// {
+			// 	difficultyBackground = mDifficultyTileBackgroundArray[4];
+			// }
+			// else if(difficulty.Contains("Bonus"))
+			// {
+			// 	difficultyBackground = mDifficultyTileBackgroundArray[3];
+			// }
+			// else if(difficulty.Contains("VeryHard"))
+			// {
+			// 	difficultyBackground = mDifficultyTileBackgroundArray[2];
+			// }
+			// else if(difficulty.Contains("Hard"))
+			// {
+			// 	difficultyBackground = mDifficultyTileBackgroundArray[1];
+			// }
+			// else
+			// {
+			// 	difficultyBackground = mDifficultyTileBackgroundArray[0];
+			// }
+
+			// Sprite tileBackground = difficultyBackground ? difficultyBackground : mDefaultTileBackground;
+			// if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
+			// {
+			// 	int dailyTileIndex = DailyPuzzleManager.Inst.GetTodayRandomIndex(mDifficultyTileBackgroundArray.Length);
+			// 	Sprite dailyTileSprite = mDifficultyTileBackgroundArray[dailyTileIndex];
+			// 	tileBackground = dailyTileSprite ? dailyTileSprite : mDefaultTileBackground;
+			// }
+			Sprite tileBackground;
+			if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
-				difficultyBackground = mDifficultyTileBackgroundArray[4];
-			}
-			else if(difficulty.Contains("Bonus"))
-			{
-				difficultyBackground = mDifficultyTileBackgroundArray[3];
-			}
-			else if(difficulty.Contains("VeryHard"))
-			{
-				difficultyBackground = mDifficultyTileBackgroundArray[2];
-			}
-			else if(difficulty.Contains("Hard"))
-			{
-				difficultyBackground = mDifficultyTileBackgroundArray[1];
+				tileBackground = GameManager.Instance.ResourceDatabase.GetTileBackgroundSprite(true);
 			}
 			else
 			{
-				difficultyBackground = mDifficultyTileBackgroundArray[0];
-			}
-
-			Sprite tileBackground = difficultyBackground ? difficultyBackground : mDefaultTileBackground;
-			if (DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
-			{
-				int dailyTileIndex = DailyPuzzleManager.Inst.GetTodayRandomIndex(mDifficultyTileBackgroundArray.Length);
-				Sprite dailyTileSprite = mDifficultyTileBackgroundArray[dailyTileIndex];
-				tileBackground = dailyTileSprite ? dailyTileSprite : mDefaultTileBackground;
+				tileBackground = GameManager.Instance.ResourceDatabase.GetTileBackgroundSprite(false);
 			}
 
 			SortingManager.SetMaxGridY(mGridHeight);
@@ -831,25 +840,14 @@ namespace TrumpTile.GameMain.Core
 
 		public void UpdateAllBlockedStates()
 		{
-			// 상자 위에 상자가 쌓인 경우, 위 상자가 열려 보드맵이 비워지면
-			// 그 아래 상자도 같은 호출 안에서 연쇄 획득되도록 더 이상 열릴 게 없을 때까지 반복한다.
-			bool bCollectedAny;
-			do
+			foreach(var item in mGemTileList)
 			{
-				bCollectedAny = false;
-				foreach(var item in mGemTileList)
+				if(!item.gameObject.activeSelf)
 				{
-					if(!item.gameObject.activeSelf)
-					{
-						continue;
-					}
-					if(item.CheckCanCollect())
-					{
-						bCollectedAny = true;
-					}
+					continue;
 				}
+				item.CheckCanCollect();
 			}
-			while(bCollectedAny);
 
 			foreach (TileController tile in mAllTiles)
 			{

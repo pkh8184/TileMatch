@@ -75,5 +75,15 @@ namespace TrumpTile.GameMain.Core
 
 		SFX_Reward_Gain,
 		SFX_Ingame_LevelName_Champions,
+
+		BGM_Ingame_Water,
+		BGM_Ingame_Ice,
+		BGM_Ingame_Dark,
+		SFX_Ingame_Water_TileMove,
+		SFX_Ingame_Water_TileMatch,
+		SFX_Ingame_Ice_TileMove,
+		SFX_Ingame_Ice_TileMatch,
+		SFX_Ingame_Dark_TileMove,
+		SFX_Ingame_Dark_TileMatch,
 	}
 }

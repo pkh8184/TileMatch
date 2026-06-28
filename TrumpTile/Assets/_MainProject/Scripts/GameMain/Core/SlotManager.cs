@@ -95,30 +95,15 @@ namespace TrumpTile.GameMain.Core
 			{
 				mSlotPositions = mDailySlotPositions;
 				SetSlotCount(bUnlocked ? 4 : 3);
+				mMatchAudioKey = GameManager.Instance.ResourceDatabase.GetMatchSFXKey(true);
 			}
 			else
 			{
 				SetSlotCount(bUnlocked ? 7 : 6);
+				mMatchAudioKey = GameManager.Instance.ResourceDatabase.GetMatchSFXKey(false);
 			}
 			Debug.Log($"[SlotManager] Initialize - MaxSlots: {mMaxSlots}, IsAdsRemoved: {bUnlocked}");
 			
-			string difficulty = GameManager.Instance.LevelDifficulty.ToString();
-			if(GameManager.Instance.IsChampionsMode)
-			{
-				mMatchAudioKey = EAudioKey.SFX_Ingame_Match_Champions;
-			}
-			else if(difficulty.Contains("VeryHard"))
-			{
-				mMatchAudioKey = EAudioKey.SFX_TileMatch_VeryHard;
-			}
-			else if(difficulty.Contains("Hard"))
-			{
-				mMatchAudioKey = EAudioKey.SFX_TileMatch_Hard;
-			}
-			else
-			{
-				mMatchAudioKey = EAudioKey.SFX_TileMatch;
-			}
 		}
 
 		public void ResetSlots()

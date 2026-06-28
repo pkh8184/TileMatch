@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5040866562224756970}
   - component: {fileID: 7340792974993916274}
   m_Layer: 0
-  m_Name: Fx_Match_003
+  m_Name: Fx_Match_Bonus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -288,8 +288,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.05
-      minScalar: 0.15
+      scalar: 0.15
+      minScalar: 0.2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -19556,7 +19556,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 2
-      minScalar: 1.2
+      minScalar: 1.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -19690,8 +19690,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.5
-      minScalar: 1.2
+      scalar: 1.8
+      minScalar: 2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -20002,8 +20002,8 @@ ParticleSystem:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: 0
-          value: -0.53868866
+          time: 0.0037879944
+          value: -0.5755005
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -20027,7 +20027,7 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: -0.7423248
+          value: -1
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -20035,13 +20035,13 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.39850596
-          value: 0.8820327
-          inSlope: 1.0117484
-          outSlope: 1.0117484
+          time: 0.40531138
+          value: 0.6857131
+          inSlope: 6.9080906
+          outSlope: 6.9080906
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.37692446
+          inWeight: 0.15889582
           outWeight: 0.33333334
         m_PreInfinity: 2
         m_PostInfinity: 2
@@ -20365,7 +20365,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 100
+        scalar: 60
         minScalar: 16
         maxCurve:
           serializedVersion: 2
@@ -24250,7 +24250,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fdab7a59c139b09479de2c92d2eae919, type: 2}
+  - {fileID: 2100000, guid: 374be866dcfa33c408f35b4949cd03b4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

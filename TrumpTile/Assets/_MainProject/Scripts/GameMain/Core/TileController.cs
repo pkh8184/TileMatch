@@ -174,27 +174,13 @@ namespace TrumpTile.GameMain.Core
 		}
 		private void SetTileMoveAudioKey(EDifficultyType type)
 		{
-			string difficulty = type.ToString();
-
-			if(GameManager.Instance.IsChampionsMode)
+			if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
-				mTileMoveAudioKey = EAudioKey.SFX_Ingame_TileMove_Champions;
-			}
-			else if(difficulty.Contains("Bonus"))
-			{
-				mTileMoveAudioKey = EAudioKey.SFX_TileMove_Bonus;
-			}
-			else if(difficulty.Contains("VeryHard"))
-			{
-				mTileMoveAudioKey = EAudioKey.SFX_TileMove_VeryHard;
-			}
-			else if(difficulty.Contains("Hard"))
-			{
-				mTileMoveAudioKey = EAudioKey.SFX_TileMove_Hard;
+				mTileMoveAudioKey = GameManager.Instance.ResourceDatabase.GetTileMoveSFXKey(true);
 			}
 			else
 			{
-				mTileMoveAudioKey = EAudioKey.SFX_TileMove;
+				mTileMoveAudioKey = GameManager.Instance.ResourceDatabase.GetTileMoveSFXKey(false);
 			}
 		}
 		private void SetupVisual(Sprite tileBackground)

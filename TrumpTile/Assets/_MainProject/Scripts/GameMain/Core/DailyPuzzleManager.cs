@@ -18,7 +18,6 @@ namespace TrumpTile.GameMain.Core
 		[Header("Debug")]
 		[SerializeField] private bool mbUseDateOverride = false;
 		[SerializeField] private string mDateOverride = "20260625";
-
 		private DailyPuzzleTable mDailyPuzzleTable;
 		private AsyncOperationHandle<DailyPuzzleTable> mTableHandle;
 		private bool mbIsActive = false;
@@ -125,6 +124,10 @@ namespace TrumpTile.GameMain.Core
 				return CalculateBackgroundIndex(overrideDate, arrayLength);
 			}
 			return CalculateBackgroundIndex(DateTime.Today, arrayLength);
+		}
+		public DayOfWeek GetToday()
+		{
+			return DateTime.Now.DayOfWeek;
 		}
 	}
 }

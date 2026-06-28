@@ -255,39 +255,25 @@ namespace TrumpTile.GameMain.UI
             }
             bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
             Sprite background;
+            EAudioKey bgmKey;
             if (bIsDailyMode)
             {
-                int dailyBgIndex = DailyPuzzleManager.Inst.GetTodayRandomIndex(mDifficultyLevelBackgroundArray.Length);
-                background = mDifficultyLevelBackgroundArray[dailyBgIndex];
+                // int dailyBgIndex = DailyPuzzleManager.Inst.GetTodayRandomIndex(mDifficultyLevelBackgroundArray.Length);
+                // background = mDifficultyLevelBackgroundArray[dailyBgIndex];
+                background = GameManager.Instance.ResourceDatabase.GetBackgroundSprite(true);
+                bgmKey = GameManager.Instance.ResourceDatabase.GetBGMKey(true);
             }
             else
             {
-                background = mDifficultyLevelBackgroundArray[index];
+                background = GameManager.Instance.ResourceDatabase.GetBackgroundSprite(false);
+                bgmKey = GameManager.Instance.ResourceDatabase.GetBGMKey(false);
             }
             mBackgroundImage.sprite = background ? background : mDefaultBackgroundSprite; 
-
-            if(index == 0)
-            {
-                AudioEvent.Play(EAudioKey.BGM_Ingame);
-            }
-            else if(index == 1)
-            {
-                AudioEvent.Play(EAudioKey.BGM_Ingame_Hard);
-            }
-            else if(index == 2)
-            {
-                AudioEvent.Play(EAudioKey.BGM_Ingame_VeryHard);
-            }
-            else if(index == 3)
+            AudioEvent.Play(bgmKey);
+            if(index == 3)
             {
                 mBonusLevelSlotFrame.SetActive(true);
-                AudioEvent.Play(EAudioKey.BGM_Ingame_Bonus);
             }
-            else
-            {
-                AudioEvent.Play(EAudioKey.BGM_Ingame_Champions);
-            }
-
             if (!bIsDailyMode)
             {
                 mLevelNameBackground.gameObject.SetActive(true);

@@ -265,26 +265,14 @@ namespace TrumpTile.GameMain.Core
 			}
 			else
 			{
-				if(GameManager.Instance.IsChampionsMode)
+				if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 				{
-					mMatchEffectPrefab = mMatchEffectArray[5];
-				}
-				else if(difficulty.Contains("Bonus"))
-				{
-					mMatchEffectPrefab = mMatchEffectArray[3];
-				}
-				else if(difficulty.Contains("VeryHard"))
-				{
-					mMatchEffectPrefab = mMatchEffectArray[2];
-				}
-				else if(difficulty.Contains("Hard"))
-				{
-					mMatchEffectPrefab = mMatchEffectArray[1];
+					mMatchEffectPrefab = GameManager.Instance.ResourceDatabase.GetMatchEffectPrefab(true);
 				}
 				else
 				{
-					mMatchEffectPrefab = mMatchEffectArray[0];
-				}	
+					mMatchEffectPrefab = GameManager.Instance.ResourceDatabase.GetMatchEffectPrefab(false);
+				}		
 			}
 			
 			if (mMatchEffectPrefab != null)

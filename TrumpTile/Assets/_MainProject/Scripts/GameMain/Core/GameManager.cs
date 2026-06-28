@@ -12,6 +12,7 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.AddressableAssets;
+using System.Runtime.ExceptionServices;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -61,7 +62,9 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private bool mbGemTest;
 		private float mTimerLogAccumulator = 0F;
 		private bool mbIsRetry = false;
-
+		[Header("리소스 컨테이너")]
+		[SerializeField] private LevelDifficultyResourceDatabase mLevelDifficultyResourceDatabase;
+		public LevelDifficultyResourceDatabase ResourceDatabase => mLevelDifficultyResourceDatabase;
 		// 게임 상태
 		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
 		public EGameState CurrentState { get; private set; }
@@ -346,6 +349,7 @@ namespace TrumpTile.GameMain.Core
 				StartCoroutine(Co_BuildTest_ToMain());
 				return;
 			}
+			mLevelDifficultyResourceDatabase.Initialize(levelData);
 
 			mELevelDifficulty = levelData.difficulty;
 			Debug.Log($"[GameManager] Starting Level {CurrentLevel}: {levelData.levelName}");
