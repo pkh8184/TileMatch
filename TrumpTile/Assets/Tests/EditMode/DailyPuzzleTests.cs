@@ -9,43 +9,73 @@ namespace TrumpTile.Tests.EditMode
 	public class DailyPuzzleTests
 	{
 		[Test]
-		public void CalculateIndex_OnStartDate_ReturnsZero()
+		public void CalculateIndex_SameDate_ReturnsSameIndex()
 		{
-			int result = DailyPuzzleTable.CalculateIndex(
-				new DateTime(2026, 1, 1),
-				new DateTime(2026, 1, 1),
-				3);
-			Assert.AreEqual(0, result);
+			DateTime date = new DateTime(2026, 6, 24);
+			int result1 = DailyPuzzleTable.CalculateIndex(date, 5);
+			int result2 = DailyPuzzleTable.CalculateIndex(date, 5);
+			Assert.AreEqual(result1, result2);
 		}
 
 		[Test]
-		public void CalculateIndex_OnDay1_ReturnsOne()
+		public void CalculateIndex_AlwaysInRange()
 		{
-			int result = DailyPuzzleTable.CalculateIndex(
-				new DateTime(2026, 1, 1),
-				new DateTime(2026, 1, 2),
-				3);
-			Assert.AreEqual(1, result);
+			DateTime date = new DateTime(2026, 1, 1);
+			for (int count = 2; count <= 8; count++)
+			{
+				for (int i = 0; i < 200; i++)
+				{
+					int result = DailyPuzzleTable.CalculateIndex(date.AddDays(i), count);
+					Assert.IsTrue(result >= 0 && result < count,
+						"count " + count + " day " + i + " out of range: " + result);
+				}
+			}
 		}
 
 		[Test]
-		public void CalculateIndex_WrapsAround_AfterAllEntries()
+		public void CalculateIndex_NoConsecutiveDuplicate()
 		{
-			// 3개 항목, 3일 후 → 인덱스 0으로 순환
-			int result = DailyPuzzleTable.CalculateIndex(
-				new DateTime(2026, 1, 1),
-				new DateTime(2026, 1, 4),
-				3);
-			Assert.AreEqual(0, result);
+			DateTime date = new DateTime(2026, 1, 1);
+			for (int count = 2; count <= 8; count++)
+			{
+				int prev = DailyPuzzleTable.CalculateIndex(date, count);
+				for (int i = 1; i < 200; i++)
+				{
+					int current = DailyPuzzleTable.CalculateIndex(date.AddDays(i), count);
+					Assert.AreNotEqual(prev, current,
+						"count " + count + " consecutive duplicate at day " + i);
+					prev = current;
+				}
+			}
 		}
 
 		[Test]
-		public void CalculateIndex_BeforeStartDate_ReturnsZero()
+		public void CalculateIndex_CoversAllEntriesPerCycle()
 		{
-			int result = DailyPuzzleTable.CalculateIndex(
-				new DateTime(2026, 1, 1),
-				new DateTime(2025, 12, 31),
-				3);
+			// count>=3: 한 사이클(count일) 동안 모든 엔트리가 정확히 한 번씩
+			DateTime date = new DateTime(2026, 1, 1);
+			for (int count = 3; count <= 8; count++)
+			{
+				// 사이클 시작(absoluteDay % count == 0)에 맞춰 윈도우 정렬
+				long absoluteDay = date.Date.Ticks / TimeSpan.TicksPerDay;
+				int alignOffset = (int)((count - absoluteDay % count) % count);
+				DateTime cycleStart = date.AddDays(alignOffset);
+
+				bool[] seen = new bool[count];
+				for (int i = 0; i < count; i++)
+				{
+					int result = DailyPuzzleTable.CalculateIndex(cycleStart.AddDays(i), count);
+					Assert.IsFalse(seen[result],
+						"count " + count + " duplicate within cycle: " + result);
+					seen[result] = true;
+				}
+			}
+		}
+
+		[Test]
+		public void CalculateIndex_SingleEntry_ReturnsZero()
+		{
+			int result = DailyPuzzleTable.CalculateIndex(new DateTime(2026, 1, 1), 1);
 			Assert.AreEqual(0, result);
 		}
 

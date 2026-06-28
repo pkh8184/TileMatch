@@ -103,6 +103,7 @@ namespace TrumpTile.GameMain.Core
 			if (mDailyPuzzleTable != null)
 			{
 				PlayerDataManager.Inst.AddGold(mDailyPuzzleTable.dailyRewardGold);
+				CoreContainer.RewardContainer.AddGold(mDailyPuzzleTable.dailyRewardGold);
 			}
 
 			mbIsActive = false;

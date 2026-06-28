@@ -620,17 +620,32 @@ namespace TrumpTile.GameMain.Core
 				int min = mAllTileTypes.FindIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
 				int max = mAllTileTypes.FindLastIndex(x => x.tileTypeId.Contains(((ETileCartegory)i).ToString()));
 				
+				// max 인덱스(카테고리 마지막 = Random 플레이스홀더 타일)는 선택 대상에서 제외
+				int rangeCount = max - min;
 				int typeCount = levelData.randomTileRangeByCartegory[i];
 				Debug.Log($"[BoardManager] {(ETileCartegory)i} 랜덤 타일 범위 : {typeCount}");
-				if(typeCount > max - min + 1 || typeCount <= 0)
+				if(typeCount > rangeCount || typeCount <= 0)
 				{
-					typeCount = max - min + 1;
+					typeCount = rangeCount;
+				}
+
+				// [min, max) 인덱스를 셔플해 앞에서 typeCount개를 중복 없이 추출
+				// (이전 코드는 중복을 허용해 카테고리 타일이 적으면 1종류로 붕괴하는 버그가 있었음)
+				List<int> indexPool = new List<int>();
+				for(int j = min; j < max; j++)
+				{
+					indexPool.Add(j);
+				}
+				for(int j = indexPool.Count - 1; j > 0; j--)
+				{
+					int k = Random.Range(0, j + 1);
+					(indexPool[j], indexPool[k]) = (indexPool[k], indexPool[j]);
 				}
 
 				List<TileData> filteredTileList = new List<TileData>();
 				for(int j = 0; j < typeCount; j++)
 				{
-					TileData filteredTile = mAllTileTypes[Random.Range(min, max)];
+					TileData filteredTile = mAllTileTypes[indexPool[j]];
 					Debug.Log($"[BoardManager] {j+1}번째 선택된 {(ETileCartegory)i} 랜덤 타일 : {filteredTile.TileID}");
 					filteredTileList.Add(filteredTile);
 				}

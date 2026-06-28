@@ -94,7 +94,7 @@ namespace TrumpTile.GameMain.Core
 			if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
 			{
 				mSlotPositions = mDailySlotPositions;
-				SetSlotCount(bUnlocked ? 4 : 3);
+				SetSlotCount(bUnlocked ? 5 : 4);
 				mMatchAudioKey = GameManager.Instance.ResourceDatabase.GetMatchSFXKey(true);
 			}
 			else

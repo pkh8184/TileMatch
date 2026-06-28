@@ -67,7 +67,7 @@ namespace TrumpTile.GameMain.UI
 
             if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
             {
-                SlotManager.Instance?.SetSlotCount(4);
+                SlotManager.Instance?.SetSlotCount(5);
             }
             else
             {
