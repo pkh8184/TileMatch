@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 
@@ -18,15 +17,7 @@ namespace TrumpTile.GameMain.UI
 		[Header("내 순위 (하단 고정)")]
 		[SerializeField] private LeaderboardEntryView mMyEntryView;
 
-		[Header("닫기")]
-		[SerializeField] private Button mCloseButton;
-
 		private List<LeaderboardEntryView> mEntryViews = new List<LeaderboardEntryView>();
-
-		private void Start()
-		{
-			mCloseButton.onClick.AddListener(Hide);
-		}
 
 		public override void Show()
 		{
