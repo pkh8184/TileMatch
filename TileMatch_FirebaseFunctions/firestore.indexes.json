@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "currentStage", "order": "DESCENDING" },
+        { "fieldPath": "stageReachedAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "currentStage", "order": "ASCENDING" },
+        { "fieldPath": "stageReachedAt", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

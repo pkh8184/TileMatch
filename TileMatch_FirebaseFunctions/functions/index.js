@@ -164,17 +164,24 @@ exports.startStage = onCall(async (request) =>{
 ///스테이지를 클리어한 경우, 스테이지 클리어 기록 관련 데이터들을 갱신해줍니다.
 //(03/09 : 플레이 데이터 검증 어떻게 할 건지 정한 후 수정해야함)
 exports.endStage = onCall(async (request) =>{
+    const uid = getUID(request);          // 추가: uid 추출
     const docRef = getDoc(request);
     const doc = await docRef.get();
     checkDocExists(doc);
 
-    //스테이지를 시작하지 않은 상태에서 요청이 온 경우 플레이를 무효 처리합니다.
     const isStartTime = doc.data().stageData.stageStartTime;
     if(!isStartTime){
         throw new HttpsError("permission-denied", "비정상적인 요청입니다.");
     }
 
-    const { isCleared, usedItems } = request.data; 
+    // 변경: request.data null 안전성 + profile 필드 추가
+    const {
+        isCleared,
+        usedItems,
+        nickname = "USER",
+        profileImageIndex = 0,
+        profileFrameIndex = 0
+    } = request.data || {}; 
 
     //사용한 아이템의 개수가 보유 아이템 개수보다 많은 경우 플레이를 무효 처리합니다.
     if(!checkItemCountValid(doc, usedItems)){
@@ -275,11 +282,29 @@ exports.endStage = onCall(async (request) =>{
                 "stageData.currentStreakStageCount": updateCurrentStreakStageCount,
                 "stageData.maxStreakStageCount": updateMaxStreakStageCount,
                 "stageData.isClearLastStage": isLastStage
-        }); 
- 
+        });
+
+        // leaderboard 업데이트
+        const prevLeaderboardDoc = await db.collection("leaderboard").doc(uid).get();
+        const bShouldUpdateTimestamp = !prevLeaderboardDoc.exists ||
+            prevLeaderboardDoc.data().currentStage < updateCurrentStage;
+
+        const leaderboardData = {
+            nickname,
+            profileImageIndex,
+            profileFrameIndex,
+            currentStage: updateCurrentStage
+        };
+
+        if (bShouldUpdateTimestamp) {
+            leaderboardData.stageReachedAt = FieldValue.serverTimestamp();
+        }
+
+        await db.collection("leaderboard").doc(uid).set(leaderboardData, { merge: true });
+
         //로컬 UI에 표시되는 데이터들의 갱신을 위해 데이터를 클라이언트에게 반환합니다.
         return{
-            blackhole: doc.data().item.blackhole - usedItems.blackhole, 
+            blackhole: doc.data().item.blackhole - usedItems.blackhole,
             timer: doc.data().item.timer - usedItems.timer,
             bomb: doc.data().item.bomb - usedItems.bomb,
             gold: doc.data().currency.gold + (100 * rewardStar),
@@ -415,6 +440,67 @@ exports.progressHousing = onCall(async (request) =>{
 
     return updateValue;
 })
+
+///리더보드 조회 onCall 함수입니다.
+///상위 N명의 리더보드 데이터와 내 순위를 반환합니다.
+exports.getLeaderboard = onCall(async (request) => {
+    const uid = getUID(request);
+    const n = (request.data && request.data.n) || 100;
+
+    // 상위 N명 조회 (currentStage 내림차순, stageReachedAt 오름차순)
+    const snapshot = await db.collection("leaderboard")
+        .orderBy("currentStage", "desc")
+        .orderBy("stageReachedAt", "asc")
+        .limit(n)
+        .get();
+
+    let rank = 1;
+    const topN = [];
+    snapshot.forEach(doc => {
+        topN.push({
+            rank: rank++,
+            nickname: doc.data().nickname,
+            profileImageIndex: doc.data().profileImageIndex,
+            profileFrameIndex: doc.data().profileFrameIndex,
+            currentStage: doc.data().currentStage
+        });
+    });
+
+    // 내 leaderboard 문서 조회
+    const myDoc = await db.collection("leaderboard").doc(uid).get();
+
+    if (!myDoc.exists) {
+        return { topN, myEntry: null };
+    }
+
+    const myData = myDoc.data();
+
+    // 나보다 높은 스테이지 유저 수
+    const higherSnap = await db.collection("leaderboard")
+        .where("currentStage", ">", myData.currentStage)
+        .count()
+        .get();
+
+    // 같은 스테이지에서 나보다 먼저 도달한 유저 수
+    const sameEarlierSnap = await db.collection("leaderboard")
+        .where("currentStage", "==", myData.currentStage)
+        .where("stageReachedAt", "<", myData.stageReachedAt)
+        .count()
+        .get();
+
+    const myRank = higherSnap.data().count + sameEarlierSnap.data().count + 1;
+
+    return {
+        topN,
+        myEntry: {
+            rank: myRank,
+            nickname: myData.nickname,
+            profileImageIndex: myData.profileImageIndex,
+            profileFrameIndex: myData.profileFrameIndex,
+            currentStage: myData.currentStage
+        }
+    };
+});
 //#endregion
 
 ////-------------아래부터는 클라이언트 호출 함수가 아닙니다.------------------
