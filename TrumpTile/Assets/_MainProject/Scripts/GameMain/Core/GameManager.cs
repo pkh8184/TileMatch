@@ -816,7 +816,7 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
-			if(PlayerDataManager.Inst.CurrentStage >= CoreData.MAX_STAGE)
+			if(PlayerDataManager.Inst.IsChampionsActive)
 			{
 				mbIsChampionsMode = true;
 				mStartLevel = PlayerDataManager.Inst.ChampionsLevel % CoreData.CHAMPIONS_INTERVAL;

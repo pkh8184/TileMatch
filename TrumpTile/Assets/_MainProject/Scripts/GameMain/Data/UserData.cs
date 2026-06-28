@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.GameMain.Data
 {
@@ -207,6 +208,7 @@ namespace TrumpTile.GameMain.Data
         
         //챔피언스 리그 관련 데이터
         public int ChampionsLevel;
+        public bool IsChampionsActive;
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
         {
@@ -300,6 +302,7 @@ namespace TrumpTile.GameMain.Data
             GemCollectionIndex = 0;
             GemCount = 0;
 
+            IsChampionsActive = false;
             ChampionsLevel = 0;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
@@ -396,7 +399,14 @@ namespace TrumpTile.GameMain.Data
             GemCount = data.GemCount;
 
             ChampionsLevel = data.ChampionsLevel;
-            
+            if(CurrentStage > CoreData.MAX_STAGE)
+            {
+                IsChampionsActive = true;
+            }
+            else
+            {
+                IsChampionsActive = false;
+            }
             LoadUnEncryptedData();
         }
     }

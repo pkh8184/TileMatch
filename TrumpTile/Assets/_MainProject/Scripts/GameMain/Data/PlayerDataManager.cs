@@ -101,6 +101,7 @@ namespace TrumpTile.GameMain.Data
 		public int GemCollectionIndex => mUserData.GemCollectionIndex;
 		public int GemCollectionCount => mUserData.GemCount;
 		public int ChampionsLevel => mUserData.ChampionsLevel;
+		public bool IsChampionsActive => mUserData.IsChampionsActive;
 		#endregion
 
 		#region 재화
@@ -162,8 +163,9 @@ namespace TrumpTile.GameMain.Data
 			{
 				mUserData.PiggyBankStageClearCount++;
 			}
-			if(CurrentStage >= CoreData.MAX_STAGE)
+			if(CurrentStage > CoreData.MAX_STAGE)
 			{
+				mUserData.IsChampionsActive = true;
 				mUserData.ChampionsLevel = 1;
 			}
 		}

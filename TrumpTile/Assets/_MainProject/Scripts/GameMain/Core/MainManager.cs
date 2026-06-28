@@ -55,7 +55,7 @@ namespace TrumpTile.GameMain.Core
 			
 			DailyPuzzleManager.Inst.SetDailyPuzzlePlayEarlyFalse();
 
-			if(PlayerDataManager.Inst.CurrentStage >= CoreData.MAX_STAGE)
+			if(PlayerDataManager.Inst.IsChampionsActive)
             {
                 AudioEvent.Play(EAudioKey.BGM_Main_Champions);
 			}
@@ -94,19 +94,11 @@ namespace TrumpTile.GameMain.Core
 
 			MainSceneEventWrapper wrapper = new MainSceneEventWrapper{Action = action, Order = order, Type = type};
 			
-			for(int i = 0; i < mEventList.Count; i++)
-			{
-				EMainSceneEventType compareType = mEventList[i].Type;
-
-				if(type < compareType)
-				{
-					mEventList.Add(wrapper);
-				}
-				else
-				{
-					
-				}
-			}
+			mEventList.Add(wrapper);
 		}
+		// private IEnumerator Co_PlayMainSceneEvent()
+		// {
+			
+		// }
 	}
 }
