@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
@@ -89,7 +90,7 @@ namespace TrumpTile.GameMain.UI
 
             mRewardAnimator.Initialize();
 
-            if(PlayerDataManager.Inst.CurrentStage >= CoreData.MAX_STAGE)
+            if(PlayerDataManager.Inst.IsChampionsActive)
             {
                 mStageStartButton.image.sprite = mChampionsStageButtonSprite;
                 mStageStartButton.image.pixelsPerUnitMultiplier = 1;
@@ -143,8 +144,8 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst.AddEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
             EventManager.Inst.AddEvent("PlayRewardAnim", PlayRewardAnim);
             EventManager.Inst.AddEvent("GoldRewardArrived", PulseShopButton);
-            EventManager.Inst.AddEvent<(float,int)>("RefreshGoldText", GoldTextProgress);
-            EventManager.Inst.AddEvent("ItemRewardArrived", PulseStageButton);
+            EventManager.Inst.AddEvent<(float,int,Action)>("RefreshGoldText", GoldTextProgress);
+            EventManager.Inst.AddEvent<Action>("ItemRewardArrived", PulseStageButton);
         }
         protected override void UnSubscribeEvent()
         {
@@ -152,8 +153,8 @@ namespace TrumpTile.GameMain.UI
             EventManager.Inst?.RemoveEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
             EventManager.Inst?.RemoveEvent("PlayRewardAnim", PlayRewardAnim);
             EventManager.Inst?.RemoveEvent("GoldRewardArrived", PulseShopButton);
-            EventManager.Inst?.RemoveEvent<(float,int)>("RefreshGoldText", GoldTextProgress);
-            EventManager.Inst?.RemoveEvent("ItemRewardArrived", PulseStageButton);
+            EventManager.Inst?.RemoveEvent<(float,int,Action)>("RefreshGoldText", GoldTextProgress);
+            EventManager.Inst?.RemoveEvent<Action>("ItemRewardArrived", PulseStageButton);
         }
         protected override void Refresh()
         {
@@ -201,25 +202,30 @@ namespace TrumpTile.GameMain.UI
             shopTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
             AudioEvent.Play(EAudioKey.SFX_GetReward_Gold);
         }
-        private void PulseStageButton()
+        private void PulseStageButton(Action onDone)
         {
             Transform stageTransform = mStageStartButton.transform;
             stageTransform.DOKill(true);
             stageTransform.localScale = Vector3.one;
-            stageTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+            stageTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f).OnComplete(() => onDone?.Invoke());
             AudioEvent.Play(EAudioKey.SFX_GetReward_Gold);
         }
-        private void GoldTextProgress((float, int) data)
+        private void GoldTextProgress((float, int, Action) data)
         {
             float duration = data.Item1;
             int amount = data.Item2;
-            
+            Action onDone = data.Item3;
+
             int value = PlayerDataManager.Inst.Gold - amount;
 
             DOTween.To(() => value, x =>
             {
                 mGoldText.text = x.ToString();
-            },PlayerDataManager.Inst.Gold, duration).OnComplete(() => EventManager.Inst.ActiveEvent("GoldRewardAnimDone"));
+            },PlayerDataManager.Inst.Gold, duration).OnComplete(() =>
+            {
+                EventManager.Inst.ActiveEvent("GoldRewardAnimDone");
+                onDone?.Invoke();
+            });
         }
         private void OnStageButtonClick()
         {

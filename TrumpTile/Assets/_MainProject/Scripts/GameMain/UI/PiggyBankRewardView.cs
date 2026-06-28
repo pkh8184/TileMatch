@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Spine.Unity;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using UnityEngine;
@@ -15,8 +16,8 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private Button mTapButton;
         [Header("골드 텍스트")]
         [SerializeField] private TMP_Text mGoldText;
-        [Header("연출 효과를 줄 돼지 렉트")]
-        [SerializeField] private RectTransform mPigRect;
+        [Header("연출 효과를 줄 돼지 스파인")]
+        [SerializeField] private SkeletonGraphic mPigSpine;
         [Header("보상 오브젝트")]
         [SerializeField] private GameObject mRewardObject;
         [Header("돼지 터질 때 파티클")]
@@ -71,36 +72,18 @@ namespace TrumpTile.GameMain.UI
                 return;
             }
 
-            if(mSeq != null && mSeq.active)
-            {
-                mSeq.Kill();
-            }
-            mSeq = DOTween.Sequence();
-
-            mSeq.Append(mPigRect.DOScale(1.1f, 0.2f));
-            mSeq.Append(mPigRect.DOScale(1f, 0.2f));
-
-            mSeq.OnComplete(() => mbIsAnim = false);
+            mPigSpine.AnimationState.SetAnimation(0, "interact", false);
+            mPigSpine.AnimationState.Complete += _ => mbIsAnim = false;
         }
         private void BoomPig()
         {
-            if(mSeq != null && mSeq.active)
+            mPigSpine.AnimationState.SetAnimation(0, "destroy", false);
+            mPigSpine.AnimationState.Complete += _ =>
             {
-                mSeq.Kill();
-            }
-            mSeq = DOTween.Sequence();
-
-            mSeq.Append(mPigRect.DOScale(1.1f, 0.2f));
-            mSeq.Append(mPigRect.DORotate(new Vector3(0, 0, 15f), 0.15f).SetRelative().SetEase(Ease.InOutSine));
-            mSeq.Append(mPigRect.DORotate(new Vector3(0, 0, -30f), 0.3f).SetRelative().SetEase(Ease.InOutSine));
-            mSeq.Append(mPigRect.DORotate(new Vector3(0, 0, 15f), 0.15f).SetRelative().SetEase(Ease.InOutSine));
-
-            mSeq.OnComplete(() => 
-            {
-                mPigRect.transform.parent.gameObject.SetActive(false);
+                mPigSpine.gameObject.SetActive(false);
                 mParticle.Play();
                 ShowReward();
-            });
+            };
         }
         private void ShowReward()
         {

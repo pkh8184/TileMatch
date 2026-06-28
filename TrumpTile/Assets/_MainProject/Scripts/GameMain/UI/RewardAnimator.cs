@@ -51,6 +51,19 @@ namespace TrumpTile.GameMain.UI
         private List<RectTransform> mRewardCoverPool = new List<RectTransform>();
 
         private bool mbIsPlaying;
+        // 골드/아이템 도착 후 후속 연출(카운트업·두근거림) 종료를 기다리기 위한 플래그
+        private bool mbSubAnimDone;
+
+        // 후속 연출 완료 콜백이 플래그를 켤 때까지 대기. 리스너 미응답 대비 타임아웃 폴백.
+        private IEnumerator WaitSubAnim(float timeout)
+        {
+            float elapsed = 0f;
+            while(!mbSubAnimDone && elapsed < timeout)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+        }
 
         public void Initialize()
         {
@@ -148,9 +161,12 @@ namespace TrumpTile.GameMain.UI
             }
 
             float duration = 0.1f * (max - 1) + 0.3f;
-            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent("RefreshGoldText", (duration, amount)));
+            mbSubAnimDone = false;
+            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent("RefreshGoldText", (duration, amount, (Action)(() => mbSubAnimDone = true))));
 
             yield return moveSeq.WaitForCompletion();
+            // 골드 카운트업 연출이 끝날 때까지 대기
+            yield return WaitSubAnim(duration + 1.5f);
         }
         private IEnumerator Co_ItemAnim()
         {
@@ -202,6 +218,9 @@ namespace TrumpTile.GameMain.UI
             interval = 0;
             Sequence moveSeq = DOTween.Sequence();
 
+            mbSubAnimDone = false;
+            int lastInterval = count - 1;
+
             for(int i = 0; i < items.Length; i++)
             {
                 if(items[i] <= 0)
@@ -210,17 +229,22 @@ namespace TrumpTile.GameMain.UI
                 }
 
                 RectTransform cover = mRewardCoverPool[interval];
+                int capturedInterval = interval;
                 //아이템 종류별 타겟 위치로 이동(종류별 미지정 시 공용 타겟)
                 moveSeq.Insert(0.1f * interval, cover.DOMove(mItemTargetRect.position, 0.3f).SetEase(Ease.InQuad)
                     .OnComplete(() => {
                         cover.gameObject.SetActive(false);
                         cover.anchoredPosition = Vector2.zero;
-                        EventManager.Inst.ActiveEvent("ItemRewardArrived");
+                        // 마지막 아이템에만 완료 콜백을 실어 보냄(마지막 두근 연출 종료 추적)
+                        Action onDone = capturedInterval == lastInterval ? (Action)(() => mbSubAnimDone = true) : null;
+                        EventManager.Inst.ActiveEvent<Action>("ItemRewardArrived", onDone);
                     }));
 
                 interval++;
             }
             yield return moveSeq.WaitForCompletion();
+            // 마지막 아이템의 스테이지 버튼 두근 연출이 끝날 때까지 대기
+            yield return WaitSubAnim(2f);
         }
         private IEnumerator Co_GemAnim()
         {

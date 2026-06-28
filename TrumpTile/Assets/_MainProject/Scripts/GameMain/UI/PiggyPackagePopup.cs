@@ -72,11 +72,10 @@ namespace TrumpTile.GameMain.UI
         {
             if(!gameObject.activeSelf) return;
 
-            SetState();
             mContentController.ActiveRedDot(mContentData.HasNewThing);
             mContentData.PiggyBankDefaultRewardProgress();
 
-            Hide();
+            SetState();
         }
         protected override void SubscribeEvent()
         {
@@ -201,6 +200,10 @@ namespace TrumpTile.GameMain.UI
                 if(mContentData.IsFull)
                 {
                     RewardProgress();
+                }
+                else
+                {
+                    Hide();
                 }
             }
             else
