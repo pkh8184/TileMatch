@@ -22,10 +22,42 @@ namespace TrumpTile.GameMain.Core
             Dictionary<object, object> raw = await FirebaseFunctionsService.RequestGetLeaderboardAsync(n);
             if (raw == null)
             {
-                Debug.LogError("[LeaderboardManager] getLeaderboard 요청 실패");
-                return null;
+                Debug.LogWarning("[LeaderboardManager] getLeaderboard 요청 실패 - 더미 데이터 사용");
+                return CreateDummyResult();
             }
             return ParseResult(raw);
+        }
+
+        private LeaderboardResult CreateDummyResult()
+        {
+            string[] dummyNames = { "TrumpKing", "AcePlayer", "CardMaster", "DeckHero", "RoyalFlush",
+                                    "PokerFace", "WildCard", "FullHouse", "StraightUp", "BluffPro" };
+
+            LeaderboardResult result = new LeaderboardResult();
+            result.topN = new List<LeaderboardEntryData>();
+
+            for (int i = 0; i < dummyNames.Length; i++)
+            {
+                result.topN.Add(new LeaderboardEntryData
+                {
+                    rank = i + 1,
+                    nickname = dummyNames[i],
+                    currentStage = 100 - (i * 7),
+                    profileImageIndex = i % 4,
+                    profileFrameIndex = i % 3
+                });
+            }
+
+            result.myEntry = new LeaderboardEntryData
+            {
+                rank = 42,
+                nickname = "ME",
+                currentStage = 30,
+                profileImageIndex = 0,
+                profileFrameIndex = 0
+            };
+
+            return result;
         }
 
         private LeaderboardResult ParseResult(Dictionary<object, object> raw)

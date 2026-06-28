@@ -18,9 +18,6 @@ namespace TrumpTile.GameMain.UI
 		[Header("내 순위 (하단 고정)")]
 		[SerializeField] private LeaderboardEntryView mMyEntryView;
 
-		[Header("로딩")]
-		[SerializeField] private GameObject mLoadingSpinner;
-
 		[Header("닫기")]
 		[SerializeField] private Button mCloseButton;
 
@@ -39,12 +36,9 @@ namespace TrumpTile.GameMain.UI
 
 		private async Task LoadLeaderboardAsync()
 		{
-			SetLoadingState(true);
 			ClearEntries();
 
 			LeaderboardResult result = await LeaderboardManager.Inst.GetLeaderboardAsync(LEADERBOARD_COUNT);
-
-			SetLoadingState(false);
 
 			if (result == null)
 			{
@@ -89,16 +83,5 @@ namespace TrumpTile.GameMain.UI
 			mEntryViews.Clear();
 		}
 
-		private void SetLoadingState(bool bIsLoading)
-		{
-			if (mLoadingSpinner != null)
-			{
-				mLoadingSpinner.SetActive(bIsLoading);
-			}
-			if (mScrollContent != null)
-			{
-				mScrollContent.gameObject.SetActive(!bIsLoading);
-			}
-		}
 	}
 }
