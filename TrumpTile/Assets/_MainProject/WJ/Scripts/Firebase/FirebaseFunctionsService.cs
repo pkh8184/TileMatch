@@ -41,14 +41,54 @@ namespace TrumpTile.FirebaseLibrary
                 return null;
             }
         }
-        public static async Task<Dictionary<object, object>> RequestEndStage()
+
+        // 수정: profile 데이터를 함께 전송
+        public static async Task<Dictionary<object, object>> RequestEndStageAsync(string nickname, int profileImageIndex, int profileFrameIndex)
         {
-            return await RequestCallableFunctionHaveReturnValue(FirebaseFunctionsNames.END_STAGE);
+            try
+            {
+                HttpsCallableResult result = await FirebaseService.Functions
+                    .GetHttpsCallable(FirebaseFunctionsNames.END_STAGE)
+                    .CallAsync(new Dictionary<string, object>
+                    {
+                        { "nickname", nickname },
+                        { "profileImageIndex", profileImageIndex },
+                        { "profileFrameIndex", profileFrameIndex }
+                    });
+
+                if (result == null)
+                {
+                    return null;
+                }
+                return result.Data as Dictionary<object, object>;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
-        public static async Task<Dictionary<object, object>> RequestPurchaseProduct()
+
+        // 추가: 리더보드 조회
+        public static async Task<Dictionary<object, object>> RequestGetLeaderboardAsync(int n)
         {
-            return await RequestCallableFunctionHaveReturnValue(FirebaseFunctionsNames.PURCHASE_PRODUCT);
+            try
+            {
+                HttpsCallableResult result = await FirebaseService.Functions
+                    .GetHttpsCallable(FirebaseFunctionsNames.GET_LEADERBOARD)
+                    .CallAsync(new Dictionary<string, object> { { "n", n } });
+
+                if (result == null)
+                {
+                    return null;
+                }
+                return result.Data as Dictionary<object, object>;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
+
         public static async Task RequestUpdateAlbumRewardedStage(int stage)
         {
             try
@@ -61,6 +101,11 @@ namespace TrumpTile.FirebaseLibrary
             {
                 return;
             }
+        }
+
+        public static async Task<Dictionary<object, object>> RequestPurchaseProduct()
+        {
+            return await RequestCallableFunctionHaveReturnValue(FirebaseFunctionsNames.PURCHASE_PRODUCT);
         }
 
         private static async Task<Dictionary<object, object>> RequestCallableFunctionHaveReturnValue(string functionName)
