@@ -29,7 +29,7 @@ namespace TrumpTile.GameMain.UI
 		{
 			SetRankDisplay(data.rank);
 			mNicknameText.text = data.nickname;
-			mStageText.text = $"Lv.{data.currentStage}";
+			mStageText.text = data.currentStage.ToString();
 
 			if (mBackground != null)
 			{

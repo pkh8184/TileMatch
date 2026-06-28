@@ -6,7 +6,7 @@ using TrumpTile.GameMain.Data;
 
 namespace TrumpTile.GameMain.UI
 {
-	public class LeaderboardPopup : PopupBase
+	public class LeaderboardPopup : ViewBase
 	{
 		private const int LEADERBOARD_COUNT = 100;
 

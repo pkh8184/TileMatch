@@ -8569,17 +8569,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 710285225308890777, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
   m_PrefabInstance: {fileID: 1234691325}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1593342389 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1098475487948001798, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
-  m_PrefabInstance: {fileID: 1234691325}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 106a162eaf8744c74a1832cefef20fa7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1600457644
 GameObject:
   m_ObjectHideFlags: 0
@@ -9820,6 +9809,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1866345321}
   m_CullTransparentMesh: 1
+--- !u!1 &1876849994 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8007468820238996120, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+  m_PrefabInstance: {fileID: 1809314947270902784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1876849997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876849994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 1
 --- !u!114 &1934697813 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2054687617895788631, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
@@ -10447,19 +10455,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2060719910}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1593342389}
-        m_TargetAssemblyTypeName: TrumpTile.GameMain.UI.LeaderboardPopup, GameMain
-        m_MethodName: Show
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 1
+      m_Calls: []
 --- !u!114 &2060719910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11519,6 +11515,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1098475487948001798, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+      propertyPath: mShowButton
+      value: 
+      objectReference: {fileID: 2060719909}
     - target: {fileID: 1241723063726795479, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -11533,6 +11533,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1241723063726795479, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1636173154094601950, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3805319351058393925, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
@@ -11623,10 +11627,29 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7207418469529737151, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+      propertyPath: m_ChildScaleHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7207418469529737151, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+      propertyPath: m_ChildForceExpandHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954628192905800849, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8774534770244252749, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8007468820238996120, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1876849997}
   m_SourcePrefab: {fileID: 100100000, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
 --- !u!114 &1832856470835263064
 MonoBehaviour:
