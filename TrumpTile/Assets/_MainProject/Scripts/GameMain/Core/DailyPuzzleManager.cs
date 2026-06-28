@@ -21,9 +21,11 @@ namespace TrumpTile.GameMain.Core
 		private DailyPuzzleTable mDailyPuzzleTable;
 		private AsyncOperationHandle<DailyPuzzleTable> mTableHandle;
 		private bool mbIsActive = false;
+		private bool mbIsDailyPuzzlePlayEarly = false;
 		private bool mbIsInitialized = false;
-
 		public bool IsActive => mbIsActive;
+		public bool IsDailyPuzzlePlayEarly => mbIsDailyPuzzlePlayEarly;
+		public void SetDailyPuzzlePlayEarlyFalse() => mbIsDailyPuzzlePlayEarly = false;
 		public bool IsInitialized => mbIsInitialized;
 		public bool IsTodayCleared => CheckIsTodayCleared();
 
@@ -88,6 +90,7 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			mbIsActive = true;
+			mbIsDailyPuzzlePlayEarly = true;
 			SceneTransister.Inst.TransistScene("GameScene");
 		}
 

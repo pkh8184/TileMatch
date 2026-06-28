@@ -85,5 +85,6 @@ namespace TrumpTile.GameMain.Core
 		SFX_Ingame_Ice_TileMatch,
 		SFX_Ingame_Dark_TileMove,
 		SFX_Ingame_Dark_TileMatch,
+		SFX_SceneTransition_Door,
 	}
 }

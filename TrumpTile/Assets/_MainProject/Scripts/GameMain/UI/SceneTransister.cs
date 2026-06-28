@@ -13,7 +13,10 @@ namespace TrumpTile.GameMain.UI
         [Header("씬 전환 오브젝트")]
         [SerializeField] private GameObject mSceneTransister;
         [SerializeField] private RectTransform[] mRectArray;
-        
+        [Header("일일퍼즐 씬 전환 오브젝트")]
+        [SerializeField] private GameObject mDailySceneTransister;
+        [SerializeField] private RectTransform[] mDailyRectArray;
+
         private Vector2[] mOriginPosArray;
         private Quaternion[] mOriginRotationArray;
         private string targetSceneName;
@@ -44,7 +47,14 @@ namespace TrumpTile.GameMain.UI
 
         public IEnumerator Co_PlayFadeInAnim()
         {
-            yield return StartCoroutine(Co_FadeInAnim());
+            if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsDailyPuzzlePlayEarly)
+            {
+                yield return StartCoroutine(Co_DailyPuzzleFadeInAnim());
+            }
+            else
+            {
+                yield return StartCoroutine(Co_FadeInAnim());
+            }
         }
         public void TransistScene(string sceneName)
         {
@@ -58,7 +68,14 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_SecneTransitionProgress()
         {
-            yield return StartCoroutine(Co_FadeOutAnim());
+            if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsDailyPuzzlePlayEarly)
+            {
+                yield return StartCoroutine(Co_DailyPuzzleFadeOutAnim());
+            }
+            else
+            {
+                yield return StartCoroutine(Co_FadeOutAnim());
+            }
 
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
 
@@ -218,6 +235,48 @@ namespace TrumpTile.GameMain.UI
             AudioEvent.Play(EAudioKey.SFX_SceneTransition_Out);
 
             yield return seq.WaitForCompletion();
+        }
+        private IEnumerator Co_DailyPuzzleFadeOutAnim()
+        {
+            if(mDailySceneTransister == null) yield break;
+
+            mDailyRectArray[0].anchoredPosition = Vector2.left * 600;
+            mDailyRectArray[1].anchoredPosition = Vector2.right * 600;
+
+            mDailySceneTransister.SetActive(true);
+
+            Sequence seq = DOTween.Sequence();
+
+            seq.Append(mDailyRectArray[0].DOAnchorPosX(0, 0.5f));
+            seq.Join(mDailyRectArray[1].DOAnchorPosX(0, 0.5f));
+            AudioEvent.Play(EAudioKey.SFX_SceneTransition_Door);
+
+            yield return seq.WaitForCompletion();
+        }
+        private IEnumerator Co_DailyPuzzleFadeInAnim()
+        {
+            if(mDailySceneTransister == null) yield break;
+
+            mbSceneTransitionProgressing = true;
+
+            mDailyRectArray[0].anchoredPosition = Vector2.zero;
+            mDailyRectArray[1].anchoredPosition = Vector2.zero;
+
+            mDailySceneTransister.SetActive(true);
+
+            yield return new WaitForSecondsRealtime(0.1f);
+
+            Sequence seq = DOTween.Sequence();
+
+            seq.Append(mDailyRectArray[0].DOAnchorPosX(-600, 0.5f));
+            seq.Join(mDailyRectArray[1].DOAnchorPosX(600, 0.5f));
+            AudioEvent.Play(EAudioKey.SFX_SceneTransition_Door);
+
+            yield return seq.WaitForCompletion(); 
+
+            mDailySceneTransister.SetActive(false);
+
+            mbSceneTransitionProgressing = false;
         }
     }
 }
