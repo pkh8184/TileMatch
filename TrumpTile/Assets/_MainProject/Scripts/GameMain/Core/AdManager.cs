@@ -51,6 +51,15 @@ namespace TrumpTile.GameMain.Core
 
 		private void InitializeMobileAds()
 		{
+			// GMA 11.x는 실기기에서 광고 이벤트 콜백을 기본적으로 백그라운드 스레드에서 호출한다.
+			// 켜지 않으면 OnAdFullScreenContentClosed 등에서 Unity API 호출이 조용히 예외나며
+			// 콜백(if(done)) 로직이 실행되지 않는다. 에디터는 기존 동작 유지를 위해 끈다.
+#if UNITY_EDITOR
+			MobileAds.RaiseAdEventsOnUnityMainThread = false;
+#else
+			MobileAds.RaiseAdEventsOnUnityMainThread = true;
+#endif
+
 			MobileAds.Initialize(initStatus =>
 			{
 				mbIsInitialized = true;
