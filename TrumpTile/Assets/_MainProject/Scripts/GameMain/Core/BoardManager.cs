@@ -1271,7 +1271,7 @@ namespace TrumpTile.GameMain.Core
 					offsetY = mTileScale.x / 2f;
 				}
 			}
-			Vector3 offsetPos = new Vector3(offsetX, offsetY + 0.1f * (layer / 2), 0);
+			Vector3 offsetPos = new Vector3(offsetX, offsetY + 0.05f * (layer / 2), 0);
 			return mBoardMap[(int)x,(int)y,layer] + offsetPos;
 		}
 
