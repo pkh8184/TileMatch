@@ -267,10 +267,10 @@ namespace TrumpTile.GameMain.Data
             MaxStreakClearStageCount = 0;
 
             ItemCounts = new Dictionary<int, int>();
-            ItemCounts[1005] = 0;
-            ItemCounts[1006] = 0;
-            ItemCounts[1007] = 0;
-            ItemCounts[1008] = 0;
+            ItemCounts[1005] = 1;
+            ItemCounts[1006] = 1;
+            ItemCounts[1007] = 1;
+            ItemCounts[1008] = 1;
             
             Gold = 0;
             Star = 0;
