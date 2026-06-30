@@ -717,6 +717,15 @@ namespace TrumpTile.GameMain.Core
 
 		#region Blocked State
 
+		public bool IsCoveredByGem(TileController tile)
+		{
+			if (tile == null)
+			{
+				return false;
+			}
+			return mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] == mGemPos;
+		}
+
 		public bool IsTileBlocked(TileController tile)
 		{
 			if (tile == null)
@@ -726,6 +735,10 @@ namespace TrumpTile.GameMain.Core
 			if (tile.IsInSlot)
 			{
 				return false;
+			}
+			if (IsCoveredByGem(tile))
+			{
+				return true;
 			}
 
 			int tileX = tile.GridX;
