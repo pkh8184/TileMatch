@@ -717,6 +717,22 @@ namespace TrumpTile.GameMain.Core
 
 		#region Blocked State
 
+		public bool IsCoveredByGem(TileController tile)
+		{
+			if (tile == null)
+			{
+				return false;
+			}
+			foreach (GemTile gem in mGemTileList)
+			{
+				if (gem != null && gem.IsCoveringTile(tile.GridX, tile.GridY, tile.LayerIndex))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public bool IsTileBlocked(TileController tile)
 		{
 			if (tile == null)
@@ -726,6 +742,10 @@ namespace TrumpTile.GameMain.Core
 			if (tile.IsInSlot)
 			{
 				return false;
+			}
+			if (IsCoveredByGem(tile))
+			{
+				return true;
 			}
 
 			int tileX = tile.GridX;
