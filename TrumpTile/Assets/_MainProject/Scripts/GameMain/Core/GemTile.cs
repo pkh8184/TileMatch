@@ -60,14 +60,6 @@ namespace TrumpTile.GameMain.Core
 
             AudioEvent.Play(EAudioKey.SFX_Ingame_GemBox_Interaction);
         }
-        public bool IsCoveringTile(int x, int y, int layer)
-        {
-            if (!gameObject.activeSelf)
-            {
-                return false;
-            }
-            return mOriginIndexList != null && mOriginIndexList.Contains((x, y, layer));
-        }
         public bool CheckCanCollect()
         {
             if(mbIsAnim)

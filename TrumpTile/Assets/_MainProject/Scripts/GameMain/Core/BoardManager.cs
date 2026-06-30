@@ -723,14 +723,7 @@ namespace TrumpTile.GameMain.Core
 			{
 				return false;
 			}
-			foreach (GemTile gem in mGemTileList)
-			{
-				if (gem != null && gem.IsCoveringTile(tile.GridX, tile.GridY, tile.LayerIndex))
-				{
-					return true;
-				}
-			}
-			return false;
+			return mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] == mGemPos;
 		}
 
 		public bool IsTileBlocked(TileController tile)
