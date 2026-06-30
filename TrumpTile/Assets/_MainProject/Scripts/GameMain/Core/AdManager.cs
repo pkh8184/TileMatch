@@ -247,8 +247,25 @@ namespace TrumpTile.GameMain.Core
 			mOnRewardedClosed = null;
 			mbRewardEarned = false;
 
-			LoadRewardedAd();
-			onClosed?.Invoke(bRewardEarned);
+			InvokeRevivedThenReloadAd(bRewardEarned, onClosed, LoadRewardedAd);
+		}
+
+		/// <summary>
+		/// onClosed(게임 재개)를 먼저 실행한 뒤 reloadAd(다음 광고 사전 로드)를 실행한다.
+		/// LoadRewardedAd()는 방금 닫힌 광고 객체를 그 광고 자신의 콜백 스택 안에서 Destroy()하는
+		/// 재진입 호출이라 예외 발생 가능성이 있다. 순서를 바꾸지 않으면 그 예외가 onClosed 실행을
+		/// 막아 "광고를 끝까지 봤는데도 게임이 재개되지 않는" 증상으로 이어진다.
+		/// </summary>
+		public static void InvokeRevivedThenReloadAd(bool bRewardEarned, System.Action<bool> onClosed, System.Action reloadAd)
+		{
+			try
+			{
+				onClosed?.Invoke(bRewardEarned);
+			}
+			finally
+			{
+				reloadAd?.Invoke();
+			}
 		}
 
 		#endregion
