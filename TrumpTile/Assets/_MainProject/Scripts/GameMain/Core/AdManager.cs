@@ -256,7 +256,7 @@ namespace TrumpTile.GameMain.Core
 		/// 재진입 호출이라 예외 발생 가능성이 있다. 순서를 바꾸지 않으면 그 예외가 onClosed 실행을
 		/// 막아 "광고를 끝까지 봤는데도 게임이 재개되지 않는" 증상으로 이어진다.
 		/// </summary>
-		internal static void InvokeRevivedThenReloadAd(bool bRewardEarned, System.Action<bool> onClosed, System.Action reloadAd)
+		public static void InvokeRevivedThenReloadAd(bool bRewardEarned, System.Action<bool> onClosed, System.Action reloadAd)
 		{
 			try
 			{
