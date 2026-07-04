@@ -85,7 +85,8 @@ namespace TrumpTile.GameMain.Core
 		//랜덤 타일을 세트로 만들기 위한 변수
 		private int mRandomTileCreateCount = 0;
 		private TileData mCurrnetRandomTile;
-		private List<TileData> mRandomTileList = new List<TileData>();
+		// 카테고리별로 랜덤 타일 풀을 분리해 저장 (같은 카테고리 placeholder끼리만 뽑히도록)
+		private Dictionary<ETileCartegory, List<TileData>> mRandomTileMap = new Dictionary<ETileCartegory, List<TileData>>();
 
 		private Dictionary<string, int> mCreatedTileMap = new Dictionary<string, int>();
 		private List<TileController> mJewerlyTileList = new List<TileController>();
@@ -135,7 +136,7 @@ namespace TrumpTile.GameMain.Core
 
 			Log($"Loading level: {levelData.levelNumber}");
 
-			mRandomTileList.Clear();
+			mRandomTileMap.Clear();
 			mJewerlyTileList.Clear();
 			mCreatedTileMap.Clear();
 			
@@ -649,20 +650,24 @@ namespace TrumpTile.GameMain.Core
 					Debug.Log($"[BoardManager] {j+1}번째 선택된 {(ETileCartegory)i} 랜덤 타일 : {filteredTile.TileID}");
 					filteredTileList.Add(filteredTile);
 				}
-				
+
+				// 이 카테고리 전용 풀에 담는다 (다른 카테고리와 섞이지 않도록)
+				List<TileData> categoryTileList = new List<TileData>();
+				mRandomTileMap[(ETileCartegory)i] = categoryTileList;
+
 				TileData tileData = filteredTileList[Random.Range(0, typeCount)];
 
 				for(int j = 0; j < count / 3; j++)
-				{	
+				{
 					for(int k = 0; k < 3; k++)
 					{
-						mRandomTileList.Add(tileData);
+						categoryTileList.Add(tileData);
 					}
-					tileData = filteredTileList[Random.Range(0, typeCount)];	
-				}	
+					tileData = filteredTileList[Random.Range(0, typeCount)];
+				}
 				for(int j = 0; j < count % 3; j++)
 				{
-					mRandomTileList.Add(tileData);
+					categoryTileList.Add(tileData);
 				}
 			}
         }
@@ -672,11 +677,37 @@ namespace TrumpTile.GameMain.Core
 			{
 				return data;
 			}
-			int randomIndex = Random.Range(0, mRandomTileList.Count);		
-			TileData tile = mRandomTileList[randomIndex];
-			mRandomTileList.RemoveAt(randomIndex);
+
+			// placeholder의 카테고리를 파싱해 같은 카테고리 풀에서만 뽑는다
+			ETileCartegory category = GetRandomTileCartegory(data.tileTypeId);
+			if(category == ETileCartegory.Length
+				|| !mRandomTileMap.TryGetValue(category, out List<TileData> pool)
+				|| pool.Count == 0)
+			{
+				Debug.LogWarning($"[BoardManager] 랜덤 타일 풀이 비어있음: {data.tileTypeId}");
+				return data;
+			}
+
+			int randomIndex = Random.Range(0, pool.Count);
+			TileData tile = pool[randomIndex];
+			pool.RemoveAt(randomIndex);
 
 			return tile;
+		}
+		/// <summary>
+		/// 랜덤 placeholder의 tileTypeId(예: "Fruit_Random")에서 카테고리를 파싱한다.
+		/// 없으면 ETileCartegory.Length 반환.
+		/// </summary>
+		private ETileCartegory GetRandomTileCartegory(string tileTypeId)
+		{
+			for(int i = 0; i < (int)ETileCartegory.Length - 1; i++)
+			{
+				if(tileTypeId.Contains(((ETileCartegory)i).ToString()))
+				{
+					return (ETileCartegory)i;
+				}
+			}
+			return ETileCartegory.Length;
 		}
 		private void SetJewerlyTileValid()
 		{
