@@ -633,7 +633,7 @@ namespace TrumpTile.LevelEditor.Editor
         {
             if (level.randomTileRangeByCartegory == null) return;
 
-            for (int i = 0; i < level.randomTileRangeByCartegory.Length; i++)
+            for (int i = 0; i < (int)ETileCartegory.Length - 1; i++)
             {
                 int rangeValue = level.randomTileRangeByCartegory[i];
                 if (rangeValue >= RANDOM_TILE_RANGE_LIMIT)
@@ -642,7 +642,7 @@ namespace TrumpTile.LevelEditor.Editor
                     {
                         severity = EIssueSeverity.Error,
                         category = "RandomTileRange",
-                        message = $"{(ETileCartegory)i} 랜덤 타일 범위 설정값({rangeValue})이 허용치({RANDOM_TILE_RANGE_LIMIT})를 초과했습니다."
+                        message = $"{(ETileCartegory)i} 랜덤 타일 범위 설정값({rangeValue})이 허용치({RANDOM_TILE_RANGE_LIMIT}) 이상입니다."
                     });
                 }
             }
