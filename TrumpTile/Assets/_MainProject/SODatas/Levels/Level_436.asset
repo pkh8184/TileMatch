@@ -17,8 +17,8 @@ MonoBehaviour:
   difficulty: 4
   createRandomBonusTile: 0
   bonusTileSet: 0
-  boardWidth: 8
-  boardHeight: 8
+  boardWidth: 7
+  boardHeight: 7
   maxLayers: 4
   slotCount: 7
   matchCount: 3
@@ -66,20 +66,6 @@ MonoBehaviour:
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 1
-      gridY: 7
-      layer: 0
-      tileTypeId: Balls_Random
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 3
-      gridY: 7
-      layer: 0
-      tileTypeId: Balls_Random
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
     - gridX: 4
       gridY: 6
       layer: 0
@@ -87,29 +73,8 @@ MonoBehaviour:
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 5
-      gridY: 7
-      layer: 0
-      tileTypeId: Balls_Random
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
     - gridX: 6
       gridY: 6
-      layer: 0
-      tileTypeId: Balls_Random
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 7
-      gridY: 7
-      layer: 0
-      tileTypeId: Balls_Random
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 7
-      gridY: 5
       layer: 0
       tileTypeId: Balls_Random
       isLocked: 0
@@ -136,13 +101,6 @@ MonoBehaviour:
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 7
-      gridY: 3
-      layer: 0
-      tileTypeId: Balls_Random
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
     - gridX: 6
       gridY: 2
       layer: 0
@@ -236,13 +194,6 @@ MonoBehaviour:
       frozenCount: 0
     - gridX: 6
       gridY: 0
-      layer: 0
-      tileTypeId: Balls_Random
-      isLocked: 0
-      isFrozen: 0
-      frozenCount: 0
-    - gridX: 7
-      gridY: 1
       layer: 0
       tileTypeId: Balls_Random
       isLocked: 0
@@ -417,16 +368,44 @@ MonoBehaviour:
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-  - tilePlacementList:
-    - gridX: 1
-      gridY: 6
+    - gridX: 2
+      gridY: 7
       layer: 0
       tileTypeId: Balls_Random
       isLocked: 0
       isFrozen: 0
       frozenCount: 0
-    - gridX: 0
+    - gridX: 4
       gridY: 7
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 4
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 2
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+    - gridX: 7
+      gridY: 7
+      layer: 0
+      tileTypeId: Balls_Random
+      isLocked: 0
+      isFrozen: 0
+      frozenCount: 0
+  - tilePlacementList:
+    - gridX: 1
+      gridY: 6
       layer: 0
       tileTypeId: Balls_Random
       isLocked: 0
