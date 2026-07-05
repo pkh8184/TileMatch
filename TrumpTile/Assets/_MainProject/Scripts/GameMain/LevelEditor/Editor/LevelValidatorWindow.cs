@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TrumpTile.LevelEditor;
+using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.LevelEditor.Editor
 {
@@ -26,6 +27,9 @@ namespace TrumpTile.LevelEditor.Editor
         private bool mValidateBoardBounds = true;
         private bool mValidateTimeLimit = true;
         private bool mValidateStarThresholds = true;
+        private bool mValidateRandomTileRange = true;
+
+        private const int RANDOM_TILE_RANGE_LIMIT = 13;
 
         private string mLevelFolderPath = "Assets/_MainProject/SODatas/Levels";
         private bool mIsValidating = false;
@@ -108,6 +112,7 @@ namespace TrumpTile.LevelEditor.Editor
             mValidateLayerSorting = EditorGUILayout.Toggle("레이어/Sorting 검증", mValidateLayerSorting);
             mValidateDuplicateTiles = EditorGUILayout.Toggle("중복 타일 검증 (같은 위치+레이어)", mValidateDuplicateTiles);
             mValidateBoardBounds = EditorGUILayout.Toggle("보드 범위 검증", mValidateBoardBounds);
+            mValidateRandomTileRange = EditorGUILayout.Toggle($"랜덤 타일 범위 설정 ({RANDOM_TILE_RANGE_LIMIT} 미만)", mValidateRandomTileRange);
 
             EditorGUILayout.EndVertical();
         }
@@ -409,6 +414,12 @@ namespace TrumpTile.LevelEditor.Editor
                 ValidateBoardBounds(level, result);
             }
 
+            // 7. 랜덤 타일 범위 설정 검증
+            if (mValidateRandomTileRange)
+            {
+                ValidateRandomTileRange(level, result);
+            }
+
             // 최종 상태 결정
             if (result.issues.Any(i => i.severity == EIssueSeverity.Error))
                 result.status = EValidationStatus.Error;
@@ -615,6 +626,25 @@ namespace TrumpTile.LevelEditor.Editor
                     category = "Bounds",
                     message = $"{outOfBounds.Count}개 타일이 보드 범위({level.boardWidth}x{level.boardHeight})를 벗어났습니다."
                 });
+            }
+        }
+
+        private void ValidateRandomTileRange(LevelData level, ValidationResult result)
+        {
+            if (level.randomTileRangeByCartegory == null) return;
+
+            for (int i = 0; i < (int)ETileCartegory.Length - 1; i++)
+            {
+                int rangeValue = level.randomTileRangeByCartegory[i];
+                if (rangeValue >= RANDOM_TILE_RANGE_LIMIT)
+                {
+                    result.issues.Add(new ValidationIssue
+                    {
+                        severity = EIssueSeverity.Error,
+                        category = "RandomTileRange",
+                        message = $"{(ETileCartegory)i} 랜덤 타일 범위 설정값({rangeValue})이 허용치({RANDOM_TILE_RANGE_LIMIT}) 이상입니다."
+                    });
+                }
             }
         }
         #endregion
