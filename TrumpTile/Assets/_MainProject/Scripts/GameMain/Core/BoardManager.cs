@@ -1484,6 +1484,13 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 
+			//힌트 타일(전부 보드 타일)을 슬롯에 다 담을 수 없으면 오버플로우로 게임오버되므로 힌트를 숨긴다.
+			if(!CanFitHintInSlot(hintList.Count))
+			{
+				GameManager.Instance.IsIdleProcess = false;
+				return;
+			}
+
 			foreach(var item in hintList)
 			{
 				item.ShowHint();
@@ -1509,6 +1516,12 @@ namespace TrumpTile.GameMain.Core
 				}
 				hintList = GetHintTileList(tile, findCount);
 				if(hintList == null || hintList.Count < findCount)
+				{
+					continue;
+				}
+
+				//보드 타일(findCount개)을 슬롯에 다 담을 수 없는 후보는 스킵(오버플로우 방지).
+				if(!CanFitHintInSlot(findCount))
 				{
 					continue;
 				}
@@ -1566,6 +1579,14 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			return value;
+		}
+		//힌트로 보드 타일 boardTileCount개를 슬롯에 넣어 3매치를 완성할 때,
+		//피크 점유량(현재 슬롯 수 + 추가 타일 수)이 최대 칸수를 넘으면 매치 완성 전에 오버플로우 → 게임오버.
+		//넘지 않을 때만 힌트를 표시한다.
+		private bool CanFitHintInSlot(int boardTileCount)
+		{
+			int currentSlotCount = SlotManager.Instance.GetAllSlotTiles().Count;
+			return currentSlotCount + boardTileCount <= SlotManager.Instance.MaxSlots;
 		}
     }
 }
