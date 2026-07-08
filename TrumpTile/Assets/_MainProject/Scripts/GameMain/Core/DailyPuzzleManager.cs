@@ -36,7 +36,7 @@ namespace TrumpTile.GameMain.Core
 
 		public static bool CheckIsTodayCleared()
 		{
-			string key = DAILY_CLEARED_KEY_PREFIX + DateTime.Today.ToString("yyyy-MM-dd");
+			string key = DAILY_CLEARED_KEY_PREFIX + GameTime.Today.ToString("yyyy-MM-dd");
 			return PlayerPrefs.GetInt(key, 0) == 1;
 		}
 
@@ -96,7 +96,7 @@ namespace TrumpTile.GameMain.Core
 
 		public void OnDailyClear()
 		{
-			string key = DAILY_CLEARED_KEY_PREFIX + DateTime.Today.ToString("yyyy-MM-dd");
+			string key = DAILY_CLEARED_KEY_PREFIX + GameTime.Today.ToString("yyyy-MM-dd");
 			PlayerPrefs.SetInt(key, 1);
 			PlayerPrefs.Save();
 
@@ -127,11 +127,11 @@ namespace TrumpTile.GameMain.Core
 			{
 				return CalculateBackgroundIndex(overrideDate, arrayLength);
 			}
-			return CalculateBackgroundIndex(DateTime.Today, arrayLength);
+			return CalculateBackgroundIndex(GameTime.Today, arrayLength);
 		}
 		public DayOfWeek GetToday()
 		{
-			return DateTime.Now.DayOfWeek;
+			return GameTime.DayOfWeek;
 		}
 	}
 }

@@ -346,6 +346,12 @@ namespace TrumpTile.GameMain.Data
 				mUserData.StreakLoginCount = 1;
 				mUserData.IsDailyCheckToday = false;
 			}
+
+			//날짜가 바뀌면 일일 컨텐츠 초기화(룰렛 이용 횟수 등)
+			if(day >= 1)
+			{
+				mUserData.RouletteCount = 0;
+			}
 		}
 		public void SetDailyCheckDone()
 		{
@@ -354,6 +360,16 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.IsDailyCheckToday = true;
+		}
+	#endregion
+	#region 룰렛 관련
+		public void SetRouletteCount(int value)
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.RouletteCount = value;
 		}
 	#endregion
 	#region 돼지저금통 관련
@@ -402,24 +418,24 @@ namespace TrumpTile.GameMain.Data
 		public void ActiveExcitTravel()
 		{
 			mUserData.IsExcitTravelActive = true;
-			mUserData.ExcitTravelActiveDate = DateTime.UtcNow;
+			mUserData.ExcitTravelActiveDate = GameTime.UtcNow;
 		}
 		public void UnActiveExcitTravel()
 		{
 			mUserData.IsExcitTravelActive = false;
-			mUserData.ExcitTravelUnActiveDate = DateTime.UtcNow;
+			mUserData.ExcitTravelUnActiveDate = GameTime.UtcNow;
 		}
 	#endregion
 	#region 보석 수집 관련
 		public void ActiveGemCollection()
 		{
 			mUserData.IsGemCollectionActive = true;
-			mUserData.GemCollectionUnActiveDate = DateTime.UtcNow;	
+			mUserData.GemCollectionUnActiveDate = GameTime.UtcNow;
 		}
 		public void UnActiveGemCollection()
 		{
 			mUserData.IsGemCollectionActive = false;
-			mUserData.GemCollectionUnActiveDate = DateTime.UtcNow;
+			mUserData.GemCollectionUnActiveDate = GameTime.UtcNow;
 		}
 		public void AddGemCount(int value)
 		{
@@ -668,5 +684,26 @@ namespace TrumpTile.GameMain.Data
 
 			LoadUserData();
 		}
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+		//런타임에서 GameTime 오프셋을 바꾼 뒤, 앱 재시작 없이 일일 리셋을 재평가하기 위한 디버그 훅.
+		//직전 로그인 시점을 로그아웃으로 간주하고 오프셋이 반영된 현재 시각으로 재로그인 처리한다.
+		public void DebugRecheckDailyReset()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+
+			mUserData.LogoutDate = mUserData.CurrentLoginDate;
+			mUserData.CurrentLoginDate = GameTime.Now;
+
+			RefreshStreakLoginCount();
+			SaveUserData();
+
+			EventManager.Inst.ActiveEvent("ContentDataRefresh");
+
+			Debug.Log($"[Debug] 일일 리셋 재검사 → streak={mUserData.StreakLoginCount}, dailyChecked={mUserData.IsDailyCheckToday}, roulette={mUserData.RouletteCount}");
+		}
+#endif
 	}
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Core;
+using TrumpTile.FrameLibrary;
 
 namespace TrumpTile.GameMain.Data
 {
@@ -95,7 +96,7 @@ namespace TrumpTile.GameMain.Data
             //로그인 날짜는 "하루 경계" 판정용이라 로컬 기준으로 저장
             FirstLoginDate = data.FirstLoginDate.Ticks;
             CurrentLoginDate = data.CurrentLoginDate.Ticks;
-            LogoutDate = DateTime.Now.Ticks;
+            LogoutDate = GameTime.Now.Ticks;
             MaxStreakLoginCount = data.MaxStreakLoginCount;
 
             //컨텐츠 해금 데이터
@@ -276,9 +277,9 @@ namespace TrumpTile.GameMain.Data
             Star = 0;
             LastAlbumRewardedStage = 0;
             //로그인 데이터
-            FirstLoginDate = DateTime.Now;
-            CurrentLoginDate = DateTime.Now;
-            LogoutDate = DateTime.Now;
+            FirstLoginDate = GameTime.Now;
+            CurrentLoginDate = GameTime.Now;
+            LogoutDate = GameTime.Now;
 
             MaxStreakLoginCount = 1;
             StreakLoginCount = 1;
@@ -359,7 +360,7 @@ namespace TrumpTile.GameMain.Data
 
             //로그인 데이터
             FirstLoginDate = new DateTime(data.FirstLoginDate, DateTimeKind.Local);
-            CurrentLoginDate = DateTime.Now;
+            CurrentLoginDate = GameTime.Now;
             LogoutDate = new DateTime(data.LogoutDate, DateTimeKind.Local);
             MaxStreakLoginCount = data.MaxStreakLoginCount;
 

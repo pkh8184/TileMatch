@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TrumpTile.GameMain.Core;
 using TrumpTile.LevelEditor.Editor;
+using TrumpTile.FrameLibrary;
 using UnityEngine;
 
 namespace TrumpTile.GameMain.Data
@@ -85,7 +86,7 @@ namespace TrumpTile.GameMain.Data
         {
             if(isDaily)
             {
-                return mEntriesByDayOfWeek[DateTime.Now.DayOfWeek].BackgroundSprite;
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek].BackgroundSprite;
             }
             if(!mEntriesByDifficultyString.ContainsKey(mDifficultyKey))
             {
@@ -98,7 +99,7 @@ namespace TrumpTile.GameMain.Data
         {
             if(isDaily)
             {
-                return mEntriesByDayOfWeek[DateTime.Now.DayOfWeek].TileBackgroundSprite;
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek].TileBackgroundSprite;
             }
             if(!mEntriesByDifficultyString.ContainsKey(mDifficultyKey))
             {
@@ -111,7 +112,7 @@ namespace TrumpTile.GameMain.Data
         {
             if(isDaily)
             {
-                return mEntriesByDayOfWeek[DateTime.Now.DayOfWeek].BGMKey;
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek].BGMKey;
             }
             if(!mEntriesByDifficultyString.ContainsKey(mDifficultyKey))
             {
@@ -124,7 +125,7 @@ namespace TrumpTile.GameMain.Data
         {
             if(isDaily)
             {
-                return mEntriesByDayOfWeek[DateTime.Now.DayOfWeek].TileMoveSFXKey;
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek].TileMoveSFXKey;
             }
             if(!mEntriesByDifficultyString.ContainsKey(mDifficultyKey))
             {
@@ -137,7 +138,7 @@ namespace TrumpTile.GameMain.Data
         {
             if(isDaily)
             {
-                return mEntriesByDayOfWeek[DateTime.Now.DayOfWeek].MatchSFXKey;
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek].MatchSFXKey;
             }
             if(!mEntriesByDifficultyString.ContainsKey(mDifficultyKey))
             {
@@ -150,7 +151,7 @@ namespace TrumpTile.GameMain.Data
         {
             if(isDaily)
             {
-                return mEntriesByDayOfWeek[DateTime.Now.DayOfWeek].MatchEffectPrefab;
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek].MatchEffectPrefab;
             }
             if(!mEntriesByDifficultyString.ContainsKey(mDifficultyKey))
             {
@@ -163,7 +164,7 @@ namespace TrumpTile.GameMain.Data
         {
             if(isDaily)
             {
-                return mEntriesByDayOfWeek[DateTime.Now.DayOfWeek];
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek];
             }
             if(!mEntriesByDifficultyString.ContainsKey(mDifficultyKey))
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using TrumpTile.LevelEditor.Editor;
+using TrumpTile.FrameLibrary;
 
 namespace TrumpTile.GameMain.Data
 {
@@ -88,7 +89,7 @@ namespace TrumpTile.GameMain.Data
 				return null;
 			}
 
-			int index = CalculateIndex(DateTime.Today, entries.Count);
+			int index = CalculateIndex(GameTime.Today, entries.Count);
 			return entries[index];
 		}
 	}

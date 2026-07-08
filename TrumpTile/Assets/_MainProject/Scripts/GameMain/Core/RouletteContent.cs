@@ -72,6 +72,11 @@ namespace TrumpTile.GameMain.Core
         {
             base.Refresh();
 
+            //일일 리셋 등으로 저장된 이용 횟수가 바뀌었을 수 있으므로 다시 읽어온다.
+            mbIsFree = true;
+            mCurrentCount = PlayerDataManager.Inst.RouletteCount;
+            mbHasNewthing = mCurrentCount < MAX_COUNT;
+
             SetIsFree();
             EventManager.Inst.ActiveEvent("RefreshRouletteData");
         }
@@ -125,6 +130,7 @@ namespace TrumpTile.GameMain.Core
 
             mRewardConfigArray[mCurrentRewardIndex].Reward.GrantReward();
             mCurrentCount++;
+            PlayerDataManager.Inst.SetRouletteCount(mCurrentCount);
 
             SetIsFree();
 

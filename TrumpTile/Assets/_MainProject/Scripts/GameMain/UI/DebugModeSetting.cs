@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using TrumpTile.FrameLibrary;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
@@ -17,6 +19,10 @@ namespace TrumpTile.GameMain.UI
         [Header("스테이지 설정 인풋필드")]
         [SerializeField] private TMP_InputField mStageSetter;
         [SerializeField] private Button mStageSetButton;
+        [Header("GameTime 디버그 (하루 이동 / 현재 날짜)")]
+        [SerializeField] private Button mDayBackwardButton;
+        [SerializeField] private Button mDayForwardButton;
+        [SerializeField] private TMP_Text mCurrentDateText;
         public override void Initialize()
         {
             base.Initialize();
@@ -37,14 +43,30 @@ namespace TrumpTile.GameMain.UI
             mDataResetButton.onClick.AddListener(ResetData);
             mStageSetButton.onClick.AddListener(SetStage);
             mStageSetter.onEndEdit.AddListener(AdjustmentStageNumber);
+
+            if(mDayBackwardButton != null)
+            {
+                mDayBackwardButton.onClick.AddListener(() => ShiftDay(-1));
+            }
+            if(mDayForwardButton != null)
+            {
+                mDayForwardButton.onClick.AddListener(() => ShiftDay(1));
+            }
+            RefreshDateText();
         }
-        private void ResetData()
+        //GameTime 오프셋을 하루 단위로 이동시키고, 앱 재시작 없이 일일 리셋(출석/룰렛)을 재평가한다.
+        private void ShiftDay(int dayOffset)
         {
-            PlayerPrefs.DeleteAll();
-            PlayerPrefs.Save();
-            PlayerDataManager.Inst.LoadUserDataForDebug();
-            EventManager.Inst.ActiveEvent("ContentDataRefresh");
-            
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            GameTime.AddOffset(TimeSpan.FromDays(dayOffset));
+            PlayerDataManager.Inst.DebugRecheckDailyReset();
+            RefreshAllViews();
+#endif
+            RefreshDateText();
+        }
+        //모든 UIBase를 재초기화해 갱신된 데이터를 화면에 반영한다.
+        private void RefreshAllViews()
+        {
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
             foreach (UIBase item in uiBaseArray)
             {
@@ -53,6 +75,23 @@ namespace TrumpTile.GameMain.UI
             }
 
             EventManager.Inst.ActiveEvent("MainSceneLoadComplete");
+        }
+        private void RefreshDateText()
+        {
+            if(mCurrentDateText == null)
+            {
+                return;
+            }
+            mCurrentDateText.text = "현재 : " + GameTime.Now.ToString("yyyy-MM-dd");
+        }
+        private void ResetData()
+        {
+            PlayerPrefs.DeleteAll();
+            PlayerPrefs.Save();
+            PlayerDataManager.Inst.LoadUserDataForDebug();
+            EventManager.Inst.ActiveEvent("ContentDataRefresh");
+
+            RefreshAllViews();
         }
         private void SetStage()
         {
@@ -71,14 +110,7 @@ namespace TrumpTile.GameMain.UI
             PlayerDataManager.Inst.UserData.CurrentStage = result;
             PlayerDataManager.Inst.UserData.IsChampionsActive = false;
 
-            UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
-            foreach (UIBase item in uiBaseArray)
-            {
-                item.Deinitialize();
-                item.Initialize();
-            }
-
-            EventManager.Inst.ActiveEvent("MainSceneLoadComplete");
+            RefreshAllViews();
         }
         private void AdjustmentStageNumber(string str)
         {

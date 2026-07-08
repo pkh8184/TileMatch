@@ -11,28 +11,26 @@ namespace TrumpTile.GameMain.Core
 	public enum EMainSceneEventType
 	{
 		GetReward = 0,
-		ContentComplete,
-		ContentCheck,
+		GetGemProgress,
+		PiggyBanckPopup,
 		UnlockContent
 	}
 	public class MainSceneEventWrapper
 	{
-		public Action Action;
-		public int Order;
+		public Func<IEnumerator> Coroutine;
 		public EMainSceneEventType Type;
 	}
 	public class MainManager : MonoBehaviour
 	{
 		public static MainManager Instance;
-
 		private List<MainSceneEventWrapper> mEventList;
 		[SerializeField] private AlbumPopup mAlbumPopup;
 
+		private IEnumerator mEventCoroutine;
 		private readonly WaitForSeconds mAlbumCheckDelay = new WaitForSeconds(0.5F);
         private async void Awake()
-        {         
+        {         	
 			Instance = this;
-			
 			mEventList = new List<MainSceneEventWrapper>();
 
 			PlayerDataManager.Inst.Initialize();
@@ -71,6 +69,10 @@ namespace TrumpTile.GameMain.Core
         private void OnDestroy()
         {
             EventManager.Inst?.RemoveEvent("RewardAnimDone", CheckAlbumPendingReward);
+			if(Instance == this)
+			{
+				Instance = null;
+			}
         }
         private void CheckAlbumPendingReward()
 		{
@@ -85,20 +87,38 @@ namespace TrumpTile.GameMain.Core
 				mAlbumPopup.PlayRewardSequence(pendingPictures);
 			});
 		}
-		public void AddEvent(Action action, int order, EMainSceneEventType type)
+		public void AddEvent(Func<IEnumerator> routine, EMainSceneEventType type)
 		{
 			if(mEventList == null)
 			{
 				mEventList = new List<MainSceneEventWrapper>();
 			}
 
-			MainSceneEventWrapper wrapper = new MainSceneEventWrapper{Action = action, Order = order, Type = type};
+			MainSceneEventWrapper wrapper = new MainSceneEventWrapper{Coroutine = routine, Type = type};
 			
 			mEventList.Add(wrapper);
 		}
-		// private IEnumerator Co_PlayMainSceneEvent()
-		// {
-			
-		// }
+		public void PlayEvent()
+		{
+			if(mEventList == null || mEventList.Count < 1)
+			{
+				return;
+			}
+			if(mEventCoroutine != null)
+			{
+				return;
+			}
+			mEventCoroutine = Co_PlayEvent();
+			StartCoroutine(mEventCoroutine);
+		}
+		private IEnumerator Co_PlayEvent()
+		{
+			while(mEventList.Count > 0)
+			{
+				yield return null;
+			}
+
+			EventManager.Inst.ActiveEvent("MainSceneEnterEventDone");
+		}
 	}
 }
