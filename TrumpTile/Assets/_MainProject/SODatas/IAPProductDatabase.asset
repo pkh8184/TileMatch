@@ -133,6 +133,19 @@ MonoBehaviour:
     mEProductType: 0
     mProductId: payment_train_04
     mRewardList: []
+  - mEProductId: 18
+    mEProductType: 0
+    mProductId: payment_train_04
+    mRewardList: []
+  - mEProductId: 19
+    mEProductType: 0
+    mProductId: payment_treasure_01
+    mRewardList:
+    - rid: 6683551996589900446
+    - rid: 6683551996589900447
+    - rid: 6683551996589900448
+    - rid: 6683551996589900449
+    - rid: 6683551996589900450
   references:
     version: 2
     RefIds:
@@ -338,3 +351,27 @@ MonoBehaviour:
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
         mCount: 100
+    - rid: 6683551996589900446
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 2000
+    - rid: 6683551996589900447
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1005
+    - rid: 6683551996589900448
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1006
+    - rid: 6683551996589900449
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1007
+    - rid: 6683551996589900450
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1008

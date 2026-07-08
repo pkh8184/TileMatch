@@ -105,6 +105,7 @@ namespace TrumpTile.GameMain.Data
         ExcitTravel_2,
         ExcitTravel_3,
         ExcitTravel_4,
+        TreasureBox,
         None
     }
     [System.Serializable]
