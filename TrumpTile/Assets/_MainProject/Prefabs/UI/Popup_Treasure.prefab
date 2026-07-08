@@ -1040,6 +1040,7 @@ GameObject:
   - component: {fileID: 1608285825282098143}
   - component: {fileID: 649360391035845298}
   - component: {fileID: 6238812314560443656}
+  - component: {fileID: 6392266163543218959}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -1096,15 +1097,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC2E0\uB098\uB294 \uC5EC\uD589!"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dafe85dff86188346a76f26844260e68, type: 2}
-  m_sharedMaterial: {fileID: -7859398832865924947, guid: dafe85dff86188346a76f26844260e68, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3439ae9660db2b349b741f9f83404e62, type: 2}
+  m_sharedMaterial: {fileID: -7859398832865924947, guid: 3439ae9660db2b349b741f9f83404e62, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294923787
-  m_fontColor: {r: 0.042452812, g: 0.3370916, b: 1, a: 1}
+    rgba: 4294936576
+  m_fontColor: {r: 0, g: 0.53333336, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1160,9 +1161,22 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6392266163543218959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5563278532874647010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &6143461827541494892
 GameObject:
   m_ObjectHideFlags: 0
