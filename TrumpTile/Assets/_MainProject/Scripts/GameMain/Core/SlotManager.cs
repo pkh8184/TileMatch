@@ -135,6 +135,27 @@ namespace TrumpTile.GameMain.Core
 			OnSlotCountChanged?.Invoke(mSlotTiles.Count, mMaxSlots, reason);
 		}
 
+		// 방금 슬롯에 넣은 타일과 같은 종류가 3개 이상이면 곧 매치되어 사라진다.
+		// (매치는 같은 종류끼리 붙여서 3개가 모이면 성립)
+		private bool WillTileCauseMatch(TileController tile)
+		{
+			if (tile == null)
+			{
+				return false;
+			}
+
+			string id = tile.TileTypeId;
+			int count = 0;
+			foreach (TileController t in mSlotTiles)
+			{
+				if (t != null && t.TileTypeId == id)
+				{
+					count++;
+				}
+			}
+			return count >= 3;
+		}
+
 		// 매치로 제거되는 타일에 짧은 팝(확대 후 축소)을 준 뒤 파괴한다. 게임 로직상 제거는 이미 끝난 상태.
 		private void PopAndDestroy(TileController tile)
 		{
@@ -221,7 +242,12 @@ namespace TrumpTile.GameMain.Core
 
 			ProcessTileAddition(tile, insertIndex);
 
-			RaiseSlotCountChanged(ESlotDecreaseReason.None);
+			// 넣은 타일이 즉시 매치돼 사라질 예정이면, 슬롯이 잠깐 위험 수(5)에 닿아도
+			// 위험 경고/심박을 울리지 않는다.
+			if (!WillTileCauseMatch(tile))
+			{
+				RaiseSlotCountChanged(ESlotDecreaseReason.None);
+			}
 
 			return true;
 		}

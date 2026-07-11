@@ -86,5 +86,9 @@ namespace TrumpTile.GameMain.Core
 		SFX_Ingame_Dark_TileMove,
 		SFX_Ingame_Dark_TileMatch,
 		SFX_SceneTransition_Door,
+
+		// 슬롯 긴장/클러치
+		SFX_Ingame_HeartBeat,
+		SFX_Ingame_ClearSlot,
 	}
 }
