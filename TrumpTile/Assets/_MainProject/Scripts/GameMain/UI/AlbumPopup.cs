@@ -59,7 +59,7 @@ namespace TrumpTile.GameMain.UI
 
             mCurrentSeq = DOTween.Sequence();
             mCurrentSeq.SetUpdate(true);
-            mCurrentSeq.Append(mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack));
+            PopupScaleAnimator.AppendPopIn(mCurrentSeq, mPopupObj.transform, mShowDuration);
             mCurrentSeq.OnComplete(() =>
 			{
 				SetInteractable(true);

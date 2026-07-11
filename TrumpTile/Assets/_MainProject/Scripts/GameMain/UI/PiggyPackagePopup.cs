@@ -117,8 +117,8 @@ namespace TrumpTile.GameMain.UI
             mShowAnimSeq = DOTween.Sequence();
             mShowAnimSeq.SetUpdate(true);
 
-            mShowAnimSeq.Append(mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack));
-            mShowAnimSeq.Append(mPigRect.DOAnchorPos(Vector2.zero, 0.3f).SetEase(Ease.InQuad));
+            PopupScaleAnimator.AppendPopIn(mShowAnimSeq, mPopupObj.transform, mShowDuration);
+            mShowAnimSeq.Append(mPigRect.DOAnchorPos(Vector2.zero, 0.3f).SetEase(Ease.OutBack));
 
             mShowAnimSeq.Append(mPigRect.DOAnchorPos(Vector2.up * 80, 0.1f).SetEase(Ease.OutQuad));
             mShowAnimSeq.Join(mLeftGoldRect.DOAnchorPos(Vector2.up * 60, 0.1f).SetEase(Ease.OutQuad));

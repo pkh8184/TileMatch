@@ -31,7 +31,7 @@ namespace TrumpTile.GameMain.UI
             mPopupObj.transform.localScale = Vector2.zero;
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(mPopupObj.transform.DOScale(1, mShowDuration).SetEase(Ease.OutBack));
+            PopupScaleAnimator.AppendPopIn(seq, mPopupObj.transform, mShowDuration);
             seq.OnComplete(() => StartCoroutine(Co_PlayMatchTutorialAnim()));
         }
         protected override void PlayHideAnim()

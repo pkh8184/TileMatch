@@ -147,7 +147,7 @@ namespace TrumpTile.GameMain.UI
             ScrollRect scroll = mAvataListObject.GetComponent<ScrollRect>();
             scroll.enabled = false;
 
-            sq.Append(mPopupObj.transform.DOScale(1f, mShowDuration).SetEase(Ease.OutBack));
+            PopupScaleAnimator.AppendPopIn(sq, mPopupObj.transform, mShowDuration);
             sq.OnComplete(() => 
             {
                 scroll.enabled = true;

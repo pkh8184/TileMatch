@@ -188,7 +188,7 @@ namespace TrumpTile.GameMain.UI
 				mPanelRect.localScale = Vector3.one * 0.5F;
 
 				mCanvasGroup.DOFade(1F, mAnimationDuration);
-				mPanelRect.DOScale(1F, mAnimationDuration).SetEase(mShowEase);
+				PopupScaleAnimator.AppendPopIn(DOTween.Sequence(), mPanelRect, mAnimationDuration);
 			}
 			else
 			{
