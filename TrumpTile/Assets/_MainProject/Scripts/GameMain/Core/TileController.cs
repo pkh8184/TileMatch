@@ -506,6 +506,7 @@ namespace TrumpTile.GameMain.Core
 				() =>
 				{
 					UpdateSortingOrder();
+					TileJuice.PlayLanding(transform, Vector3.one * 0.6F);
 					onComplete?.Invoke();
 				});
 

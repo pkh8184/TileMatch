@@ -361,6 +361,8 @@ namespace TrumpTile.GameMain.Core
 			mSlotManager?.Initialize();  // 반드시 ResetSlots() 이전
 			mSlotManager?.ResetSlots();
 
+			FindObjectOfType<SlotTensionController>(true)?.ResetForNewStage();
+
             //임시
             EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)(levelData, mbIsRetry));
 

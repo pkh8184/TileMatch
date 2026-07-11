@@ -42,6 +42,8 @@ namespace TrumpTile.GameMain.Core
 		public event Action OnSlotFull;
 		public event Action OnGameOver;
 		public event Action OnLevelClear;
+		// 슬롯 개수 변동 알림 (count, max, 감소 사유). 시각 연출은 구독자가 담당.
+		public event Action<int, int, ESlotDecreaseReason> OnSlotCountChanged;
 
 		// 타일 리스트
 		[SerializeField] private List<TileController> mSlotTiles = new List<TileController>();
@@ -128,6 +130,33 @@ namespace TrumpTile.GameMain.Core
 
 		public void SetSlotCount(int count) => mMaxSlots = count;
 
+		private void RaiseSlotCountChanged(ESlotDecreaseReason reason)
+		{
+			OnSlotCountChanged?.Invoke(mSlotTiles.Count, mMaxSlots, reason);
+		}
+
+		// 매치로 제거되는 타일에 짧은 팝(확대 후 축소)을 준 뒤 파괴한다. 게임 로직상 제거는 이미 끝난 상태.
+		private void PopAndDestroy(TileController tile)
+		{
+			if (tile == null)
+			{
+				return;
+			}
+			Transform t = tile.transform;
+			tile.enabled = false;
+			Sequence seq = DOTween.Sequence();
+			seq.SetUpdate(true);
+			seq.Append(t.DOScale(t.localScale * 1.25F, 0.08F).SetEase(Ease.OutQuad));
+			seq.Append(t.DOScale(Vector3.zero, 0.1F).SetEase(Ease.InBack));
+			seq.OnComplete(() =>
+			{
+				if (tile != null)
+				{
+					Destroy(tile.gameObject);
+				}
+			});
+		}
+
 		public void ResumeGame()
 		{
 			StopAllCoroutines();
@@ -192,6 +221,8 @@ namespace TrumpTile.GameMain.Core
 
 			ProcessTileAddition(tile, insertIndex);
 
+			RaiseSlotCountChanged(ESlotDecreaseReason.None);
+
 			return true;
 		}
 
@@ -248,6 +279,8 @@ namespace TrumpTile.GameMain.Core
 
 				Debug.Log($"[SlotManager] Tile returned to board: {tile.Data?.TileID} at {landPosition}");	
 			}
+			RaiseSlotCountChanged(ESlotDecreaseReason.Item);
+
 			return true;
 		}
 		/// <summary>
@@ -291,6 +324,9 @@ namespace TrumpTile.GameMain.Core
 			//RearrangeSlots();
 
 			Debug.Log($"[SlotManager] Tile returned to board: {tile.Data?.TileID} at {landPosition}");
+
+			RaiseSlotCountChanged(ESlotDecreaseReason.Item);
+
 			return true;
 		}
 
@@ -523,8 +559,9 @@ namespace TrumpTile.GameMain.Core
 			{
 				mSlotTiles.Remove(item);
 				BoardManager.Instance.RemoveTileFromBoard(item);
-				Destroy(item.gameObject);
+				PopAndDestroy(item);
 			}
+			RaiseSlotCountChanged(ESlotDecreaseReason.Match);
 			for(int i = 1; i < matchedTileList.Count; i += 3)
 			{
 				if(matchedTileList[i].TileTypeId.Contains("Bonus"))
