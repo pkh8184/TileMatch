@@ -65,6 +65,9 @@ namespace TrumpTile.GameMain.Core
 		[Header("리소스 컨테이너")]
 		[SerializeField] private LevelDifficultyResourceDatabase mLevelDifficultyResourceDatabase;
 		public LevelDifficultyResourceDatabase ResourceDatabase => mLevelDifficultyResourceDatabase;
+
+		[Header("타일 착지 젤리 (일일 퍼즐 바다/심해 테마 전용)")]
+		[SerializeField] private bool mbEnableTileJelly = true;
 		// 게임 상태
 		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
 		public EGameState CurrentState { get; private set; }
@@ -350,6 +353,13 @@ namespace TrumpTile.GameMain.Core
 				return;
 			}
 			mLevelDifficultyResourceDatabase.Initialize(levelData);
+
+			// 착지 젤리: 토글 ON + 일일 퍼즐 + Water/Dark(바다/심해) 테마일 때만 켠다.
+			bool bIsDailyForJelly = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
+			ELevelTheme currentTheme = mLevelDifficultyResourceDatabase.GetCurrentTheme(bIsDailyForJelly);
+			TileJuice.IsEnabled = mbEnableTileJelly
+				&& bIsDailyForJelly
+				&& (currentTheme == ELevelTheme.Water || currentTheme == ELevelTheme.Dark);
 
 			mELevelDifficulty = levelData.difficulty;
 			Debug.Log($"[GameManager] Starting Level {CurrentLevel}: {levelData.levelName}");

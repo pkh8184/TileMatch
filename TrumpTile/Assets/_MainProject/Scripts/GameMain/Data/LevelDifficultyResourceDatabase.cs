@@ -82,6 +82,21 @@ namespace TrumpTile.GameMain.Data
                 mDifficultyKey = "Normal";
             }
         }
+        /// <summary>현재 레벨의 테마를 반환한다. (일일 퍼즐이면 요일별 테마, 아니면 난이도 테마)</summary>
+        public ELevelTheme GetCurrentTheme(bool isDaily)
+        {
+            if (isDaily)
+            {
+                return mEntriesByDayOfWeek[GameTime.DayOfWeek].LevelTheme;
+            }
+            if (mEntriesByDifficultyString != null
+                && mEntriesByDifficultyString.TryGetValue(mDifficultyKey, out LevelDifficultyResourceEntry entry)
+                && entry != null)
+            {
+                return entry.LevelTheme;
+            }
+            return ELevelTheme.Normal;
+        }
         public Sprite GetBackgroundSprite(bool isDaily)
         {
             if(isDaily)

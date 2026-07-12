@@ -25,9 +25,7 @@ namespace TrumpTile.GameMain.Core
         [Header("보상 단계별 요구 젬 개수")]
         [SerializeField] private int[] mRequiredGemCountArray;
 
-        // 보상 단계 수는 요구 젬 배열 길이를 기준으로 한다.
-        // (기존 하드코딩 상수 15가 실제 배열 길이와 어긋나 IndexOutOfRange를 유발했음)
-        private int MaxIndex => mRequiredGemCountArray != null ? mRequiredGemCountArray.Length : 0;
+        private const int MAX_INDEX = 15;
         private int mCurrentIndex;
         private int mCurrentGemCount;
         private int mCapturedGemCount;
@@ -36,7 +34,7 @@ namespace TrumpTile.GameMain.Core
         public int CapturedGemCount => mCapturedGemCount;
         public int CapturedIndex => mCapturedIndex;
         public int PreviousGemCount => mPreviousGemCount;
-        public bool IsMaxIndex => mCurrentIndex >= MaxIndex;
+        public bool IsMaxIndex => mCurrentIndex >= MAX_INDEX;
         private List<GemCollectAnimPayload> mPlayloadList;
         public override void Initialize()
         {
@@ -88,7 +86,7 @@ namespace TrumpTile.GameMain.Core
         }
         private void RewardProgressForInit()
         {
-            if(mCurrentIndex >= MaxIndex)
+            if(mCurrentIndex >= MAX_INDEX)
             {
                 return;
             }
@@ -106,7 +104,7 @@ namespace TrumpTile.GameMain.Core
                     item.GrantReward();
                 }
                 mCurrentGemCount -= mRequiredGemCountArray[mCurrentIndex++];
-                if(mCurrentIndex >= MaxIndex)
+                if(mCurrentIndex >= MAX_INDEX)
                 {
                     Debug.Log("모든 보상 획득");
                     PlayerDataManager.Inst.UnActiveGemCollection();
@@ -118,7 +116,7 @@ namespace TrumpTile.GameMain.Core
         }
         private void RewardProgressForRefresh()
         {
-            if(mCurrentIndex >= MaxIndex)
+            if(mCurrentIndex >= MAX_INDEX)
             {
                 return;
             }
@@ -142,7 +140,7 @@ namespace TrumpTile.GameMain.Core
                 mPlayloadList.Add(new GemCollectAnimPayload{RewardDisplayInfoList = infos, CapturedRequiredGemCount = mRequiredGemCountArray[mCurrentIndex], CapturedCurrentIndex = mCurrentIndex});
                
                 mCurrentGemCount -= mRequiredGemCountArray[mCurrentIndex++];
-                if(mCurrentIndex >= MaxIndex)
+                if(mCurrentIndex >= MAX_INDEX)
                 {
                     Debug.Log("모든 보상 획득");
                     PlayerDataManager.Inst.UnActiveGemCollection();
@@ -158,21 +156,11 @@ namespace TrumpTile.GameMain.Core
         }
         public int GetCapturedRequiredGemCount()
         {
-            return GetRequiredGemAtSafe(mCapturedIndex);
+            return mRequiredGemCountArray[mCapturedIndex];
         }
         public int GetCurrentRequiredGem()
         {
-            return GetRequiredGemAtSafe(mCurrentIndex);
-        }
-        // 저장된 진행도(index)가 요구 젬 배열 길이를 넘어서도 크래시 없이 마지막 단계 값을 반환한다.
-        private int GetRequiredGemAtSafe(int index)
-        {
-            if (mRequiredGemCountArray == null || mRequiredGemCountArray.Length == 0)
-            {
-                return 0;
-            }
-            int clamped = Mathf.Clamp(index, 0, mRequiredGemCountArray.Length - 1);
-            return mRequiredGemCountArray[clamped];
+            return mRequiredGemCountArray[mCurrentIndex];
         }
         public int GetCurrentIndex()
         {
