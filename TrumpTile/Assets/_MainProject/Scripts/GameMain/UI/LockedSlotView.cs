@@ -52,7 +52,7 @@ namespace TrumpTile.GameMain.UI
 
         private void OnRemoveAdsPurchased()
         {
-            SlotManager.Instance?.SetSlotCount(7);
+            SlotManager.Instance?.AddBonusSlot(7);
             OnUnlocked();
         }
     }

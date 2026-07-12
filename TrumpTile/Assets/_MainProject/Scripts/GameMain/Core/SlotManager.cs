@@ -130,6 +130,14 @@ namespace TrumpTile.GameMain.Core
 
 		public void SetSlotCount(int count) => mMaxSlots = count;
 
+		// 슬롯 구매 등 게임 중 최대 슬롯 수가 바뀔 때 사용.
+		// 최대치 변경으로 '1칸 남음' 위험 여부가 달라지므로 알림을 보내 경고를 다시 판정하게 한다.
+		public void AddBonusSlot(int newMaxSlots)
+		{
+			mMaxSlots = newMaxSlots;
+			RaiseSlotCountChanged(ESlotDecreaseReason.None);
+		}
+
 		private void RaiseSlotCountChanged(ESlotDecreaseReason reason)
 		{
 			OnSlotCountChanged?.Invoke(mSlotTiles.Count, mMaxSlots, reason);

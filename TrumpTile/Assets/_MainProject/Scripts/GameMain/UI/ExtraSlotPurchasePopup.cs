@@ -52,11 +52,11 @@ namespace TrumpTile.GameMain.UI
             yield return new WaitForSeconds(mUnlockDelay);
             if(DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive)
             {
-                SlotManager.Instance?.SetSlotCount(5);
+                SlotManager.Instance?.AddBonusSlot(5);
             }
             else
             {
-                SlotManager.Instance?.SetSlotCount(7);   
+                SlotManager.Instance?.AddBonusSlot(7);   
             }
             mLockedSlotView?.OnUnlocked();
         }
