@@ -87,7 +87,7 @@ namespace TrumpTile.GameMain.UI
                 int minutes = Mathf.FloorToInt(x) / 60;
                 int seconds = Mathf.FloorToInt(x) % 60;
                 mTimerText.text = string.Format("{0:D2} : {1:D2}", minutes, seconds);
-            }, GameManager.Instance.ElapsedTime, 0.3f));
+            }, GameManager.Instance.TotalPlayTime, 0.3f));
 
             if(bBonusLevel)
             {

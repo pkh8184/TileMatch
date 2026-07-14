@@ -23,5 +23,11 @@ namespace TrumpTile.GameMain.Data
 	public class TBStageTableTemp : ScriptableObject
 	{
 		public TBStageDataTemp[] stages;
+
+		public TBStageDataTemp GetStageData(int index)
+		{
+			if(index < 0 || index >= stages.Length) return null;
+			return stages[index];
+		}
 	}
 }

@@ -68,6 +68,9 @@ namespace TrumpTile.GameMain.Core
 
 		[Header("타일 착지 젤리 (일일 퍼즐 바다/심해 테마 전용)")]
 		[SerializeField] private bool mbEnableTileJelly = true;
+
+		[Header("시간제한 및 별점 적용을 위한 참조")]
+		[SerializeField] private ScoreManager mScoreManager;
 		// 게임 상태
 		public enum EGameState { Loading, Playing, Paused, GameOver, GameClear }
 		public EGameState CurrentState { get; private set; }
@@ -93,6 +96,8 @@ namespace TrumpTile.GameMain.Core
 		private string mTimerString;
 		private float mCurrentTime;
 		private float mCurrentIdleTime;
+		private float mTotalPlayTime;
+		public float TotalPlayTime => mTotalPlayTime;
 		public float CurrentIdleTime => mCurrentIdleTime;
 
 		// 점수 및 통계
@@ -100,6 +105,7 @@ namespace TrumpTile.GameMain.Core
 		private int mComboCount;
 		private int mMatchedTileCount;
 		private int mTotalTileCount;
+		private StageScoreData mStageScoreData;
 		// 부활 관련
 		private bool mbIsTimeOut;
 		private int mCurrentReviveCount = 0;
@@ -212,7 +218,7 @@ namespace TrumpTile.GameMain.Core
 				if(!mbLevelTestMode)
 				{
                     mElapsedTime += Time.deltaTime;
-
+					mTotalPlayTime += Time.deltaTime;
                     if (mEnableTimerLog)
                     {
                         mTimerLogAccumulator += Time.deltaTime;
@@ -332,15 +338,18 @@ namespace TrumpTile.GameMain.Core
 				{
 					FreeReviveStage = false;
 					levelData = await DataManager.Instance.LoadDailyLevelAsync(assetRef);
+					mStageScoreData = mScoreManager.GetDailyPuzzleStageScoreData(DailyPuzzleManager.Inst.GetTodayIndex());
 				}
 			}
 			else if(mbIsChampionsMode)
 			{
-				levelData = await DataManager.Instance.LoadChampionsLevelAsync(levelNumber);
+				levelData = await DataManager.Instance.LoadChampionsLevelAsync(PlayerDataManager.Inst.ChampionsLevel);
+				mStageScoreData = mScoreManager.GetStageScoreData(levelData.levelNumber);
 			}
 			else
 			{
 				levelData = await DataManager.Instance.LoadLevelAsync(levelNumber);
+				mStageScoreData = mScoreManager.GetStageScoreData(levelNumber);
 			}
 
 			if (levelData == null)
@@ -383,9 +392,7 @@ namespace TrumpTile.GameMain.Core
 			// 타이머 초기화
 			mElapsedTime = 0F;
 			
-			mTargetClearTime = mStarConfig != null
-				? mTotalTileCount * mStarConfig.TileTimeCoefficient
-				: mTotalTileCount * 2.0F;
+			mTargetClearTime = mStageScoreData.TimeLimit;
 
 
             Debug.Log($"[GameManager] TargetClearTime: {mTargetClearTime}s (tiles: {mTotalTileCount})");
@@ -675,17 +682,31 @@ namespace TrumpTile.GameMain.Core
 
 		private int CalculateStars()
 		{
-			if (mStarConfig == null)
-			{
-				Debug.LogWarning("[GameManager] StarConfig is null, defaulting to 1 star");
-				return 1;
-			}
+			// if (mStarConfig == null)
+			// {
+			// 	Debug.LogWarning("[GameManager] StarConfig is null, defaulting to 1 star");
+			// 	return 1;
+			// }
 
-			if (mElapsedTime <= mTargetClearTime)
+			// if (mElapsedTime <= mTargetClearTime)
+			// {
+			// 	return 3;
+			// }
+			// else if (mElapsedTime <= mTargetClearTime * mStarConfig.Star2TimeRatio)
+			// {
+			// 	return 2;
+			// }
+			// else
+			// {
+			// 	return 1;
+			// }
+			float star3 = mStageScoreData.TimeLimit - mStageScoreData.Star3;
+			float star2 = mStageScoreData.TimeLimit - mStageScoreData.Star2;
+			if(mTotalPlayTime <= star3)
 			{
 				return 3;
 			}
-			else if (mElapsedTime <= mTargetClearTime * mStarConfig.Star2TimeRatio)
+			else if(mTotalPlayTime <= star2)
 			{
 				return 2;
 			}

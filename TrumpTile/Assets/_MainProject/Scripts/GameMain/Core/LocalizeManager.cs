@@ -1,3 +1,4 @@
+using TMPro;
 using TrumpTile.FrameLibrary;
 using TrumpTile.GameMain.Data;
 using UnityEngine;

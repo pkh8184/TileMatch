@@ -92,5 +92,9 @@ namespace TrumpTile.GameMain.Data
 			int index = CalculateIndex(GameTime.Today, entries.Count);
 			return entries[index];
 		}
+		public int GetTodayIndex()
+		{
+			return CalculateIndex(GameTime.Today, entries.Count);
+		}
 	}
 }

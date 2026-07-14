@@ -118,9 +118,15 @@ namespace TrumpTile.LevelEditor.Editor
             }
             if (GUILayout.Button("Convert To Daily Level"))
             {
-                
+
             }
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(5);
+            if (GUILayout.Button("Renumber Champions Levels (이름/주소 1부터 재정렬)"))
+            {
+                RenumberChampionsLevels();
+            }
 
             EditorGUILayout.EndVertical();
         }
@@ -134,22 +140,30 @@ namespace TrumpTile.LevelEditor.Editor
         }
         private void ConvertToChampions()
         {
+            // 기존 챔피언스 레벨 이름(ChampionsLevel_N)의 N 최대값을 찾아 이어서 넘버링
+            // (levelNumber는 원본 값을 유지하므로 네이밍 기준은 levelName에서 파싱)
             string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { CHAMPIONS_PATH });
-            List<LevelData> list = guids
-            .Select(g => AssetDatabase.LoadAssetAtPath<LevelData>(AssetDatabase.GUIDToAssetPath(g)))
-            .OrderBy(so => so.levelNumber)
-            .ToList();
+            int startLevel = 0;
+            foreach (string existingGuid in guids)
+            {
+                LevelData existing = AssetDatabase.LoadAssetAtPath<LevelData>(AssetDatabase.GUIDToAssetPath(existingGuid));
+                string suffix = existing.levelName.Replace("ChampionsLevel_", "");
+                if (int.TryParse(suffix, out int number) && number > startLevel)
+                {
+                    startLevel = number;
+                }
+            }
 
-            int startLevel = list[list.Count - 1].levelNumber;
             for(int i = 0; i < mCheckArray.Length; i++)
             {
                 if(mCheckArray[i])
                 {
-                    LevelData level = CreateInstance<LevelData>();
-                    level = mLevelDataList[i].Clone();
+                    LevelData level = mLevelDataList[i].Clone();
 
-                    level.levelNumber = ++startLevel;
-                    level.levelName = $"ChampionsLevel_{level.levelNumber}";
+                    // levelName / 어드레서블 주소는 1부터 이어지는 연속 번호로 부여
+                    // levelNumber 필드는 원본 레벨데이터 값을 그대로 유지 (건드리지 않음)
+                    int championsNumber = ++startLevel;
+                    level.levelName = $"ChampionsLevel_{championsNumber}";
                     level.ChampionsLevel = true;
 
                     string path = CHAMPIONS_PATH + $"/{level.levelName}.asset";
@@ -167,7 +181,87 @@ namespace TrumpTile.LevelEditor.Editor
         }
         private void ConvertToDaily()
         {
-            
+
+        }
+        /// <summary>
+        /// 기존 챔피언스 레벨들의 이름/어드레서블 주소를 현재 순서 기준 1부터 연속으로 재정렬.
+        /// levelNumber 필드는 건드리지 않는다.
+        /// </summary>
+        private void RenumberChampionsLevels()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { CHAMPIONS_PATH });
+            if (guids.Length == 0)
+            {
+                EditorUtility.DisplayDialog("알림", "챔피언스 레벨이 없습니다.", "확인");
+                return;
+            }
+
+            List<LevelData> list = guids
+                .Select(g => AssetDatabase.LoadAssetAtPath<LevelData>(AssetDatabase.GUIDToAssetPath(g)))
+                .OrderBy(l => ParseChampionsNumber(l.levelName))
+                .ToList();
+
+            if (!EditorUtility.DisplayDialog(
+                "챔피언스 레벨 재정렬",
+                $"{list.Count}개의 이름/어드레서블 주소를 현재 순서 기준 1 ~ {list.Count} 로 재정렬합니다.\n(levelNumber 필드는 유지됩니다.)\n\n계속할까요?",
+                "재정렬", "취소"))
+            {
+                return;
+            }
+
+            AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+            AddressableAssetGroup group = settings.FindGroup("ChampionsLevels");
+            if (group == null)
+            {
+                EditorUtility.DisplayDialog("오류", "'ChampionsLevels' 어드레서블 그룹을 찾을 수 없습니다.", "확인");
+                return;
+            }
+
+            try
+            {
+                // 1패스: 임시 이름으로 변경 (하향 번호 재배치 시 파일명 충돌 방지)
+                for (int i = 0; i < list.Count; i++)
+                {
+                    EditorUtility.DisplayProgressBar("챔피언스 레벨 재정렬", "임시 이름 지정 중...", (float)i / list.Count * 0.5f);
+                    string path = AssetDatabase.GetAssetPath(list[i]);
+                    AssetDatabase.RenameAsset(path, $"__champions_tmp_{i}");
+                }
+
+                // 2패스: 1부터 연속 번호로 확정
+                for (int i = 0; i < list.Count; i++)
+                {
+                    EditorUtility.DisplayProgressBar("챔피언스 레벨 재정렬", "번호 부여 중...", 0.5f + (float)i / list.Count * 0.5f);
+                    int number = i + 1;
+                    string newName = $"ChampionsLevel_{number}";
+
+                    string path = AssetDatabase.GetAssetPath(list[i]);
+                    AssetDatabase.RenameAsset(path, newName);
+
+                    list[i].levelName = newName; // levelNumber는 건드리지 않음
+                    EditorUtility.SetDirty(list[i]);
+
+                    string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(list[i]));
+                    settings.CreateOrMoveEntry(guid, group).address = newName;
+                }
+
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+
+            Debug.Log($"[LevelConverterWindow] Renumbered {list.Count} champions levels → ChampionsLevel_1 ~ ChampionsLevel_{list.Count}");
+        }
+        private int ParseChampionsNumber(string levelName)
+        {
+            if (string.IsNullOrEmpty(levelName))
+            {
+                return int.MaxValue;
+            }
+            string suffix = levelName.Replace("ChampionsLevel_", "");
+            return int.TryParse(suffix, out int number) ? number : int.MaxValue;
         }
     }
 }

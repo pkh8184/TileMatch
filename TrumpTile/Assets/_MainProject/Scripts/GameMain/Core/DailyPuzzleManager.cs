@@ -133,5 +133,9 @@ namespace TrumpTile.GameMain.Core
 		{
 			return GameTime.DayOfWeek;
 		}
+		public int GetTodayIndex()
+		{
+			return mDailyPuzzleTable.GetTodayIndex();
+		}
 	}
 }

@@ -12,5 +12,13 @@ namespace TrumpTile.Editor
 		TBPictureCollect,
 		[SheetName("TB_StringMaster")]
 		TBStringMaster,
+		[SheetName("TB_DailyPuzzleStage")]
+		TBDailyPuzzleStage,
+		[SheetName("TB_Profile")]
+		TBProfile,
+		[SheetName("TB_Shop")]
+		TBShop,
+		[SheetName("TB_RefuseName")]
+		TBRefuseName,
 	}
 }
