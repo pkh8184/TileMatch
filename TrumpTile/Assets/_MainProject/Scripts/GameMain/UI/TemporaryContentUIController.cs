@@ -47,11 +47,17 @@ namespace TrumpTile.GameMain.UI
             int day = totalTime / 86400;
             int hour = (totalTime % 86400) / 3600;
 
-            string dayString = day > 0? $"{day}일 " : "";
-            string hourString = hour >  0? $"{hour}시간" : "";
+            //1일 이상: "n일 m시간"(m>0) / "n일"(m==0), 1일 미만: "m시간"(1시간 미만이면 "0시간")
+            string result;
+            if(day > 0)
+            {
+                result = hour > 0 ? $"{day}일 {hour}시간" : $"{day}일";
+            }
+            else
+            {
+                result = $"{hour}시간";
+            }
 
-            string result = dayString + hourString;
-            
             if(mLimitTimeText != null) mLimitTimeText.text = result;
             if(mShowButtonLimitTimeText != null) mShowButtonLimitTimeText.text = result;
         }

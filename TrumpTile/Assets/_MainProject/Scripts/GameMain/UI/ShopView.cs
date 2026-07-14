@@ -27,6 +27,9 @@ namespace TrumpTile.GameMain.UI
         }
         [SerializeField] private PurchaseButtonConfig[] mPurchaseButtonCofigArray;
 
+        [Header("구매 불가(쿨타임 중) 패키지 버튼에 적용할 색")]
+        [SerializeField] private Color mSoldOutColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+
         private EProductId mCurrentPurchaseProductId = EProductId.None;
         public override void Initialize()
         {
@@ -44,6 +47,9 @@ namespace TrumpTile.GameMain.UI
         public override void Show()
         {
             base.Show();
+
+            //상점 접근 시마다 패키지 구매 가능 여부 갱신 (쿨타임 지난 것은 재구매 가능하도록 리셋 + 버튼 활성/비활성)
+            UpdatePurchaseButtons();
 
             ScrollRect scroll = GetComponentInChildren<ScrollRect>();
             scroll.verticalNormalizedPosition = 1f;
@@ -86,6 +92,24 @@ namespace TrumpTile.GameMain.UI
         {
             IAPManager.Instance.PurchaseProduct(eProductId);
             mCurrentPurchaseProductId = eProductId;
+        }
+        /// <summary>
+        /// 패키지 구매 가능 여부에 따라 버튼 활성/비활성 처리.
+        /// CanPurchasePackage 호출로 쿨타임이 지난 패키지는 여기서 자동으로 재구매 가능하게 리셋된다.
+        /// (쿨타임이 없는 일반 상품은 항상 구매 가능하므로 영향 없음)
+        /// </summary>
+        private void UpdatePurchaseButtons()
+        {
+            foreach(var item in mPurchaseButtonCofigArray)
+            {
+                bool canBuy = PlayerDataManager.Inst.CanPurchasePackage(item.eProductId);
+                item.button.interactable = canBuy;
+
+                //UIBase가 disabledColor을 normalColor로 맞춰버리므로, 잠긴 버튼은 회색으로 되돌려준다.
+                ColorBlock colors = item.button.colors;
+                colors.disabledColor = canBuy ? colors.normalColor : mSoldOutColor;
+                item.button.colors = colors;
+            }
         }
         public void OnPurchaseSuccess()
         {

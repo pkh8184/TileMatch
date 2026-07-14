@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Data;
@@ -40,8 +41,9 @@ namespace TrumpTile.GameMain.Core
         {
             base.Initialize();
 
-            mbIsActive = PlayerDataManager.Inst.IsGemCollectionActive;
-           
+            //쿨타임/제한시간 기준으로 활성 상태 재평가 (지났으면 재활성화 + 진행도 초기화)
+            EvaluateActiveState();
+
             mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
             mPreviousGemCount = mCurrentGemCount - CoreContainer.RewardContainer.Gem;
@@ -54,6 +56,8 @@ namespace TrumpTile.GameMain.Core
         {
             base.Refresh();
 
+            EvaluateActiveState();
+
             mCurrentIndex = PlayerDataManager.Inst.GemCollectionIndex;
             mCurrentGemCount = PlayerDataManager.Inst.GemCollectionCount;
             mPreviousGemCount = mCurrentGemCount - CoreContainer.RewardContainer.Gem;
@@ -62,13 +66,19 @@ namespace TrumpTile.GameMain.Core
 
             RewardProgressForRefresh();
         }
+
+        protected override bool GetActiveFlag() => PlayerDataManager.Inst.IsGemCollectionActive;
+        protected override DateTime GetActiveDate() => PlayerDataManager.Inst.GemCollectionActiveDate;
+        protected override DateTime GetUnActiveDate() => PlayerDataManager.Inst.GemCollectionUnActiveDate;
+        protected override void OnActivate() => PlayerDataManager.Inst.ActiveGemCollection();
+        protected override void OnDeactivate() => PlayerDataManager.Inst.UnActiveGemCollection();
+
         public override void CheckUnlock()
         {
             if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
-                mbIsActive = true;
-                
+
                 if(!PlayerDataManager.Inst.UserData.GemCollectionUnlock)
                 {
                     PlayerDataManager.Inst.UnlockGemCollection();

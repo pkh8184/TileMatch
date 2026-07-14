@@ -55,6 +55,11 @@ namespace  TrumpTile.GameMain.Core
         {
             return mProductDatabase.GetProductRewards(eProductId);
         }
+        /// <summary>해당 상품의 재구매 리필 시간(초). RefreshTimeMinute * 60.</summary>
+        public int GetPackageRefreshSeconds(EProductId eProductId)
+        {
+            return mProductDatabase.GetRefreshTimeSeconds(eProductId);
+        }
         private async Task InitializeIAP()
         {
             mStoreController = UnityIAPServices.StoreController();
@@ -103,6 +108,14 @@ namespace  TrumpTile.GameMain.Core
 
             EProductId eProductId = mProductDatabase.GetEProductId(productId);
             mProductDatabase.GrantReward(productId);
+
+            //초보자/중급자/상급자 패키지는 재구매 쿨타임 체크를 위해 구매 시각을 기록
+            if(eProductId == EProductId.NewbiePackage
+                || eProductId == EProductId.BigginerPackage
+                || eProductId == EProductId.MasterPackage)
+            {
+                PlayerDataManager.Inst.PurchasePackage(eProductId);
+            }
 
             EventManager.Inst.ActiveEvent("PurchaseConfirmed");
             EventManager.Inst.ActiveEvent("ContentDataRefresh");

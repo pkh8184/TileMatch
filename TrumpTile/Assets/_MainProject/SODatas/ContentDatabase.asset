@@ -25,7 +25,7 @@ MonoBehaviour:
       type: {class: DailyCheckContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
       data:
         mContentName: DailyCheck
-        mLevelToUnlock: 3
+        mLevelToUnlock: 14
         mRewardArray:
         - rid: 5061743828438614368
         - rid: 5061743828438614369
@@ -100,7 +100,7 @@ MonoBehaviour:
       type: {class: RouletteContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
       data:
         mContentName: Roulette
-        mLevelToUnlock: 1
+        mLevelToUnlock: 24
         mRewardConfigArray:
         - Reward:
             rid: 5061743895749591043
@@ -150,9 +150,9 @@ MonoBehaviour:
       type: {class: ExcitTravelContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
       data:
         mContentName: ExcitTravel
-        mLevelToUnlock: 14
-        mLimitTime: 432000
-        mCoolTime: 360
+        mLevelToUnlock: 34
+        mLimitTime: 10080
+        mCoolTime: 20160
         mPaidRewardIDArray: 06000000070000000a0000000b000000
         mFreeRewardArray:
         - rid: 5061743913760457042
@@ -199,9 +199,9 @@ MonoBehaviour:
       type: {class: PiggyBankContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
       data:
         mContentName: PiggyBank
-        mLevelToUnlock: 7
-        mLimitTime: 259200
-        mCoolTime: 604800
+        mLevelToUnlock: 41
+        mLimitTime: 4320
+        mCoolTime: 10080
         mDefaultReward:
           rid: 5061744232091877741
         mRewardArray:
@@ -223,9 +223,9 @@ MonoBehaviour:
       type: {class: GemCollectContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
       data:
         mContentName: GemCollection
-        mLevelToUnlock: 11
-        mLimitTime: 604800
-        mCoolTime: 1209600
+        mLevelToUnlock: 31
+        mLimitTime: 10080
+        mCoolTime: 20160
         mRewardArray:
         - RewardArray:
           - rid: 5061743987175194644

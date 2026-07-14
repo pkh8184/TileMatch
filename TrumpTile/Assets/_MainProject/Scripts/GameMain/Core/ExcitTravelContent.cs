@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TrumpTile.GameMain.Data;
@@ -21,31 +22,38 @@ namespace TrumpTile.GameMain.Core
         {
             base.Initialize();
 
-            if(!PlayerDataManager.Inst.IsExcitTravelActive)
-            {
-                //비활성화 시간 - 현재 시간 > 쿨타임 이면 활성화
-                //첫 활성화인 경우 비활성화 시간 == null 검사 후 활성화
-            }
+            //쿨타임/제한시간 기준으로 활성 상태 재평가 (지났으면 재활성화 + 진행도 초기화)
+            EvaluateActiveState();
 
-            mCurrentIndex = PlayerDataManager.Inst.ExcitTravelIndex;
-
-            if(mCurrentIndex >= MAX_REWARD_COUNT)
-            {
-                mbHasNewthing = false;
-            }
-            else
-            {
-                mbHasNewthing = true;
-            }
+            RefreshExcitTravelData();
         }
+
+        public override void Refresh()
+        {
+            base.Refresh();
+
+            EvaluateActiveState();
+
+            RefreshExcitTravelData();
+        }
+
+        private void RefreshExcitTravelData()
+        {
+            mCurrentIndex = PlayerDataManager.Inst.ExcitTravelIndex;
+            mbHasNewthing = mCurrentIndex < MAX_REWARD_COUNT;
+        }
+
+        protected override bool GetActiveFlag() => PlayerDataManager.Inst.IsExcitTravelActive;
+        protected override DateTime GetActiveDate() => PlayerDataManager.Inst.ExcitTravelActiveDate;
+        protected override DateTime GetUnActiveDate() => PlayerDataManager.Inst.ExcitTravelUnActiveDate;
+        protected override void OnActivate() => PlayerDataManager.Inst.ActiveExcitTravel();
+        protected override void OnDeactivate() => PlayerDataManager.Inst.UnActiveExcitTravel();
 
         public override void CheckUnlock()
         {
             if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
-                
-                mbIsActive = true;
 
                 if(!PlayerDataManager.Inst.UserData.ExcitTravelUnlock)
                 {

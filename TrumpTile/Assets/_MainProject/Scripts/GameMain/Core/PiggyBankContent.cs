@@ -1,3 +1,4 @@
+using System;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 
@@ -21,12 +22,9 @@ namespace TrumpTile.GameMain.Core
         public override void Initialize()
         {
             base.Initialize();
-            
-            if(!PlayerDataManager.Inst.IsPiggyBankActive)
-            {
-                //비활성화 시간 - 현재 시간 > 쿨타임 이면 활성화
-                //첫 활성화인 경우 비활성화 시간 == null 검사 후 활성화
-            }
+
+            //쿨타임/제한시간 기준으로 활성 상태 재평가 (지났으면 재활성화 + 진행도 초기화)
+            EvaluateActiveState();
 
             SetPiggyBankData();
         }
@@ -34,14 +32,22 @@ namespace TrumpTile.GameMain.Core
         {
             base.Refresh();
 
+            EvaluateActiveState();
+
             SetPiggyBankData();
         }
+
+        protected override bool GetActiveFlag() => PlayerDataManager.Inst.IsPiggyBankActive;
+        protected override DateTime GetActiveDate() => PlayerDataManager.Inst.PiggyBankActiveDate;
+        protected override DateTime GetUnActiveDate() => PlayerDataManager.Inst.PiggyBankUnActiveDate;
+        protected override void OnActivate() => PlayerDataManager.Inst.StartPiggyBankContent();
+        protected override void OnDeactivate() => PlayerDataManager.Inst.EndPiggyBankContent();
+
         public override void CheckUnlock()
         {
             if(PlayerDataManager.Inst.CurrentStage >= mLevelToUnlock)
             {
                 SetUnlock();
-                mbIsActive = true;
                 if(!PlayerDataManager.Inst.UserData.PiggyBankUnlock)
                 {
                     PlayerDataManager.Inst.UnlockPiggyBank();

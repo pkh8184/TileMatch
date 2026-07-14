@@ -52,7 +52,7 @@ namespace TrumpTile.GameMain.UI
 
             mShowButton.transform.parent.gameObject.SetActive(true);
 
-            mContentController.SetLimitTimeText(mContentData.GetContentInfo().ActiveTime);
+            mContentController.SetLimitTimeText(mContentData.GetRemainTimeSeconds());
 
             CreateElement();
             InitCollectGauge();

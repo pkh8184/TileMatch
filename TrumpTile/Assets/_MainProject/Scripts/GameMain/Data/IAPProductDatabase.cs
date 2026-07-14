@@ -115,10 +115,11 @@ namespace TrumpTile.GameMain.Data
         [SerializeField] private ProductType mEProductType;
         [SerializeField] private string mProductId;
         [SerializeReference, SubclassSelector] private List<ProductReward> mRewardList = new List<ProductReward>();
-
+        [SerializeField] private int mRefreshTimeMinute;
         public EProductId EProductId => mEProductId;
         public ProductType EProductType => mEProductType;
         public string ProductId => mProductId;
+        public int RefreshTimeMinute => mRefreshTimeMinute;
 
         public void GrantReward()
         {
@@ -191,6 +192,20 @@ namespace TrumpTile.GameMain.Data
                 }
             }
             return EProductId.None;
+        }
+        /// <summary>해당 상품의 재구매 리필 시간(분). 미설정 시 0.</summary>
+        public int GetRefreshTimeMinute(EProductId productId)
+        {
+            if(mProductMap == null || !mProductMap.TryGetValue(productId, out ProductEntry entry))
+            {
+                return 0;
+            }
+            return entry.RefreshTimeMinute;
+        }
+        /// <summary>해당 상품의 재구매 리필 시간을 초로 변환해서 반환 (RefreshTimeMinute * 60).</summary>
+        public int GetRefreshTimeSeconds(EProductId productId)
+        {
+            return GetRefreshTimeMinute(productId) * 60;
         }
 
     }

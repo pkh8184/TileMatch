@@ -102,6 +102,14 @@ namespace TrumpTile.GameMain.Data
 		public int GemCollectionCount => mUserData.GemCount;
 		public int ChampionsLevel => mUserData.ChampionsLevel;
 		public bool IsChampionsActive => mUserData.IsChampionsActive;
+
+		//컨텐츠 활성/비활성 시각 (쿨타임 비교용 - UTC)
+		public DateTime ExcitTravelActiveDate => mUserData.ExcitTravelActiveDate;
+		public DateTime ExcitTravelUnActiveDate => mUserData.ExcitTravelUnActiveDate;
+		public DateTime PiggyBankActiveDate => mUserData.PiggyBankActiveDate;
+		public DateTime PiggyBankUnActiveDate => mUserData.PiggyBankUnActiveDate;
+		public DateTime GemCollectionActiveDate => mUserData.GemCollectionActiveDate;
+		public DateTime GemCollectionUnActiveDate => mUserData.GemCollectionUnActiveDate;
 		#endregion
 
 		#region 재화
@@ -302,8 +310,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			Debug.Log("[PlayerDataManager] 보석 수집 해금 완료");
-			mUserData.GemCollectionUnlock = true;	
-			mUserData.IsGemCollectionActive = true;
+			mUserData.GemCollectionUnlock = true;
+			//활성화는 컨텐츠 쪽 EvaluateActiveState에서 처리 (여기서 강제 활성화하지 않음)
 		}
 
 	#endregion
@@ -390,9 +398,11 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 돼지저금통 컨텐트 시작");
 			mUserData.IsPiggyBankActive = true;
-
-			//캐싱해놓은 서버 기준 현재 시간 적용하기
-			//mUserData.PiggyBankActiveDate = 서버 기준 시간;
+			mUserData.PiggyBankActiveDate = GameTime.UtcNow;
+			//새 사이클 진행도 초기화
+			mUserData.PiggyBankStageClearCount = 0;
+			mUserData.PiggyBankPurchase = false;
+			SaveUserData();
 		}
 		public void EndPiggyBankContent()
 		{
@@ -402,12 +412,11 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 돼지저금통 컨텐트 종료");
 			mUserData.IsPiggyBankActive = false;
+			mUserData.PiggyBankUnActiveDate = GameTime.UtcNow;
 
 			mUserData.PiggyBankPurchase = false;
 			mUserData.PiggyBankStageClearCount = 0;
-
-			//캐싱해놓은 서버 기준 현재 시간 적용하기
-			//mUserData.PiggyBankUnActiveDate = 서버 기준 시간;
+			SaveUserData();
 		}
 	#endregion
 	#region 기차 여행 관련
@@ -419,23 +428,33 @@ namespace TrumpTile.GameMain.Data
 		{
 			mUserData.IsExcitTravelActive = true;
 			mUserData.ExcitTravelActiveDate = GameTime.UtcNow;
+			//새 사이클 진행도 초기화
+			mUserData.ExcitTravelIndex = 0;
+			SaveUserData();
 		}
 		public void UnActiveExcitTravel()
 		{
 			mUserData.IsExcitTravelActive = false;
 			mUserData.ExcitTravelUnActiveDate = GameTime.UtcNow;
+			SaveUserData();
 		}
 	#endregion
 	#region 보석 수집 관련
 		public void ActiveGemCollection()
 		{
 			mUserData.IsGemCollectionActive = true;
-			mUserData.GemCollectionUnActiveDate = GameTime.UtcNow;
+			//기존 버그 수정: 활성화 시각은 ActiveDate에 저장 (이전엔 UnActiveDate에 잘못 저장)
+			mUserData.GemCollectionActiveDate = GameTime.UtcNow;
+			//새 사이클 진행도 초기화
+			mUserData.GemCollectionIndex = 0;
+			mUserData.GemCount = 0;
+			SaveUserData();
 		}
 		public void UnActiveGemCollection()
 		{
 			mUserData.IsGemCollectionActive = false;
 			mUserData.GemCollectionUnActiveDate = GameTime.UtcNow;
+			SaveUserData();
 		}
 		public void AddGemCount(int value)
 		{
@@ -463,6 +482,131 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.GemCollectionIndex = value;
 		}
+	#endregion
+	#region 구매 패키지 (초보자/중급자/상급자 재구매 쿨타임)
+
+		/// <summary>
+		/// 패키지 구매 기록. 구매 플래그를 true로 세우고 구매 시각(UTC)을 저장한다.
+		/// </summary>
+		public void PurchasePackage(EProductId eProductId)
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			SetPackagePurchased(eProductId, true);
+			SetPackagePurchaseDate(eProductId, GameTime.UtcNow);
+			SaveUserData();
+			Debug.Log($"[PlayerDataManager] 패키지 구매 기록: {eProductId}");
+		}
+
+		/// <summary>
+		/// 현재 구매 상태 (쿨타임 재평가는 하지 않음).
+		/// </summary>
+		public bool IsPackagePurchased(EProductId eProductId)
+		{
+			return mUserData != null && GetPackagePurchased(eProductId);
+		}
+
+		/// <summary>
+		/// 재구매 가능 여부. 구매 후 리필 시간(RefreshTimeMinute*60초)이 지났으면
+		/// 구매 플래그를 false로 리셋하고 true를 반환한다.
+		/// </summary>
+		public bool CanPurchasePackage(EProductId eProductId)
+		{
+			if(mUserData == null)
+			{
+				return false;
+			}
+
+			//구매한 적 없으면 바로 구매 가능
+			if(!GetPackagePurchased(eProductId))
+			{
+				return true;
+			}
+
+			int refreshSeconds = GetPackageRefreshSeconds(eProductId);
+			if(refreshSeconds <= 0)
+			{
+				//리필 시간 미설정(0) → 쿨타임 없이 항상 재구매 가능
+				SetPackagePurchased(eProductId, false);
+				SaveUserData();
+				return true;
+			}
+
+			double elapsed = (GameTime.UtcNow - GetPackagePurchaseDate(eProductId)).TotalSeconds;
+			if(elapsed >= refreshSeconds)
+			{
+				//쿨타임 종료 → 재구매 가능하도록 플래그 리셋
+				SetPackagePurchased(eProductId, false);
+				SaveUserData();
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// 3개 패키지의 쿨타임을 일괄 재평가 (지난 것은 플래그 리셋).
+		/// 접속/컨텐츠 갱신 시점에 호출. (IAPManager 초기화 이후에 호출해야 리필 시간을 읽을 수 있음)
+		/// </summary>
+		public void RefreshAllPackagePurchaseStates()
+		{
+			CanPurchasePackage(EProductId.NewbiePackage);
+			CanPurchasePackage(EProductId.BigginerPackage);
+			CanPurchasePackage(EProductId.MasterPackage);
+		}
+
+		private int GetPackageRefreshSeconds(EProductId eProductId)
+		{
+			if(IAPManager.Instance == null)
+			{
+				return 0;
+			}
+			return IAPManager.Instance.GetPackageRefreshSeconds(eProductId);
+		}
+
+		private bool GetPackagePurchased(EProductId eProductId)
+		{
+			switch(eProductId)
+			{
+				case EProductId.NewbiePackage:   return mUserData.NewbiePackagePurchased;
+				case EProductId.BigginerPackage: return mUserData.BigginerPackagePurchased;
+				case EProductId.MasterPackage:   return mUserData.MasterPackagePurchased;
+				default:                         return false;
+			}
+		}
+
+		private void SetPackagePurchased(EProductId eProductId, bool value)
+		{
+			switch(eProductId)
+			{
+				case EProductId.NewbiePackage:   mUserData.NewbiePackagePurchased = value;   break;
+				case EProductId.BigginerPackage: mUserData.BigginerPackagePurchased = value; break;
+				case EProductId.MasterPackage:   mUserData.MasterPackagePurchased = value;   break;
+			}
+		}
+
+		private DateTime GetPackagePurchaseDate(EProductId eProductId)
+		{
+			switch(eProductId)
+			{
+				case EProductId.NewbiePackage:   return mUserData.NewbiePackagePurchaseDate;
+				case EProductId.BigginerPackage: return mUserData.BigginerPackagePurchaseDate;
+				case EProductId.MasterPackage:   return mUserData.MasterPackagePurchaseDate;
+				default:                         return default;
+			}
+		}
+
+		private void SetPackagePurchaseDate(EProductId eProductId, DateTime value)
+		{
+			switch(eProductId)
+			{
+				case EProductId.NewbiePackage:   mUserData.NewbiePackagePurchaseDate = value;   break;
+				case EProductId.BigginerPackage: mUserData.BigginerPackagePurchaseDate = value; break;
+				case EProductId.MasterPackage:   mUserData.MasterPackagePurchaseDate = value;   break;
+			}
+		}
+
 	#endregion
 	#region Getters (기존)
 

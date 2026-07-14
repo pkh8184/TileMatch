@@ -44,7 +44,7 @@ namespace TrumpTile.GameMain.UI
                 mShowButton.gameObject.SetActive(false);
                 return;
             }
-            mActiveTime = mContentData.GetContentInfo().ActiveTime;
+            mActiveTime = mContentData.GetRemainTimeSeconds();
             mShowButton.gameObject.SetActive(true);
 
             mContentController.ActiveRedDot(mContentData.HasNewThing);

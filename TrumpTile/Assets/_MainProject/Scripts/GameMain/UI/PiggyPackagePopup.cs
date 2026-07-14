@@ -64,7 +64,7 @@ namespace TrumpTile.GameMain.UI
             mContentController.ActiveRedDot(mContentData.HasNewThing);
             mContentController.PlayShowButtonAnim(mShowButton);
 
-            mContentController.SetLimitTimeText(mContentData.GetContentInfo().ActiveTime);
+            mContentController.SetLimitTimeText(mContentData.GetRemainTimeSeconds());
 
             SetState();
         }

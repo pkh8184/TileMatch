@@ -71,6 +71,14 @@ namespace TrumpTile.GameMain.Data
 
         //챔피언스 리그 관련 데이터
         public int ChampionsLevel;
+
+        //구매 패키지 관련 데이터 (재구매 쿨타임 체크용 - UTC ticks)
+        public bool NewbiePackagePurchased;
+        public long NewbiePackagePurchaseDate;
+        public bool BigginerPackagePurchased;
+        public long BigginerPackagePurchaseDate;
+        public bool MasterPackagePurchased;
+        public long MasterPackagePurchaseDate;
         public EncryptedUserData(UserData data)
         {
             RemoveAds = data.RemoveAds;
@@ -135,6 +143,14 @@ namespace TrumpTile.GameMain.Data
             GemCount = data.GemCount;
 
             ChampionsLevel = data.ChampionsLevel;
+
+            //구매 패키지 관련 데이터 (재구매 쿨타임은 UTC 기준)
+            NewbiePackagePurchased = data.NewbiePackagePurchased;
+            NewbiePackagePurchaseDate = data.NewbiePackagePurchaseDate.ToUniversalTime().Ticks;
+            BigginerPackagePurchased = data.BigginerPackagePurchased;
+            BigginerPackagePurchaseDate = data.BigginerPackagePurchaseDate.ToUniversalTime().Ticks;
+            MasterPackagePurchased = data.MasterPackagePurchased;
+            MasterPackagePurchaseDate = data.MasterPackagePurchaseDate.ToUniversalTime().Ticks;
         }
     }
     [Serializable]
@@ -210,6 +226,14 @@ namespace TrumpTile.GameMain.Data
         //챔피언스 리그 관련 데이터
         public int ChampionsLevel;
         public bool IsChampionsActive;
+
+        //구매 패키지 관련 데이터 (재구매 쿨타임 체크용 - 쿨타임은 UTC 기준)
+        public bool NewbiePackagePurchased;
+        public DateTime NewbiePackagePurchaseDate;
+        public bool BigginerPackagePurchased;
+        public DateTime BigginerPackagePurchaseDate;
+        public bool MasterPackagePurchased;
+        public DateTime MasterPackagePurchaseDate;
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
         {
@@ -305,6 +329,10 @@ namespace TrumpTile.GameMain.Data
 
             IsChampionsActive = false;
             ChampionsLevel = 0;
+
+            NewbiePackagePurchased = false;
+            BigginerPackagePurchased = false;
+            MasterPackagePurchased = false;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
@@ -400,6 +428,15 @@ namespace TrumpTile.GameMain.Data
             GemCount = data.GemCount;
 
             ChampionsLevel = data.ChampionsLevel;
+
+            //구매 패키지 관련 데이터 (재구매 쿨타임은 UTC 기준)
+            NewbiePackagePurchased = data.NewbiePackagePurchased;
+            NewbiePackagePurchaseDate = new DateTime(data.NewbiePackagePurchaseDate, DateTimeKind.Utc);
+            BigginerPackagePurchased = data.BigginerPackagePurchased;
+            BigginerPackagePurchaseDate = new DateTime(data.BigginerPackagePurchaseDate, DateTimeKind.Utc);
+            MasterPackagePurchased = data.MasterPackagePurchased;
+            MasterPackagePurchaseDate = new DateTime(data.MasterPackagePurchaseDate, DateTimeKind.Utc);
+
             if(CurrentStage > CoreData.MAX_STAGE)
             {
                 IsChampionsActive = true;
