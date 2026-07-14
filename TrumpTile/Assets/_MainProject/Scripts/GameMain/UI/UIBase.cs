@@ -74,7 +74,8 @@ namespace TrumpTile.GameMain.UI
                 colors.disabledColor = colors.normalColor;
                 selectable.colors = colors;
             }
-            SetTMP_TextIsRTL();
+
+            RefreshLanguage();
         }
 
         public virtual void Show()
@@ -110,29 +111,15 @@ namespace TrumpTile.GameMain.UI
         private void OnRefreshLanguage()
         {
             Refresh();
-            SetTMP_TextIsRTL();
+            RefreshLanguage();
         }
-
-        /// <summary>
-        /// 현재 언어가 아랍어로 설정된 경우 TMP_Text의 IsRTL을 true로 해줌.
-        /// 오른쪽에서부터 텍스트 시작
-        /// </summary>
-        private void SetTMP_TextIsRTL()
+        private void RefreshLanguage()
         {
-            if (SettingsManager.Inst == null)
+            foreach (TextLocalizeSetter setter in GetComponentsInChildren<TextLocalizeSetter>(true))
             {
-                return;
+                setter.Initialize();
             }
 
-            bool bIsRTL = SettingsManager.Inst.Language == ELanguage.Arabic;
-            foreach (TMP_Text text in GetComponentsInChildren<TMP_Text>(true))
-            {
-                if (text.GetComponent<IgnoreRTL>() != null)
-                {
-                    continue;
-                }
-                text.isRightToLeftText = bIsRTL;
-            }
         }
     }
 }
