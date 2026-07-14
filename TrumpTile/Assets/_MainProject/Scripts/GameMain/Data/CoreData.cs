@@ -6,8 +6,8 @@ namespace TrumpTile.GameMain.Core
 {
     public static class CoreData
     {
-        public const int MAX_STAGE = 50;
-        public const int CHAMPIONS_INTERVAL = 31;
+        public const int MAX_STAGE = 500;
+        public const int CHAMPIONS_INTERVAL = 392;
     }    
 }
 
