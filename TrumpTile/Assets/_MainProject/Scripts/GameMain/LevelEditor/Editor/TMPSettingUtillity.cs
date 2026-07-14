@@ -3,12 +3,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Linq;
 
 namespace TrumpTile.LevelEditor.Editor
 {
-    public class TMPAutoSizeSetter
+    public class TMPSettingUtillity
     {
-        [MenuItem("Tools//Set All TMP AutoSize")]
+        [MenuItem("Tools/TMP/Set All TMP AutoSize")]
         static void SetAllTMPAutoSize()
         {
             TMP_Text[] allTMP = Object.FindObjectsOfType<TMP_Text>(true);
@@ -24,6 +25,22 @@ namespace TrumpTile.LevelEditor.Editor
                 SceneManager.GetActiveScene()
             );
             Debug.Log($"TMP AutoSize 적용 완료 : {allTMP.Length}개");
+        }
+        [MenuItem("Tools/TMP/Find TMP Objects")]
+        static void FindTMPObjects()
+        {
+            var tmps = GameObject.FindObjectsByType<TMPro.TMP_Text>(FindObjectsSortMode.None);
+            Selection.objects = tmps.Select(x => x.gameObject).Cast<Object>().ToArray();
+        }
+
+        [MenuItem("Tools/TMP/Find TMP in Selected Prefab")]
+        static void FindTMPInSelectedPrefab()
+        {
+            var selected = Selection.activeGameObject;
+            if (selected == null) return;
+
+            var tmps = selected.GetComponentsInChildren<TMPro.TMP_Text>(true);
+            Selection.objects = tmps.Select(x => x.gameObject).Cast<Object>().ToArray();
         }
     }    
 }
