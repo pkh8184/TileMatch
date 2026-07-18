@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
@@ -36,12 +37,14 @@ namespace TrumpTile.GameMain.UI
         [Header("적용 버튼")]
         [SerializeField] private Button mApplyButton;
 
+        [Header("비속어 테이블")]
+        [SerializeField] private TBRefuseNameTable mRefuseNameTable;
         private int mCurrentAvataIndex = 0;
         private int mCurrentFrameIndex = 0;
 
         private List<Sprite> mAvataSpriteList;
         private List<Sprite> mFrameSpriteList;
-
+        private string mCurrentNickName = "USER";
         public override void Initialize()
         {
             base.Initialize();
@@ -60,6 +63,17 @@ namespace TrumpTile.GameMain.UI
             mAvataButton.onClick.AddListener(() => OnSpriteListChange(true));
             mFrameButton.onClick.AddListener(() => OnSpriteListChange(false));
             mApplyButton.onClick.AddListener(() => ApplyChanges());
+            
+            mCurrentNickName = PlayerDataManager.Inst.GetNickname();
+            mNickNameInputField.text = mCurrentNickName;
+            mNickNameInputField.onValueChanged.AddListener(str =>
+            {
+                if (str.Contains(" "))
+                {
+                    mNickNameInputField.text = str.Replace(" ", "");
+                }
+            });
+            mNickNameInputField.onEndEdit.AddListener(str => OnNickNameEditEnd(str));
         }
         public void SetProfilePopupValid(List<Sprite> avata = null, List<Sprite> frame = null)
         {
@@ -81,6 +95,19 @@ namespace TrumpTile.GameMain.UI
             mNickNameInputField.text = PlayerDataManager.Inst.GetNickname();
 
             OnSpriteListChange(true);
+        }
+        private void OnNickNameEditEnd(string str)
+        {
+            bool hasNonEnglish = System.Text.RegularExpressions.Regex.IsMatch(str, @"[^a-zA-Z]");
+            bool enoughLength = str.Length >= 3;
+            bool canNaming = mRefuseNameTable.CanNaming(str);
+            if(hasNonEnglish || !enoughLength || !canNaming)
+            {
+                mNickNameInputField.text = mCurrentNickName;
+                return;
+            }
+
+            mCurrentNickName = mNickNameInputField.text;                 
         }
         private void OnSpriteListChange(bool isAvata)
         {
