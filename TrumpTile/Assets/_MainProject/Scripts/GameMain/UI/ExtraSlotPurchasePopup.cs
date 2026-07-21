@@ -35,7 +35,7 @@ namespace TrumpTile.GameMain.UI
         private void OnConfirm()
         {
             Hide();
-            EventManager.Inst.ActiveEvent("AccessShopView");
+            EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW);
         }
 
         /// <summary>

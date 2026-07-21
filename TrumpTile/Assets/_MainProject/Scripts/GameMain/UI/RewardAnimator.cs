@@ -86,28 +86,24 @@ namespace TrumpTile.GameMain.UI
                 }
             }
         }
-        public void PlayRewardAnim(Action OnPlayStart, Action OnPlayComplete)
+        public IEnumerator PlayRewardAnim()
         {
             if(mbIsPlaying)
             {
-                return;
+                yield break;
             }
             
             mbIsPlaying = true;
 
-            StartCoroutine(Co_PlayRewardAnim(OnPlayStart, OnPlayComplete));
+            yield return StartCoroutine(Co_PlayRewardAnim());
         }
-        private IEnumerator Co_PlayRewardAnim(Action OnPlayStart, Action OnPlayComplete)
+        private IEnumerator Co_PlayRewardAnim()
         {  
-            OnPlayStart?.Invoke();
-
             yield return StartCoroutine(Co_GoldAnim());
 
             yield return StartCoroutine(Co_ItemAnim());
 
             yield return StartCoroutine(Co_GemAnim());
-
-            OnPlayComplete?.Invoke();
 
             mbIsPlaying = false;
         }
@@ -156,13 +152,13 @@ namespace TrumpTile.GameMain.UI
                     .OnComplete(() => {
                         coin.gameObject.SetActive(false);
                         coin.anchoredPosition = Vector2.zero;
-                        EventManager.Inst.ActiveEvent("GoldRewardArrived");
+                        EventManager.Inst.ActiveEvent(EventKeys.GOLD_REWARD_ARRIVED);
                     }));
             }
 
             float duration = 0.1f * (max - 1) + 0.3f;
             mbSubAnimDone = false;
-            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent("RefreshGoldText", (duration, amount, (Action)(() => mbSubAnimDone = true))));
+            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent(EventKeys.REFRESH_GOLD_TEXT, (duration, amount, (Action)(() => mbSubAnimDone = true))));
 
             yield return moveSeq.WaitForCompletion();
             // 골드 카운트업 연출이 끝날 때까지 대기
@@ -237,7 +233,7 @@ namespace TrumpTile.GameMain.UI
                         cover.anchoredPosition = Vector2.zero;
                         // 마지막 아이템에만 완료 콜백을 실어 보냄(마지막 두근 연출 종료 추적)
                         Action onDone = capturedInterval == lastInterval ? (Action)(() => mbSubAnimDone = true) : null;
-                        EventManager.Inst.ActiveEvent<Action>("ItemRewardArrived", onDone);
+                        EventManager.Inst.ActiveEvent<Action>(EventKeys.ITEM_REWARD_ARRIVED, onDone);
                     }));
 
                 interval++;
@@ -291,11 +287,12 @@ namespace TrumpTile.GameMain.UI
                     .OnComplete(() => {
                         coin.gameObject.SetActive(false);
                         coin.anchoredPosition = Vector2.zero;
-                        EventManager.Inst.ActiveEvent("GemRewardArrived");
+                        EventManager.Inst.ActiveEvent(EventKeys.GEM_REWARD_ARRIVED);
                     }));
             }
 
-            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent("RefreshGemUI", amount));
+
+            moveSeq.InsertCallback(0.4f, () => EventManager.Inst.ActiveEvent(EventKeys.REFRESH_GEM_UI, amount));
 
             yield return moveSeq.WaitForCompletion();
         }

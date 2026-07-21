@@ -75,20 +75,20 @@ namespace TrumpTile.GameMain.UI
         {
             base.Hide();
 
-            EventManager.Inst.ActiveEvent("PlayRewardAnim");
+            EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
             AdManager.Inst.ShowBannerAd();
         }
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("PurchaseSuccess", OnPurchaseSuccess);
+            EventManager.Inst.AddEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent("PurchaseSuccess", OnPurchaseSuccess);
+            EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
         }
         private void CreateRewards()
         {

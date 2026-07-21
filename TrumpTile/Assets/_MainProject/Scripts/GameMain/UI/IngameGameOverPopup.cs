@@ -37,7 +37,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();
 
-            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("AccessShopView"));
+            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW));
 
             mCostButton.onClick.AddListener(ReviveWithPay);
 
@@ -119,13 +119,13 @@ namespace TrumpTile.GameMain.UI
 
             if(mEGameOverType == EGameOverType.TimeOut)
             {
-                EventManager.Inst.AddEvent("GameOver_TimeOut", Show);
+                EventManager.Inst.AddEvent(EventKeys.GAME_OVER_TIME_OUT, Show);
             }
             else if(mEGameOverType == EGameOverType.SlotFull)
             {
-                EventManager.Inst.AddEvent("GameOver_SlotFull", Show);
+                EventManager.Inst.AddEvent(EventKeys.GAME_OVER_SLOT_FULL, Show);
             }
-            EventManager.Inst.AddEvent("RestartLevel", OnRestartLevel);
+            EventManager.Inst.AddEvent(EventKeys.RESTART_LEVEL, OnRestartLevel);
             PlayerDataManager.Inst.OnGoldChanged += Refresh;
         }
 
@@ -135,13 +135,13 @@ namespace TrumpTile.GameMain.UI
 
             if(mEGameOverType == EGameOverType.TimeOut)
             {
-                EventManager.Inst.RemoveEvent("GameOver_TimeOut", Show);
+                EventManager.Inst.RemoveEvent(EventKeys.GAME_OVER_TIME_OUT, Show);
             }
             else if(mEGameOverType == EGameOverType.SlotFull)
             {
-                EventManager.Inst.RemoveEvent("GameOver_SlotFull", Show);
+                EventManager.Inst.RemoveEvent(EventKeys.GAME_OVER_SLOT_FULL, Show);
             }
-            EventManager.Inst.RemoveEvent("RestartLevel", OnRestartLevel);
+            EventManager.Inst.RemoveEvent(EventKeys.RESTART_LEVEL, OnRestartLevel);
 
             if(PlayerDataManager.Inst != null)
             {
@@ -158,7 +158,7 @@ namespace TrumpTile.GameMain.UI
             {
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
-                EventManager.Inst.ActiveEvent("StageFailed");
+                EventManager.Inst.ActiveEvent(EventKeys.STAGE_FAILED);
             });   
         }
 
@@ -176,7 +176,7 @@ namespace TrumpTile.GameMain.UI
 
             if(gold < cost)
             {
-                EventManager.Inst.ActiveEvent("AccessShopView");
+                EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW);
                 return;
             }
 

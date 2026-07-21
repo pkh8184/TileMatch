@@ -52,8 +52,10 @@ namespace TrumpTile.GameMain.UI
             mContentUIController.ActiveRedDot(mContentData.HasNewThing);
 
             mRouletteButton.onClick.AddListener(OnRouletteButton);
+
+            MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.UnlockContent);
         }
-        private void InitAfterRewardAnim()
+        private IEnumerator Co_MainSceneEnterEvent()
         {
             if(mContentData.ShowUnlockPopup)
             {
@@ -61,6 +63,8 @@ namespace TrumpTile.GameMain.UI
                 UIBase ui = obj.GetComponent<UIBase>();
                 ui.Initialize();
                 ui.Show();
+
+                yield return new WaitWhile(() => obj.activeSelf);
             }
         }
         
@@ -85,21 +89,18 @@ namespace TrumpTile.GameMain.UI
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
 
-                EventManager.Inst.ActiveEvent("PlayRewardAnim");
-                CoreContainer.RewardContainer.Clear();
+                EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
             }); 
         }
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();
-            EventManager.Inst.AddEvent("RefreshRouletteData", SetButtonState);
-            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
+            EventManager.Inst.AddEvent(EventKeys.REFRESH_ROULETTE_DATA, SetButtonState);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
-            EventManager.Inst?.RemoveEvent("RefreshRouletteData", SetButtonState);
-            EventManager.Inst?.AddEvent("RewardAnimDone", InitAfterRewardAnim);
+            EventManager.Inst?.RemoveEvent(EventKeys.REFRESH_ROULETTE_DATA, SetButtonState);
         }
         private void OnRouletteButton()
         {
@@ -175,7 +176,7 @@ namespace TrumpTile.GameMain.UI
             List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
             infos.Add(mContentData.GetProductReward().GetRewardDisplayInfo());
 
-            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.PopupContent});
+            EventManager.Inst.ActiveEvent(EventKeys.PLAY_MINI_REWARD_ANIM, new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.PopupContent});
             yield return new WaitForSeconds(1f);
 
             SetInteractable(true);

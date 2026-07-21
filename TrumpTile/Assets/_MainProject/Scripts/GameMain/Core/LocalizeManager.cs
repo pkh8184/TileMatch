@@ -9,6 +9,8 @@ namespace TrumpTile.GameMain.Core
 	{
 		[SerializeField] private TBStringMasterTable mStringMasterTable;
 
+		[SerializeField] private TMP_FontAsset[] mFontArray;
+
 		public string GetString(int key)
 		{
 			if (mStringMasterTable == null)
@@ -45,6 +47,19 @@ namespace TrumpTile.GameMain.Core
 				case ELanguage.Arabic:    return data.Ar;
 				default:                  return data.Ko;
 			}
+		}
+		public TMP_FontAsset GetFontAssetByLocale()
+		{
+			if(mFontArray.Length == 0)
+			{
+				return null;
+			}
+			int index = (int)SettingsManager.Inst.Language;
+			if(index >= mFontArray.Length)
+			{
+				return mFontArray[0];
+			}
+			return mFontArray[index];
 		}
 	}
 }

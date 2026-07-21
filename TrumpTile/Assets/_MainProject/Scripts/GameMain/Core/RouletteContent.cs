@@ -78,7 +78,7 @@ namespace TrumpTile.GameMain.Core
             mbHasNewthing = mCurrentCount < MAX_COUNT;
 
             SetIsFree();
-            EventManager.Inst.ActiveEvent("RefreshRouletteData");
+            EventManager.Inst.ActiveEvent(EventKeys.REFRESH_ROULETTE_DATA);
         }
         public int GetRewardIndex()
         {

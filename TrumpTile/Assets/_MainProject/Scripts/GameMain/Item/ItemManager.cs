@@ -22,7 +22,7 @@ namespace TrumpTile.GameMain.Item
 
         private void OnDestroy()
         {
-            EventManager.Inst?.RemoveEvent("PurchaseConfirmed", LoadItemCounts);
+            EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_CONFIRMED, LoadItemCounts);
         }
         public void Initialize(
 			BoardManager boardManager,
@@ -39,7 +39,7 @@ namespace TrumpTile.GameMain.Item
 
 			LoadItemCounts();
 
-			EventManager.Inst.AddEvent("PurchaseConfirmed", LoadItemCounts);
+			EventManager.Inst.AddEvent(EventKeys.PURCHASE_CONFIRMED, LoadItemCounts);
 		}
 
 		private void RegisterItem(IItem item)
@@ -96,7 +96,7 @@ namespace TrumpTile.GameMain.Item
 			if (GetItemCount(itemId) <= 0)
 			{
 				// 임시
-				EventManager.Inst.ActiveEvent("PurchaseItem", (object)itemId);
+				EventManager.Inst.ActiveEvent(EventKeys.PURCHASE_ITEM, (object)itemId);
 				return;
 			}
 			if (!item.CanExecute())
@@ -106,7 +106,7 @@ namespace TrumpTile.GameMain.Item
 			
 			mItemCounts[itemId]--;
 			PlayerDataManager.Inst.SetItemCount(itemId, mItemCounts[itemId]);
-			EventManager.Inst.ActiveEvent("ItemCountChanged");
+			EventManager.Inst.ActiveEvent(EventKeys.ITEM_COUNT_CHANGED);
 			//OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
 
 			StartCoroutine(ExecuteItemCoroutine(item));
@@ -147,7 +147,7 @@ namespace TrumpTile.GameMain.Item
 			mItemCounts[itemId] += count;
 			
 			PlayerDataManager.Inst.SetItemCount(itemId, mItemCounts[itemId]);
-			EventManager.Inst.ActiveEvent("ItemCountChanged");
+			EventManager.Inst.ActiveEvent(EventKeys.ITEM_COUNT_CHANGED);
 			
 			//OnItemCountChanged?.Invoke(itemId, mItemCounts[itemId]);
 		}

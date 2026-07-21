@@ -46,13 +46,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("OnExitButton", Show);
+            EventManager.Inst.AddEvent(EventKeys.ON_EXIT_BUTTON, Show);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent("OnExitButton", Show);
+            EventManager.Inst?.RemoveEvent(EventKeys.ON_EXIT_BUTTON, Show);
         }
         private void OnConfirmButton()
         {

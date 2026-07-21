@@ -116,13 +116,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("LevelClear", Show);
+            EventManager.Inst.AddEvent(EventKeys.LEVEL_CLEAR, Show);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent("LevelClear", Show);
+            EventManager.Inst?.RemoveEvent(EventKeys.LEVEL_CLEAR, Show);
         }
         private void OnRewardButtonClick()
         {

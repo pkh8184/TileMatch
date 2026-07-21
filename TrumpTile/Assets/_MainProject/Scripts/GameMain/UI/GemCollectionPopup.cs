@@ -56,8 +56,10 @@ namespace TrumpTile.GameMain.UI
 
             CreateElement();
             InitCollectGauge();
+
+            MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.UnlockContent);
         }
-        private void InitAfterRewardAnim()
+        private IEnumerator Co_MainSceneEnterEvent()
         {
             if(mContentData.ShowUnlockPopup)
             {
@@ -65,29 +67,30 @@ namespace TrumpTile.GameMain.UI
                 UIBase ui = obj.GetComponent<UIBase>();
                 ui.Initialize();
                 ui.Show();
+
+                yield return new WaitWhile(() => obj.activeSelf);
             }
         }
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent<int>("RefreshGemUI", RefreshGemUI);
-            EventManager.Inst.AddEvent("GemRewardArrived", PulseGemRect);
-            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
+            EventManager.Inst.AddEvent<int>(EventKeys.REFRESH_GEM_UI, RefreshGemUI);
+            EventManager.Inst.AddEvent(EventKeys.GEM_REWARD_ARRIVED, PulseGemRect);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent<int>("RefreshGemUI", RefreshGemUI);
-            EventManager.Inst?.RemoveEvent("GemRewardArrived", PulseGemRect);
-            EventManager.Inst?.RemoveEvent("RewardAnimDone", InitAfterRewardAnim);
+            EventManager.Inst?.RemoveEvent<int>(EventKeys.REFRESH_GEM_UI, RefreshGemUI);
+            EventManager.Inst?.RemoveEvent(EventKeys.GEM_REWARD_ARRIVED, PulseGemRect);
         }
         private void PulseGemRect()
         {
             mMainViewGemTransform.DOKill(true);
             mMainViewGemTransform.localScale = Vector3.one;
             mMainViewGemTransform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 6, 0.8f);
+            AudioEvent.Play(EAudioKey.SFX_GetReward_Gold);
         }
         private void RefreshGemUI(int amount)
         {   
@@ -95,20 +98,19 @@ namespace TrumpTile.GameMain.UI
             transform.GetChild(1).gameObject.SetActive(false);
             
             gameObject.SetActive(true);
-            StartCoroutine(Co_RefreshGemUI(amount));
+            MainManager.Instance.AddEvent(() => Co_RefreshGemUI(amount), EMainSceneEventType.GetGemProgress);
         }
         private IEnumerator Co_RefreshGemUI(int amount)
         {
             int startValue = mContentData.CapturedGemCount - amount;
 
             List<GemCollectAnimPayload> animPayloadList = mContentData.GetAnimPayload();
-            if(animPayloadList == null)
+            int count = 0;
+            if(animPayloadList != null)
             {
-
-                EventManager.Inst.ActiveEvent("PlayRewardAnim");
-                yield break;
+                count = animPayloadList.Count;
             }
-            for(int i = 0; i < animPayloadList.Count; i++)
+            for(int i = 0; i < count; i++)
             {
                 Sequence seq = DOTween.Sequence();
 
@@ -121,7 +123,7 @@ namespace TrumpTile.GameMain.UI
                     mMainViewSliderProgressText.text = $"{x}/{animPayloadList[i].CapturedRequiredGemCount}";
                 }, animPayloadList[i].CapturedRequiredGemCount, 0.5f));
 
-                seq.AppendCallback(() => EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = animPayloadList[i].RewardDisplayInfoList, Type = EMiniRewardAnimType.Custom, target = new Vector2(235, 79), parentName = "Contents_GemCollect"}));
+                seq.AppendCallback(() => EventManager.Inst.ActiveEvent(EventKeys.PLAY_MINI_REWARD_ANIM, new MiniRewardPayload{Infos = animPayloadList[i].RewardDisplayInfoList, Type = EMiniRewardAnimType.Custom, target = new Vector2(235, 79), parentName = "Contents_GemCollect"}));
                 seq.Append(mMainViewSliderRewardIcon.transform.DOScale(0, 0.3f).SetEase(Ease.InBack));
                 seq.JoinCallback(() => AudioEvent.Play(EAudioKey.SFX_Main_GemCollection_GaugeUp_Complete));
 
@@ -164,7 +166,9 @@ namespace TrumpTile.GameMain.UI
             {
                 lastSeq.Append(mShowButton.transform.parent.DOScale(0, 0.3f).SetEase(Ease.InBack));
                 lastSeq.AppendCallback(() => mShowButton.transform.parent.gameObject.SetActive(false));
-                EventManager.Inst.ActiveEvent("PlayRewardAnim");
+                
+                yield return lastSeq.WaitForCompletion();
+                EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
                 yield break;
             }
 
@@ -183,7 +187,7 @@ namespace TrumpTile.GameMain.UI
 
             SetElement();
 
-            EventManager.Inst.ActiveEvent("PlayRewardAnim");
+            EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
         }
         private void CreateElement()
         {

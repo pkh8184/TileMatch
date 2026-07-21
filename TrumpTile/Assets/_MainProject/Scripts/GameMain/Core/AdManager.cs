@@ -36,12 +36,12 @@ namespace TrumpTile.GameMain.Core
 
 		private void OnEnable()
 		{
-			EventManager.Inst?.AddEvent("RemoveAdsPurchased", OnRemoveAdsPurchased);
+			EventManager.Inst?.AddEvent(EventKeys.REMOVE_ADS_PURCHASED, OnRemoveAdsPurchased);
 		}
 
 		private void OnDisable()
 		{
-			EventManager.Inst?.RemoveEvent("RemoveAdsPurchased", OnRemoveAdsPurchased);
+			EventManager.Inst?.RemoveEvent(EventKeys.REMOVE_ADS_PURCHASED, OnRemoveAdsPurchased);
 		}
 
 		private void OnRemoveAdsPurchased()

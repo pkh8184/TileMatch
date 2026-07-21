@@ -39,7 +39,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.Initialize();    
 
-            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("AccessShopView"));
+            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW));
             mPurchaseButton.onClick.AddListener(PurchaseProgress);
 
             RefreshGoldData();
@@ -92,7 +92,7 @@ namespace TrumpTile.GameMain.UI
             }
             if(!mbCanPucrchase)
             {
-                EventManager.Inst.ActiveEvent("AccessShopView");
+                EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW);
                 return;
             }
 

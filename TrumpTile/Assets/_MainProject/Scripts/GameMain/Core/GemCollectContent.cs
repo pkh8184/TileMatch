@@ -126,6 +126,10 @@ namespace TrumpTile.GameMain.Core
         }
         private void RewardProgressForRefresh()
         {
+            //단계 완료 여부와 무관하게 항상 새 리스트로 초기화한다.
+            //(단계 미완료로 early-return될 때 이전 수집의 payload가 남아, 이전 단계 프로그레스가 잘못 재생되는 것 방지)
+            mPlayloadList = new List<GemCollectAnimPayload>();
+
             if(mCurrentIndex >= MAX_INDEX)
             {
                 return;
@@ -134,7 +138,6 @@ namespace TrumpTile.GameMain.Core
             {
                 return;
             }
-            mPlayloadList = new List<GemCollectAnimPayload>();
 
             while(mCurrentGemCount >= mRequiredGemCountArray[mCurrentIndex])
             {

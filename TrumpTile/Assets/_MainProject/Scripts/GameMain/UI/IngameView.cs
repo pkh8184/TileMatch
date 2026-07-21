@@ -110,7 +110,7 @@ namespace TrumpTile.GameMain.UI
                 if(PlayerDataManager.Inst.Gold < SlotManager.Instance.BonusSlotCost)
                 {
                     GameManager.Instance.PauseGame();
-                    EventManager.Inst.ActiveEvent("AccessShopView");
+                    EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW);
                 }
                 else
                 {
@@ -131,27 +131,27 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
             //임시
-            EventManager.Inst.AddEvent("IngameLoadingComplete", OnLoadLevelComplete);
-            EventManager.Inst.AddEvent("TimerSettingComplete", OnTimerSettingComplete);
+            EventManager.Inst.AddEvent(EventKeys.INGAME_LOADING_COMPLETE, OnLoadLevelComplete);
+            EventManager.Inst.AddEvent(EventKeys.TIMER_SETTING_COMPLETE, OnTimerSettingComplete);
             //다른 UI들에서 상점 접근이 가능해지기 위한 이벤트 등록
-            EventManager.Inst.AddEvent("ItemCountChanged", RefreshButtons);
-            EventManager.Inst.AddEvent("PurchaseItem", PurchaseItem);
-            EventManager.Inst.AddEvent("BonusTileMatch", OnBonusTileMatched);
-            EventManager.Inst.AddEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
-            EventManager.Inst.AddEvent<int>("CollectGem", CollectGem);
+            EventManager.Inst.AddEvent(EventKeys.ITEM_COUNT_CHANGED, RefreshButtons);
+            EventManager.Inst.AddEvent(EventKeys.PURCHASE_ITEM, PurchaseItem);
+            EventManager.Inst.AddEvent(EventKeys.BONUS_TILE_MATCH, OnBonusTileMatched);
+            EventManager.Inst.AddEvent(EventKeys.REMOVE_ADS_PURCHASED, UpdateBonusSlotButtonVisibility);
+            EventManager.Inst.AddEvent<int>(EventKeys.COLLECT_GEM, CollectGem);
 
             PlayerDataManager.Inst.OnGoldChanged += RefreshButtons;
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
-            EventManager.Inst?.RemoveEvent("IngameLoadingComplete", OnLoadLevelComplete);
-            EventManager.Inst?.RemoveEvent("TimerSettingComplete", OnTimerSettingComplete);
-            EventManager.Inst?.RemoveEvent("ItemCountChanged", RefreshButtons);
-            EventManager.Inst?.RemoveEvent("PurchaseItem", PurchaseItem);
-            EventManager.Inst?.RemoveEvent("BonusTileMatch", OnBonusTileMatched);
-            EventManager.Inst?.RemoveEvent("RemoveAdsPurchased", UpdateBonusSlotButtonVisibility);
-            EventManager.Inst?.RemoveEvent<int>("CollectGem", CollectGem);
+            EventManager.Inst?.RemoveEvent(EventKeys.INGAME_LOADING_COMPLETE, OnLoadLevelComplete);
+            EventManager.Inst?.RemoveEvent(EventKeys.TIMER_SETTING_COMPLETE, OnTimerSettingComplete);
+            EventManager.Inst?.RemoveEvent(EventKeys.ITEM_COUNT_CHANGED, RefreshButtons);
+            EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_ITEM, PurchaseItem);
+            EventManager.Inst?.RemoveEvent(EventKeys.BONUS_TILE_MATCH, OnBonusTileMatched);
+            EventManager.Inst?.RemoveEvent(EventKeys.REMOVE_ADS_PURCHASED, UpdateBonusSlotButtonVisibility);
+            EventManager.Inst?.RemoveEvent<int>(EventKeys.COLLECT_GEM, CollectGem);
 
             if(PlayerDataManager.Inst != null)
             {

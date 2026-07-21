@@ -19,13 +19,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("PurchaseFailed", Show);
+            EventManager.Inst.AddEvent(EventKeys.PURCHASE_FAILED, Show);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
             
-            EventManager.Inst.RemoveEvent("PurchaseFailed", Show);
+            EventManager.Inst.RemoveEvent(EventKeys.PURCHASE_FAILED, Show);
         }
     }    
 }

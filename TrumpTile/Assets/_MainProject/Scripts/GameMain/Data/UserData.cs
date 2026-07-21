@@ -41,6 +41,7 @@ namespace TrumpTile.GameMain.Data
         public bool RouletteUnlock;
         public bool ExcitTravelUnlock;
         public bool GemCollectionUnlock;
+        public bool TreasureBoxUnlock;
 
         //출석체크 관련 데이터
         public int StreakLoginCount;
@@ -79,6 +80,9 @@ namespace TrumpTile.GameMain.Data
         public long BigginerPackagePurchaseDate;
         public bool MasterPackagePurchased;
         public long MasterPackagePurchaseDate;
+
+        //트레져박스 관련 데이터
+        public long TreasureBoxActiveDate;
         public EncryptedUserData(UserData data)
         {
             RemoveAds = data.RemoveAds;
@@ -114,6 +118,7 @@ namespace TrumpTile.GameMain.Data
             RouletteUnlock = data.RouletteUnlock;
             ExcitTravelUnlock = data.ExcitTravelUnlock;
             GemCollectionUnlock = data.GemCollectionUnlock;
+            TreasureBoxUnlock = data.TreasureBoxUnlock;
 
             //출석체크 관련 데이터
             StreakLoginCount = data.StreakLoginCount;
@@ -151,6 +156,8 @@ namespace TrumpTile.GameMain.Data
             BigginerPackagePurchaseDate = data.BigginerPackagePurchaseDate.ToUniversalTime().Ticks;
             MasterPackagePurchased = data.MasterPackagePurchased;
             MasterPackagePurchaseDate = data.MasterPackagePurchaseDate.ToUniversalTime().Ticks;
+
+            TreasureBoxActiveDate = data.TreasureBoxActiveDate.ToUniversalTime().Ticks;
         }
     }
     [Serializable]
@@ -196,6 +203,7 @@ namespace TrumpTile.GameMain.Data
         public bool RouletteUnlock;
         public bool ExcitTravelUnlock;
         public bool GemCollectionUnlock;
+        public bool TreasureBoxUnlock;
 
         //출석체크 관련 데이터
         public int StreakLoginCount;
@@ -234,6 +242,10 @@ namespace TrumpTile.GameMain.Data
         public DateTime BigginerPackagePurchaseDate;
         public bool MasterPackagePurchased;
         public DateTime MasterPackagePurchaseDate;
+
+        //트레져 박스 관련 데이터
+        public DateTime TreasureBoxActiveDate;
+
         //딕셔너리 파싱 생성자
         public UserData(Dictionary<object, object> dataDictionary)
         {
@@ -333,6 +345,8 @@ namespace TrumpTile.GameMain.Data
             NewbiePackagePurchased = false;
             BigginerPackagePurchased = false;
             MasterPackagePurchased = false;
+
+            TreasureBoxUnlock = false;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
@@ -399,6 +413,7 @@ namespace TrumpTile.GameMain.Data
             RouletteUnlock = data.RouletteUnlock;
             ExcitTravelUnlock = data.ExcitTravelUnlock;
             GemCollectionUnlock = data.GemCollectionUnlock;
+            TreasureBoxUnlock = data.TreasureBoxUnlock;
 
             //출석체크 관련 데이터
             StreakLoginCount = data.StreakLoginCount;
@@ -445,6 +460,8 @@ namespace TrumpTile.GameMain.Data
             {
                 IsChampionsActive = false;
             }
+            
+            TreasureBoxActiveDate = new DateTime(data.TreasureBoxActiveDate, DateTimeKind.Utc);
             LoadUnEncryptedData();
         }
     }

@@ -1012,7 +1012,7 @@ namespace TrumpTile.GameMain.Core
 			if(mTileData.tileTypeId.Contains("Bonus"))
 			{
 				GameManager.Instance.IncreaseBonusGold();
-				EventManager.Inst.ActiveEvent("BonusTileMatch");
+				EventManager.Inst.ActiveEvent(EventKeys.BONUS_TILE_MATCH);
 			}
 			Destroy(gameObject);
 		}

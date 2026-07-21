@@ -74,7 +74,7 @@ namespace TrumpTile.GameMain.UI
                 item.Initialize();
             }
 
-            EventManager.Inst.ActiveEvent("MainSceneLoadComplete");
+            EventManager.Inst.ActiveEvent(EventKeys.MAIN_SCENE_LOAD_COMPLETE);
         }
         private void RefreshDateText()
         {
@@ -89,7 +89,7 @@ namespace TrumpTile.GameMain.UI
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
             PlayerDataManager.Inst.LoadUserDataForDebug();
-            EventManager.Inst.ActiveEvent("ContentDataRefresh");
+            EventManager.Inst.ActiveEvent(EventKeys.CONTENT_DATA_REFRESH);
 
             RefreshAllViews();
         }

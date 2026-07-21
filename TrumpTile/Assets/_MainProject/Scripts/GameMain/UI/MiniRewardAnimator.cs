@@ -54,11 +54,11 @@ namespace TrumpTile.GameMain.UI
             }
             mCanvasGroup = transform.GetComponent<CanvasGroup>();
 
-            EventManager.Inst.AddEvent<MiniRewardPayload>("PlayMiniRewardAnim", PlayMiniRewardAnim);
+            EventManager.Inst.AddEvent<MiniRewardPayload>(EventKeys.PLAY_MINI_REWARD_ANIM, PlayMiniRewardAnim);
         }
         private void OnDestroy()
         {
-            EventManager.Inst?.RemoveEvent<MiniRewardPayload>("PlayMiniRewardAnim", PlayMiniRewardAnim);
+            EventManager.Inst?.RemoveEvent<MiniRewardPayload>(EventKeys.PLAY_MINI_REWARD_ANIM, PlayMiniRewardAnim);
         }
         public void PlayMiniRewardAnim(MiniRewardPayload payload)
         {

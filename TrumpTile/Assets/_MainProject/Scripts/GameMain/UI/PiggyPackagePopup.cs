@@ -67,6 +67,8 @@ namespace TrumpTile.GameMain.UI
             mContentController.SetLimitTimeText(mContentData.GetRemainTimeSeconds());
 
             SetState();
+
+            MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.PiggyBankPopup);
         }
         public void OnPurchaseSuccess()
         {
@@ -81,17 +83,15 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("PurchaseSuccess", OnPurchaseSuccess);
-            EventManager.Inst.AddEvent("PiggyRewardConfirm", OnPiggyRewardConfirm);
-            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
+            EventManager.Inst.AddEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
+            EventManager.Inst.AddEvent(EventKeys.PIGGY_REWARD_CONFIRM, OnPiggyRewardConfirm);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent("PurchaseSuccess", OnPurchaseSuccess);
-            EventManager.Inst?.RemoveEvent("PiggyRewardConfirm", OnPiggyRewardConfirm);
-            EventManager.Inst?.RemoveEvent("RewardAnimDone", InitAfterRewardAnim);
+            EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
+            EventManager.Inst?.RemoveEvent(EventKeys.PIGGY_REWARD_CONFIRM, OnPiggyRewardConfirm);
         }
         protected override void PlayShowAnim()
         {
@@ -140,23 +140,8 @@ namespace TrumpTile.GameMain.UI
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
 
-                EventManager.Inst.ActiveEvent("PlayRewardAnim");
+                EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
             }); 
-        }
-        private void InitAfterRewardAnim()
-        {
-            if(mContentData.CanGetRewardAfterEndActive)
-            {
-                Show();
-                RewardProgress();
-                return;
-            }
-            if(mContentData.IsFull && mContentData.CanConfirm)
-            {
-                Show();
-                RewardProgress();
-                return;
-            }
         }
         private void PlayProgressAnim()
         {
@@ -187,6 +172,21 @@ namespace TrumpTile.GameMain.UI
             }
 
             mProgressAnimSeq.OnComplete(() => SetInteractable(true));
+        }
+        private IEnumerator Co_MainSceneEnterEvent()
+        {
+            if(mContentData.CanGetRewardAfterEndActive)
+            {
+                Show();
+                RewardProgress();
+                yield return new WaitWhile(() => gameObject.activeSelf);
+            }
+            else if(mContentData.IsFull && mContentData.CanConfirm)
+            {
+                Show();
+                RewardProgress();
+                yield return new WaitWhile(() => gameObject.activeSelf);
+            }
         }
         private void SetState()
         {
@@ -220,6 +220,7 @@ namespace TrumpTile.GameMain.UI
         private void OnPiggyRewardConfirm()
         {
             SetInteractable(false);
+
             mContentData.PiggyBankRewardProgress();
 
             mShowButton.gameObject.SetActive(false);

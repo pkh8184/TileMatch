@@ -12,8 +12,11 @@ namespace TrumpTile.GameMain.Core
 	{
 		GetReward = 0,
 		GetGemProgress,
-		PiggyBanckPopup,
-		UnlockContent
+		PiggyBankPopup,
+		UnlockContent,
+		TreasurePackProgress,
+		DailyCheck,
+		AlbumPending
 	}
 	public class MainSceneEventWrapper
 	{
@@ -44,7 +47,7 @@ namespace TrumpTile.GameMain.Core
             }
             _ = AdManager.Inst;
 
-			EventManager.Inst.AddEvent("RewardAnimDone", CheckAlbumPendingReward);
+			EventManager.Inst.AddEvent(EventKeys.REWARD_ANIM_DONE, CheckAlbumPendingReward);
         }
 
 		private IEnumerator Start()
@@ -61,14 +64,14 @@ namespace TrumpTile.GameMain.Core
 			{
 				AudioEvent.Play(EAudioKey.BGM_Main);
 			}
-			EventManager.Inst.ActiveEvent("MainSceneLoadComplete");
+			EventManager.Inst.ActiveEvent(EventKeys.MAIN_SCENE_LOAD_COMPLETE);
 
 			// yield return mAlbumCheckDelay;
 			// CheckAlbumPendingReward();
 		}
         private void OnDestroy()
         {
-            EventManager.Inst?.RemoveEvent("RewardAnimDone", CheckAlbumPendingReward);
+            EventManager.Inst?.RemoveEvent(EventKeys.REWARD_ANIM_DONE, CheckAlbumPendingReward);
 			if(Instance == this)
 			{
 				Instance = null;
@@ -98,27 +101,52 @@ namespace TrumpTile.GameMain.Core
 			
 			mEventList.Add(wrapper);
 		}
-		public void PlayEvent()
+		public void PlayEvent(Action OnStart = null, Action OnEnd = null)
 		{
-			if(mEventList == null || mEventList.Count < 1)
-			{
-				return;
-			}
-			if(mEventCoroutine != null)
-			{
-				return;
-			}
-			mEventCoroutine = Co_PlayEvent();
-			StartCoroutine(mEventCoroutine);
+			StartCoroutine(Co_PlayEvent(OnStart, OnEnd));
 		}
-		private IEnumerator Co_PlayEvent()
+		private IEnumerator Co_PlayEvent(Action OnStart, Action OnEnd)
 		{
-			while(mEventList.Count > 0)
+			bool isPlaying = false;
+			while(true)
 			{
-				yield return null;
-			}
+				if(mEventList.Count == 0)
+				{
+					if(isPlaying)
+					{
+						isPlaying = false;
+						OnEnd?.Invoke();
+					}
+					yield return null;
+					continue;
+				}
+				else
+				{
+					if(!isPlaying)
+					{
+						isPlaying = true;
+						OnStart?.Invoke();
+					}
+					Func<IEnumerator> routine = null;
+					for(int i = 0; i < (int)EMainSceneEventType.AlbumPending; i++)
+					{
+						for(int j = 0; j < mEventList.Count; j++)
+						{
+							if(mEventList[j].Type == (EMainSceneEventType)i)
+							{
+								routine = mEventList[j].Coroutine;
+								mEventList.Remove(mEventList[j]);
+								break;
+							}
+						}
+						if(routine != null) break;
+					}
 
-			EventManager.Inst.ActiveEvent("MainSceneEnterEventDone");
+					yield return StartCoroutine(routine());	
+
+					yield return null;				
+				}
+			}
 		}
 	}
 }

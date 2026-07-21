@@ -602,7 +602,7 @@ namespace TrumpTile.GameMain.Core
 				{
 					EffectManager.Instance?.PlayMatchEffect(matchedTileList[i].transform.position, eMatchType : EMatchType.Bonus);
 					GameManager.Instance.IncreaseBonusGoldWithMatch();
-					EventManager.Inst.ActiveEvent("BonusTileMatch");
+					EventManager.Inst.ActiveEvent(EventKeys.BONUS_TILE_MATCH);
 					AudioEvent.Play(EAudioKey.SFX_TileMatch_Bonus);
 				}
 				else
@@ -908,7 +908,7 @@ namespace TrumpTile.GameMain.Core
 			if(tile.TileTypeId.Contains("Bonus"))
 			{
 				GameManager.Instance.IncreaseBonusGold();
-				EventManager.Inst.ActiveEvent("BonusTileMatch");
+				EventManager.Inst.ActiveEvent(EventKeys.BONUS_TILE_MATCH);
 			}
 			int index = mSlotTiles.IndexOf(tile);
 			mSlotTiles.Remove(tile);

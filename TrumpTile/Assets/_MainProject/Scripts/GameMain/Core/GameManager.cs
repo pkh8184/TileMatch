@@ -245,7 +245,7 @@ namespace TrumpTile.GameMain.Core
             }
 			if(Input.GetKeyDown(KeyCode.Escape))
 			{
-				EventManager.Inst.ActiveEvent("OnExitButton");
+				EventManager.Inst.ActiveEvent(EventKeys.ON_EXIT_BUTTON);
 			}
 			if (mEnableDebugKeys)
 			{
@@ -383,7 +383,7 @@ namespace TrumpTile.GameMain.Core
 			FindObjectOfType<SlotTensionController>(true)?.ResetForNewStage();
 
             //임시
-            EventManager.Inst.ActiveEvent("IngameLoadingComplete", (object)(levelData, mbIsRetry));
+            EventManager.Inst.ActiveEvent(EventKeys.INGAME_LOADING_COMPLETE, (object)(levelData, mbIsRetry));
 
             mBoardManager?.LoadLevel(levelData);
 
@@ -404,7 +404,7 @@ namespace TrumpTile.GameMain.Core
 			mCurrentTime = mTargetClearTime;
 
             //임시
-            EventManager.Inst.ActiveEvent("TimerSettingComplete");
+            EventManager.Inst.ActiveEvent(EventKeys.TIMER_SETTING_COMPLETE);
 
            // UIManager.Instance?.UpdateLevel(CurrentLevel);
 			UIManager.Instance?.UpdateScore(mCurrentScore);
@@ -435,7 +435,7 @@ namespace TrumpTile.GameMain.Core
 			mbIsRetry = true;
 			Debug.Log($"[GameManager] RestartLevel - Level {CurrentLevel}");
 			AudioManager.Inst.SetBGMVolume(1f);
-			EventManager.Inst.ActiveEvent("RestartLevel");
+			EventManager.Inst.ActiveEvent(EventKeys.RESTART_LEVEL);
 
 			mCurrentReviveCount = 0;
 			mbIsTimeOut = false;
@@ -574,11 +574,11 @@ namespace TrumpTile.GameMain.Core
 
 			if(mbIsTimeOut)
 			{
-				EventManager.Inst.ActiveEvent("GameOver_TimeOut");	
+				EventManager.Inst.ActiveEvent(EventKeys.GAME_OVER_TIME_OUT);	
 			}
 			else
 			{
-				EventManager.Inst.ActiveEvent("GameOver_SlotFull");
+				EventManager.Inst.ActiveEvent(EventKeys.GAME_OVER_SLOT_FULL);
 			}
 		}
 
@@ -664,7 +664,7 @@ namespace TrumpTile.GameMain.Core
 
 			yield return new WaitForSeconds(0.5F);
 
-			EventManager.Inst.ActiveEvent("LevelClear");
+			EventManager.Inst.ActiveEvent(EventKeys.LEVEL_CLEAR);
 			// VictoryPopup 표시
       
 			if (mVictoryPopup != null)

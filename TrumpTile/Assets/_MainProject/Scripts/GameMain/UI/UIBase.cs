@@ -107,6 +107,25 @@ namespace TrumpTile.GameMain.UI
         public void Deinitialize()
         {
             UnSubscribeEvent();
+
+            //Initialize에서 등록한 런타임 onClick 리스너를 정리한다.
+            //(RefreshAllViews 등으로 재초기화될 때 리스너가 중복 누적되어 한 번 클릭에 여러 번 실행되는 것 방지)
+            if (mShowButton != null)
+            {
+                mShowButton.onClick.RemoveAllListeners();
+            }
+            if (mHideButton != null)
+            {
+                mHideButton.onClick.RemoveAllListeners();
+            }
+            foreach (Button button in GetComponentsInChildren<Button>(true))
+            {
+                button.onClick.RemoveAllListeners();
+            }
+            foreach (Toggle toggle in GetComponentsInChildren<Toggle>(true))
+            {
+                toggle.onValueChanged.RemoveAllListeners();
+            }
         }
         private void OnRefreshLanguage()
         {

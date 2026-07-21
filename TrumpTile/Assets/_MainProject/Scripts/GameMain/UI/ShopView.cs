@@ -77,16 +77,16 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("AccessShopView", Show);
-            EventManager.Inst.AddEvent("PurchaseSuccess", OnPurchaseSuccess);
+            EventManager.Inst.AddEvent(EventKeys.ACCESS_SHOP_VIEW, Show);
+            EventManager.Inst.AddEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
            // EventManager.Inst.AddEvent("ShopView", Show);    
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent("AccessShopView", Show);
-            EventManager.Inst?.RemoveEvent("PurchaseSuccess", OnPurchaseSuccess);
+            EventManager.Inst?.RemoveEvent(EventKeys.ACCESS_SHOP_VIEW, Show);
+            EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
         }
         private void OnPurchaeButtonClick(EProductId eProductId)
         {
@@ -130,7 +130,7 @@ namespace TrumpTile.GameMain.UI
             {
                 CoreContainer.RewardContainer.AddReward(item);
             }
-            EventManager.Inst.ActiveEvent("PlayRewardAnim");
+            EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
 
             Hide();
         }

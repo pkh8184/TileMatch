@@ -55,13 +55,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("PurchaseSuccess", OnPurchaseSuccess);
+            EventManager.Inst.AddEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst?.RemoveEvent("PurchaseSuccess", OnPurchaseSuccess);
+            EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
         }
         public void OnPurchaseSuccess()
         {
@@ -88,7 +88,7 @@ namespace TrumpTile.GameMain.UI
             {
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
-                EventManager.Inst.ActiveEvent("PlayRewardAnim");
+                EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
                 mShowButton.gameObject.SetActive(false);
             });
         }

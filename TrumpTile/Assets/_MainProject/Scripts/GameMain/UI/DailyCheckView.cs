@@ -64,24 +64,21 @@ namespace TrumpTile.GameMain.UI
             mContentController.PlayShowButtonAnim(mShowButton);
 
             InitStickerConfigs();
-        }
-        protected override void SubscribeEvent()
-        {
-            base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("RewardAnimDone", InitAfterRewardAnim);
+            if(mContentData.ShowUnlockPopup)
+            {
+                MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.UnlockContent);
+            }
+            else
+            {
+                MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.DailyCheck);
+            }
         }
-        protected override void UnSubscribeEvent()
-        {
-            base.UnSubscribeEvent();
-
-            EventManager.Inst?.RemoveEvent("RewardAnimDone", InitAfterRewardAnim);
-        }
-        private void InitAfterRewardAnim()
+        private IEnumerator Co_MainSceneEnterEvent()
         {
             if(!mContentData.Unlock || !mContentData.HasNewThing)
             {
-                return;
+                yield break;
             }
             if(mContentData.ShowUnlockPopup)
             {
@@ -89,10 +86,13 @@ namespace TrumpTile.GameMain.UI
                 UIBase ui = obj.GetComponent<UIBase>();
                 ui.Initialize();
                 ui.Show();
+
+                yield return new WaitWhile(() => obj.activeSelf);
             }
             else
             {
-                 Show();
+                Show();
+                yield return new WaitWhile(() => gameObject.activeSelf);
             }
         }
         public override void Hide()
@@ -176,7 +176,7 @@ namespace TrumpTile.GameMain.UI
             gameObject.SetActive(false);
             mShowButton.gameObject.SetActive(false);
                   
-            EventManager.Inst.ActiveEvent("PlayRewardAnim");
+            EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
         }
         private void OnStickerClick(int index)
         {

@@ -17,7 +17,7 @@ namespace TrumpTile.GameMain.Core
         }
         private void OnDestroy()
         {
-            EventManager.Inst?.RemoveEvent("ContentDataRefresh", Refresh);
+            EventManager.Inst?.RemoveEvent(EventKeys.CONTENT_DATA_REFRESH, Refresh);
         }
         protected override void InitOnCreated()
         {
@@ -32,7 +32,7 @@ namespace TrumpTile.GameMain.Core
                 }
             };
 
-            EventManager.Inst.AddEvent("ContentDataRefresh", Refresh);
+            EventManager.Inst.AddEvent(EventKeys.CONTENT_DATA_REFRESH, Refresh);
         }
         public async Task Initialize()
         {

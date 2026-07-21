@@ -63,7 +63,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnExitButtonClick()
         {
-            EventManager.Inst.ActiveEvent("OnExitButton");
+            EventManager.Inst.ActiveEvent(EventKeys.ON_EXIT_BUTTON);
         }
         private IEnumerator Co_PlayShowAnim()
         {

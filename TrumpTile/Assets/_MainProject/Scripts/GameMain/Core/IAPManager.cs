@@ -117,12 +117,12 @@ namespace  TrumpTile.GameMain.Core
                 PlayerDataManager.Inst.PurchasePackage(eProductId);
             }
 
-            EventManager.Inst.ActiveEvent("PurchaseConfirmed");
-            EventManager.Inst.ActiveEvent("ContentDataRefresh");
+            EventManager.Inst.ActiveEvent(EventKeys.PURCHASE_CONFIRMED);
+            EventManager.Inst.ActiveEvent(EventKeys.CONTENT_DATA_REFRESH);
 
             if(eProductId == EProductId.RemoveAds)
             {
-                EventManager.Inst.ActiveEvent("RemoveAdsPurchased");
+                EventManager.Inst.ActiveEvent(EventKeys.REMOVE_ADS_PURCHASED);
             }
         }
         // 구매 실패
@@ -130,7 +130,7 @@ namespace  TrumpTile.GameMain.Core
         {
             Debug.Log($"[IAPManager] 구매 실패: {failedOrder.FailureReason}");
 
-            EventManager.Inst.ActiveEvent("PurchaseFailed");
+            EventManager.Inst.ActiveEvent(EventKeys.PURCHASE_FAILED);
         }
     } 
 }

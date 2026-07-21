@@ -118,7 +118,7 @@ namespace TrumpTile.GameMain.Core
                 {
                     gemCount++;
                     gem.gameObject.SetActive(false);
-                    EventManager.Inst.ActiveEvent("CollectGem", mCapturedGemCount + gemCount);
+                    EventManager.Inst.ActiveEvent(EventKeys.COLLECT_GEM, mCapturedGemCount + gemCount);
                     AudioEvent.Play(EAudioKey.SFX_Ingame_Collect_Gem);
                 });
             }

@@ -21,13 +21,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("PurchaseConfirmed", Show);
+            EventManager.Inst.AddEvent(EventKeys.PURCHASE_CONFIRMED, Show);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
             
-            EventManager.Inst.RemoveEvent("PurchaseConfirmed", Show);
+            EventManager.Inst.RemoveEvent(EventKeys.PURCHASE_CONFIRMED, Show);
         }
         public override void Show()
         {
@@ -43,7 +43,7 @@ namespace TrumpTile.GameMain.UI
             {
                 mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
                 gameObject.SetActive(false);
-                EventManager.Inst.ActiveEvent("PurchaseSuccess");
+                EventManager.Inst.ActiveEvent(EventKeys.PURCHASE_SUCCESS);
             }); 
         }
 

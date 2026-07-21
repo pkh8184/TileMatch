@@ -18,6 +18,7 @@ MonoBehaviour:
   - rid: 5061743966543676128
   - rid: 5061743987175194626
   - rid: 5061743913760457041
+  - rid: 6683552263994605570
   references:
     version: 2
     RefIds:
@@ -357,3 +358,39 @@ MonoBehaviour:
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
         mCount: 1000
+    - rid: 6683552263994605570
+      type: {class: TreasureBoxContent, ns: TrumpTile.GameMain.Core, asm: GameMain}
+      data:
+        mContentName: TreasureBox
+        mLevelToUnlock: 19
+        mRewardArray:
+        - rid: 6683552263994605571
+        - rid: 6683552263994605572
+        - rid: 6683552263994605573
+        - rid: 6683552263994605574
+        - rid: 6683552263994605575
+        mReactivateCoolTime: 20160
+    - rid: 6683552263994605571
+      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1000
+    - rid: 6683552263994605572
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1005
+    - rid: 6683552263994605573
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1006
+    - rid: 6683552263994605574
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1007
+    - rid: 6683552263994605575
+      type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mCount: 1
+        mItemId: 1008

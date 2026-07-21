@@ -80,7 +80,7 @@ namespace TrumpTile.GameMain.Core
 
             yield return new WaitUntil(() => mLoadingProgress >= 100);
 
-            EventManager.Inst.ActiveEvent("LoadingComplete", (Action)(() => op.allowSceneActivation = true));
+            EventManager.Inst.ActiveEvent(RequestEventKeys.LOADING_COMPLETE, (Action)(() => op.allowSceneActivation = true));
         }
         private IEnumerator Co_IncreaseLoadingProgress()
         {

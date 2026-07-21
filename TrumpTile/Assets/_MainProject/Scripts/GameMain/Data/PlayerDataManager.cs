@@ -110,6 +110,8 @@ namespace TrumpTile.GameMain.Data
 		public DateTime PiggyBankUnActiveDate => mUserData.PiggyBankUnActiveDate;
 		public DateTime GemCollectionActiveDate => mUserData.GemCollectionActiveDate;
 		public DateTime GemCollectionUnActiveDate => mUserData.GemCollectionUnActiveDate;
+		//트레져 박스 재활성화 시각 (구매 후 이 시각이 지나면 다시 활성 - UTC)
+		public DateTime TreasureBoxActiveDate => mUserData.TreasureBoxActiveDate;
 		#endregion
 
 		#region 재화
@@ -312,6 +314,28 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 보석 수집 해금 완료");
 			mUserData.GemCollectionUnlock = true;
 			//활성화는 컨텐츠 쪽 EvaluateActiveState에서 처리 (여기서 강제 활성화하지 않음)
+		}
+		public void UnlcokTreasureBox()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 트레져 박스 해금 완료");
+			mUserData.TreasureBoxUnlock = true;
+		}
+
+		/// <summary>
+		/// 트레져 박스 구매 시 호출. 재활성화 시각을 (지금 + 쿨타임)으로 저장해 그때까지 비활성 처리한다. (UTC)
+		/// </summary>
+		public void StartTreasureBoxCoolTime(double coolTimeSeconds)
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			mUserData.TreasureBoxActiveDate = GameTime.UtcNow.AddSeconds(coolTimeSeconds);
+			SaveUserData();
 		}
 
 	#endregion
@@ -844,7 +868,7 @@ namespace TrumpTile.GameMain.Data
 			RefreshStreakLoginCount();
 			SaveUserData();
 
-			EventManager.Inst.ActiveEvent("ContentDataRefresh");
+			EventManager.Inst.ActiveEvent(EventKeys.CONTENT_DATA_REFRESH);
 
 			Debug.Log($"[Debug] 일일 리셋 재검사 → streak={mUserData.StreakLoginCount}, dailyChecked={mUserData.IsDailyCheckToday}, roulette={mUserData.RouletteCount}");
 		}

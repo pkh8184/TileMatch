@@ -62,12 +62,16 @@ namespace TrumpTile.GameMain.UI
 
             PlayerDataManager.Inst?.Initialize();
             RefreshLocalData();          
-            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("AccessShopView"));
+            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW));
             mStageStartButton.onClick.AddListener(OnStageButtonClick);
             mDailyPuzzleButton.onClick.AddListener(OnDailyPuzzleButtonClick);
             mDailyPuzzleButton.interactable = false;
             mDailyPuzzleButton.transform.localScale = Vector3.zero;
             mDailyPuzzleButtonCanvasGroup.alpha = 0;
+            if(PlayerDataManager.Inst.CurrentStage < 57)
+            {
+                mDailyPuzzleButton.gameObject.SetActive(false);
+            }
 
             InitializeDailyPuzzleAsync();
             mProfilePopup.SetProfilePopupValid(mAvataSpriteList, mFrameSpriteList);
@@ -133,28 +137,28 @@ namespace TrumpTile.GameMain.UI
             {
                 CoreContainer.RewardContainer.AddGem(500);
                 PlayerDataManager.Inst.AddGemCount(500);
-                EventManager.Inst.ActiveEvent("ContentDataRefresh");
+                EventManager.Inst.ActiveEvent(EventKeys.CONTENT_DATA_REFRESH);
 
-                PlayRewardAnim();
+                PlayMainSceneEnterEventAnim();
             }
         }
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();
-            EventManager.Inst.AddEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
-            EventManager.Inst.AddEvent("PlayRewardAnim", PlayRewardAnim);
-            EventManager.Inst.AddEvent("GoldRewardArrived", PulseShopButton);
-            EventManager.Inst.AddEvent<(float,int,Action)>("RefreshGoldText", GoldTextProgress);
-            EventManager.Inst.AddEvent<Action>("ItemRewardArrived", PulseStageButton);
+            EventManager.Inst.AddEvent(EventKeys.MAIN_SCENE_LOAD_COMPLETE, OnMainSceneLoadComplete);
+            EventManager.Inst.AddEvent(EventKeys.PLAY_REWARD_ANIM, PlayRewardAnim);
+            EventManager.Inst.AddEvent(EventKeys.GOLD_REWARD_ARRIVED, PulseShopButton);
+            EventManager.Inst.AddEvent<(float,int,Action)>(EventKeys.REFRESH_GOLD_TEXT, GoldTextProgress);
+            EventManager.Inst.AddEvent<Action>(EventKeys.ITEM_REWARD_ARRIVED, PulseStageButton);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
-            EventManager.Inst?.RemoveEvent("MainSceneLoadComplete", OnMainSceneLoadComplete);
-            EventManager.Inst?.RemoveEvent("PlayRewardAnim", PlayRewardAnim);
-            EventManager.Inst?.RemoveEvent("GoldRewardArrived", PulseShopButton);
-            EventManager.Inst?.RemoveEvent<(float,int,Action)>("RefreshGoldText", GoldTextProgress);
-            EventManager.Inst?.RemoveEvent<Action>("ItemRewardArrived", PulseStageButton);
+            EventManager.Inst?.RemoveEvent(EventKeys.MAIN_SCENE_LOAD_COMPLETE, OnMainSceneLoadComplete);
+            EventManager.Inst?.RemoveEvent(EventKeys.PLAY_REWARD_ANIM, PlayRewardAnim);
+            EventManager.Inst?.RemoveEvent(EventKeys.GOLD_REWARD_ARRIVED, PulseShopButton);
+            EventManager.Inst?.RemoveEvent<(float,int,Action)>(EventKeys.REFRESH_GOLD_TEXT, GoldTextProgress);
+            EventManager.Inst?.RemoveEvent<Action>(EventKeys.ITEM_REWARD_ARRIVED, PulseStageButton);
         }
         protected override void Refresh()
         {
@@ -178,21 +182,12 @@ namespace TrumpTile.GameMain.UI
         }
         private void PlayRewardAnim()
         {
-            bool bChainsGemRefresh = CoreContainer.RewardContainer.Gem > 0;
-            mRewardAnimator.PlayRewardAnim(() => SetInteractable(false), () => 
-            {
-                SetInteractable(true);
-                if(bChainsGemRefresh)
-                {
-                    return;
-                }
-
-                if(!mbInitOnSceneLoad)
-                {
-                    EventManager.Inst.ActiveEvent("RewardAnimDone");
-                    mbInitOnSceneLoad = true;
-                }
-            });
+            MainManager.Instance.AddEvent(mRewardAnimator.PlayRewardAnim, EMainSceneEventType.GetReward);
+        }
+        private void PlayMainSceneEnterEventAnim()
+        {
+            MainManager.Instance.AddEvent(mRewardAnimator.PlayRewardAnim, EMainSceneEventType.GetReward);
+            MainManager.Instance.PlayEvent(() => SetInteractable(false), () => SetInteractable(true));
         }
         private void PulseShopButton()
         {
@@ -223,7 +218,7 @@ namespace TrumpTile.GameMain.UI
                 mGoldText.text = x.ToString();
             },PlayerDataManager.Inst.Gold, duration).OnComplete(() =>
             {
-                EventManager.Inst.ActiveEvent("GoldRewardAnimDone");
+                EventManager.Inst.ActiveEvent(EventKeys.GOLD_REWARD_ANIM_DONE);
                 onDone?.Invoke();
             });
         }
@@ -284,7 +279,7 @@ namespace TrumpTile.GameMain.UI
             seq.Join(mDailyPuzzleButton.transform.DOScale(Vector3.one, 0.5f / 1.5f));
             seq.Join(mDailyPuzzleButtonCanvasGroup.DOFade(targetAlpha, 0.7f / 1.5f));
 
-            seq.OnComplete(() => PlayRewardAnim());
+            seq.OnComplete(() => PlayMainSceneEnterEventAnim());
         }
     }
 }

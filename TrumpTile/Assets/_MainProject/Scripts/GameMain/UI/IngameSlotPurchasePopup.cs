@@ -25,7 +25,7 @@ namespace TrumpTile.GameMain.UI
 
             mCancleButton.onClick.AddListener(Hide);
             mConfirmButton.onClick.AddListener(PurchaseSlot);
-            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent("AccessShopView"));
+            mShopButton.onClick.AddListener(() => EventManager.Inst.ActiveEvent(EventKeys.ACCESS_SHOP_VIEW));
             RefreshGoldData();
         }
         protected override void SubscribeEvent()

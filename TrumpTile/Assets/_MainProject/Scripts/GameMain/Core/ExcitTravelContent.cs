@@ -87,7 +87,7 @@ namespace TrumpTile.GameMain.Core
                 List<RewardDisplayInfo> infos = new List<RewardDisplayInfo>();
                 infos.Add(mFreeRewardArray[modifiedIndex].GetRewardDisplayInfo());
 
-                EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
+                EventManager.Inst.ActiveEvent(EventKeys.PLAY_MINI_REWARD_ANIM, new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
                 CoreContainer.RewardContainer.AddReward(mFreeRewardArray[modifiedIndex].GetRewardDisplayInfo());
                 mCurrentIndex++;
                 PlayerDataManager.Inst.IncreaseExcitTravelIndex();
@@ -99,7 +99,7 @@ namespace TrumpTile.GameMain.Core
             modifiedIndex = modifiedIndex / PAID_INTERVAL - 1;
 
             List<RewardDisplayInfo> infos = IAPManager.Instance.GetRewardDisplayInfos(mPaidRewardIDArray[modifiedIndex]);
-            EventManager.Inst.ActiveEvent("PlayMiniRewardAnim", new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
+            EventManager.Inst.ActiveEvent(EventKeys.PLAY_MINI_REWARD_ANIM, new MiniRewardPayload{Infos = infos, Type = EMiniRewardAnimType.ViewContent});
 
             foreach(var item in infos)
             {

@@ -51,13 +51,13 @@ namespace TrumpTile.GameMain.UI
         {
             base.SubscribeEvent();
 
-            EventManager.Inst.AddEvent("StageFailed", Show);
+            EventManager.Inst.AddEvent(EventKeys.STAGE_FAILED, Show);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
-            EventManager.Inst.RemoveEvent("StageFailed", Show);
+            EventManager.Inst.RemoveEvent(EventKeys.STAGE_FAILED, Show);
         }
         protected override void PlayHideAnim()
         {

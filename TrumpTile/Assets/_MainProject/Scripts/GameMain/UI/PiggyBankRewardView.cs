@@ -50,7 +50,7 @@ namespace TrumpTile.GameMain.UI
         {
             base.Hide();
 
-            EventManager.Inst.ActiveEvent("PiggyRewardConfirm");
+            EventManager.Inst.ActiveEvent(EventKeys.PIGGY_REWARD_CONFIRM);
         }
         private void Tap()
         {
