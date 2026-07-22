@@ -51,6 +51,15 @@ namespace TrumpTile.GameMain.UI
 			foreach (TMP_Text text in mNumberTexts) text.text = $"No. {number}";
 			foreach (TMP_Text text in mStageTexts)  text.text = $"Stage. {picture.StageValue}";
 
+			//로케일 폰트 적용
+			TMP_FontAsset localeFont = LocalizeManager.Inst.GetFontAssetByLocale();
+			foreach (TMP_Text text in mTitleTexts)  text.font = localeFont;
+			foreach (TMP_Text text in mNumberTexts) text.font = localeFont;
+			foreach (TMP_Text text in mStageTexts)  text.font = localeFont;
+
+			//아랍어면 로컬라이즈된 제목 텍스트에 RTL 적용
+			LocalizeManager.Inst.ApplyRTL(mTitleTexts);
+
 			mLockImage.SetActive(!bViewable);
 			mAlbumImage.gameObject.SetActive(bViewable);
 

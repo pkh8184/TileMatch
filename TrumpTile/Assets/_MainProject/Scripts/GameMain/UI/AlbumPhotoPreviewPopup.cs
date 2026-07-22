@@ -65,6 +65,14 @@ namespace TrumpTile.GameMain.UI
 
 			mTitleText.text       = LocalizeManager.Inst.GetString(picture.PictureNameId);
 			mDescriptionText.text = LocalizeManager.Inst.GetString(picture.PictureDescriptionId);
+
+			//로케일 폰트 적용
+			TMP_FontAsset localeFont = LocalizeManager.Inst.GetFontAssetByLocale();
+			mTitleText.font       = localeFont;
+			mDescriptionText.font = localeFont;
+
+			//아랍어면 RTL 적용
+			LocalizeManager.Inst.ApplyRTL(mTitleText, mDescriptionText);
 		}
 
 		protected override void PlayShowAnim()

@@ -150,15 +150,16 @@ namespace TrumpTile.GameMain.UI
 				case EAlbumPictureState.Locked:
 					AudioEvent.Play(EAudioKey.SFX_UnlockInteract);
 					break;
+				//해금(열람 가능)된 사진은 Available/Collected 모두 프리뷰 표시
 				case EAlbumPictureState.Available:
-					Debug.Log("[AlbumPopup] Available: 튜토리얼 가이드 표시.");
-					break;
 				case EAlbumPictureState.Collected:
-					if (previewPopup != null)
+					if (previewPopup == null)
 					{
-						previewPopup.Setup(picture);
-						previewPopup.Show();
+						Debug.LogWarning("[AlbumPopup] previewPopup이 할당되지 않았습니다. (인스펙터 확인)");
+						break;
 					}
+					previewPopup.Setup(picture);
+					previewPopup.Show();
 					break;
 			}
 		}
