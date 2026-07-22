@@ -7528,6 +7528,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Popup_PurchaseCancle
       objectReference: {fileID: 0}
+    - target: {fileID: 977605880428201768, guid: 775b3ca8c52408e43a52800052aad560, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5292547798385723570, guid: 775b3ca8c52408e43a52800052aad560, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -12244,24 +12248,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
---- !u!1 &1695183599 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8055431671528767288, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
-  m_PrefabInstance: {fileID: 1809314947270902784}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1695183603
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695183599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89d50ede84de0d54ea45dea9bb937eae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mKey: 200152
 --- !u!1 &1708084504
 GameObject:
   m_ObjectHideFlags: 0
@@ -15783,9 +15769,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6350792105139550951, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 856313864}
-    - targetCorrespondingSourceObject: {fileID: 8055431671528767288, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1695183603}
     - targetCorrespondingSourceObject: {fileID: 8007468820238996120, guid: e58d686fc38430d418f4254dc55e000d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1876849997}
@@ -17052,6 +17035,11 @@ PrefabInstance:
       propertyPath: mContentController.mShowButtonLimitTimeText
       value: 
       objectReference: {fileID: 1282858640}
+    - target: {fileID: 2091297670213521655, guid: 01402fb412aff81429a9808ff8c54bc1, type: 3}
+      propertyPath: m_text
+      value: "\uBCF4\uC0C1 \uD68D\uB4DD\uC5D0 \uD544\uC694\uD55C \uB808\uBCA8\uC774
+        \uBD80\uC871\uD569\uB2C8\uB2E4!"
+      objectReference: {fileID: 0}
     - target: {fileID: 6527638662130849560, guid: 01402fb412aff81429a9808ff8c54bc1, type: 3}
       propertyPath: m_Name
       value: Popup_PiggyPackage
