@@ -26,7 +26,7 @@ namespace TrumpTile.GameMain.Core
                 SetUnlock();
                 if(!PlayerDataManager.Inst.UserData.TreasureBoxUnlock)
                 {
-                    PlayerDataManager.Inst.UnlcokTreasureBox();
+                    PlayerDataManager.Inst.UnlockTreasureBox();
                     mbShowUnlockPopup = true;
                 }
                 else

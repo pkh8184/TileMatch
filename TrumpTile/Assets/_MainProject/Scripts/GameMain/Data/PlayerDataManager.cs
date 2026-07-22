@@ -315,7 +315,7 @@ namespace TrumpTile.GameMain.Data
 			mUserData.GemCollectionUnlock = true;
 			//활성화는 컨텐츠 쪽 EvaluateActiveState에서 처리 (여기서 강제 활성화하지 않음)
 		}
-		public void UnlcokTreasureBox()
+		public void UnlockTreasureBox()
 		{
 			if(mUserData == null)
 			{
@@ -336,6 +336,15 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.TreasureBoxActiveDate = GameTime.UtcNow.AddSeconds(coolTimeSeconds);
 			SaveUserData();
+		}
+		public void UnlockChampions()
+		{
+			if(mUserData == null)
+			{
+				return;
+			}
+			Debug.Log("[PlayerDataManager] 챔피언스 해금 완료");
+			mUserData.ChampionsUnlock = true;
 		}
 
 	#endregion

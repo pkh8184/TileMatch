@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using TrumpTile.GameMain.Data;
+using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -25,18 +26,40 @@ namespace TrumpTile.GameMain.UI
 
 		private const int MEDAL_RANK_MAX = 3;
 
-		public void SetData(LeaderboardEntryData data, bool bIsMyEntry)
+		public void SetData(TBLeaderNameData data, int rank)
 		{
-			SetRankDisplay(data.rank);
-			mNicknameText.text = data.nickname;
-			mStageText.text = data.currentStage.ToString();
+			SetRankDisplay(rank);
+			mNicknameText.text = data.Nickname;
+			mStageText.text = data.Stage.ToString();
+			mProfileImage.sprite = MainManager.Instance.ProfileResourceDatabase.GetProfileSprite(data.Profile);
+			mProfileFrame.sprite = MainManager.Instance.ProfileResourceDatabase.GetFrameSprite(data.Frame);
 
 			if (mBackground != null)
 			{
-				mBackground.color = bIsMyEntry ? mMyEntryColor : mDefaultColor;
+				mBackground.color = mDefaultColor;
 			}
 		}
-
+		public void SetMyData(int rank)
+		{
+			if(rank > 100)
+			{
+				mRankBackground.gameObject.SetActive(false);
+			}
+			else
+			{
+				SetRankDisplay(rank);
+			}
+			
+			mNicknameText.text = PlayerDataManager.Inst.GetNickname();
+			mStageText.text = PlayerDataManager.Inst.ChampionsLevel.ToString();
+			mProfileImage.sprite = MainManager.Instance.ProfileResourceDatabase.GetProfileSprite(PlayerDataManager.Inst.GetProfileImageIndex() + 101);
+			mProfileFrame.sprite = MainManager.Instance.ProfileResourceDatabase.GetFrameSprite(PlayerDataManager.Inst.GetProfileFrameIndex() + 301);
+			
+			if (mBackground != null)
+			{
+				mBackground.color = mMyEntryColor;
+			}
+		}
 		private void SetRankDisplay(int rank)
 		{
 			bool bIsMedalRank = rank >= 1 && rank <= MEDAL_RANK_MAX;

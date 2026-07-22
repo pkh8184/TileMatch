@@ -20,5 +20,7 @@ namespace TrumpTile.Editor
 		TBShop,
 		[SheetName("TB_RefuseName")]
 		TBRefuseName,
+		[SheetName("TB_LeaderName")]
+		TBLeaderName,
 	}
 }

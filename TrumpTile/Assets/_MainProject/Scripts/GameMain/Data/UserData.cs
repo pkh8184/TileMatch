@@ -42,6 +42,7 @@ namespace TrumpTile.GameMain.Data
         public bool ExcitTravelUnlock;
         public bool GemCollectionUnlock;
         public bool TreasureBoxUnlock;
+        public bool ChampionsUnlock;
 
         //출석체크 관련 데이터
         public int StreakLoginCount;
@@ -119,7 +120,8 @@ namespace TrumpTile.GameMain.Data
             ExcitTravelUnlock = data.ExcitTravelUnlock;
             GemCollectionUnlock = data.GemCollectionUnlock;
             TreasureBoxUnlock = data.TreasureBoxUnlock;
-
+            ChampionsUnlock = data.ChampionsUnlock;
+            
             //출석체크 관련 데이터
             StreakLoginCount = data.StreakLoginCount;
             IsDailyCheckToday = data.IsDailyCheckToday;
@@ -204,6 +206,7 @@ namespace TrumpTile.GameMain.Data
         public bool ExcitTravelUnlock;
         public bool GemCollectionUnlock;
         public bool TreasureBoxUnlock;
+        public bool ChampionsUnlock;
 
         //출석체크 관련 데이터
         public int StreakLoginCount;
@@ -347,6 +350,8 @@ namespace TrumpTile.GameMain.Data
             MasterPackagePurchased = false;
 
             TreasureBoxUnlock = false;
+
+            ChampionsUnlock = false;
         }
         public void SetUserDataOnEndStage(Dictionary<object, object> dataDictionary)
         {
@@ -414,6 +419,7 @@ namespace TrumpTile.GameMain.Data
             ExcitTravelUnlock = data.ExcitTravelUnlock;
             GemCollectionUnlock = data.GemCollectionUnlock;
             TreasureBoxUnlock = data.TreasureBoxUnlock;
+            ChampionsUnlock = data.ChampionsUnlock;
 
             //출석체크 관련 데이터
             StreakLoginCount = data.StreakLoginCount;

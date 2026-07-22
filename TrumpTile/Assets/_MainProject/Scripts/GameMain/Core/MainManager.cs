@@ -28,13 +28,16 @@ namespace TrumpTile.GameMain.Core
 		public static MainManager Instance;
 		private List<MainSceneEventWrapper> mEventList;
 		[SerializeField] private AlbumPopup mAlbumPopup;
+		[SerializeField] private ProfileResourceDatabase mProfileResourceDB;
 
+		public ProfileResourceDatabase ProfileResourceDatabase => mProfileResourceDB;
 		private IEnumerator mEventCoroutine;
 		private readonly WaitForSeconds mAlbumCheckDelay = new WaitForSeconds(0.5F);
         private async void Awake()
         {         	
 			Instance = this;
 			mEventList = new List<MainSceneEventWrapper>();
+			mProfileResourceDB.Initialize();
 
 			PlayerDataManager.Inst.Initialize();
 

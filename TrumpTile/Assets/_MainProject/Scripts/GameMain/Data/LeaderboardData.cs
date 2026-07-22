@@ -8,8 +8,8 @@ namespace TrumpTile.GameMain.Data
     {
         public int rank;
         public string nickname;
-        public int profileImageIndex;
-        public int profileFrameIndex;
+        public int profileImageId;
+        public int profileFrameId;
         public int currentStage;
     }
 
