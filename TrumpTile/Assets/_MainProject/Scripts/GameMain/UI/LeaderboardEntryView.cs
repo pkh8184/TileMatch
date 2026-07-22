@@ -41,15 +41,7 @@ namespace TrumpTile.GameMain.UI
 		}
 		public void SetMyData(int rank)
 		{
-			if(rank > 100)
-			{
-				mRankBackground.gameObject.SetActive(false);
-			}
-			else
-			{
-				SetRankDisplay(rank);
-			}
-			
+			SetRankDisplay(rank);
 			mNicknameText.text = PlayerDataManager.Inst.GetNickname();
 			mStageText.text = PlayerDataManager.Inst.ChampionsLevel.ToString();
 			mProfileImage.sprite = MainManager.Instance.ProfileResourceDatabase.GetProfileSprite(PlayerDataManager.Inst.GetProfileImageIndex() + 101);
@@ -74,7 +66,14 @@ namespace TrumpTile.GameMain.UI
 				mRankText.gameObject.SetActive(!bIsMedalRank);
 				if (!bIsMedalRank)
 				{
-					mRankText.text = rank.ToString();
+					if(rank > 100)
+					{
+						mRankText.text = "-";
+					}
+					else
+					{
+						mRankText.text = rank.ToString();
+					}
 				}
 			}
 
