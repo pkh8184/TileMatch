@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
@@ -43,6 +44,7 @@ namespace TrumpTile.GameMain.UI
             int index = GetLocaleHeaderIndex(locale);
 
             PlayerDataManager.Inst?.SetLocaleIndex(index);
+            SettingsManager.Inst.SetLanguage((ELanguage)index);
             //LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.GetLocale(locale);
             yield return null;
 

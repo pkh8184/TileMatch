@@ -70,6 +70,16 @@ namespace TrumpTile.GameMain.UI
 
             MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.PiggyBankPopup);
         }
+        protected override void Refresh()
+        {
+            base.Refresh();
+            //로케일 변경/데이터 갱신 시 시간제한 텍스트 재적용
+            if(mContentData == null || !mContentData.Unlock || !mContentData.IsActive)
+            {
+                return;
+            }
+            mContentController.SetLimitTimeText(mContentData.GetRemainTimeSeconds());
+        }
         public void OnPurchaseSuccess()
         {
             if(!gameObject.activeSelf) return;

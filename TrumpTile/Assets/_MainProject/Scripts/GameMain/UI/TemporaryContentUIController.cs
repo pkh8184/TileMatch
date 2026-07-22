@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using TrumpTile.GameMain.Core;
 
 namespace TrumpTile.GameMain.UI
 {
@@ -51,15 +52,26 @@ namespace TrumpTile.GameMain.UI
             string result;
             if(day > 0)
             {
-                result = hour > 0 ? $"{day}일 {hour}시간" : $"{day}일";
+                result = hour > 0 ? $"{day}{LocalizeManager.Inst.GetString(200138)} {hour}{LocalizeManager.Inst.GetString(200139)}" : $"{day}{LocalizeManager.Inst.GetString(200139)}";
             }
             else
             {
-                result = $"{hour}시간";
+                result = $"{hour}{LocalizeManager.Inst.GetString(200139)}";
             }
 
-            if(mLimitTimeText != null) mLimitTimeText.text = result;
-            if(mShowButtonLimitTimeText != null) mShowButtonLimitTimeText.text = result;
+            if(mLimitTimeText != null) 
+            {
+                mLimitTimeText.text = result;
+                mLimitTimeText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            }
+            if(mShowButtonLimitTimeText != null)
+            {
+                mShowButtonLimitTimeText.text = result;
+                mShowButtonLimitTimeText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            }
+
+            //아랍어면 RTL 적용
+            LocalizeManager.Inst.ApplyRTL(mLimitTimeText, mShowButtonLimitTimeText);
         }
     }    
 }

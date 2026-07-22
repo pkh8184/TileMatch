@@ -132,13 +132,12 @@ namespace TrumpTile.GameMain.UI
             Refresh();
             RefreshLanguage();
         }
-        private void RefreshLanguage()
+        protected virtual void RefreshLanguage()
         {
             foreach (TextLocalizeSetter setter in GetComponentsInChildren<TextLocalizeSetter>(true))
             {
                 setter.Initialize();
             }
-
         }
     }
 }

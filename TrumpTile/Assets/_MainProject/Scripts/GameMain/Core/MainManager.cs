@@ -50,6 +50,10 @@ namespace TrumpTile.GameMain.Core
             }
             _ = AdManager.Inst;
 
+            //모든 UI 초기화 후, 저장된 언어로 로케일을 한 번 재적용한다.
+            //(초기 로드 시 UI가 초기화되는 순간엔 로케일 적용이 누락될 수 있어, 언어변경 흐름(REFRESH_LANGUAGE)을 startup에 재현)
+            EventManager.Inst.ActiveEvent(RequestEventKeys.REFRESH_LANGUAGE);
+
 			EventManager.Inst.AddEvent(EventKeys.REWARD_ANIM_DONE, CheckAlbumPendingReward);
         }
 

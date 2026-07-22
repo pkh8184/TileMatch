@@ -51,6 +51,19 @@ namespace TrumpTile.GameMain.UI
 			}
 
         }
+        protected override void Refresh()
+        {
+            base.Refresh();
+            //로케일 변경/데이터 갱신 시 시간제한 텍스트 재적용 (SetLimitTimeText가 refresh 흐름 밖 일회성이라 초기 로케일 미반영되던 문제 방지)
+            if(!PlayerDataManager.Inst.IsChampionsActive)
+            {
+                return;
+            }
+            DateTime now = GameTime.Now;
+            DateTime endOfMonth = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month), 23, 59, 59);
+            float secondsLeft = (float)(endOfMonth - now).TotalSeconds;
+            mUIController.SetLimitTimeText(secondsLeft);
+        }
 		private IEnumerator Co_MainSceneEnterEvent()
         {
             GameObject obj = Instantiate(mUnlockPopupPrefab.gameObject, Vector2.zero, Quaternion.identity, GameObject.Find("Canvas_Popup").transform);

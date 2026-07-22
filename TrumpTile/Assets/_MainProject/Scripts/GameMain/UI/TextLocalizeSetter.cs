@@ -15,8 +15,10 @@ namespace TrumpTile.GameMain.UI
         {
             if(mKey == 0) return;
 
-            GetComponent<TMP_Text>().text = LocalizeManager.Inst.GetString(mKey);
-
+            TMP_Text tmp = GetComponent<TMP_Text>();
+            tmp.text = LocalizeManager.Inst.GetString(mKey);
+            tmp.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            
             if (SettingsManager.Inst == null)
             {
                 return;

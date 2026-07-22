@@ -98,7 +98,8 @@ namespace TrumpTile.GameMain.UI
             {
                 mStageStartButton.image.sprite = mChampionsStageButtonSprite;
                 mStageStartButton.image.pixelsPerUnitMultiplier = 1;
-                mCurrentStageText.text = "챌린지 " + PlayerDataManager.Inst.ChampionsLevel.ToString();
+                mCurrentStageText.text = $"{LocalizeManager.Inst.GetString(200155)} " + PlayerDataManager.Inst.ChampionsLevel.ToString();
+                  mCurrentStageText.font = LocalizeManager.Inst.GetFontAssetByLocale();
                 mBackgroundImage.sprite = mChampionsBackgroundSprite;
                 return;
             }
@@ -106,7 +107,8 @@ namespace TrumpTile.GameMain.UI
             {
                 mStageStartButton.image.sprite = mDefault;
                 mStageStartButton.image.pixelsPerUnitMultiplier = 3;
-                mCurrentStageText.text = "LEVEL " + PlayerDataManager.Inst.CurrentStage.ToString();
+                mCurrentStageText.text = $"{LocalizeManager.Inst.GetString(200141)} " + PlayerDataManager.Inst.CurrentStage.ToString();
+                  mCurrentStageText.font = LocalizeManager.Inst.GetFontAssetByLocale();
                 mBackgroundImage.sprite = mDefaultBackgroundSprite;
             }
 
@@ -130,6 +132,29 @@ namespace TrumpTile.GameMain.UI
             };
 
             AudioEvent.Play(EAudioKey.BGM_Main);
+        }
+        protected override void RefreshLanguage()
+        {
+            base.RefreshLanguage();
+            if(PlayerDataManager.Inst.IsChampionsActive)
+            {
+                mCurrentStageText.text = $"{LocalizeManager.Inst.GetString(200155)} " + PlayerDataManager.Inst.ChampionsLevel.ToString();
+            }
+            else
+            {
+                mCurrentStageText.text = $"{LocalizeManager.Inst.GetString(200141)} " + PlayerDataManager.Inst.CurrentStage.ToString();
+            }
+            mCurrentStageText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            
+            bool bCleared = DailyPuzzleManager.Inst.IsTodayCleared;
+            if (mDailyPuzzleButtonText != null)
+            {
+                mDailyPuzzleButtonText.text = bCleared ? "완료" : LocalizeManager.Inst.GetString(200068);
+            }
+            mDailyPuzzleButtonText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+
+            //코드에서 직접 세팅하는 동적 텍스트(레벨/데일리퍼즐 버튼)에 아랍어 RTL 적용
+            LocalizeManager.Inst.ApplyRTL(mCurrentStageText, mDailyPuzzleButtonText);
         }
         void Update()
         {
@@ -244,7 +269,7 @@ namespace TrumpTile.GameMain.UI
             mDailyPuzzleButtonCanvasGroup.alpha = mDailyPuzzleButton.interactable ? 1F : 0.5F;
             if (mDailyPuzzleButtonText != null)
             {
-                mDailyPuzzleButtonText.text = bCleared ? "완료" : "일일 퍼즐";
+                mDailyPuzzleButtonText.text = bCleared ? "완료" : LocalizeManager.Inst.GetString(200068);
             }
         }
 

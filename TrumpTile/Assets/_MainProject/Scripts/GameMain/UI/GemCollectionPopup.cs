@@ -59,6 +59,16 @@ namespace TrumpTile.GameMain.UI
 
             MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.UnlockContent);
         }
+        protected override void Refresh()
+        {
+            base.Refresh();
+            //로케일 변경/데이터 갱신 시 시간제한 텍스트 재적용 (SetLimitTimeText가 refresh 흐름 밖 일회성이라 초기 로케일 미반영되던 문제 방지)
+            if(mContentData == null || !mContentData.Unlock || !mContentData.IsActive)
+            {
+                return;
+            }
+            mContentController.SetLimitTimeText(mContentData.GetRemainTimeSeconds());
+        }
         private IEnumerator Co_MainSceneEnterEvent()
         {
             if(mContentData.ShowUnlockPopup)

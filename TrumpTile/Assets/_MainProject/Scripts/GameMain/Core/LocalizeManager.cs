@@ -61,5 +61,26 @@ namespace TrumpTile.GameMain.Core
 			}
 			return mFontArray[index];
 		}
+
+		public bool IsRTL()
+		{
+			return SettingsManager.Inst != null && SettingsManager.Inst.Language == ELanguage.Arabic;
+		}
+
+		/// <summary>
+		/// 코드에서 직접 .text를 세팅하는 동적 텍스트에 현재 언어 기준 RTL(아랍어) 여부를 적용한다.
+		/// (TextLocalizeSetter를 안 거치는 텍스트용)
+		/// </summary>
+		public void ApplyRTL(params TMP_Text[] texts)
+		{
+			bool bRTL = IsRTL();
+			foreach(TMP_Text text in texts)
+			{
+				if(text != null)
+				{
+					text.isRightToLeftText = bRTL;
+				}
+			}
+		}
 	}
 }

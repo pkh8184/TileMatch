@@ -29,7 +29,8 @@ namespace TrumpTile.LevelEditor.Editor
         [MenuItem("Tools/TMP/Find TMP Objects")]
         static void FindTMPObjects()
         {
-            var tmps = GameObject.FindObjectsByType<TMPro.TMP_Text>(FindObjectsSortMode.None);
+            //FindObjectsInactive.Include: 비활성(꺼진) 오브젝트의 TMP도 포함해서 찾는다
+            var tmps = GameObject.FindObjectsByType<TMPro.TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             Selection.objects = tmps.Select(x => x.gameObject).Cast<Object>().ToArray();
         }
 

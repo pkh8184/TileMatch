@@ -54,6 +54,16 @@ namespace TrumpTile.GameMain.UI
 
             CreateRewards();
         }
+        protected override void Refresh()
+        {
+            base.Refresh();
+            //로케일 변경/데이터 갱신 시 시간제한 텍스트 재적용
+            if(mContentData == null || !mContentData.Unlock || !mContentData.IsActive)
+            {
+                return;
+            }
+            mContentController.SetLimitTimeText(mContentData.GetRemainTimeSeconds());
+        }
         public override void Show()
         {
             base.Show();
@@ -89,6 +99,15 @@ namespace TrumpTile.GameMain.UI
             base.UnSubscribeEvent();
 
             EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
+        }
+        protected override void RefreshLanguage()
+        {
+            base.RefreshLanguage();
+
+            foreach(var item in mRewardUIList)
+            {
+                item.SetLocalize();
+            }
         }
         private void CreateRewards()
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
@@ -74,6 +75,17 @@ namespace TrumpTile.GameMain.UI
             mConfirmButton.image.color = Color.white;
 
             mLockObject.SetActive(false);
+        }
+        public void SetLocalize()
+        {
+            if(mbIsFree)
+            {
+                mButtonText.text = LocalizeManager.Inst.GetString(200102);
+                mButtonText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+
+                //아랍어면 RTL 적용
+                LocalizeManager.Inst.ApplyRTL(mButtonText);
+            }
         }
     }   
 }
