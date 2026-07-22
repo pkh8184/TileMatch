@@ -24,6 +24,8 @@ namespace TrumpTile.GameMain.UI
         {
             public EProductId eProductId;
             public Button button;
+            [Tooltip("재구매 쿨타임(비활성) 중이면 스크롤 리스트에서 통째로 끌 패키지 레이아웃 루트")]
+            public GameObject packageObject;
         }
         [SerializeField] private PurchaseButtonConfig[] mPurchaseButtonCofigArray;
 
@@ -103,6 +105,14 @@ namespace TrumpTile.GameMain.UI
             foreach(var item in mPurchaseButtonCofigArray)
             {
                 bool canBuy = PlayerDataManager.Inst.CanPurchasePackage(item.eProductId);
+
+                //재구매 쿨타임(비활성) 중인 패키지는 스크롤 리스트에서 레이아웃 자체를 끈다.
+                //(쿨타임 없는 패키지는 CanPurchasePackage가 항상 true라 그대로 보임)
+                if(item.packageObject != null)
+                {
+                    item.packageObject.SetActive(canBuy);
+                }
+
                 item.button.interactable = canBuy;
 
                 //UIBase가 disabledColor을 normalColor로 맞춰버리므로, 잠긴 버튼은 회색으로 되돌려준다.
@@ -142,12 +152,22 @@ namespace TrumpTile.GameMain.UI
 
             Sequence sequence = DOTween.Sequence();
             sequence.SetUpdate(true);
-            for (int i = 0; i < 6; i++)
+            //꺼진(쿨타임) 패키지는 건너뛰고, 활성 패키지 기준으로 최대 6개까지 애니메이션한다.
+            //(앞쪽이 꺼져 있으면 그 개수만큼 뒤 항목을 끌어와 총 6개를 채움)
+            int animIndex = 0;
+            for (int i = 0; i < mUIContainerTransform.childCount && animIndex < 6; i++)
             {
-                RectTransform rect = mUIContainerTransform.GetChild(i).GetComponent<RectTransform>();
+                GameObject child = mUIContainerTransform.GetChild(i).gameObject;
+                if (!child.activeSelf)
+                {
+                    continue;
+                }
+
+                RectTransform rect = child.GetComponent<RectTransform>();
 
                 rect.anchoredPosition = new Vector2(rect.anchoredPosition.x + Screen.width, rect.anchoredPosition.y);
-                sequence.Insert(i * 0.1f, rect.DOAnchorPosX(rect.anchoredPosition.x - Screen.width, 0.3f).SetEase(Ease.OutQuad));
+                sequence.Insert(animIndex * 0.1f, rect.DOAnchorPosX(rect.anchoredPosition.x - Screen.width, 0.3f).SetEase(Ease.OutQuad));
+                animIndex++;
             }
             sequence.OnComplete(() => layoutGroup.enabled = true);
 

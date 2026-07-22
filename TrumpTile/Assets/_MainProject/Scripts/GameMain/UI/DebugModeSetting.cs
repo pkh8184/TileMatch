@@ -40,16 +40,23 @@ namespace TrumpTile.GameMain.UI
             {
                 return;
             }
+            //디버그 버튼들은 자기 소유라, 재초기화(RefreshAllViews) 시 중복 누적 방지를 위해 remove 후 add.
+            //(ShiftDay 등은 람다라 선택 제거가 안 되므로 이 버튼들만 RemoveAllListeners)
+            mDataResetButton.onClick.RemoveAllListeners();
             mDataResetButton.onClick.AddListener(ResetData);
+            mStageSetButton.onClick.RemoveAllListeners();
             mStageSetButton.onClick.AddListener(SetStage);
+            mStageSetter.onEndEdit.RemoveAllListeners();
             mStageSetter.onEndEdit.AddListener(AdjustmentStageNumber);
 
             if(mDayBackwardButton != null)
             {
+                mDayBackwardButton.onClick.RemoveAllListeners();
                 mDayBackwardButton.onClick.AddListener(() => ShiftDay(-1));
             }
             if(mDayForwardButton != null)
             {
+                mDayForwardButton.onClick.RemoveAllListeners();
                 mDayForwardButton.onClick.AddListener(() => ShiftDay(1));
             }
             RefreshDateText();

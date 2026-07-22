@@ -52,7 +52,7 @@ namespace TrumpTile.GameMain.UI
             string result;
             if(day > 0)
             {
-                result = hour > 0 ? $"{day}{LocalizeManager.Inst.GetString(200138)} {hour}{LocalizeManager.Inst.GetString(200139)}" : $"{day}{LocalizeManager.Inst.GetString(200139)}";
+                result = hour > 0 ? $"{day}{LocalizeManager.Inst.GetString(200138)} {hour}{LocalizeManager.Inst.GetString(200139)}" : $"{day}{LocalizeManager.Inst.GetString(200138)}";
             }
             else
             {

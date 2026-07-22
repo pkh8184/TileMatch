@@ -43,12 +43,15 @@ namespace TrumpTile.GameMain.UI
         //씬 매니저가 씬에 존재하는 모든 UIBase를 순회하여 호출
         public virtual void Initialize()
         {
+            //remove 후 add: 재초기화(RefreshAllViews 등) 시 중복 등록 방지. 명명 메서드라 이 리스너만 정리됨.
             if (mShowButton != null)
             {
+                mShowButton.onClick.RemoveListener(Show);
                 mShowButton.onClick.AddListener(Show);
             }
             if (mHideButton != null)
             {
+                mHideButton.onClick.RemoveListener(Hide);
                 mHideButton.onClick.AddListener(Hide);
             }
 
@@ -57,15 +60,17 @@ namespace TrumpTile.GameMain.UI
             //로컬 데이터(프로필 이미지, 프레임 등) 연결 되면 주석 해제
             RefreshLocalData();
             Refresh();
-            
-            //씬에 존재하는 모든 버튼, 토글에 클릭 효과음 추가
-            foreach(var button in GetComponentsInChildren<Button>(true))
+
+            //씬에 존재하는 모든 버튼, 토글에 클릭 효과음 추가 (명명 메서드 → 중복 방지 remove 후 add)
+            foreach(Button button in GetComponentsInChildren<Button>(true))
             {
-                button.onClick.AddListener(() => AudioEvent.Play(EAudioKey.SFX_BtnClick));
+                button.onClick.RemoveListener(OnButtonClickSFX);
+                button.onClick.AddListener(OnButtonClickSFX);
             }
-            foreach(var toggle in GetComponentsInChildren<Toggle>(true))
+            foreach(Toggle toggle in GetComponentsInChildren<Toggle>(true))
             {
-                toggle.onValueChanged.AddListener((isOn) => AudioEvent.Play(EAudioKey.SFX_BtnClick));
+                toggle.onValueChanged.RemoveListener(OnToggleClickSFX);
+                toggle.onValueChanged.AddListener(OnToggleClickSFX);
             }
             //연출 락 등으로 인터랙터블이 꺼져도 회색으로 변하지 않도록 Disabled 색을 Normal과 동일하게 맞춤
             foreach(var selectable in GetComponentsInChildren<Selectable>(true))
@@ -108,24 +113,33 @@ namespace TrumpTile.GameMain.UI
         {
             UnSubscribeEvent();
 
-            //Initialize에서 등록한 런타임 onClick 리스너를 정리한다.
-            //(RefreshAllViews 등으로 재초기화될 때 리스너가 중복 누적되어 한 번 클릭에 여러 번 실행되는 것 방지)
+            //이 UIBase가 등록한 리스너만 '선택' 제거한다.
+            //RemoveAllListeners로 싹 지우면, 같은 버튼에 다른 뷰가 건 리스너(예: 상위 뷰의 자식으로 배치된
+            //컨텐츠 아이콘 버튼의 Show)까지 지워져 버튼이 안 열리게 됨.
             if (mShowButton != null)
             {
-                mShowButton.onClick.RemoveAllListeners();
+                mShowButton.onClick.RemoveListener(Show);
             }
             if (mHideButton != null)
             {
-                mHideButton.onClick.RemoveAllListeners();
+                mHideButton.onClick.RemoveListener(Hide);
             }
             foreach (Button button in GetComponentsInChildren<Button>(true))
             {
-                button.onClick.RemoveAllListeners();
+                button.onClick.RemoveListener(OnButtonClickSFX);
             }
             foreach (Toggle toggle in GetComponentsInChildren<Toggle>(true))
             {
-                toggle.onValueChanged.RemoveAllListeners();
+                toggle.onValueChanged.RemoveListener(OnToggleClickSFX);
             }
+        }
+        private void OnButtonClickSFX()
+        {
+            AudioEvent.Play(EAudioKey.SFX_BtnClick);
+        }
+        private void OnToggleClickSFX(bool isOn)
+        {
+            AudioEvent.Play(EAudioKey.SFX_BtnClick);
         }
         private void OnRefreshLanguage()
         {
