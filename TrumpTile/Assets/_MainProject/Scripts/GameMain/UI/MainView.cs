@@ -149,7 +149,7 @@ namespace TrumpTile.GameMain.UI
             bool bCleared = DailyPuzzleManager.Inst.IsTodayCleared;
             if (mDailyPuzzleButtonText != null)
             {
-                mDailyPuzzleButtonText.text = bCleared ? "완료" : LocalizeManager.Inst.GetString(200068);
+                mDailyPuzzleButtonText.text = bCleared ? LocalizeManager.Inst.GetString(200201) : LocalizeManager.Inst.GetString(200068);
             }
             mDailyPuzzleButtonText.font = LocalizeManager.Inst.GetFontAssetByLocale();
 
@@ -269,8 +269,12 @@ namespace TrumpTile.GameMain.UI
             mDailyPuzzleButtonCanvasGroup.alpha = mDailyPuzzleButton.interactable ? 1F : 0.5F;
             if (mDailyPuzzleButtonText != null)
             {
-                mDailyPuzzleButtonText.text = bCleared ? "완료" : LocalizeManager.Inst.GetString(200068);
+                mDailyPuzzleButtonText.text = bCleared ? LocalizeManager.Inst.GetString(200201) : LocalizeManager.Inst.GetString(200068);
             }
+             mDailyPuzzleButtonText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+
+            //코드에서 직접 세팅하는 동적 텍스트(레벨/데일리퍼즐 버튼)에 아랍어 RTL 적용
+            LocalizeManager.Inst.ApplyRTL(mCurrentStageText, mDailyPuzzleButtonText);
         }
 
         private void OnDailyPuzzleButtonClick()

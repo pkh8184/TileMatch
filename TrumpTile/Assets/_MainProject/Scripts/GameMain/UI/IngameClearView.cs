@@ -18,6 +18,7 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private TMP_Text mTimerText;
         [Header("클리어 텍스트")]
         [SerializeField] private CanvasGroup mClearTextCanvasGroup;
+        [SerializeField] private GameObject[] mStarTextArray;
         [Header("버튼들")]
         [SerializeField] private Button mRewardButton;
         [SerializeField] private Button mMainButton;
@@ -42,6 +43,10 @@ namespace TrumpTile.GameMain.UI
             mTimerRect.localScale = new Vector2(1,0);
             mTimerText.text = "00 : 00";
             mClearTextCanvasGroup.alpha = 0;
+            foreach(var item in mStarTextArray)
+            {
+                item.SetActive(false);
+            }
 
             mRewardButtonRect = mRewardButton.GetComponent<RectTransform>();
             mMainButtonRect = mMainButton.GetComponent<RectTransform>();
@@ -100,7 +105,7 @@ namespace TrumpTile.GameMain.UI
                     mGoldText.text = Mathf.RoundToInt(x).ToString();
                 }, CoreContainer.RewardContainer.Gold, 0.3f));
             }
-
+            mStarTextArray[GameManager.Instance.StarCount - 1].SetActive(true);
             seq.Append(mClearTextCanvasGroup.DOFade(1, 0.3f));
 
             seq.AppendCallback(() => SettingsManager.Inst?.Vibrate(EVibrationStyle.Medium));

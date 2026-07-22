@@ -203,7 +203,10 @@ namespace TrumpTile.GameMain.UI
             if(mContentData.CanConfirm)
             {
                 mPurchaseButton.image.sprite = mAfterPurchaseSprite;
-                mPurchaseButtonText.text = "구매 완료";
+                mPurchaseButtonText.text = LocalizeManager.Inst.GetString(200208);
+                mPurchaseButtonText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+                LocalizeManager.Inst.ApplyRTL(mPurchaseButtonText);
+                
                 mPurchaseButton.onClick.RemoveAllListeners();
                 mPurchaseButton.onClick.AddListener(OnPurchaseButtonAfterPurchase);
 

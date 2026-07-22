@@ -39,6 +39,9 @@ namespace TrumpTile.GameMain.UI
 
         [Header("비속어 테이블")]
         [SerializeField] private TBRefuseNameTable mRefuseNameTable;
+        [Header("닉네임 경고 문구")]
+        [SerializeField] private TMP_Text mWarningText;
+        private Sequence mWarningTextSeq;
         private int mCurrentAvataIndex = 0;
         private int mCurrentFrameIndex = 0;
 
@@ -104,10 +107,29 @@ namespace TrumpTile.GameMain.UI
             if(hasNonEnglish || !enoughLength || !canNaming)
             {
                 mNickNameInputField.text = mCurrentNickName;
+                ShowWarningText();
                 return;
             }
 
             mCurrentNickName = mNickNameInputField.text;                 
+        }
+        private void ShowWarningText()
+        {
+            if(mWarningTextSeq != null && mWarningTextSeq.active)
+            {
+                mWarningTextSeq.Kill();
+            }
+            mWarningText.gameObject.SetActive(true);
+            mWarningText.color = new Color(1,1,1,0);
+            mWarningText.rectTransform.anchoredPosition = Vector2.zero;
+
+            mWarningTextSeq = DOTween.Sequence();
+
+            mWarningTextSeq.Append(mWarningText.DOFade(1, 0.5f));
+            mWarningTextSeq.Join(mWarningText.rectTransform.DOAnchorPosY(30, 0.5f));
+            mWarningTextSeq.AppendInterval(0.3f);
+
+            mWarningTextSeq.OnComplete(() => mWarningText.gameObject.SetActive(false));
         }
         private void OnSpriteListChange(bool isAvata)
         {
