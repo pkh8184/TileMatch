@@ -76,6 +76,10 @@ namespace TrumpTile.GameMain.Core
 		private const int MOVING_SORTING_ORDER = 1099;
 		public const int SPAWN_ANIM_COUNT = 5;
 
+		// 슬롯에 올라간 타일은 보드 위에 확실히 표시되도록 별도 소팅레이어(Overlay)로 올린다.
+		private const string SORTING_LAYER_DEFAULT = "Default";
+		private const string SORTING_LAYER_SLOT = "Overlay";
+
 		#endregion
 
 		#region Private Fields
@@ -245,6 +249,9 @@ namespace TrumpTile.GameMain.Core
 
 		private void SetMovingToSlotSorting()
 		{
+			//슬롯으로 올라가는 순간 소팅레이어를 Overlay로 올려 보드 타일 위에 항상 표시되게 한다.
+			SetSortingLayer(SORTING_LAYER_SLOT);
+
 			mCurrentSortingOrder = MOVING_SORTING_ORDER;
 
 			if (mBackgroundRenderer != null)
@@ -265,6 +272,16 @@ namespace TrumpTile.GameMain.Core
 		public static int GetLayerSortingOrder(int layer)
 		{
 			return BASE_SORTING_ORDER + (layer * SORTING_STEP);
+		}
+
+		//소팅오더는 그대로 두고 소팅레이어만 바꾼다. (배경 렌더러 + 하위 렌더러 전부)
+		private void SetSortingLayer(string layerName)
+		{
+			SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+			foreach (SpriteRenderer sr in renderers)
+			{
+				sr.sortingLayerName = layerName;
+			}
 		}
 
 		#endregion
@@ -534,6 +551,9 @@ namespace TrumpTile.GameMain.Core
 
 		private void InitBoardReturn()
 		{
+			//보드로 돌아오면 소팅레이어를 기본(Default)으로 되돌린다.
+			SetSortingLayer(SORTING_LAYER_DEFAULT);
+
 			mIsInSlot = false;
 			mSlotIndex = -1;
 

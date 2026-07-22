@@ -73,8 +73,13 @@ namespace TrumpTile.GameMain.UI
         }
         public void SetValid(IngameItemConfig config)
         {
-            mItemNameText.text = config.itemName;
-            mItemDescriptionText.text = config.itemDescription;
+            mItemNameText.text = LocalizeManager.Inst.GetString(config.itemNameId);
+            mItemDescriptionText.text = LocalizeManager.Inst.GetString(config.itemDescriptionId);
+            mItemNameText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            mItemDescriptionText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            
+            LocalizeManager.Inst.ApplyRTL(mItemNameText, mItemDescriptionText);
+            
             mItemCountText.text = "X" + config.amount.ToString();
             mCurrentAmount = config.amount;
             mItemCostText.text = config.cost.ToString();

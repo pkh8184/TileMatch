@@ -12,9 +12,8 @@ namespace TrumpTile.GameMain.Core
 		English = 1,
 		Japanese = 2,
 		Chinese = 3,
-		Vietnamese = 4,
-		Hindi = 5,
-		Arabic = 6
+		Hindi = 4,
+		Arabic = 5
 	}
 
 	/// <summary>
@@ -276,7 +275,6 @@ namespace TrumpTile.GameMain.Core
 				case ELanguage.English: return "en";
 				case ELanguage.Japanese: return "ja";
 				case ELanguage.Chinese: return "zh";
-				case ELanguage.Vietnamese: return "vi";
 				case ELanguage.Hindi: return "hi";
 				case ELanguage.Arabic: return "ar";
 				default: return "ko";
@@ -294,7 +292,6 @@ namespace TrumpTile.GameMain.Core
 				case ELanguage.English: return "English";
 				case ELanguage.Japanese: return "日本語";
 				case ELanguage.Chinese: return "中文";
-				case ELanguage.Vietnamese: return "Tiếng Việt";
 				case ELanguage.Hindi: return "हिन्दी";
 				case ELanguage.Arabic: return "العربية";
 				default: return "한국어";

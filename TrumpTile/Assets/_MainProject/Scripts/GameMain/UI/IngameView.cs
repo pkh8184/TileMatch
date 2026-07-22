@@ -14,8 +14,8 @@ namespace TrumpTile.GameMain.UI
     [System.Serializable]
     public class IngameItemConfig
     {
-        public string itemName;
-        public string itemDescription;
+        public int itemNameId;
+        public int itemDescriptionId;
         public int itemId;
         public int amount = 3;
         public int cost = 100;
@@ -351,7 +351,9 @@ namespace TrumpTile.GameMain.UI
             mBallonRect.localScale = Vector3.zero;
             mBallonRect.localRotation = Quaternion.Euler(0f, 0f, -8f);
 
-            mBallonText.text = item.ingameItemConfig.unlockLevel.ToString() + "레벨 오픈";
+            mBallonText.text = item.ingameItemConfig.unlockLevel.ToString() + LocalizeManager.Inst.GetString(200228);
+            mBallonText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            LocalizeManager.Inst.ApplyRTL(mBallonText);
 
             mBallonRect.gameObject.SetActive(true);
 

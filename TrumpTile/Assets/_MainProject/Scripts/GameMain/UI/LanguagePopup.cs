@@ -74,7 +74,7 @@ namespace TrumpTile.GameMain.UI
 
 			if (mVietnameseButton != null)
 			{
-				mVietnameseButton.onClick.AddListener(() => OnLanguageSelected(ELanguage.Vietnamese));
+				//mVietnameseButton.onClick.AddListener(() => OnLanguageSelected(ELanguage.Vietnamese));
 			}
 
 			if (mHindiButton != null)
@@ -104,7 +104,7 @@ namespace TrumpTile.GameMain.UI
 			SetSelectedIndicator(mEnglishSelected, currentLanguage == ELanguage.English);
 			SetSelectedIndicator(mJapaneseSelected, currentLanguage == ELanguage.Japanese);
 			SetSelectedIndicator(mChineseSelected, currentLanguage == ELanguage.Chinese);
-			SetSelectedIndicator(mVietnameseSelected, currentLanguage == ELanguage.Vietnamese);
+			//SetSelectedIndicator(mVietnameseSelected, currentLanguage == ELanguage.Vietnamese);
 			SetSelectedIndicator(mHindiSelected, currentLanguage == ELanguage.Hindi);
 			SetSelectedIndicator(mArabicSelected, currentLanguage == ELanguage.Arabic);
 		}

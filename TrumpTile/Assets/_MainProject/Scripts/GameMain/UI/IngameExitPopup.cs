@@ -32,14 +32,16 @@ namespace TrumpTile.GameMain.UI
             bool bIsDailyMode = DailyPuzzleManager.Inst != null && DailyPuzzleManager.Inst.IsActive;
 			if (bIsDailyMode)
 			{
-				mLevelText.text = "일일 퍼즐";
+				mLevelText.text = LocalizeManager.Inst.GetString(200068);
 			}
 			else
 			{
-                string header = GameManager.Instance.IsChampionsMode ? "챌린지 " : "레벨 ";
+                string header = GameManager.Instance.IsChampionsMode ? $"{LocalizeManager.Inst.GetString(200155)} " : $"{LocalizeManager.Inst.GetString(200189)} ";
                 string number = GameManager.Instance.IsChampionsMode ? PlayerDataManager.Inst.ChampionsLevel.ToString() : GameManager.Instance.CurrentLevel.ToString();
                 mLevelText.text = header + number;
             }
+            mLevelText.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            LocalizeManager.Inst.ApplyRTL(mLevelText);
             base.Show();
         }
         protected override void SubscribeEvent()

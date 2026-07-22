@@ -10,9 +10,9 @@ namespace TrumpTile.GameMain.UI
 {
     public class _LanguagePopup : PopupBase
     {
-        [Header("언어 선택 버튼 배열\n(순서대로 ko, en, ja, zh, vi, hi, ar)")]
+        [Header("언어 선택 버튼 배열\n(순서대로 ko, en, ja, zh, hi, ar)")]
         [SerializeField] private Button[] mLanguageButtonArray;
-        private string[] mLocaleHeaderStringArray = { "ko", "en", "ja", "zh", "vi", "hi", "ar" };
+        private string[] mLocaleHeaderStringArray = { "ko", "en", "ja", "zh", "hi", "ar" };
 
         [Header("선택된 언어 표시를 위한 스프라이트")]
         [SerializeField] private Sprite mCurrentLangaugeSprite;

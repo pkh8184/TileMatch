@@ -16,8 +16,12 @@ namespace TrumpTile.GameMain.UI
 
         public void SetValid(IngameItemConfig config)
         {
-            mItemName.text = config.itemName;
-            mItemDescription.text = config.itemDescription;
+            mItemName.text = LocalizeManager.Inst.GetString(config.itemNameId);
+            mItemDescription.text = LocalizeManager.Inst.GetString(config.itemDescriptionId);
+            mItemName.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            mItemDescription.font = LocalizeManager.Inst.GetFontAssetByLocale();
+            
+            LocalizeManager.Inst.ApplyRTL(mItemName, mItemDescription);
             mItemImage.sprite = config.itemIcon;
         } 
         protected override void PlayHideAnim()

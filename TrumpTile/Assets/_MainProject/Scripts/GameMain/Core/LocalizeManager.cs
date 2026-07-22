@@ -42,7 +42,6 @@ namespace TrumpTile.GameMain.Core
 				case ELanguage.English:   return data.En;
 				case ELanguage.Japanese:  return data.Ja;
 				case ELanguage.Chinese:   return data.Zh;
-				case ELanguage.Vietnamese: return data.Vi;
 				case ELanguage.Hindi:     return data.Hi;
 				case ELanguage.Arabic:    return data.Ar;
 				default:                  return data.Ko;
