@@ -71,6 +71,27 @@ namespace TrumpTile.GameMain.Core
 		public bool IsGameEnded => mIsGameEnded;
 		public int BonusSlotCost => mBonusSlotCost;
 
+		// 슬롯에 타일이 들어오는 중이거나(비행/정렬 애니메이션) 매치 처리가 진행 중인지 여부.
+		// 타임오버 순간에 진행 중이면, 마지막에 매치가 성립될 수 있으므로 승패 판정을 미루는 데 사용한다.
+		public bool HasPendingSlotResolution
+		{
+			get
+			{
+				if (mIsProcessingMatch)
+				{
+					return true;
+				}
+				foreach (TileController tile in mSlotTiles)
+				{
+					if (tile != null && (tile.IsAnimating || !tile.IsArrivedSlot))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+
 		private EAudioKey mMatchAudioKey;
         private void Awake()
 		{

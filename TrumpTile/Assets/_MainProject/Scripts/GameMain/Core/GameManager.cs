@@ -236,10 +236,12 @@ namespace TrumpTile.GameMain.Core
                         }
                     }
                     mCurrentTime = mTargetClearTime - mElapsedTime;
-                    if (mCurrentTime <= 0) 
+                    if (mCurrentTime <= 0)
 					{
-						mbIsTimeOut = true;
-						OnGameOver();
+						//시간이 다 됐어도 마이너스로 두지 않고 0에서 멈춘 뒤,
+						//슬롯 이동/매치가 진행 중이면 결과를 기다렸다가 승패를 판정한다.
+						mCurrentTime = 0;
+						HandleTimeOver();
 					}
                 }		
             }
@@ -553,6 +555,30 @@ namespace TrumpTile.GameMain.Core
 		public float GetCurrentTimeClamped()
 		{
 			return mCurrentTime / mTargetClearTime;
+		}
+		//시간이 0에 도달했을 때의 처리.
+		//슬롯에 타일이 들어오는 중이거나 매치/재정렬이 진행 중이면(=마지막 순간에 매치가 성립될 수 있으면)
+		//결과가 확정될 때까지 패배 처리를 보류한다.
+		//진행이 끝난 뒤 보드/슬롯이 모두 비어 클리어면 승리 처리를 하고, 타일이 남아 있으면 타임오버 패배로 처리한다.
+		private void HandleTimeOver()
+		{
+			//슬롯 이동/매치 연출이 진행 중이면 이번 프레임은 대기 (승패 판정 보류)
+			if (mSlotManager != null && mSlotManager.HasPendingSlotResolution)
+			{
+				return;
+			}
+
+			bool bBoardEmpty = mBoardManager == null || !mBoardManager.HasRemainingTiles();
+			bool bSlotEmpty = mSlotManager == null || mSlotManager.CurrentTileCount == 0;
+
+			if (bBoardEmpty && bSlotEmpty)
+			{
+				LevelClear();
+				return;
+			}
+
+			mbIsTimeOut = true;
+			OnGameOver();
 		}
 		public void OnGameOver()
 		{
