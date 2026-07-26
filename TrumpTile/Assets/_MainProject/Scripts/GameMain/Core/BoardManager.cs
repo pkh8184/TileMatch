@@ -757,6 +757,42 @@ namespace TrumpTile.GameMain.Core
 			return mBoardMap[tile.GridX, tile.GridY, tile.LayerIndex] == mGemPos;
 		}
 
+		//활성 젬이 시각적으로 덮고 있는 타일(젬보다 아래 레이어 + 젬 2×2 영역 안)을 막는다.
+		//레이어 마킹의 스태거 콘 검사(홀수 간격에서만 이웃 검사)가 놓치는 케이스를 세계좌표 겹침으로 직접 처리한다.
+		private bool IsCoveredByActiveGem(TileController tile)
+		{
+			if (tile == null || mGemTileList == null)
+			{
+				return false;
+			}
+
+			Vector3 tilePos = tile.transform.position;
+
+			foreach (GemTile gem in mGemTileList)
+			{
+				if (gem == null || !gem.gameObject.activeSelf)
+				{
+					continue;
+				}
+
+				//젬은 자기 레이어보다 앞(위)에 그려져 아래 레이어 타일을 가린다. 같은/위 레이어는 젬보다 앞이라 제외.
+				if (tile.LayerIndex >= gem.GemLayer)
+				{
+					continue;
+				}
+
+				//젬은 2×2 크기(반경 = 타일 1칸). 타일 중심이 젬 영역 안이면 젬 뒤에 가려진 것으로 본다.
+				Vector3 gemPos = gem.transform.position;
+				if (Mathf.Abs(tilePos.x - gemPos.x) < mTileScale.x
+					&& Mathf.Abs(tilePos.y - gemPos.y) < mTileScale.y)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		public bool IsTileBlocked(TileController tile)
 		{
 			if (tile == null)
@@ -768,6 +804,11 @@ namespace TrumpTile.GameMain.Core
 				return false;
 			}
 			if (IsCoveredByGem(tile))
+			{
+				return true;
+			}
+			//활성 젬이 시각적으로 덮은 아래 레이어 타일도 막는다. (스태거 콘 검사가 놓치는 케이스 보정)
+			if (IsCoveredByActiveGem(tile))
 			{
 				return true;
 			}
