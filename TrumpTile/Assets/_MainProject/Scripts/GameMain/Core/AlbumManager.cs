@@ -95,12 +95,14 @@ namespace TrumpTile.GameMain.Core
 			}
 
 			TBPictureCollectData[] allPictures    = mPictureTable.GetAll();
-			int lastAlbumRewardedStage             = PlayerDataManager.Inst.LastAlbumRewardedStage;
+			int currentStage                       = PlayerDataManager.Inst.CurrentStage;
 
 			int collected = 0;
 			foreach (TBPictureCollectData picture in allPictures)
 			{
-				if (picture.StageValue <= lastAlbumRewardedStage)
+				//해금(열람 가능 = Available + Collected)된 사진 수. 그리드에 프리뷰가 뜨는 기준(stageValue < currentStage)과 동일.
+				//기존엔 보상 수령(Collected)만 세서, 해금됐으나 보상 미수령(Available)인 앨범이 수집현황에 빠졌음.
+				if (picture.StageValue < currentStage)
 				{
 					collected++;
 				}
