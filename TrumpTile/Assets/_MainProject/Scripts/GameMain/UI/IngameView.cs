@@ -127,6 +127,13 @@ namespace TrumpTile.GameMain.UI
             mGemCollectionUI.SetActive(GameManager.Instance.IsGemCollectActive);
             mGemCountText = mGemCollectionUI.GetComponentInChildren<TMP_Text>();
         }
+
+        //인게임 HUD(슬롯구매/아이템/설정/상점 등 하위 버튼 전체) 입력 차단/해제.
+        //클리어·게임오버 시 차단, 레벨 시작 시 해제한다. (CanvasGroup.interactable 기반이라 인스펙터 배선 버튼도 함께 막힘)
+        public void SetHudInteractable(bool interactable)
+        {
+            SetInteractable(interactable);
+        }
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();

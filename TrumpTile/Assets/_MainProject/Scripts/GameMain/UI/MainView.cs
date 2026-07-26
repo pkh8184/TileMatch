@@ -192,6 +192,9 @@ namespace TrumpTile.GameMain.UI
             {
                 gold -= CoreContainer.RewardContainer.Gold;
             }
+            //젬 마일스톤처럼 PlayerData엔 반영됐지만 아직 애니(젬 게이지 후 골드 연출) 전인 골드도 차감해
+            //연출 전에 최종값이 미리 보이지 않게 한다.
+            gold -= CoreContainer.RewardContainer.PendingAnimGold;
             mGoldText.text = gold.ToString();
         }
         

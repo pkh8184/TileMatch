@@ -111,7 +111,8 @@ namespace TrumpTile.GameMain.UI
                 return;
             }
 
-            mCurrentNickName = mNickNameInputField.text;                 
+            mCurrentNickName = mNickNameInputField.text;
+            PlayerDataManager.Inst.SetNickName(mCurrentNickName);                 
         }
         private void ShowWarningText()
         {
@@ -159,12 +160,8 @@ namespace TrumpTile.GameMain.UI
         {
             PlayerDataManager.Inst?.SetProfileImageIndex(mCurrentAvataIndex);
             PlayerDataManager.Inst?.SetProfileFrameIndex(mCurrentFrameIndex);
-            PlayerDataManager.Inst.SetNickName(mNickNameInputField.text);
-
-            Debug.Log(PlayerDataManager.Inst.GetProfileImageIndex());
 
             EventManager.Inst.ActiveEvent(RequestEventKeys.REFRESH_PLAYER_LOCAL_DATA);
- 
         }
         private void AdjustSelectedMark(bool isAvata)
         {

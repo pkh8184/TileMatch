@@ -16,6 +16,13 @@ namespace TrumpTile.GameMain.Core
         public int Gold => mGold;
         public int Gem => mGem;
 
+        //젬 마일스톤처럼 PlayerData엔 이미 반영됐지만, 아직 애니 전 단계(젬 게이지 진행 중)라
+        //메인 골드 표기에서 차감해 숨겨야 하는 골드. 게이지 완료 시 실제 애니 대상(mGold)으로 옮긴다.
+        private int mPendingAnimGold;
+        public int PendingAnimGold => mPendingAnimGold;
+        public void AddPendingAnimGold(int amount) => mPendingAnimGold += amount;
+        public void ConsumePendingAnimGold(int amount) => mPendingAnimGold = System.Math.Max(0, mPendingAnimGold - amount);
+
         public void AddReward(RewardDisplayInfo info)
         {
             if(info == null) return;
@@ -50,6 +57,7 @@ namespace TrumpTile.GameMain.Core
         {
             mGold = 0;
             mGem = 0;
+            mPendingAnimGold = 0;
         }
         public void AddGold(int amount)
         {
