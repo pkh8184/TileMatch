@@ -852,10 +852,7 @@ namespace TrumpTile.GameMain.Core
 
 			GameObject clockObj = Instantiate(mClockItemEffectPrefab, mClockEffectParent);
 			Animator animator = clockObj.GetComponent<Animator>();
-
-			// Clock_Padein 재생 (기본 상태)
-			yield return new WaitForSeconds(mClockFadeInDuration);
-
+			
 			// 타이머 동결 시작 콜백
 			onActionPoint?.Invoke();
 

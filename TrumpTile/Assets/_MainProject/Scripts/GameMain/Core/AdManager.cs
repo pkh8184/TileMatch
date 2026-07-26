@@ -11,11 +11,20 @@ namespace TrumpTile.GameMain.Core
 	/// </summary>
 	public class AdManager : Singleton_GameObject<AdManager>
 	{
-		// 테스트용 광고 ID (실제 배포 시 교체 필요)
+		// 광고 유닛 ID: 에디터/개발 빌드는 구글 공식 테스트 ID, 릴리즈 빌드는 실제 ID를 사용한다.
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+		// [테스트] 구글 공식 테스트 유닛 ID — 실광고로 교체 금지 (본인 광고 클릭 = AdMob 정책 위반/계정 정지 위험)
 		private const string ANDROID_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
 		private const string IOS_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/2934735716";
 		private const string ANDROID_REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
 		private const string IOS_REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/1712485313";
+#else
+		// [실제] AdMob 콘솔에서 발급받은 광고 유닛 ID. (iOS는 미출시 → placeholder 유지, iOS 낼 때 교체)
+		private const string ANDROID_BANNER_AD_UNIT_ID = "ca-app-pub-8303844869450983/3246966354";
+		private const string IOS_BANNER_AD_UNIT_ID = "ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX";
+		private const string ANDROID_REWARDED_AD_UNIT_ID = "ca-app-pub-8303844869450983/1997784977";
+		private const string IOS_REWARDED_AD_UNIT_ID = "ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX";
+#endif
 
 		private BannerView mBannerView;
 		private RewardedAd mRewardedAd;
@@ -143,6 +152,11 @@ namespace TrumpTile.GameMain.Core
 		}
 		public float GetBannerHeightForAdjustView()
 		{
+			//배너가 아직 로드되지 않았거나(오프라인 등) 제거된 경우 0을 반환해 NRE를 방지한다.
+			if (mBannerView == null)
+			{
+				return 0f;
+			}
 			return mBannerView.GetHeightInPixels();
 		}
 		#endregion

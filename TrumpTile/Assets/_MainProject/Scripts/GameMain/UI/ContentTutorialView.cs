@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using DG.Tweening;
+using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ namespace TrumpTile.GameMain.UI
         private Sequence seq;
         public override void Show()
         {
+            AdManager.Inst.HideBannerAd();
             base.Show();
     
             if(seq != null && seq.active)
@@ -57,6 +59,11 @@ namespace TrumpTile.GameMain.UI
                     break;
                 }       
             }
+        }
+        public override void Hide()
+        {
+            base.Hide();
+            AdManager.Inst.ShowBannerAd();
         }
     }    
 }
