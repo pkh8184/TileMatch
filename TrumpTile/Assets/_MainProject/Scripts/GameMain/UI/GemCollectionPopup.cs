@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Core;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -168,6 +169,13 @@ namespace TrumpTile.GameMain.UI
                 foreach(var item in animPayloadList[i].RewardDisplayInfoList)
                 {
                     CoreContainer.RewardContainer.AddReward(item);
+
+                    //대기 골드를 실제 애니 대상(mGold)으로 이동: AddReward가 mGold에 더했으니 대기분에서 차감.
+                    //(차감 총량 = mGold + PendingAnimGold 는 불변 → 게이지 진행 중에도 표기 일관)
+                    if(item != null && item.Type == ERewardType.Gold)
+                    {
+                        CoreContainer.RewardContainer.ConsumePendingAnimGold(item.Amount);
+                    }
                 }
             }
             Sequence lastSeq = DOTween.Sequence();

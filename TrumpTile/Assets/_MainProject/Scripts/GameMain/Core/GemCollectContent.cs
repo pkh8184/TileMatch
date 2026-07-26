@@ -148,6 +148,13 @@ namespace TrumpTile.GameMain.Core
 
                     RewardDisplayInfo info = item.GetRewardDisplayInfo();
                     infos.Add(info);
+
+                    //골드는 PlayerData에 즉시 반영되지만 실제 애니(젬 게이지 후 골드 카운트업)는 나중이라,
+                    //그 사이 메인 골드 표기가 미리 최종값으로 보이지 않도록 대기 골드로 등록한다.
+                    if(info != null && info.Type == ERewardType.Gold)
+                    {
+                        CoreContainer.RewardContainer.AddPendingAnimGold(info.Amount);
+                    }
                 }
 
                 mPlayloadList.Add(new GemCollectAnimPayload{RewardDisplayInfoList = infos, CapturedRequiredGemCount = mRequiredGemCountArray[mCurrentIndex], CapturedCurrentIndex = mCurrentIndex});
