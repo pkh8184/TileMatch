@@ -378,6 +378,8 @@ namespace TrumpTile.GameMain.Core
 			mCurrentScore = 0;
 			mComboCount = 0;
 			mMatchedTileCount = 0;
+			//새 레벨/재시도 시작 시 HUD 입력 다시 활성화 (직전 클리어에서 차단됐을 수 있음)
+			IngameViewRef?.SetHudInteractable(true);
 
 			mSlotManager?.Initialize();  // 반드시 ResetSlots() 이전
 			mSlotManager?.ResetSlots();
@@ -393,7 +395,10 @@ namespace TrumpTile.GameMain.Core
 
 			// 타이머 초기화
 			mElapsedTime = 0F;
-			
+			//재시도/새 스테이지 시작 시 별 계산에 쓰는 누적 플레이시간도 리셋한다.
+			//(안 하면 이전 시도 시간이 누적돼 클리어타임/별이 잘못 계산됨. 부활은 이 경로를 안 타므로 부활 페널티는 유지)
+			mTotalPlayTime = 0F;
+
 			mTargetClearTime = mStageScoreData.TimeLimit;
 
 
@@ -628,6 +633,8 @@ namespace TrumpTile.GameMain.Core
 			if(mbIsTimeOut)
 			{
 				mElapsedTime = 0;
+				//부활 시 타이머를 새로 주므로 플레이시간도 초기화 → 별점이 부활 타이머 기준으로 계산됨
+				mTotalPlayTime = 0;
 				mTargetClearTime = 40;
 
 				AudioManager.Inst.SetBGMVolume(1f);
@@ -643,6 +650,8 @@ namespace TrumpTile.GameMain.Core
 				if(mCurrentTime < 20)
 				{
 					mElapsedTime = 0;
+					//부활 시 타이머를 새로 주므로 플레이시간도 초기화
+					mTotalPlayTime = 0;
 					mTargetClearTime = 30;
 				}
 				AudioManager.Inst.SetBGMVolume(1f);
@@ -671,6 +680,8 @@ namespace TrumpTile.GameMain.Core
 			PlayerDataManager.Inst.AddGemCount(CoreContainer.RewardContainer.Gem);
 			ItemManager.Inst.SaveItemCountsToServer();
 			UIManager.Instance?.DisableItemButtons();
+			//클리어 즉시 HUD 입력 차단(슬롯구매/설정/상점/아이템). 팝업 뜨기 전 창에서의 오클릭 방지.
+			IngameViewRef?.SetHudInteractable(false);
 
 			yield return new WaitForSeconds(0.5F);
 
@@ -726,8 +737,11 @@ namespace TrumpTile.GameMain.Core
 			// {
 			// 	return 1;
 			// }
-			float star3 = mStageScoreData.TimeLimit - mStageScoreData.Star3;
-			float star2 = mStageScoreData.TimeLimit - mStageScoreData.Star2;
+			//별점은 현재 타이머(mTargetClearTime) 기준으로 남은시간을 판정한다.
+			//부활하면 mTargetClearTime이 40/30초로 바뀌므로 부활 타이머의 남은시간 기준으로 계산되고,
+			//부활을 안 하면 mTargetClearTime == 스테이지 제한시간이라 기존과 동일하다.
+			float star3 = mTargetClearTime - mStageScoreData.Star3;
+			float star2 = mTargetClearTime - mStageScoreData.Star2;
 			if(mTotalPlayTime <= star3)
 			{
 				return 3;
@@ -771,6 +785,10 @@ namespace TrumpTile.GameMain.Core
 		#region Items
 
 		public bool CanUseItem() => CurrentState == EGameState.Playing;
+
+		//인게임 HUD 입력 차단용 IngameView 참조 (지연 캐싱)
+		private IngameView mIngameViewCache;
+		private IngameView IngameViewRef => mIngameViewCache != null ? mIngameViewCache : (mIngameViewCache = FindObjectOfType<IngameView>(true));
 
 		#endregion
 

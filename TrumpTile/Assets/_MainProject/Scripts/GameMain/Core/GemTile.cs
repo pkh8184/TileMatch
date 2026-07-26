@@ -12,6 +12,8 @@ namespace TrumpTile.GameMain.Core
         private int mGemCount;
         private List<(int,int,int)> mCheckIndexList;
         private List<(int,int,int)> mOriginIndexList;
+        //젬이 앵커된 그리드 레이어. originList는 모두 이 레이어의 2×2 footprint 셀이다. 못 구하면 -1.
+        public int GemLayer => (mOriginIndexList != null && mOriginIndexList.Count > 0) ? mOriginIndexList[0].Item3 : -1;
         private RectTransform mTargetRect;
         private bool mbIsAnim;
         private Sequence mSeq;
