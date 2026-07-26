@@ -20,6 +20,48 @@ namespace TrumpTile.FirebaseLibrary
             }
         }
 
+        /// <summary>
+        /// [saveData] 유저 데이터(5필드) + 리더보드 더미 스냅샷을 서버에 저장한다.
+        /// payload 형태: { user: {...}, leaderboard: { data, lastRefresh } }
+        /// </summary>
+        public static async Task<bool> RequestSaveData(Dictionary<string, object> payload)
+        {
+            try
+            {
+                await FirebaseService.Functions.GetHttpsCallable(FirebaseFunctionsNames.SAVE_DATA).CallAsync(payload);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// [loadData] UID로 서버에 저장된 유저 데이터를 읽어온다. 실패 시 null.
+        /// </summary>
+        public static async Task<(bool notFound, Dictionary<object, object> data)> RequestLoadData()
+        {
+            try
+            {
+                HttpsCallableResult result = await FirebaseService.Functions.GetHttpsCallable(FirebaseFunctionsNames.LOAD_DATA).CallAsync();
+                return (false, result != null ? result.Data as Dictionary<object, object> : null);
+            }
+            catch (FunctionsException fe)
+            {
+                //서버에 UID 문서가 없으면(한 번도 온라인 저장하지 않은 계정) not-found 로 응답한다.
+                if (fe.ErrorCode == FunctionsErrorCode.NotFound)
+                {
+                    return (true, null);
+                }
+                return (false, null);
+            }
+            catch (Exception)
+            {
+                return (false, null);
+            }
+        }
+
         public static async Task<object> RequestLogin(string version)
         {
             try

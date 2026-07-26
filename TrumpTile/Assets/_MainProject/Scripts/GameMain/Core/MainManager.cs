@@ -41,14 +41,38 @@ namespace TrumpTile.GameMain.Core
 
 			PlayerDataManager.Inst.Initialize();
 
-            await ContentManager.Inst.Initialize();
-                
+            //async void Awake라 예외가 나면 이후 UI 초기화가 통째로 중단된다. 어떤 초기화 실패도 UI/입력을 막지 않도록 방어한다.
+            try
+            {
+                await ContentManager.Inst.Initialize();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[MainManager] ContentManager 초기화 실패(무시하고 진행): {e}");
+            }
+
+            //개별 UI 초기화 실패가 전체 UI/입력을 막지 않도록 각각 가드한다. (하나가 예외나도 나머지는 초기화)
             UIBase[] uiBaseArray = FindObjectsOfType<UIBase>(true);
             foreach (UIBase item in uiBaseArray)
             {
-                item.Initialize();
+                try
+                {
+                    item.Initialize();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[MainManager] UI 초기화 실패({(item != null ? item.name : "null")}): {e}");
+                }
             }
-            _ = AdManager.Inst;
+
+            try
+            {
+                _ = AdManager.Inst;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[MainManager] AdManager 초기화 실패(무시): {e}");
+            }
 
             //모든 UI 초기화 후, 저장된 언어로 로케일을 한 번 재적용한다.
             //(초기 로드 시 UI가 초기화되는 순간엔 로케일 적용이 누락될 수 있어, 언어변경 흐름(REFRESH_LANGUAGE)을 startup에 재현)

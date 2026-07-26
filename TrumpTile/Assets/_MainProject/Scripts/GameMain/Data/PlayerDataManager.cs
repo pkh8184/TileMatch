@@ -178,6 +178,8 @@ namespace TrumpTile.GameMain.Data
 				mUserData.IsChampionsActive = true;
 				mUserData.ChampionsLevel = 1;
 			}
+
+			SaveUserData();
 		}
 		public void ClearChampionsStage()
 		{
@@ -186,6 +188,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.ChampionsLevel++;
+
+			SaveUserData();
 		}
 		public int GetStageStars(int level)
 		{
@@ -223,6 +227,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.ItemCounts[itemId] = count;
+
+			SaveUserData();
 		}
 		public void AddItemCount(int itemId, int count)
 		{
@@ -231,6 +237,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.ItemCounts[itemId] += count;
+
+			SaveUserData();
 		}
 
 		public Dictionary<int, int> GetAllItemCounts()
@@ -258,6 +266,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 광고 제거 구독 완료");
 			mUserData.RemoveAds = true;
+
+			SaveUserData();
 		}
 		public void UnlockSeasonPass()
 		{
@@ -267,6 +277,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 시즌패스 해금 완료");
 			mUserData.SeasonPassUnlock = true;
+
+			SaveUserData();
 		}
 		public void UnlockPiggyBank()
 		{
@@ -286,6 +298,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 출석체크 해금 완료");
 			mUserData.DailyCheckUnlock = true;
+
+			SaveUserData();
 		}
 		public void UnlockRoulette()
 		{
@@ -294,7 +308,9 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			Debug.Log("[PlayerDataManager] 룰렛 해금 완료");
-			mUserData.RouletteUnlock = true;	
+			mUserData.RouletteUnlock = true;
+
+			SaveUserData();
 		}
 		public void UnlockExcitTravel()
 		{
@@ -303,7 +319,9 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			Debug.Log("[PlayerDataManager] 기차 여행 해금 완료");
-			mUserData.ExcitTravelUnlock = true;	
+			mUserData.ExcitTravelUnlock = true;
+
+			SaveUserData();
 		}
 		public void UnlockGemCollection()
 		{
@@ -314,6 +332,8 @@ namespace TrumpTile.GameMain.Data
 			Debug.Log("[PlayerDataManager] 보석 수집 해금 완료");
 			mUserData.GemCollectionUnlock = true;
 			//활성화는 컨텐츠 쪽 EvaluateActiveState에서 처리 (여기서 강제 활성화하지 않음)
+
+			SaveUserData();
 		}
 		public void UnlockTreasureBox()
 		{
@@ -323,6 +343,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 트레져 박스 해금 완료");
 			mUserData.TreasureBoxUnlock = true;
+
+			SaveUserData();
 		}
 
 		/// <summary>
@@ -345,6 +367,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 챔피언스 해금 완료");
 			mUserData.ChampionsUnlock = true;
+
+			SaveUserData();
 		}
 
 	#endregion
@@ -358,6 +382,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.LastAlbumRewardedStage = stage;
+
+			SaveUserData();
 		}
 
 	#endregion
@@ -393,6 +419,8 @@ namespace TrumpTile.GameMain.Data
 			{
 				mUserData.RouletteCount = 0;
 			}
+
+			SaveUserData();
 		}
 		public void SetDailyCheckDone()
 		{
@@ -401,6 +429,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.IsDailyCheckToday = true;
+
+			SaveUserData();
 		}
 	#endregion
 	#region 룰렛 관련
@@ -411,6 +441,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.RouletteCount = value;
+
+			SaveUserData();
 		}
 	#endregion
 	#region 돼지저금통 관련
@@ -422,6 +454,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			Debug.Log("[PlayerDataManager] 돼지저금통 구매 완료");
 			mUserData.PiggyBankPurchase = true;
+
+			SaveUserData();
 		}
 		public void StartPiggyBankContent()
 		{
@@ -456,6 +490,8 @@ namespace TrumpTile.GameMain.Data
 		public void IncreaseExcitTravelIndex()
 		{
 			mUserData.ExcitTravelIndex++;
+
+			SaveUserData();
 		}
 		public void ActiveExcitTravel()
 		{
@@ -497,6 +533,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.GemCount += value;
 			if(mUserData.GemCount < 0) mUserData.GemCount = 0;
+
+			SaveUserData();
 		}
 		public void SetGemCount(int value)
 		{
@@ -506,6 +544,8 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.GemCount = value;
 			if(mUserData.GemCount < 0) mUserData.GemCount = 0;
+
+			SaveUserData();
 		}
 		public void SetGemIndex(int value)
 		{
@@ -514,6 +554,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.GemCollectionIndex = value;
+
+			SaveUserData();
 		}
 	#endregion
 	#region 구매 패키지 (초보자/중급자/상급자 재구매 쿨타임)
@@ -815,6 +857,80 @@ namespace TrumpTile.GameMain.Data
 			mUserData.NickName = nickName;
             PlayerPrefs.SetString("NickName", nickName);
         }
+		#region 서버 동기화 (saveData/loadData용)
+
+		/// <summary>
+		/// 서버 저장용 유저 데이터(5필드)를 서버 스키마 형태의 딕셔너리로 만든다.
+		/// { removeAds, currentStage, gold, itemCounts{id:count}, championsLevel, isChampionsActive }
+		/// </summary>
+		public Dictionary<string, object> BuildServerUserData()
+		{
+			Dictionary<string, object> itemCounts = new Dictionary<string, object>();
+			if(mUserData != null && mUserData.ItemCounts != null)
+			{
+				foreach(KeyValuePair<int, int> pair in mUserData.ItemCounts)
+				{
+					itemCounts[pair.Key.ToString()] = pair.Value;
+				}
+			}
+
+			return new Dictionary<string, object>
+			{
+				{ "removeAds", mUserData != null && mUserData.RemoveAds },
+				{ "currentStage", mUserData != null ? mUserData.CurrentStage : 1 },
+				{ "gold", mUserData != null ? mUserData.Gold : 0 },
+				{ "itemCounts", itemCounts },
+				{ "championsLevel", mUserData != null ? mUserData.ChampionsLevel : 0 },
+				{ "isChampionsActive", mUserData != null && mUserData.IsChampionsActive }
+			};
+		}
+
+		/// <summary>
+		/// 서버에서 불러온 유저 데이터를 로컬 UserData에 반영하고 저장한다.
+		/// </summary>
+		public void ApplyServerUserData(Dictionary<object, object> data)
+		{
+			if(mUserData == null || data == null)
+			{
+				return;
+			}
+
+			if(data.TryGetValue("removeAds", out object removeAds))
+			{
+				mUserData.RemoveAds = Convert.ToBoolean(removeAds);
+			}
+			if(data.TryGetValue("currentStage", out object currentStage))
+			{
+				mUserData.CurrentStage = Convert.ToInt32(currentStage);
+			}
+			if(data.TryGetValue("gold", out object gold))
+			{
+				mUserData.Gold = Convert.ToInt32(gold);
+			}
+			if(data.TryGetValue("championsLevel", out object championsLevel))
+			{
+				mUserData.ChampionsLevel = Convert.ToInt32(championsLevel);
+			}
+			if(data.TryGetValue("isChampionsActive", out object isChampionsActive))
+			{
+				mUserData.IsChampionsActive = Convert.ToBoolean(isChampionsActive);
+			}
+			if(data.TryGetValue("itemCounts", out object itemCountsObj) && itemCountsObj is Dictionary<object, object> itemCounts)
+			{
+				foreach(KeyValuePair<object, object> pair in itemCounts)
+				{
+					if(int.TryParse(pair.Key.ToString(), out int itemId))
+					{
+						mUserData.ItemCounts[itemId] = Convert.ToInt32(pair.Value);
+					}
+				}
+			}
+
+			SaveUserData();
+		}
+
+		#endregion
+
 		private void LoadUserData()
 		{
 			string encryptedText = PlayerPrefs.GetString("UserData", "");

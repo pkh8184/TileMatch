@@ -14,6 +14,14 @@ namespace TrumpTile.GameMain.Core
     {
         public List<TBLeaderNameData> DataList;
     }
+
+    //서버 저장/복원용 더미 리더보드 스냅샷.
+    [Serializable]
+    public class LeaderboardServerData
+    {
+        public string data;        //LeaderboardDataWrapper JSON (더미 경쟁자 리스트)
+        public string lastRefresh; //마지막 갱신 시각 (Ticks 문자열)
+    }
     public class LeaderboardManager : Singleton_GameObject<LeaderboardManager>
     {
        // private const int DEFAULT_COUNT = 100;
@@ -265,6 +273,45 @@ namespace TrumpTile.GameMain.Core
 
             return sortedList;
         }
+
+        #region 서버 저장/복원 (재설치 시 더미 리더보드 순위 유지)
+
+        /// <summary>
+        /// 현재 로컬에 저장된 더미 리더보드 스냅샷을 서버 전송용으로 반환한다.
+        /// saveData 호출 시 payload.leaderboard 로 함께 올린다.
+        /// PlayerPrefs에 저장된 값이 없으면(아직 미생성) data가 빈 문자열로 반환된다.
+        /// </summary>
+        public LeaderboardServerData ExportForServer()
+        {
+            return new LeaderboardServerData
+            {
+                data = PlayerPrefs.GetString(PREFS_PATH, string.Empty),
+                lastRefresh = PlayerPrefs.GetString(PREFS_LAST_REFRESH, string.Empty)
+            };
+        }
+
+        /// <summary>
+        /// loadData로 받아온 서버의 더미 리더보드 스냅샷을 로컬에 복원한다.
+        /// 마지막 갱신 시각까지 복원한 뒤 주/월 경계 델타를 다시 적용하므로,
+        /// 재설치 후에도 동일한 경쟁자/순위가 유지된다.
+        /// 서버에 저장된 값이 없으면(신규 유저) 로컬 생성 상태를 그대로 둔다.
+        /// </summary>
+        public void RestoreFromServer(string dataJson, string lastRefreshTicks)
+        {
+            if(string.IsNullOrEmpty(dataJson) || string.IsNullOrEmpty(lastRefreshTicks))
+            {
+                return;
+            }
+
+            PlayerPrefs.SetString(PREFS_PATH, dataJson);
+            PlayerPrefs.SetString(PREFS_LAST_REFRESH, lastRefreshTicks);
+            PlayerPrefs.Save();
+
+            //복원된 마지막 갱신 시각 기준으로 주/월 경계를 재평가한다.
+            CheckLeaderboardRefresh();
+        }
+
+        #endregion
         // private void LoadUserData()
 		// {
 		// 	string encryptedText = PlayerPrefs.GetString("UserData", "");

@@ -28,13 +28,25 @@ namespace TrumpTile.GameMain.UI
             {
                 mCancleButton.onClick.AddListener(() => gameObject.SetActive(false));
             }
+            if(mConfirmButton != null)
+            {
+                mConfirmButton.onClick.AddListener(Hide);
+            }
         }
 
         public void AddActionToConfirmButton(Action action)
         {
             if(mConfirmButton != null)
             {
-                mConfirmButton.onClick.AddListener(() => action());
+                if(action == null)
+                {
+                    return;
+                }
+                else
+                {
+                    mConfirmButton.onClick.RemoveAllListeners();
+                    mConfirmButton.onClick.AddListener(() => action());
+                }
             }
         }
         /// <summary>

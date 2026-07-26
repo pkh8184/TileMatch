@@ -60,5 +60,8 @@ namespace TrumpTile.GameMain.Core
 		// 인게임 타일/젬
 		public const string BONUS_TILE_MATCH = "BonusTileMatch";
 		public const string COLLECT_GEM      = "CollectGem";
+
+		// 네트워크 (인앱구매/데이터 불러오기 등에서 네트워크 미연결 시 발생)
+		public const string NETWORK_NOT_CONNECT = "NetworkNotConnect";
 	}
 }

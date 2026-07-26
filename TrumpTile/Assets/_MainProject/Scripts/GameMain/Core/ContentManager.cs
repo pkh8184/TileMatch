@@ -47,7 +47,7 @@ namespace TrumpTile.GameMain.Core
             }
 
             mbWasInit = true;
-            mContentDatabase.Initialize();   
+            mContentDatabase.Initialize();
 
             return;  
         }

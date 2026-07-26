@@ -12,6 +12,12 @@ namespace TrumpTile.FirebaseLibrary
     {
         private static FirebaseAuth mAuth;
         private static FirebaseFunctions mFunctions;
+        private static bool mbInitialized;
+
+        public static bool IsInitialized => mbInitialized;
+
+        //에디터/개발(디버그) 빌드에서 사용할 로컬 Functions 에뮬레이터 주소.
+        private const string FUNCTIONS_EMULATOR_URL = "http://localhost:5001";
 
         public static FirebaseAuth Auth { get => mAuth; }
         public static FirebaseFunctions Functions { get => mFunctions; }
@@ -23,6 +29,12 @@ namespace TrumpTile.FirebaseLibrary
         /// <returns></returns>
         public static async Task Initialize()
         {
+            //중복 초기화 방지 (스테이지 클리어/구매 등에서 재호출될 수 있음)
+            if(mbInitialized)
+            {
+                return;
+            }
+
             //파이어베이스 기본 설정들을 초기화해줍니다.
             await FirebaseApp.CheckAndFixDependenciesAsync();
 
@@ -31,8 +43,13 @@ namespace TrumpTile.FirebaseLibrary
             //firestore와 로컬 위치를 맞추기 위해 서울 서버를 읽어옵니다.
             mFunctions = FirebaseFunctions.GetInstance("asia-northeast3");
 
-            //테스트 단계에서는 로컬에서 실행되는 에뮬레이터를 사용합니다.
-            mFunctions.UseFunctionsEmulator("http://localhost:5001");
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            //에디터/개발(디버그) 빌드에서는 로컬 에뮬레이터를 사용합니다. 실기기 릴리즈 빌드는 실제 Functions를 호출합니다.
+            //주의: 실기기 개발빌드에서 localhost는 기기 자신이므로, PC 에뮬레이터를 쓰려면 adb reverse(tcp:5001) 또는 PC IP로 교체하세요.
+            mFunctions.UseFunctionsEmulator(FUNCTIONS_EMULATOR_URL);
+#endif
+
+            mbInitialized = true;
         }
     }
 }

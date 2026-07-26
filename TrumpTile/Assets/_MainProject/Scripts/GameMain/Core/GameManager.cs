@@ -857,12 +857,18 @@ namespace TrumpTile.GameMain.Core
 			{
 				Debug.Log($"[GameManager] ClearChampionsLevel Progress, Next Level : {PlayerDataManager.Inst.ChampionsLevel + 1}");
 				PlayerDataManager.Inst.ClearChampionsStage();
+
+				//로컬 저장 후 서버에도 저장 (로그인 보장 포함, 오프라인이면 조용히 스킵)
+				_ = ServerSyncService.SaveToServer();
 				return;
 			}
 
 			Debug.Log($"[GameManager] SaveLevelProgress - Level: {level}, Stars: {stars}");
 			PlayerDataManager.Inst.ClearStage(level, stars);
 			Debug.Log($"[GameManager] Saved - NextStage: {PlayerDataManager.Inst.CurrentStage}");
+
+			//로컬 저장 후 서버에도 저장 (로그인 보장 포함, 오프라인이면 조용히 스킵)
+			_ = ServerSyncService.SaveToServer();
 		}
 
 		/// <summary>
