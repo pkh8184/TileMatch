@@ -14,7 +14,6 @@ namespace TrumpTile.GameMain.Core
 
         // 다른 클래스로 뺴야하는 이벤트들 (임시, 03.29)
         public const string REFRESH_PLAYER_LOCAL_DATA = "RefreshLocalData";
-        public const string LOADING_COMPLETE = "LoadingComplete";
         public const string REFRESH_LANGUAGE = "RefreshLanguage";
     }
 }

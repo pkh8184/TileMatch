@@ -52,8 +52,23 @@ namespace TrumpTile.FirebaseLibrary
         private const string PARAM_COST      = "cost";
         private const string PARAM_PRODUCT   = "product_id";
 
+        //에디터/디버그(개발) 빌드에서는 실제 전송을 하지 않는다.
+        //- 에디터: Analytics는 데스크톱 네이티브 구현이 없어서 호출하면 유니티가 크래시한다.
+        //- 디버그 빌드: 개발 중 플레이가 실제 지표에 섞이면 안 된다.
+        private static bool bIsSendEnabled
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return false;
+#else
+                return !Debug.isDebugBuild;
+#endif
+            }
+        }
+
         //Firebase 초기화(CheckAndFixDependenciesAsync) 전에 호출하면 예외가 나므로 상태를 확인한다.
-        private static bool IsReady => FirebaseService.IsInitialized;
+        private static bool IsReady => bIsSendEnabled && FirebaseService.IsInitialized;
 
         /// <summary>수집을 켠다. FirebaseService.Initialize()에서 한 번 호출된다.</summary>
         public static void SetCollectionEnabled(bool enabled)
@@ -70,12 +85,22 @@ namespace TrumpTile.FirebaseLibrary
         /// <summary>스테이지 도전(시작). 재시도/부활 후 재시작도 각각 1회로 집계된다.</summary>
         public static void LogStageStart(int stage)
         {
+            if(IsSkipped(FirebaseAnalyticsEvents.STAGE_START))
+            {
+                return;
+            }
+
             LogEvent(FirebaseAnalyticsEvents.STAGE_START, new Parameter(PARAM_STAGE, stage));
         }
 
         /// <summary>스테이지 클리어.</summary>
         public static void LogStageClear(int stage, int star, float playTime)
         {
+            if(IsSkipped(FirebaseAnalyticsEvents.STAGE_CLEAR))
+            {
+                return;
+            }
+
             LogEvent(FirebaseAnalyticsEvents.STAGE_CLEAR,
                 new Parameter(PARAM_STAGE, stage),
                 new Parameter(PARAM_STAR, star),
@@ -85,6 +110,11 @@ namespace TrumpTile.FirebaseLibrary
         /// <summary>스테이지 사망. reason은 "time_out" 또는 "slot_full".</summary>
         public static void LogStageFail(int stage, string reason)
         {
+            if(IsSkipped(FirebaseAnalyticsEvents.STAGE_FAIL))
+            {
+                return;
+            }
+
             LogEvent(FirebaseAnalyticsEvents.STAGE_FAIL,
                 new Parameter(PARAM_STAGE, stage),
                 new Parameter(PARAM_REASON, reason));
@@ -93,12 +123,22 @@ namespace TrumpTile.FirebaseLibrary
         /// <summary>광고 시청으로 부활.</summary>
         public static void LogStageReviveAd(int stage)
         {
+            if(IsSkipped(FirebaseAnalyticsEvents.STAGE_REVIVE_AD))
+            {
+                return;
+            }
+
             LogEvent(FirebaseAnalyticsEvents.STAGE_REVIVE_AD, new Parameter(PARAM_STAGE, stage));
         }
 
         /// <summary>골드 소모로 부활.</summary>
         public static void LogStageReviveGold(int stage, int cost)
         {
+            if(IsSkipped(FirebaseAnalyticsEvents.STAGE_REVIVE_GOLD))
+            {
+                return;
+            }
+
             LogEvent(FirebaseAnalyticsEvents.STAGE_REVIVE_GOLD,
                 new Parameter(PARAM_STAGE, stage),
                 new Parameter(PARAM_COST, cost));
@@ -111,35 +151,61 @@ namespace TrumpTile.FirebaseLibrary
         /// <summary>파라미터 없는 단순 카운트 이벤트.</summary>
         public static void LogContentEvent(string eventName)
         {
+            if(IsSkipped(eventName))
+            {
+                return;
+            }
+
             LogEvent(eventName);
         }
 
         /// <summary>구매 성공/실패처럼 상품 식별이 필요한 이벤트.</summary>
         public static void LogContentEvent(string eventName, string productId)
         {
+            if(IsSkipped(eventName))
+            {
+                return;
+            }
+
             LogEvent(eventName, new Parameter(PARAM_PRODUCT, productId));
         }
 
         #endregion
 
-        private static void LogEvent(string eventName)
+        /// <summary>
+        /// 전송하지 않아야 하는 상황이면 true.
+        /// Parameter는 네이티브(P/Invoke) 래퍼라 생성 자체가 에디터에서 위험하므로,
+        /// 반드시 Parameter를 만들기 전에 이 검사를 먼저 통과해야 한다.
+        /// </summary>
+        private static bool IsSkipped(string eventName)
         {
-            if(!IsReady || string.IsNullOrEmpty(eventName))
+            if(string.IsNullOrEmpty(eventName))
             {
-                return;
+                return true;
             }
 
+            if(IsReady)
+            {
+                return false;
+            }
+
+            //어떤 이벤트가 발생했는지는 에디터/디버그에서도 확인할 수 있게 로그만 남긴다.
+            if(!bIsSendEnabled)
+            {
+                Debug.Log($"[Analytics] (전송 생략) {eventName}");
+            }
+
+            return true;
+        }
+
+        private static void LogEvent(string eventName)
+        {
             FirebaseAnalytics.LogEvent(eventName);
             Debug.Log($"[Analytics] {eventName}");
         }
 
         private static void LogEvent(string eventName, params Parameter[] parameters)
         {
-            if(!IsReady || string.IsNullOrEmpty(eventName))
-            {
-                return;
-            }
-
             FirebaseAnalytics.LogEvent(eventName, parameters);
             Debug.Log($"[Analytics] {eventName} ({parameters.Length} params)");
         }

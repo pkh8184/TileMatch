@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace TrumpTile.GameMain.Core
 {
@@ -20,6 +18,10 @@ namespace TrumpTile.GameMain.Core
         [SerializeField] private float mHoldSecond;
         [Header("테스트용 플래그(Firebase 에뮬레이터 없이 타이틀씬 사용 시 체크)")]
         [SerializeField] private bool mbWhitoutFirebase;
+
+        //온라인 초기화(Firebase 초기화 + 로그인) 최대 대기 시간.
+        //Firebase Task가 끝내 완료되지 않는 경우가 있어, 부팅이 여기서 멈추지 않도록 상한을 둔다.
+        private const float ONLINE_INIT_TIMEOUT_SECOND = 10f;
 
         private float mLoadingProgress = 0;
         public float LoadingProgress { get => mLoadingProgress; }
@@ -47,38 +49,37 @@ namespace TrumpTile.GameMain.Core
 
             StartCoroutine(Co_IncreaseLoadingProgress());
 
+            //테스트 플래그와 실제 부팅이 서로 다른 씬 전환 경로를 타면 한쪽만 깨져도 알아채기 어렵다.
+            //초기화 여부만 분기하고, 씬 전환은 아래 한 경로로 합친다.
             if(mbWhitoutFirebase)
             {
                 Debug.Log("[TitleManager] 파이어베이스 없이 테스트, 로딩 시작");
-
-                yield return new WaitUntil(() => mLoadingProgress >= 100);
-
-                Debug.Log("씬 전환 이벤트 호출");
-                SceneTransister.Inst.TransistScene("MainScene");
-
-                yield break;
             }
-
-            Task task = InitFirebaseService();
-            yield return new WaitUntil(() => task.IsCompleted);
-
-            Debug.Log("데이터 로딩 완료, 씬 로딩 실행");
-            AsyncOperation op = SceneManager.LoadSceneAsync("MainScene");
-            op.allowSceneActivation = false;
-
-            while(!op.isDone)
+            else
             {
-                if (op.progress >= 0.9f)
+                Task task = InitFirebaseService();
+
+                //응답이 오지 않는 Task를 무한정 기다리면 타이틀에서 부팅이 멈춘다.
+                //상한을 넘기면 로그만 남기고 로컬 데이터로 진행한다(로그인은 이후 저장 시점에 재시도된다).
+                float elapsed = 0f;
+                yield return new WaitUntil(() =>
                 {
-                    break;
+                    elapsed += Time.unscaledDeltaTime;
+                    return task.IsCompleted || elapsed >= ONLINE_INIT_TIMEOUT_SECOND;
+                });
+
+                if(!task.IsCompleted)
+                {
+                    Debug.LogWarning($"[TitleManager] 온라인 초기화 {ONLINE_INIT_TIMEOUT_SECOND}초 초과 - 로컬 데이터로 진행");
                 }
-                yield return null;
+
+                Debug.Log("데이터 로딩 완료, 씬 로딩 실행");
             }
-            Debug.Log("로딩 성공");
 
             yield return new WaitUntil(() => mLoadingProgress >= 100);
 
-            EventManager.Inst.ActiveEvent(RequestEventKeys.LOADING_COMPLETE, (Action)(() => op.allowSceneActivation = true));
+            Debug.Log("씬 전환 이벤트 호출");
+            SceneTransister.Inst.TransistScene("MainScene");
         }
         private IEnumerator Co_IncreaseLoadingProgress()
         {

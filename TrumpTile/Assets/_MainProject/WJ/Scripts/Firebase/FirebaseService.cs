@@ -17,7 +17,10 @@ namespace TrumpTile.FirebaseLibrary
 
         public static bool IsInitialized => mbInitialized;
 
-        //에디터/개발(디버그) 빌드에서 사용할 로컬 Functions 에뮬레이터 주소.
+        //로컬 Functions 에뮬레이터 주소와 사용 여부.
+        //기본은 false(에디터에서도 실제 배포된 Functions를 호출한다).
+        //에뮬레이터를 직접 띄워놓고 테스트할 때만 true로 바꾼다.
+        private const bool USE_FUNCTIONS_EMULATOR = false;
         private const string FUNCTIONS_EMULATOR_URL = "http://localhost:5001";
 
         public static FirebaseAuth Auth { get => mAuth; }
@@ -36,6 +39,13 @@ namespace TrumpTile.FirebaseLibrary
                 return;
             }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            //네이티브(C++) SDK가 내부에서 무엇을 하는지 콘솔로 뽑는다.
+            //응답이 오지 않는 요청을 추적할 때 이 로그가 유일한 단서다.
+            //반드시 첫 FirebaseApp 접근보다 먼저 설정해야 적용된다.
+            FirebaseApp.LogLevel = LogLevel.Verbose;
+#endif
+
             //파이어베이스 기본 설정들을 초기화해줍니다.
             //Available이 아니면 Auth/Functions가 정상 동작하지 않으므로 상태를 남기고 중단한다.
             DependencyStatus status = await FirebaseApp.CheckAndFixDependenciesAsync();
@@ -51,11 +61,14 @@ namespace TrumpTile.FirebaseLibrary
             mFunctions = FirebaseFunctions.GetInstance("asia-northeast3");
 
 #if UNITY_EDITOR
-            //에디터에서만 로컬 에뮬레이터를 사용합니다.
-            //실기기는 개발빌드여도 실제 Functions를 호출합니다.
+            //에뮬레이터는 스위치를 켰을 때만 사용하고, 기본은 실제 Functions를 호출합니다.
+            //실기기는 개발빌드여도 항상 실제 Functions를 호출합니다.
             //(기기에서 localhost는 기기 자신이라, 개발빌드에 에뮬레이터를 걸면 모든 서버 호출이 조용히 실패한다)
-            mFunctions.UseFunctionsEmulator(FUNCTIONS_EMULATOR_URL);
-            Debug.Log($"[FirebaseService] 에디터 - Functions 에뮬레이터 사용: {FUNCTIONS_EMULATOR_URL}");
+            if(USE_FUNCTIONS_EMULATOR)
+            {
+                mFunctions.UseFunctionsEmulator(FUNCTIONS_EMULATOR_URL);
+                Debug.Log($"[FirebaseService] 에디터 - Functions 에뮬레이터 사용: {FUNCTIONS_EMULATOR_URL}");
+            }
 #endif
 
             mbInitialized = true;
