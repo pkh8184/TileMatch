@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Process Unity -ErrorAction SilentlyContinue | Select-Object -First 3 ProcessName, Id; if \\(-not \\(Get-Process Unity -ErrorAction SilentlyContinue\\)\\) { \"Unity not running\" })",
+      "Bash(rm -rf \"Assets/Firebase\" \"Assets/Firebase.meta\")",
+      "Bash(rm -rf \"Assets/Plugins/iOS/Firebase\" \"Assets/Plugins/iOS/Firebase.meta\")",
+      "Bash(rm -rf \"Assets/GeneratedLocalRepo/Firebase\" \"Assets/GeneratedLocalRepo/Firebase.meta\")",
+      "Bash(rm -rf \"Assets/Editor Default Resources/Firebase\" \"Assets/Editor Default Resources/Firebase.meta\")",
+      "Bash(rm -rf \"Assets/Plugins/Android/FirebaseApp.androidlib\" \"Assets/Plugins/Android/FirebaseApp.androidlib.meta\")",
+      "Bash(cd \"c:/Users/rk454/Desktop/Project/Game/TileMatch/TrumpTile\" && du -sh Assets/Plugins/tvOS/Firebase 2>/dev/null && rm -rf \"Assets/Plugins/tvOS/Firebase\" \"Assets/Plugins/tvOS/Firebase.meta\" && echo \"tvOS 삭제 완료\" && echo \"\" && echo \"=== Plugins 전체 잔존물 재검색 ===\" && ls Assets/Plugins/ && echo \"--- tvOS 폴더 ---\" && ls Assets/Plugins/tvOS/ 2>/dev/null || echo \"\\(tvOS 폴더 비었거나 없음\\)\")",
+      "Bash(rmdir Assets/Plugins/tvOS)",
+      "Bash(rm -f Assets/Plugins/tvOS.meta)"
+    ]
+  }
+}
