@@ -59,6 +59,10 @@ namespace TrumpTile.FirebaseLibrary
 #endif
 
             mbInitialized = true;
+
+            //Analytics는 로그인이 필요 없고, 초기화 완료 후에만 호출해야 예외가 나지 않는다.
+            FirebaseAnalyticsService.SetCollectionEnabled(true);
+
             Debug.Log("[FirebaseService] 초기화 완료 (region: asia-northeast3)");
         }
     }

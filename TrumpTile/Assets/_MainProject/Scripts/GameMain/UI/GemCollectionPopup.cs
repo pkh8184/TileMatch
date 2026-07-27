@@ -33,6 +33,8 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private TMP_Text mSliderProgressText;
         [Header("다수 보상의 경우 표시할 선물상자 아이콘")]
         [SerializeField] private Sprite mGiftBoxSprite;
+        [Header("젬 2배 버프 활성 시 재생할 파티클\n(Contents_GemCollect/CollectGage/Icon_Gem 하위)")]
+        [SerializeField] private ParticleSystem mGemDoubleParticle;
         
         private List<GemCollectionRewardUI> mGemRewardUIList = new List<GemCollectionRewardUI>();
         private GemCollectContent mContentData;
@@ -57,6 +59,7 @@ namespace TrumpTile.GameMain.UI
 
             CreateElement();
             InitCollectGauge();
+            RefreshGemDoubleEffect();
 
             MainManager.Instance.AddEvent(Co_MainSceneEnterEvent, EMainSceneEventType.UnlockContent);
         }
@@ -69,6 +72,8 @@ namespace TrumpTile.GameMain.UI
                 return;
             }
             mContentController.SetLimitTimeText(mContentData.GetRemainTimeSeconds());
+            //버프 획득/만료가 CONTENT_DATA_REFRESH를 타고 들어오므로 여기서 연출을 맞춘다.
+            RefreshGemDoubleEffect();
         }
         private IEnumerator Co_MainSceneEnterEvent()
         {
@@ -95,6 +100,39 @@ namespace TrumpTile.GameMain.UI
 
             EventManager.Inst?.RemoveEvent<int>(EventKeys.REFRESH_GEM_UI, RefreshGemUI);
             EventManager.Inst?.RemoveEvent(EventKeys.GEM_REWARD_ARRIVED, PulseGemRect);
+        }
+        /// <summary>
+        /// 젬 2배 버프 상태에 맞춰 젬 아이콘 파티클을 켜고 끈다.
+        /// 버프 만료 판정은 ContentManager가 컨텐츠 쿨타임과 같은 시점에 처리하므로,
+        /// 여기서는 그 결과(IsGemDoubleActive)만 보고 연출을 맞춘다.
+        /// </summary>
+        private void RefreshGemDoubleEffect()
+        {
+            if(mGemDoubleParticle == null)
+            {
+                return;
+            }
+
+            bool bActive = PlayerDataManager.Inst != null && PlayerDataManager.Inst.IsGemDoubleActive;
+            if(bActive)
+            {
+                //이미 재생 중이면 다시 Play해서 연출이 끊기지 않도록 둔다.
+                if(!mGemDoubleParticle.gameObject.activeSelf)
+                {
+                    mGemDoubleParticle.gameObject.SetActive(true);
+                }
+                if(!mGemDoubleParticle.isPlaying)
+                {
+                    mGemDoubleParticle.Play(true);
+                }
+                return;
+            }
+
+            if(mGemDoubleParticle.isPlaying)
+            {
+                mGemDoubleParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+            mGemDoubleParticle.gameObject.SetActive(false);
         }
         private void PulseGemRect()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
+using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
@@ -181,7 +182,10 @@ namespace TrumpTile.GameMain.UI
             }
 
             PlayerDataManager.Inst.UseGold(cost);
-            
+
+            //골드 부활 사용 횟수. 골드가 실제로 차감된 뒤에만 집계한다.
+            FirebaseAnalyticsService.LogStageReviveGold(GameManager.Instance.CurrentLevel, cost);
+
             GameManager.Instance.CurrentReviveCount++;
 
             OnReviveAfterHide();
@@ -192,6 +196,10 @@ namespace TrumpTile.GameMain.UI
             {
                 if(done)
                 {
+                    //광고 부활 사용 횟수. 보상을 실제로 받은 경우에만 집계한다.
+                    //(광고 미준비/중간 이탈은 done=false로 들어오므로 제외된다)
+                    FirebaseAnalyticsService.LogStageReviveAd(GameManager.Instance.CurrentLevel);
+
                     mbAdsFreeDone = true;
                     OnReviveAfterHide();
                 }

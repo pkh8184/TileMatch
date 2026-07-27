@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.UI;
 using TrumpTile.GameMain.Data;
 using TrumpTile.GameMain.Item;
@@ -379,6 +380,8 @@ namespace TrumpTile.GameMain.Core
 			mCurrentScore = 0;
 			mComboCount = 0;
 			mMatchedTileCount = 0;
+			//스테이지 도전 횟수. 재시도도 각각 1회로 집계된다.
+			FirebaseAnalyticsService.LogStageStart(CurrentLevel);
 			//새 레벨/재시도 시작 시 HUD 입력 다시 활성화 (직전 클리어에서 차단됐을 수 있음)
 			IngameViewRef?.SetHudInteractable(true);
 
@@ -604,9 +607,12 @@ namespace TrumpTile.GameMain.Core
 			EffectManager.Instance?.PlayGameOverEffect();
 			AudioEvent.Play(EAudioKey.SFX_StageLosed);
 
+			//사망 횟수. 사유를 같이 남겨서 시간초과/슬롯가득을 구분할 수 있게 한다.
+			FirebaseAnalyticsService.LogStageFail(CurrentLevel, mbIsTimeOut ? "time_out" : "slot_full");
+
 			if(mbIsTimeOut)
 			{
-				EventManager.Inst.ActiveEvent(EventKeys.GAME_OVER_TIME_OUT);	
+				EventManager.Inst.ActiveEvent(EventKeys.GAME_OVER_TIME_OUT);
 			}
 			else
 			{
@@ -677,6 +683,9 @@ namespace TrumpTile.GameMain.Core
 			CurrentState = EGameState.GameClear;
 
 			AudioManager.Inst.SetBGMVolume(0.2f);
+			//클리어 횟수. 별/플레이시간을 같이 남겨 난이도 분석에 쓴다.
+			FirebaseAnalyticsService.LogStageClear(CurrentLevel, StarCount, mTotalPlayTime);
+
 			PlayerDataManager.Inst.AddGold(CoreContainer.RewardContainer.Gold);
 			PlayerDataManager.Inst.AddGemCount(CoreContainer.RewardContainer.Gem);
 			ItemManager.Inst.SaveItemCountsToServer();

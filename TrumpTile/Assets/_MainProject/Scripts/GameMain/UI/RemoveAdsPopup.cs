@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using System.Collections.Generic;
@@ -92,8 +93,18 @@ namespace TrumpTile.GameMain.UI
                 mShowButton.gameObject.SetActive(false);
             });
         }
+        public override void Show()
+        {
+            base.Show();
+
+            //광고 제거 UI 오픈 횟수
+            FirebaseAnalyticsService.LogContentEvent(FirebaseAnalyticsEvents.REMOVE_ADS_OPEN);
+        }
         private void OnPurchaseButtonClick()
         {
+            //광고 제거 구매 버튼 클릭 횟수 (성공 여부와 무관하게 클릭 시점에 집계)
+            FirebaseAnalyticsService.LogContentEvent(FirebaseAnalyticsEvents.REMOVE_ADS_CLICK);
+
             IAPManager.Instance.PurchaseProduct(EProductId.RemoveAds);
         }
         protected override void PlayShowAnim()

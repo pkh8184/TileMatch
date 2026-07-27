@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using DG.Tweening;
+using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using UnityEngine;
@@ -67,6 +68,9 @@ namespace TrumpTile.GameMain.UI
         public override void Show()
         {
             base.Show();
+
+            //기차여행 UI 오픈 횟수
+            FirebaseAnalyticsService.LogContentEvent(FirebaseAnalyticsEvents.TRAIN_TRAVEL_OPEN);
 
             AdManager.Inst.HideBannerAd();
 
@@ -163,11 +167,18 @@ namespace TrumpTile.GameMain.UI
             ExcitTravelRewardUI peek = mRewardUIList[0];
             if(peek.IsFree)
             {
+                //기차여행 무료 보상 수령 횟수
+                FirebaseAnalyticsService.LogContentEvent(FirebaseAnalyticsEvents.TRAIN_TRAVEL_FREE_REWARD);
+
                 mContentData.ConfirmCurrentReward();
                 PeekProgress();
                 AudioEvent.Play(EAudioKey.SFX_Reward_Gain);
                 return;
             }
+
+            //기차여행 유료 구매 버튼 클릭 횟수 (ConfirmCurrentReward가 결제를 띄운다)
+            FirebaseAnalyticsService.LogContentEvent(FirebaseAnalyticsEvents.TRAIN_TRAVEL_PAID_CLICK);
+
             mContentData.ConfirmCurrentReward();
         }
         public void OnPurchaseSuccess()

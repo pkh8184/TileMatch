@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Purchasing;
 using System.Threading.Tasks;
 using System.Linq;
+using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.Data;
 
 namespace  TrumpTile.GameMain.Core
@@ -234,6 +235,9 @@ namespace  TrumpTile.GameMain.Core
             string productId = product.definition.id;
 
             EProductId eProductId = mProductDatabase.GetEProductId(productId);
+
+            LogPurchaseAnalytics(eProductId, true);
+
             mProductDatabase.GrantReward(productId);
 
             //초보자/중급자/상급자 패키지는 재구매 쿨타임 체크를 위해 구매 시각을 기록
@@ -260,7 +264,51 @@ namespace  TrumpTile.GameMain.Core
         {
             Debug.Log($"[IAPManager] 구매 실패: {failedOrder.FailureReason}");
 
+            LogPurchaseAnalytics(GetOrderProductId(failedOrder), false);
+
             EventManager.Inst.ActiveEvent(EventKeys.PURCHASE_FAILED);
+        }
+
+        //주문에서 상품 ID를 안전하게 꺼낸다. 못 꺼내면 None.
+        private EProductId GetOrderProductId(Order order)
+        {
+            CartItem cartItem = order?.CartOrdered?.Items()?.FirstOrDefault();
+            Product product = cartItem != null ? cartItem.Product : null;
+            if(product == null)
+            {
+                return EProductId.None;
+            }
+
+            return mProductDatabase.GetEProductId(product.definition.id);
+        }
+
+        /// <summary>
+        /// 컨텐츠별 구매 성공/실패 이벤트를 남긴다.
+        /// 요청된 집계 대상(광고 제거 / 트레져박스 / 기차여행)만 기록하고 나머지는 무시한다.
+        /// </summary>
+        private void LogPurchaseAnalytics(EProductId eProductId, bool bSuccess)
+        {
+            string eventName = null;
+            switch(eProductId)
+            {
+                case EProductId.RemoveAds:
+                    eventName = bSuccess ? FirebaseAnalyticsEvents.REMOVE_ADS_SUCCESS : FirebaseAnalyticsEvents.REMOVE_ADS_FAIL;
+                    break;
+                case EProductId.TreasureBox:
+                    eventName = bSuccess ? FirebaseAnalyticsEvents.TREASURE_BOX_SUCCESS : FirebaseAnalyticsEvents.TREASURE_BOX_FAIL;
+                    break;
+                case EProductId.ExcitTravel_1:
+                case EProductId.ExcitTravel_2:
+                case EProductId.ExcitTravel_3:
+                case EProductId.ExcitTravel_4:
+                    eventName = bSuccess ? FirebaseAnalyticsEvents.TRAIN_TRAVEL_PAID_SUCCESS : FirebaseAnalyticsEvents.TRAIN_TRAVEL_PAID_FAIL;
+                    break;
+                default:
+                    return;
+            }
+
+            //기차여행은 상품이 4종이라 어느 단계인지 파라미터로 남긴다.
+            FirebaseAnalyticsService.LogContentEvent(eventName, eProductId.ToString());
         }
     } 
 }

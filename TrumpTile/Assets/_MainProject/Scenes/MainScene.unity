@@ -4059,6 +4059,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1453297540}
     - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
+      propertyPath: mGemDoubleParticle
+      value: 
+      objectReference: {fileID: 2066234298}
+    - target: {fileID: 4340762545063979376, guid: 8f93ec8b7bd37af4997650ca10584613, type: 3}
       propertyPath: mMainViewGemTransform
       value: 
       objectReference: {fileID: 1810540002}
@@ -15931,6 +15935,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1811198099}
     m_Modifications:
+    - target: {fileID: 423201225631191464, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 423201225631191464, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 423201225631191464, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2066357831295244312, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -16023,6 +16039,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Contents_GemCollect
       objectReference: {fileID: 0}
+    - target: {fileID: 8590792196017187697, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -16031,6 +16051,11 @@ PrefabInstance:
       addedObject: {fileID: 2001682331}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
+--- !u!198 &2066234298 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8590792196017187697, guid: 61cd0e1bdc6118442bacbc7b40cbfc98, type: 3}
+  m_PrefabInstance: {fileID: 2066234297}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2080078141
 GameObject:
   m_ObjectHideFlags: 0

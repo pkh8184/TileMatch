@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
+using TrumpTile.FirebaseLibrary;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
 using TMPro;
@@ -44,8 +45,18 @@ namespace TrumpTile.GameMain.UI
             Show();
             yield return new WaitWhile(() => gameObject.activeSelf);
         }
+        public override void Show()
+        {
+            base.Show();
+
+            //트레져박스 UI 오픈 횟수
+            FirebaseAnalyticsService.LogContentEvent(FirebaseAnalyticsEvents.TREASURE_BOX_OPEN);
+        }
         private void OnPurchaseButton()
         {
+            //트레져박스 구매 버튼 클릭 횟수
+            FirebaseAnalyticsService.LogContentEvent(FirebaseAnalyticsEvents.TREASURE_BOX_CLICK);
+
             IAPManager.Instance.PurchaseProduct(EProductId.TreasureBox);
         }
         public void OnPurchaseSuccess()
