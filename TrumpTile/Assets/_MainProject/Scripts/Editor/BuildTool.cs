@@ -277,6 +277,16 @@ namespace TrumpTile.Editor
         // ─── 빌드 로직 ──────────────────────────────────────────────────────────
         private void Build()
         {
+            // Firebase 관리 DLL과 네이티브 aar 버전이 어긋나면 빌드는 성공해도 실기기에서 Firebase가 전부 죽는다.
+            // 조용히 깨지는 종류의 사고라 빌드 자체를 막는다.
+            if (!FirebaseNativeVersionValidator.Validate(out string firebaseMessage))
+            {
+                Debug.LogError($"[BuildTool] Firebase 버전 불일치로 빌드 중단\n{firebaseMessage}");
+                EditorUtility.DisplayDialog("빌드 중단 - Firebase 버전 불일치", firebaseMessage, "확인");
+                return;
+            }
+            Debug.Log($"[BuildTool] {firebaseMessage}");
+
             string outputPath = GetOutputPath();
             if (string.IsNullOrEmpty(outputPath))
                 return;

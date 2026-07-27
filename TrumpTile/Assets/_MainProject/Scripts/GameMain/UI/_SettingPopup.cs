@@ -37,7 +37,6 @@ namespace TrumpTile.GameMain.UI
 
         [Header("데이터 불러오기 성공 팝업 (확인 시 앱 종료)")]
         [SerializeField] private PublicPopup mLoadSuccessPopup;
-        private bool mbLoadSuccessPopupWired;
 
         [Header("데이터 불러오기 실패 팝업 (미할당 시 로그만 남김)")]
         [SerializeField] private PublicPopup mLoadFailedPopup;
@@ -142,13 +141,10 @@ namespace TrumpTile.GameMain.UI
                 case ELoadResult.Success:
                     Debug.Log("[_SettingPopup] 데이터 불러오기 완료");
                     //"불러오기 성공, 게임 재시작 필요" 팝업 → 확인 누르면 앱 종료.
+                    //AddActionToConfirmButton은 동작을 덮어쓰는 방식이라 중복 호출해도 안전하다.
                     if(mLoadSuccessPopup != null)
                     {
-                        if(!mbLoadSuccessPopupWired)
-                        {
-                            mLoadSuccessPopup.AddActionToConfirmButton(() => Application.Quit());
-                            mbLoadSuccessPopupWired = true;
-                        }
+                        mLoadSuccessPopup.AddActionToConfirmButton(QuitApplication);
                         mLoadSuccessPopup.Show();
                     }
                     break;
@@ -176,6 +172,19 @@ namespace TrumpTile.GameMain.UI
                     Debug.Log("[_SettingPopup] 이미 서버 데이터를 불러왔음 (서버 호출 안 함)");
                     break;
             }
+        }
+
+        /// <summary>
+        /// 서버 데이터를 로컬에 덮어썼기 때문에 재시작이 필요하다. 에디터에서는 플레이 모드를 종료한다.
+        /// </summary>
+        private void QuitApplication()
+        {
+            Debug.Log("[_SettingPopup] 불러오기 완료 확인 - 앱 종료");
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
 #if UNITY_ANDROID
         private void ShareURL()
