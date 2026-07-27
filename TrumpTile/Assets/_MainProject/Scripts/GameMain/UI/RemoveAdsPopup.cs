@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using TrumpTile.GameMain.Core;
@@ -86,7 +86,7 @@ namespace TrumpTile.GameMain.UI
             mCurrentSeq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
             mCurrentSeq.OnComplete(() =>
             {
-                mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+                MarkClosed();
                 gameObject.SetActive(false);
                 EventManager.Inst.ActiveEvent(EventKeys.PLAY_REWARD_ANIM);
                 mShowButton.gameObject.SetActive(false);

@@ -71,6 +71,10 @@ namespace TrumpTile.GameMain.Data
         public int GemCollectionIndex;
         public int GemCount;
 
+        //젬 2배 버프 (스테이지에서 획득하는 젬이 2배가 되는 기간 한정 버프)
+        public bool IsGemDoubleActive;
+        public long GemDoubleExpireDate;
+
         //챔피언스 리그 관련 데이터
         public int ChampionsLevel;
 
@@ -148,6 +152,10 @@ namespace TrumpTile.GameMain.Data
             GemCollectionUnActiveDate = data.GemCollectionUnActiveDate.ToUniversalTime().Ticks;
             GemCollectionIndex = data.GemCollectionIndex;
             GemCount = data.GemCount;
+
+            //젬 2배 버프
+            IsGemDoubleActive = data.IsGemDoubleActive;
+            GemDoubleExpireDate = data.GemDoubleExpireDate.ToUniversalTime().Ticks;
 
             ChampionsLevel = data.ChampionsLevel;
 
@@ -233,6 +241,10 @@ namespace TrumpTile.GameMain.Data
         public DateTime GemCollectionUnActiveDate;
         public int GemCollectionIndex;
         public int GemCount;
+
+        //젬 2배 버프. 만료 시각(UTC)이 지나면 플래그를 내린다.
+        public bool IsGemDoubleActive;
+        public DateTime GemDoubleExpireDate;
         
         //챔피언스 리그 관련 데이터
         public int ChampionsLevel;
@@ -342,6 +354,9 @@ namespace TrumpTile.GameMain.Data
             GemCollectionIndex = 0;
             GemCount = 0;
 
+            IsGemDoubleActive = false;
+            GemDoubleExpireDate = default;
+
             IsChampionsActive = false;
             ChampionsLevel = 0;
 
@@ -447,6 +462,10 @@ namespace TrumpTile.GameMain.Data
             GemCollectionUnActiveDate = new DateTime(data.GemCollectionUnActiveDate, DateTimeKind.Utc);
             GemCollectionIndex = data.GemCollectionIndex;
             GemCount = data.GemCount;
+
+            //젬 2배 버프
+            IsGemDoubleActive = data.IsGemDoubleActive;
+            GemDoubleExpireDate = new DateTime(data.GemDoubleExpireDate, DateTimeKind.Utc);
 
             ChampionsLevel = data.ChampionsLevel;
 

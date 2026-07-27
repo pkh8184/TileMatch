@@ -29,10 +29,12 @@ namespace TrumpTile.FirebaseLibrary
             try
             {
                 await FirebaseService.Functions.GetHttpsCallable(FirebaseFunctionsNames.SAVE_DATA).CallAsync(payload);
+                UnityEngine.Debug.Log("[FirebaseFunctionsService] saveData 성공");
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogCallFailure(FirebaseFunctionsNames.SAVE_DATA, e);
                 return false;
             }
         }
@@ -52,14 +54,33 @@ namespace TrumpTile.FirebaseLibrary
                 //서버에 UID 문서가 없으면(한 번도 온라인 저장하지 않은 계정) not-found 로 응답한다.
                 if (fe.ErrorCode == FunctionsErrorCode.NotFound)
                 {
+                    UnityEngine.Debug.Log("[FirebaseFunctionsService] loadData: 저장된 데이터 없음(not-found)");
                     return (true, null);
                 }
+                LogCallFailure(FirebaseFunctionsNames.LOAD_DATA, fe);
                 return (false, null);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogCallFailure(FirebaseFunctionsNames.LOAD_DATA, e);
                 return (false, null);
             }
+        }
+
+        /// <summary>
+        /// Callable 호출 실패를 한 곳에서 로그로 남긴다.
+        /// FunctionsException이면 서버가 준 에러 코드까지 찍어야 원인 구분이 된다.
+        /// (Unauthenticated=로그인 안 됨, NotFound=함수 미배포/리전 불일치, Unavailable=네트워크·에뮬레이터 주소 오류)
+        /// </summary>
+        private static void LogCallFailure(string functionName, Exception e)
+        {
+            if (e is FunctionsException fe)
+            {
+                UnityEngine.Debug.LogWarning($"[FirebaseFunctionsService] {functionName} 실패 - code: {fe.ErrorCode}, message: {fe.Message}");
+                return;
+            }
+
+            UnityEngine.Debug.LogWarning($"[FirebaseFunctionsService] {functionName} 실패 - {e.GetType().Name}: {e.Message}");
         }
 
         public static async Task<object> RequestLogin(string version)

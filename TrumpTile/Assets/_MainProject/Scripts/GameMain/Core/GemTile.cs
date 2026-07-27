@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 
 namespace TrumpTile.GameMain.Core
@@ -18,6 +19,8 @@ namespace TrumpTile.GameMain.Core
         private bool mbIsAnim;
         private Sequence mSeq;
         private int mCapturedGemCount;
+        //획득 시점에 확정한 젬 배율(2배 버프). 연출 도중 버프가 만료돼도 값이 흔들리지 않도록 캡처해서 쓴다.
+        private int mGemMultiplier = 1;
         public void Initialize(int count, List<(int,int,int)> checkList, List<(int,int,int)> originList, int layer, Vector3 pos, Vector3 scale)
         {
             mGemCount = count;
@@ -78,9 +81,13 @@ namespace TrumpTile.GameMain.Core
         }
         public void Collect()
         {
+            //젬 2배 버프가 켜져 있으면 획득 수치에 배율을 적용한다.
+            //날아가는 스프라이트 개수는 프리팹에 고정돼 있으므로 연출은 그대로 두고 수치만 배로 올린다.
+            mGemMultiplier = PlayerDataManager.Inst != null ? PlayerDataManager.Inst.GemMultiplier : 1;
+
             PlayCollectAnim();
             mCapturedGemCount = CoreContainer.RewardContainer.Gem;
-            CoreContainer.RewardContainer.AddGem(mGemCount);
+            CoreContainer.RewardContainer.AddGem(mGemCount * mGemMultiplier);
         }
         private void PlayCollectAnim()
         {
@@ -120,12 +127,22 @@ namespace TrumpTile.GameMain.Core
                 {
                     gemCount++;
                     gem.gameObject.SetActive(false);
-                    EventManager.Inst.ActiveEvent(EventKeys.COLLECT_GEM, mCapturedGemCount + gemCount);
+                    //배율을 곱해야 연출이 끝났을 때 HUD 표기가 RewardContainer.Gem과 일치한다.
+                    EventManager.Inst.ActiveEvent(EventKeys.COLLECT_GEM, mCapturedGemCount + (gemCount * mGemMultiplier));
                     AudioEvent.Play(EAudioKey.SFX_Ingame_Collect_Gem);
                 });
             }
             seq.Append(mSpriteRendererArray[0].DOFade(0, 0.3f));
-            seq.OnComplete(() => gameObject.SetActive(false));
+            seq.OnComplete(() =>
+            {
+                gameObject.SetActive(false);
+
+                //젬이 완전히 사라진 뒤 블록 상태를 다시 계산한다.
+                //수집 시점의 UpdateAllBlockedStates는 이 젬 오브젝트가 아직 살아 있어서
+                //IsCoveredByActiveGem이 true였고, 아래 레이어 타일들이 선택 불가로 굳어버린다.
+                //여기서 갱신하지 않으면 다른 타일을 제거하기 전까지 그 타일들이 계속 안 눌린다.
+                BoardManager.Instance?.UpdateAllBlockedStates();
+            });
         }
     }   
 }

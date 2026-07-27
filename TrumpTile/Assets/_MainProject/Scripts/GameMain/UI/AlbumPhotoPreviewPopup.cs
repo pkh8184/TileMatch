@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using TMPro;
 using TrumpTile.GameMain.Core;
 using TrumpTile.GameMain.Data;
@@ -96,7 +96,7 @@ namespace TrumpTile.GameMain.UI
 			mCurrentSeq.Append(mPopupCanvasGroup.DOFade(0F, mHideDuration).SetEase(Ease.InQuad));
 			mCurrentSeq.OnComplete(() =>
 			{
-				mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+				MarkClosed();
 				ClearBackgroundImage();
 				gameObject.SetActive(false);
 			});

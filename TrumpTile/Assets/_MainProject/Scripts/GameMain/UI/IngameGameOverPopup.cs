@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
@@ -156,7 +156,7 @@ namespace TrumpTile.GameMain.UI
             seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
             seq.OnComplete(() =>
             {
-                mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+                MarkClosed();
                 gameObject.SetActive(false);
                 EventManager.Inst.ActiveEvent(EventKeys.STAGE_FAILED);
             });   
@@ -213,7 +213,7 @@ namespace TrumpTile.GameMain.UI
             seq.Append(mPopupObj.transform.DOScale(0, mHideDuration).SetEase(Ease.InBack));
             seq.OnComplete(() =>
             {
-                mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+                MarkClosed();
                 gameObject.SetActive(false);
                 GameManager.Instance.ContinueGame();
             });   

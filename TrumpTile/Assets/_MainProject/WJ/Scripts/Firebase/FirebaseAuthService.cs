@@ -74,12 +74,22 @@ namespace TrumpTile.FirebaseLibrary
             {
                 authCode = codeTask.Result;
             }
+            else
+            {
+                Debug.LogWarning("[FirebaseAuthService] 서버 인증 코드 요청 타임아웃(15초)");
+            }
 
             if(string.IsNullOrEmpty(authCode))
             {
+                //여기서 막히면 대부분 GPGS의 WebClientId가 '웹' 유형이 아니거나,
+                //Play Console에 '게임 서버' 사용자 인증 정보가 없는 경우다.
+                Debug.LogWarning("[FirebaseAuthService] 서버 인증 코드를 받지 못함 - Firebase 로그인 중단 "
+                    + $"(WebClientId: {GooglePlayGames.GameInfo.WebClientId})");
                 CachedFirebaseUid = null;
                 return;
             }
+
+            Debug.Log("[FirebaseAuthService] 서버 인증 코드 획득 성공");
 
             //2. 서버 인증 코드로 Firebase Auth 로그인 → UID 캐싱
             try
@@ -92,7 +102,9 @@ namespace TrumpTile.FirebaseLibrary
             catch(Exception e)
             {
                 CachedFirebaseUid = null;
-                Debug.LogWarning($"[FirebaseAuthService] Firebase 로그인 실패: {e.Message}");
+                //Firebase 콘솔에서 'Play 게임즈' 제공업체가 꺼져 있거나,
+                //거기 등록한 웹 클라이언트 ID/보안 비밀이 GPGS 것과 다르면 여기로 떨어진다.
+                Debug.LogWarning($"[FirebaseAuthService] Firebase 로그인 실패: {e.GetType().Name} / {e.Message}");
             }
         }
 
@@ -108,6 +120,10 @@ namespace TrumpTile.FirebaseLibrary
                     Debug.Log("[FirebaseAuthService] 구글 플레이 로그인 성공");
                     PlayGamesPlatform.Instance.RequestServerSideAccess(false, code =>
                     {
+                        if(string.IsNullOrEmpty(code))
+                        {
+                            Debug.LogWarning("[FirebaseAuthService] RequestServerSideAccess가 빈 코드를 반환함");
+                        }
                         tcs.TrySetResult(code);
                     });
                 }

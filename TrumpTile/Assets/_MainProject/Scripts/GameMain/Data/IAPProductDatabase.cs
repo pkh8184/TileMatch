@@ -12,6 +12,8 @@ namespace TrumpTile.GameMain.Data
         Gold,
         Item,
         ETC,
+        //젬 2배 버프. 기존 값들의 번호가 밀리지 않도록 Length 앞에 추가한다.
+        GemDouble,
         Length
     }
     public class RewardDisplayInfo
@@ -57,6 +59,24 @@ namespace TrumpTile.GameMain.Data
          public override RewardDisplayInfo GetRewardDisplayInfo()
         {
             return new RewardDisplayInfo{Type = ERewardType.Item, Amount = mCount, ItemId = mItemId};
+        }
+    }
+    /// <summary>
+    /// 일정 시간 동안 스테이지에서 획득하는 젬을 2배로 만드는 보상.
+    /// 이미 버프 중에 또 획득하면 남은 시간에 이어 붙는다.
+    /// </summary>
+    [System.Serializable]
+    public class GemDoubleReward : ProductReward
+    {
+        [SerializeField] private int mDurationMinutes = 30;
+        public override void GrantReward()
+        {
+            PlayerDataManager.Inst.AddGemDoubleTime(mDurationMinutes);
+        }
+        public override RewardDisplayInfo GetRewardDisplayInfo()
+        {
+            //Amount는 지속 시간(분). 아이콘은 ERewardType.GemDouble로 구분한다.
+            return new RewardDisplayInfo{Type = ERewardType.GemDouble, Amount = mDurationMinutes};
         }
     }
     [System.Serializable]

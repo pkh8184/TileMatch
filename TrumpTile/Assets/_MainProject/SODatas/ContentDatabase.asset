@@ -235,7 +235,7 @@ MonoBehaviour:
         - RewardArray:
           - rid: 5061743987175194646
         - RewardArray:
-          - rid: 5061743987175194647
+          - rid: 6683552470927671632
         - RewardArray:
           - rid: 5061743987175194648
         - RewardArray:
@@ -247,7 +247,7 @@ MonoBehaviour:
         - RewardArray:
           - rid: 5061743987175194652
         - RewardArray:
-          - rid: 5061743987175194653
+          - rid: 6683552470927671633
         - RewardArray:
           - rid: 5061743987175194654
         - RewardArray:
@@ -261,7 +261,7 @@ MonoBehaviour:
           - rid: 5061743987175194660
         - RewardArray:
           - rid: 5061743987175194661
-        mRequiredGemCountArray: 070000000a0000000e00000013000000190000002000000028000000320000003d000000490000005600000064000000740000008500000097000000
+        mRequiredGemCountArray: 0a000000140000005f00000082000000400100003601000085020000300200002e040000700300003b060000b004000098080000a4060000810b0000
     - rid: 5061743987175194644
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
@@ -275,10 +275,6 @@ MonoBehaviour:
       data:
         mCount: 1
         mItemId: 1005
-    - rid: 5061743987175194647
-      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
-      data:
-        mCount: 50
     - rid: 5061743987175194648
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
@@ -301,14 +297,10 @@ MonoBehaviour:
       data:
         mCount: 1
         mItemId: 1006
-    - rid: 5061743987175194653
-      type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
-      data:
-        mCount: 120
     - rid: 5061743987175194654
       type: {class: GoldReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
-        mCount: 150
+        mCount: 120
     - rid: 5061743987175194655
       type: {class: ItemReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
       data:
@@ -364,3 +356,11 @@ MonoBehaviour:
         mContentName: TreasureBox
         mLevelToUnlock: 19
         mReactivateCoolTime: 20160
+    - rid: 6683552470927671632
+      type: {class: GemDoubleReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mDurationMinutes: 30
+    - rid: 6683552470927671633
+      type: {class: GemDoubleReward, ns: TrumpTile.GameMain.Data, asm: GameMain}
+      data:
+        mDurationMinutes: 30

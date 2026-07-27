@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using Google.MiniJSON;
 using System.Collections;
 using System.Collections.Generic;
@@ -84,7 +84,7 @@ namespace TrumpTile.GameMain.UI
         }
         protected override void PlayHideAnim()
         {
-            mOpenPopupCount = Mathf.Max(0, mOpenPopupCount - 1);
+            MarkClosed();
             GameManager.Instance.ResumeGame();
             gameObject.SetActive(false);
         }

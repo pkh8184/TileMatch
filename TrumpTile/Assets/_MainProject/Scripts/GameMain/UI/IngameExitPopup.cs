@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using TrumpTile.GameMain.Core;
@@ -58,7 +58,7 @@ namespace TrumpTile.GameMain.UI
         }
         private void OnConfirmButton()
         {
-            mOpenPopupCount = 0;
+            ResetOpenPopupCount();
             CoreContainer.RewardContainer.Clear();
             GameManager.Instance.GoToMainMenu();
         }

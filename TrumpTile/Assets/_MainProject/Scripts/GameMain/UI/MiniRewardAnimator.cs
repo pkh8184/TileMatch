@@ -37,6 +37,8 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private float mDuration = 1f;
         [Header("보상 스프라이트")]
         [SerializeField] private Sprite[] mSpriteArray;
+        [Header("젬 2배 버프 아이콘")]
+        [SerializeField] private Sprite mGemDoubleSprite;
         [Header("연출이 적용될 이미지 / 텍스트")]
         [SerializeField] private MiniRewardConfig[] mMiniRewardConfigArray;
          [Header("보상 이미지 간격")]
@@ -100,8 +102,18 @@ namespace TrumpTile.GameMain.UI
             for(int i = 0; i < count; i++)
             {
                 mMiniRewardConfigArray[i].Image.rectTransform.anchoredPosition = new Vector2(startX + mPlacementWidth * i, 0);
-                mMiniRewardConfigArray[i].Image.sprite = info[i].Type == ERewardType.Gold? mSpriteArray[0] : mSpriteArray[info[i].ItemId - 1004];
-                mMiniRewardConfigArray[i].Text.text = "+" + info[i].Amount.ToString();
+                //젬 2배는 ItemId가 없으므로 아이템 인덱싱(ItemId-1004)을 타면 안 된다.
+                if(info[i].Type == ERewardType.GemDouble)
+                {
+                    mMiniRewardConfigArray[i].Image.sprite = mGemDoubleSprite;
+                    //Amount는 지속 시간(분)
+                    mMiniRewardConfigArray[i].Text.text = info[i].Amount.ToString() + "m";
+                }
+                else
+                {
+                    mMiniRewardConfigArray[i].Image.sprite = info[i].Type == ERewardType.Gold? mSpriteArray[0] : mSpriteArray[info[i].ItemId - 1004];
+                    mMiniRewardConfigArray[i].Text.text = "+" + info[i].Amount.ToString();
+                }
 
                 mMiniRewardConfigArray[i].Image.gameObject.SetActive(true);
             }

@@ -247,6 +247,7 @@ namespace TrumpTile.GameMain.Core
             }
 			if(Input.GetKeyDown(KeyCode.Escape))
 			{
+				if(CurrentState == EGameState.GameClear) return;
 				EventManager.Inst.ActiveEvent(EventKeys.ON_EXIT_BUTTON);
 			}
 			if (mEnableDebugKeys)

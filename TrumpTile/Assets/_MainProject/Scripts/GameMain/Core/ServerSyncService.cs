@@ -43,12 +43,14 @@ namespace TrumpTile.GameMain.Core
         {
             if(!NetworkUtil.IsConnected())
             {
+                Debug.Log("[ServerSyncService] 서버 저장 스킵 - 네트워크 미연결");
                 return false;
             }
 
             //로그인 보장 (이미 캐싱된 UID 있으면 로그인 생략). 실패 시 저장 스킵.
             if(!await FirebaseAuthService.EnsureLoggedIn())
             {
+                Debug.LogWarning("[ServerSyncService] 서버 저장 스킵 - 로그인 실패");
                 return false;
             }
 
@@ -94,6 +96,7 @@ namespace TrumpTile.GameMain.Core
             //로그인 보장 (이미 캐싱된 UID 있으면 로그인 생략). 실패 시 불러오기 스킵.
             if(!await FirebaseAuthService.EnsureLoggedIn())
             {
+                Debug.LogWarning("[ServerSyncService] 데이터 불러오기 실패 - 로그인 실패");
                 return ELoadResult.Failed;
             }
 

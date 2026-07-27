@@ -26,6 +26,9 @@ namespace  TrumpTile.GameMain.Core
         private System.Action<ERestoreResult> mOnRestoreCompleted;
         //구매복원 응답 지연 대비 타임아웃 코루틴.
         private Coroutine mRestoreTimeoutCo;
+        //구매복원 버튼으로 FetchPurchases를 호출했는지 여부.
+        //앱 시작 시 자동 fetch에서는 false라 광고 제거 복원이 돌지 않는다.
+        private bool mbRestoreRequested;
         public static IAPManager Instance => instance;
         private async void Awake()
         {
@@ -79,6 +82,7 @@ namespace  TrumpTile.GameMain.Core
             }
 
             mOnRestoreCompleted = onCompleted;
+            mbRestoreRequested = true;
             mStoreController.FetchPurchases();
 
             //응답이 안 오는 경우(오프라인 전환 등) 대비 타임아웃.
@@ -95,6 +99,7 @@ namespace  TrumpTile.GameMain.Core
 
             mRestoreTimeoutCo = null;
             //타임아웃까지 OnPurchasesFetched가 안 온 경우 실패로 처리한다.
+            //mbRestoreRequested는 일부러 그대로 둔다. 응답이 늦게 오면 그때라도 복원되어야 하기 때문.
             System.Action<ERestoreResult> callback = mOnRestoreCompleted;
             mOnRestoreCompleted = null;
             callback?.Invoke(ERestoreResult.Failed);
@@ -161,15 +166,18 @@ namespace  TrumpTile.GameMain.Core
                 Debug.Log($"[IAPManager] 상품 ID: {product.definition.id}");
             }
 
+            //결제는 됐지만 확정(ConfirmPurchase)이 안 된 주문을 OnPurchasePending으로 회수하기 위한 호출.
+            //광고 제거 복원은 mbRestoreRequested가 false라 여기서는 돌지 않는다.
             mStoreController.FetchPurchases();
         }
         private void OnPurchasesFetched(Orders orders)
         {
             Debug.Log("[IAPManager] 구매 목록 로드 성공");
 
-            //스토어에 소유 확정된 비소비성 구매(현재는 광고 제거)를 기준으로 복원한다.
-            //앱 시작 시 자동 fetch에도, 구매복원 버튼으로도 이 경로를 탄다.
-            bool bRestoredRemoveAds = RestoreOwnedNonConsumables(orders);
+            //광고 제거 복원은 구매복원 버튼으로 호출된 경우에만 수행한다.
+            //앱 시작 시 자동 fetch에서 복원하면, 스토어 소유권만으로 첫 실행부터 광고 제거가 켜진다.
+            bool bRestoredRemoveAds = mbRestoreRequested && RestoreOwnedNonConsumables(orders);
+            mbRestoreRequested = false;
 
             //타임아웃 코루틴이 돌고 있으면 정지(정상 응답 도착).
             if(mRestoreTimeoutCo != null)

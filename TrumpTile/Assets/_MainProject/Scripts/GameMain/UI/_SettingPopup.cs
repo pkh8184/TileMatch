@@ -39,6 +39,9 @@ namespace TrumpTile.GameMain.UI
         [SerializeField] private PublicPopup mLoadSuccessPopup;
         private bool mbLoadSuccessPopupWired;
 
+        [Header("데이터 불러오기 실패 팝업 (미할당 시 로그만 남김)")]
+        [SerializeField] private PublicPopup mLoadFailedPopup;
+
         [Header("공유 텍스트 및 URL")]
         [SerializeField] private string mShareText;
         [SerializeField] private string mShareURL = "https://";
@@ -160,10 +163,16 @@ namespace TrumpTile.GameMain.UI
                     //네트워크 팝업은 NETWORK_NOT_CONNECT 이벤트 핸들러(NetworkPopupHandler)가 처리
                     break;
                 case ELoadResult.Failed:
-                    Debug.Log("[_SettingPopup] 데이터 불러오기 실패");
+                    //로그인/서버 호출 실패. 아무 반응이 없으면 유저가 버튼 고장으로 인식하므로 안내를 띄운다.
+                    Debug.LogWarning("[_SettingPopup] 데이터 불러오기 실패 - 로그인 또는 서버 호출 실패");
+                    if(mLoadFailedPopup != null)
+                    {
+                        mLoadFailedPopup.Show();
+                    }
                     break;
                 case ELoadResult.AlreadyLoaded:
-                    //이미 이 설치에서 불러온 상태 → 서버 호출 안 함. 필요 시 안내 팝업 연결.
+                    //이미 이 설치에서 불러온 상태 → 서버 호출 안 함.
+                    //이 경우 버튼 자체가 비활성(Initialize에서 처리)이라 실제로는 도달하지 않는다.
                     Debug.Log("[_SettingPopup] 이미 서버 데이터를 불러왔음 (서버 호출 안 함)");
                     break;
             }

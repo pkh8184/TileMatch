@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TrumpTile.FrameLibrary;
+using TrumpTile.GameMain.Data;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -38,6 +39,7 @@ namespace TrumpTile.GameMain.Core
         {
             if(mbWasInit)
             {
+                EvaluateTimedBuffs();
                 mContentDatabase.Refresh();
                 return;
             }
@@ -47,13 +49,24 @@ namespace TrumpTile.GameMain.Core
             }
 
             mbWasInit = true;
+            EvaluateTimedBuffs();
             mContentDatabase.Initialize();
 
-            return;  
+            return;
         }
         private void Refresh()
         {
+            EvaluateTimedBuffs();
             mContentDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// 컨텐츠 쿨타임과 같은 시점에, 컨텐츠에 속하지 않는 시간제 버프의 만료도 함께 재평가한다.
+        /// (ContentDatabase를 거치지 않는 PlayerData 직속 버프들이 여기 모인다)
+        /// </summary>
+        private void EvaluateTimedBuffs()
+        {
+            PlayerDataManager.Inst?.EvaluateGemDoubleState();
         }
         public T GetContentData<T>(string contentName) where T : ContentBase
         {

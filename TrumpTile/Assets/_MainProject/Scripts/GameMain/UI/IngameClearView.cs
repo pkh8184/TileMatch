@@ -28,7 +28,13 @@ namespace TrumpTile.GameMain.UI
         private RectTransform mRewardButtonRect;
         private RectTransform mMainButtonRect;
 
+        //클리어 연출 중이거나 리워드 광고 대기 중이면 true. 버튼 입력을 막는 용도.
+        //해제 경로가 하나라도 끊기면 버튼이 영구히 안 눌리므로 아래 복구 장치들과 함께 관리한다.
         private bool mbAnimProgress;
+
+        //클리어 연출 시퀀스. 백그라운드 복귀 시 살아있는지 확인하려고 들고 있는다.
+        private Sequence mShowSeq;
+
         public override void Initialize()
         {
             base.Initialize();
@@ -77,7 +83,12 @@ namespace TrumpTile.GameMain.UI
             AudioEvent.Play(EAudioKey.SFX_StageClear);
             mbAnimProgress = true;
 
-            Sequence seq = DOTween.Sequence();
+            mShowSeq?.Kill();
+
+            //SetUpdate(true): timeScale이 0이 되어도(일시정지 등) 연출이 멈추지 않게 한다.
+            //멈추면 OnComplete가 실행되지 않아 mbAnimProgress가 true로 고정되고 버튼이 먹통이 된다.
+            Sequence seq = DOTween.Sequence().SetUpdate(true);
+            mShowSeq = seq;
 
             seq.Append(mStarRectArray[0].parent.DOScale(1, 0.5f));
             for(int i = 0; i < GameManager.Instance.StarCount; i++)
@@ -115,7 +126,43 @@ namespace TrumpTile.GameMain.UI
             seq.Append(mMainButtonRect.DOScale(1.1f, 0.15f));
             seq.Append(mMainButtonRect.DOScale(1f, 0.15f));
      
-            seq.OnComplete(() => mbAnimProgress = false);
+            seq.OnComplete(() =>
+            {
+                mShowSeq = null;
+                mbAnimProgress = false;
+            });
+        }
+
+        private void OnDisable()
+        {
+            mShowSeq?.Kill();
+            mShowSeq = null;
+            mbAnimProgress = false;
+        }
+
+        /// <summary>
+        /// 백그라운드 복귀 시 잠금을 복구한다.
+        /// 연출 시퀀스가 완료 콜백 없이 사라졌거나(Kill), 리워드 광고 콜백이 끝내 돌아오지 않으면
+        /// mbAnimProgress가 true로 남아 메인/리워드 버튼이 영구히 눌리지 않는다.
+        /// </summary>
+        private void OnApplicationPause(bool pause)
+        {
+            if(pause)
+            {
+                return;
+            }
+            if(!mbAnimProgress)
+            {
+                return;
+            }
+            //연출이 아직 살아서 진행 중이면 그대로 두고 OnComplete에 맡긴다.
+            if(mShowSeq != null && mShowSeq.IsActive())
+            {
+                return;
+            }
+
+            mShowSeq = null;
+            mbAnimProgress = false;
         }
         protected override void SubscribeEvent()
         {
@@ -135,12 +182,17 @@ namespace TrumpTile.GameMain.UI
             mbAnimProgress = true;
             AdManager.Inst.ShowRewardedAd((bool done) =>
             {
-                if(done)
+                if(!done)
                 {
-                    PlayerDataManager.Inst.AddGold(10);
-                    CoreContainer.RewardContainer.AddGold(10);
-                    GameManager.Instance.GoToMainMenu();
+                    //보상 미획득(광고 미준비/중간 이탈 등)이면 잠금을 반드시 되돌린다.
+                    //안 풀면 리워드 버튼은 물론 메인 버튼까지 같이 막힌다.
+                    mbAnimProgress = false;
+                    return;
                 }
+
+                PlayerDataManager.Inst.AddGold(10);
+                CoreContainer.RewardContainer.AddGold(10);
+                GameManager.Instance.GoToMainMenu();
             });
         }
         private void OnMainButtonClick()

@@ -2,6 +2,7 @@ using Firebase;
 using Firebase.Auth;
 using Firebase.Functions;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace TrumpTile.FirebaseLibrary
 {
@@ -36,20 +37,29 @@ namespace TrumpTile.FirebaseLibrary
             }
 
             //파이어베이스 기본 설정들을 초기화해줍니다.
-            await FirebaseApp.CheckAndFixDependenciesAsync();
+            //Available이 아니면 Auth/Functions가 정상 동작하지 않으므로 상태를 남기고 중단한다.
+            DependencyStatus status = await FirebaseApp.CheckAndFixDependenciesAsync();
+            if(status != DependencyStatus.Available)
+            {
+                Debug.LogError($"[FirebaseService] 초기화 실패 - 의존성 상태: {status}");
+                return;
+            }
 
             mAuth = FirebaseAuth.DefaultInstance;
 
             //firestore와 로컬 위치를 맞추기 위해 서울 서버를 읽어옵니다.
             mFunctions = FirebaseFunctions.GetInstance("asia-northeast3");
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            //에디터/개발(디버그) 빌드에서는 로컬 에뮬레이터를 사용합니다. 실기기 릴리즈 빌드는 실제 Functions를 호출합니다.
-            //주의: 실기기 개발빌드에서 localhost는 기기 자신이므로, PC 에뮬레이터를 쓰려면 adb reverse(tcp:5001) 또는 PC IP로 교체하세요.
+#if UNITY_EDITOR
+            //에디터에서만 로컬 에뮬레이터를 사용합니다.
+            //실기기는 개발빌드여도 실제 Functions를 호출합니다.
+            //(기기에서 localhost는 기기 자신이라, 개발빌드에 에뮬레이터를 걸면 모든 서버 호출이 조용히 실패한다)
             mFunctions.UseFunctionsEmulator(FUNCTIONS_EMULATOR_URL);
+            Debug.Log($"[FirebaseService] 에디터 - Functions 에뮬레이터 사용: {FUNCTIONS_EMULATOR_URL}");
 #endif
 
             mbInitialized = true;
+            Debug.Log("[FirebaseService] 초기화 완료 (region: asia-northeast3)");
         }
     }
 }

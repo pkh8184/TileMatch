@@ -100,6 +100,12 @@ namespace TrumpTile.GameMain.Data
 		public bool IsGemCollectionActive => mUserData.IsGemCollectionActive;
 		public int GemCollectionIndex => mUserData.GemCollectionIndex;
 		public int GemCollectionCount => mUserData.GemCount;
+
+		//젬 2배 버프
+		public bool IsGemDoubleActive => mUserData != null && mUserData.IsGemDoubleActive;
+		public DateTime GemDoubleExpireDate => mUserData != null ? mUserData.GemDoubleExpireDate : default;
+		//스테이지에서 젬을 획득할 때 곱할 배율. 버프가 없으면 1.
+		public int GemMultiplier => IsGemDoubleActive ? 2 : 1;
 		public int ChampionsLevel => mUserData.ChampionsLevel;
 		public bool IsChampionsActive => mUserData.IsChampionsActive;
 
@@ -525,6 +531,61 @@ namespace TrumpTile.GameMain.Data
 			mUserData.GemCollectionUnActiveDate = GameTime.UtcNow;
 			SaveUserData();
 		}
+		/// <summary>
+		/// 젬 2배 버프 시간을 추가한다.
+		/// 이미 버프 중이면 남은 시간에 이어 붙이고(중첩), 아니면 지금부터 시작한다.
+		/// 쿨타임 컨벤션대로 UTC 기준으로 저장한다.
+		/// </summary>
+		public void AddGemDoubleTime(int minutes)
+		{
+			if(mUserData == null || minutes <= 0)
+			{
+				return;
+			}
+
+			//만료 시각이 이미 지났으면 남은 시간이 없는 것이므로 지금부터 다시 센다.
+			bool bStillRunning = mUserData.IsGemDoubleActive && mUserData.GemDoubleExpireDate > GameTime.UtcNow;
+			DateTime baseDate = bStillRunning ? mUserData.GemDoubleExpireDate : GameTime.UtcNow;
+
+			mUserData.GemDoubleExpireDate = baseDate.AddMinutes(minutes);
+			mUserData.IsGemDoubleActive = true;
+
+			Debug.Log($"[PlayerDataManager] 젬 2배 버프 +{minutes}분 → 만료(UTC): {mUserData.GemDoubleExpireDate}");
+			SaveUserData();
+		}
+
+		/// <summary>
+		/// 젬 2배 버프의 만료 여부를 시간 기준으로 재평가한다.
+		/// 메인씬 진입/컨텐츠 갱신 시점에 다른 컨텐츠 쿨타임과 함께 호출된다.
+		/// </summary>
+		public void EvaluateGemDoubleState()
+		{
+			if(mUserData == null || !mUserData.IsGemDoubleActive)
+			{
+				return;
+			}
+			if(mUserData.GemDoubleExpireDate > GameTime.UtcNow)
+			{
+				return;
+			}
+
+			mUserData.IsGemDoubleActive = false;
+			Debug.Log("[PlayerDataManager] 젬 2배 버프 만료");
+			SaveUserData();
+		}
+
+		/// <summary>젬 2배 버프의 남은 시간(초). 비활성이면 0. (UI 타이머 표기용)</summary>
+		public float GetGemDoubleRemainSeconds()
+		{
+			if(!IsGemDoubleActive)
+			{
+				return 0f;
+			}
+
+			double remain = (mUserData.GemDoubleExpireDate - GameTime.UtcNow).TotalSeconds;
+			return remain > 0 ? (float)remain : 0f;
+		}
+
 		public void AddGemCount(int value)
 		{
 			if(mUserData == null)
