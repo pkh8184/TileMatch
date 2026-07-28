@@ -57,12 +57,26 @@ namespace TrumpTile.GameMain.UI
             base.SubscribeEvent();
 
             EventManager.Inst.AddEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
+            //구매 복원 경로에는 PURCHASE_SUCCESS가 없다. 광고 제거가 확정되는 공통 시점으로 진입 버튼을 정리한다.
+            EventManager.Inst.AddEvent(EventKeys.REMOVE_ADS_PURCHASED, OnRemoveAdsGranted);
         }
         protected override void UnSubscribeEvent()
         {
             base.UnSubscribeEvent();
 
             EventManager.Inst?.RemoveEvent(EventKeys.PURCHASE_SUCCESS, OnPurchaseSuccess);
+            EventManager.Inst?.RemoveEvent(EventKeys.REMOVE_ADS_PURCHASED, OnRemoveAdsGranted);
+        }
+        /// <summary>
+        /// 광고 제거 소유가 확정된 시점(정상 구매 / 구매 복원 공통). 메인 화면의 진입 버튼을 감춘다.
+        /// 정상 구매는 이후 HideOnPurchase에서도 같은 처리를 하지만 중복 호출해도 안전하다.
+        /// </summary>
+        private void OnRemoveAdsGranted()
+        {
+            if(mShowButton != null)
+            {
+                mShowButton.gameObject.SetActive(false);
+            }
         }
         public void OnPurchaseSuccess()
         {

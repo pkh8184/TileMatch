@@ -1,4 +1,5 @@
 using Google.MiniJSON;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -29,6 +30,12 @@ namespace TrumpTile.GameMain.UI
         [Header("구매 복원 버튼")]
         [SerializeField] private Button mRestorePurchaseButton;
 
+        [Header("구매 복원 완료 팝업 (확인 시 닫기만)")]
+        [SerializeField] private PublicPopup mRestoreSuccessPopup;
+
+        [Header("복원할 구매 없음 팝업 (확인 시 닫기만)")]
+        [SerializeField] private PublicPopup mNothingToRestorePopup;
+
         [Header("데이터 불러오기 버튼")]
         [SerializeField] private Button mLoadDataButton;
 
@@ -38,8 +45,11 @@ namespace TrumpTile.GameMain.UI
         [Header("데이터 불러오기 성공 팝업 (확인 시 앱 종료)")]
         [SerializeField] private PublicPopup mLoadSuccessPopup;
 
-        [Header("데이터 불러오기 실패 팝업 (미할당 시 로그만 남김)")]
-        [SerializeField] private PublicPopup mLoadFailedPopup;
+        [Header("이미 불러온 상태 팝업 (확인 시 닫기만)")]
+        [SerializeField] private PublicPopup mAlreadyLoadedPopup;
+
+        //서버 응답을 기다리는 중인지. 연속 클릭으로 서버 요청이 중복 나가는 것을 막는다.
+        private bool mbLoadDataInProgress;
 
         [Header("공유 텍스트 및 URL")]
         [SerializeField] private string mShareText;
@@ -99,8 +109,9 @@ namespace TrumpTile.GameMain.UI
             {
                 mLoadDataButton.onClick.AddListener(OnLoadDataClick);
 
-                //이미 이 설치에서 서버 데이터를 불러왔으면 버튼 비활성 (컬러 틴트라 자동으로 어두워짐)
-                mLoadDataButton.interactable = !ServerSyncService.IsServerDataLoaded;
+                //이미 불러온 상태여도 버튼은 살려둔다. 눌러야 "이미 불러왔음" 안내를 띄울 수 있고,
+                //LoadFromServer가 플래그를 먼저 확인해 서버 호출 없이 AlreadyLoaded로 즉시 반환하므로 비용도 들지 않는다.
+                mLoadDataButton.interactable = true;
             }
         }
 
@@ -113,21 +124,31 @@ namespace TrumpTile.GameMain.UI
 
             IAPManager.Instance.RestorePurchases(result =>
             {
-                //결과 피드백 지점. 필요 시 결과별 토스트/팝업 연결.
-                //(NetworkUnavailable은 NETWORK_NOT_CONNECT 이벤트도 별도로 발생함)
+                //확인 버튼에 별도 동작을 주입하지 않으면 PublicPopup의 기본 동작(Hide)만 수행한다.
                 switch(result)
                 {
                     case ERestoreResult.Restored:
                         Debug.Log("[_SettingPopup] 광고 제거 구매 복원됨");
+                        if(mRestoreSuccessPopup != null)
+                        {
+                            mRestoreSuccessPopup.Show();
+                        }
                         break;
                     case ERestoreResult.NothingToRestore:
                         Debug.Log("[_SettingPopup] 복원할 구매 없음");
+                        if(mNothingToRestorePopup != null)
+                        {
+                            mNothingToRestorePopup.Show();
+                        }
                         break;
                     case ERestoreResult.NetworkUnavailable:
+                        //IAPManager가 EnsureConnected에서 이미 NETWORK_NOT_CONNECT를 발생시켜 팝업이 뜬다.
                         Debug.Log("[_SettingPopup] 네트워크 미연결");
                         break;
                     case ERestoreResult.Failed:
-                        Debug.Log("[_SettingPopup] 구매 복원 실패");
+                        //스토어 미연결 / 타임아웃. 실질적으로 통신 문제라 네트워크 안내 팝업을 재사용한다.
+                        Debug.LogWarning("[_SettingPopup] 구매 복원 실패 - 네트워크 안내 팝업 표시");
+                        EventManager.Inst?.ActiveEvent(EventKeys.NETWORK_NOT_CONNECT);
                         break;
                 }
             });
@@ -135,7 +156,28 @@ namespace TrumpTile.GameMain.UI
 
         private async void OnLoadDataClick()
         {
-            ELoadResult result = await ServerSyncService.LoadFromServer();
+            if(mbLoadDataInProgress)
+            {
+                return;
+            }
+            mbLoadDataInProgress = true;
+
+            ELoadResult result;
+            try
+            {
+                result = await ServerSyncService.LoadFromServer();
+            }
+            catch(Exception e)
+            {
+                //예외로 빠지면 아래 switch에 도달하지 못해 아무 안내도 없이 끝난다. Failed로 수렴시킨다.
+                Debug.LogError($"[_SettingPopup] 데이터 불러오기 예외: {e}");
+                result = ELoadResult.Failed;
+            }
+            finally
+            {
+                mbLoadDataInProgress = false;
+            }
+
             switch(result)
             {
                 case ELoadResult.Success:
@@ -159,17 +201,19 @@ namespace TrumpTile.GameMain.UI
                     //네트워크 팝업은 NETWORK_NOT_CONNECT 이벤트 핸들러(NetworkPopupHandler)가 처리
                     break;
                 case ELoadResult.Failed:
-                    //로그인/서버 호출 실패. 아무 반응이 없으면 유저가 버튼 고장으로 인식하므로 안내를 띄운다.
-                    Debug.LogWarning("[_SettingPopup] 데이터 불러오기 실패 - 로그인 또는 서버 호출 실패");
-                    if(mLoadFailedPopup != null)
-                    {
-                        mLoadFailedPopup.Show();
-                    }
+                    //로그인/서버 호출 실패 또는 예외. 실제 원인은 대부분 통신 문제(연결은 잡혔으나 서버 도달 실패)라
+                    //전용 팝업을 따로 두지 않고 네트워크 안내 팝업을 재사용한다. (NetworkPopupHandler가 수신)
+                    Debug.LogWarning("[_SettingPopup] 데이터 불러오기 실패 - 네트워크 안내 팝업 표시");
+                    EventManager.Inst?.ActiveEvent(EventKeys.NETWORK_NOT_CONNECT);
                     break;
                 case ELoadResult.AlreadyLoaded:
-                    //이미 이 설치에서 불러온 상태 → 서버 호출 안 함.
-                    //이 경우 버튼 자체가 비활성(Initialize에서 처리)이라 실제로는 도달하지 않는다.
+                    //이미 이 설치에서 불러온 상태 → 서버 호출 없이 안내만 띄운다.
+                    //확인 버튼은 별도 주입 없이 기본 동작(Hide)만 수행한다.
                     Debug.Log("[_SettingPopup] 이미 서버 데이터를 불러왔음 (서버 호출 안 함)");
+                    if(mAlreadyLoadedPopup != null)
+                    {
+                        mAlreadyLoadedPopup.Show();
+                    }
                     break;
             }
         }

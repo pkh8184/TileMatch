@@ -180,6 +180,13 @@ namespace  TrumpTile.GameMain.Core
             bool bRestoredRemoveAds = mbRestoreRequested && RestoreOwnedNonConsumables(orders);
             mbRestoreRequested = false;
 
+            //복원 경로에는 정상 구매의 PURCHASE_CONFIRMED → PURCHASE_SUCCESS 흐름이 없어 UI 갱신이 누락된다.
+            //로컬 데이터가 바뀌었으므로 여기서 직접 갱신을 요청한다. (복원 완료 팝업보다 먼저 반영되도록 콜백 앞에서 호출)
+            if(bRestoredRemoveAds)
+            {
+                EventManager.Inst?.ActiveEvent(RequestEventKeys.REFRESH_PLAYER_DATA);
+            }
+
             //타임아웃 코루틴이 돌고 있으면 정지(정상 응답 도착).
             if(mRestoreTimeoutCo != null)
             {
