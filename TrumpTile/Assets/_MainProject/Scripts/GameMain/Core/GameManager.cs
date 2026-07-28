@@ -895,6 +895,9 @@ namespace TrumpTile.GameMain.Core
 			PlayerDataManager.Inst.ClearStage(level, stars);
 			Debug.Log($"[GameManager] Saved - NextStage: {PlayerDataManager.Inst.CurrentStage}");
 
+			//스테이지 구간 업적 보고 (달성분 전체를 보내므로 소급 해금도 함께 처리된다)
+			StageAchievementReporter.ReportAchievedStages(PlayerDataManager.Inst.MaxClearedStage);
+
 			//로컬 저장 후 서버에도 저장 (로그인 보장 포함, 오프라인이면 조용히 스킵)
 			_ = ServerSyncService.SaveToServer();
 		}

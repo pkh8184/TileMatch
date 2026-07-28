@@ -41,6 +41,15 @@ namespace TrumpTile.GameMain.Core
         }
 
         /// <summary>
+        /// 메인씬 진입 시 트레져박스 팝업을 자동으로 띄울지 판정한다.
+        /// 최초 해금 시점(bFirstUnlock)에만 자동 표시하고, 이후 진입에서는 표시하지 않는다.
+        /// </summary>
+        public static bool ShouldAutoShowOnMainSceneEnter(bool bUnlocked, bool bActive, bool bFirstUnlock)
+        {
+            return bUnlocked && bActive && bFirstUnlock;
+        }
+
+        /// <summary>
         /// 구매 성공 시 호출. 실제 보상 지급은 IAP(OnPurchaseConfirmed → GrantReward)가 담당하므로
         /// 여기선 획득 연출용으로만 RewardContainer에 담고, 재활성화 쿨타임을 시작한다(그동안 비활성).
         /// </summary>

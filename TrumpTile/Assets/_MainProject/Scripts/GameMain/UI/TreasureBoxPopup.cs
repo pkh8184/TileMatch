@@ -42,6 +42,12 @@ namespace TrumpTile.GameMain.UI
         }
         private IEnumerator Co_MainSceneEnterEvent()
         {
+            //최초 해금 시에만 자동 표시한다. (이후 메인씬 진입에서는 ShowButton으로만 접근)
+            if(!TreasureBoxContent.ShouldAutoShowOnMainSceneEnter(mContentData.Unlock, mContentData.IsActive, mContentData.ShowUnlockPopup))
+            {
+                yield break;
+            }
+
             Show();
             yield return new WaitWhile(() => gameObject.activeSelf);
         }
