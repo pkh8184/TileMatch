@@ -298,6 +298,8 @@ namespace TrumpTile.GameMain.Core
 			SetJewerlyTileValid();
 			UpdateAllBlockedStates();
 			CreateGemTile();
+			//젬이 mBoardMap을 마킹한 뒤 한 번 더 갱신해야, 젬에 가려진 아래 레이어 타일이 로드 직후부터 선택 불가로 표시된다.
+			UpdateAllBlockedStates();
 
 			mIsLevelLoaded = true;
 			Log($"Level loaded: {createdCount} tiles, Grid: {mGridWidth}x{mGridHeight}, Layers: {mMaxLayers}");
@@ -499,18 +501,23 @@ namespace TrumpTile.GameMain.Core
 				}
 				else
 				{
+					//검사 대상은 i번 레이어이므로 범위도 i번 레이어 크기로 판단해야 한다.
+					//(보드 폭이 7이면 홀수 레이어는 8칸이라 인덱스 7이 존재한다)
+					int layerSizeX = GetLayerSizeX(i);
+					int layerSizeY = GetLayerSizeY(i);
+
 					blockIndexList.Add((tileX, tileY, i));
-					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					if(tileX + rangeX >= 0 && tileX + rangeX < layerSizeX)
 					{
 						blockIndexList.Add((tileX + rangeX, tileY, i));
 					}
-					if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+					if(tileY + rangeY >= 0 && tileY + rangeY < layerSizeY)
 					{
 						blockIndexList.Add((tileX, tileY + rangeY, i));
 					}
-					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					if(tileX + rangeX >= 0 && tileX + rangeX < layerSizeX)
 					{
-						if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+						if(tileY + rangeY >= 0 && tileY + rangeY < layerSizeY)
 						{
 							blockIndexList.Add((tileX + rangeX, tileY + rangeY, i));
 						}
@@ -518,7 +525,41 @@ namespace TrumpTile.GameMain.Core
 				}
 				count++;
 			}
-		}	
+		}
+
+		/// <summary>
+		/// 해당 레이어의 X 인덱스 개수를 반환한다.
+		/// 홀수 레이어는 반 칸 어긋나 있어서, 보드 폭이 8 미만이면 한 칸 넓고(폭+1) 8이면 한 칸 좁다(폭-1).
+		/// (LevelEditorWindow.GetGridSizeXByLayer 와 동일 규칙)
+		/// </summary>
+		private int GetLayerSizeX(int layer)
+		{
+			if(layer % 2 == 0)
+			{
+				return mOriginWidth;
+			}
+			if(mOriginWidth < 8)
+			{
+				return mOriginWidth + 1;
+			}
+			return mOriginWidth - 1;
+		}
+
+		/// <summary>
+		/// 해당 레이어의 Y 인덱스 개수를 반환한다. (GetLayerSizeX 와 동일 규칙)
+		/// </summary>
+		private int GetLayerSizeY(int layer)
+		{
+			if(layer % 2 == 0)
+			{
+				return mOriginHeight;
+			}
+			if(mOriginHeight < 8)
+			{
+				return mOriginHeight + 1;
+			}
+			return mOriginHeight - 1;
+		}
 		private void SetBonusTileRandom(LevelData level)
 		{
 			if(level.difficulty != EDifficultyType.Bonus)
@@ -875,27 +916,32 @@ namespace TrumpTile.GameMain.Core
 				}
 				else
 				{
+					//검사 대상은 i번 레이어이므로 범위도 i번 레이어 크기로 판단해야 한다.
+					//(보드 폭이 7이면 홀수 레이어는 8칸이라 인덱스 7이 존재한다)
+					int layerSizeX = GetLayerSizeX(i);
+					int layerSizeY = GetLayerSizeY(i);
+
 					if(mBoardMap[tileX, tileY, i] != Vector3.zero)
 					{
 						return true;
 					}
-					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					if(tileX + rangeX >= 0 && tileX + rangeX < layerSizeX)
 					{
 						if(mBoardMap[tileX + rangeX, tileY, i] != Vector3.zero)
 						{
 							return true;
 						}
 					}
-					if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+					if(tileY + rangeY >= 0 && tileY + rangeY < layerSizeY)
 					{
 						if(mBoardMap[tileX, tileY + rangeY, i] != Vector3.zero)
 						{
 							return true;
 						}
 					}
-					if(tileX + rangeX >= 0 && tileX + rangeX < mOriginWidth)
+					if(tileX + rangeX >= 0 && tileX + rangeX < layerSizeX)
 					{
-						if(tileY + rangeY >= 0 && tileY + rangeY < mOriginHeight)
+						if(tileY + rangeY >= 0 && tileY + rangeY < layerSizeY)
 						{
 							if(mBoardMap[tileX + rangeX, tileY + rangeY, i] != Vector3.zero)
 							{

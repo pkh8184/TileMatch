@@ -19,9 +19,10 @@ namespace TrumpTile.GameMain.Core
         [Header("테스트용 플래그(Firebase 에뮬레이터 없이 타이틀씬 사용 시 체크)")]
         [SerializeField] private bool mbWhitoutFirebase;
 
-        //온라인 초기화(Firebase 초기화 + 로그인) 최대 대기 시간.
+        //온라인 초기화(Firebase 초기화 + 로그인 + 서버 데이터 자동 복원) 최대 대기 시간.
         //Firebase Task가 끝내 완료되지 않는 경우가 있어, 부팅이 여기서 멈추지 않도록 상한을 둔다.
-        private const float ONLINE_INIT_TIMEOUT_SECOND = 10f;
+        //자동 복원의 서버 왕복이 포함되므로 로그인만 하던 때(10초)보다 여유를 뒀다.
+        private const float ONLINE_INIT_TIMEOUT_SECOND = 15f;
 
         private float mLoadingProgress = 0;
         public float LoadingProgress { get => mLoadingProgress; }
@@ -122,6 +123,15 @@ namespace TrumpTile.GameMain.Core
                 Debug.Log(FirebaseAuthService.IsLoggedIn
                     ? "[TitleManager] 로그인 성공, UID 캐싱 완료"
                     : "[TitleManager] 로그인 실패 - 로컬 데이터로 진행");
+
+                //로그인된 계정 기준으로, 이 설치가 아직 서버 데이터를 받은 적 없으면 여기서 자동 복원한다.
+                //메인씬 진입 전에 끝내야 재설치 유저가 복원 전에 플레이해서 서버를 덮어쓰는 사고를 막을 수 있다.
+                //(게임 시작 전에 데이터가 확정되므로 예전처럼 "재시작 필요" 안내가 필요 없다)
+                if(FirebaseAuthService.IsLoggedIn)
+                {
+                    ELoadResult restoreResult = await ServerSyncService.TryAutoRestoreOnBoot();
+                    Debug.Log($"[TitleManager] 부팅 자동 복원 결과: {restoreResult}");
+                }
             }
             catch (Exception e)
             {

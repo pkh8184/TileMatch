@@ -264,7 +264,8 @@ namespace  TrumpTile.GameMain.Core
             }
 
             //구매 보상 로컬 반영 후 서버에도 저장 (로그인 보장 포함, 오프라인이면 조용히 스킵)
-            _ = ServerSyncService.SaveToServer();
+            //예약된 재화 변경분도 여기서 함께 올라간다.
+            PlayerDataManager.Inst.FlushServerSaveNow();
         }
         // 구매 실패
         private void OnPurchaseFailed(FailedOrder failedOrder)

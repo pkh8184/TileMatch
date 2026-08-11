@@ -57,12 +57,22 @@ namespace TrumpTile.GameMain.Data
 		private void OnApplicationQuit()
         {
             SaveUserData();
+            FlushServerSaveIfPending();
         }
         private void OnApplicationPause(bool pause)
         {
             if(pause)
 			{
 				SaveUserData();
+				//백그라운드로 가면 디바운스 타이머가 끝까지 못 돌 수 있으니 예약분을 여기서 올린다.
+				FlushServerSaveIfPending();
+				return;
+			}
+
+			//백그라운드에 있는 동안 자정을 넘겼을 수 있다. 복귀 시점에 하루 경계를 다시 판정한다.
+			if(RefreshDailyReset())
+			{
+				EventManager.Inst?.ActiveEvent(EventKeys.CONTENT_DATA_REFRESH);
 			}
         }
         public void Initialize(Dictionary<object, object> dictionary)
@@ -134,6 +144,7 @@ namespace TrumpTile.GameMain.Data
 			OnGoldChanged?.Invoke();
 
 			SaveUserData();
+			MarkServerSaveDirty();
 		}
 
 		public bool UseGold(int amount)
@@ -146,6 +157,7 @@ namespace TrumpTile.GameMain.Data
 			OnGoldChanged?.Invoke();
 
 			SaveUserData();
+			MarkServerSaveDirty();
 			return true;
 		}
 
@@ -235,6 +247,7 @@ namespace TrumpTile.GameMain.Data
 			mUserData.ItemCounts[itemId] = count;
 
 			SaveUserData();
+			MarkServerSaveDirty();
 		}
 		public void AddItemCount(int itemId, int count)
 		{
@@ -245,6 +258,7 @@ namespace TrumpTile.GameMain.Data
 			mUserData.ItemCounts[itemId] += count;
 
 			SaveUserData();
+			MarkServerSaveDirty();
 		}
 
 		public Dictionary<int, int> GetAllItemCounts()
@@ -402,13 +416,17 @@ namespace TrumpTile.GameMain.Data
 			}
 			return !mUserData.IsDailyCheckToday;
 		}
+		/// <summary>
+		/// 마지막 판정일(LastDailyResetDate)과 오늘(로컬)을 비교해 연속로그인/일일 컨텐츠를 갱신한다.
+		/// 판정이 끝나면 LastDailyResetDate를 오늘로 찍어, 같은 날 여러 번 불려도 한 번만 적용되게 한다.
+		/// </summary>
 		private void RefreshStreakLoginCount()
 		{
 			if(mUserData == null)
 			{
 				return;
 			}
-			int day = (mUserData.CurrentLoginDate.Date - mUserData.LogoutDate.Date).Days;
+			int day = (GameTime.Today - mUserData.LastDailyResetDate.Date).Days;
 			if(day == 1)
 			{
 				mUserData.StreakLoginCount++;
@@ -426,7 +444,33 @@ namespace TrumpTile.GameMain.Data
 				mUserData.RouletteCount = 0;
 			}
 
+			//기기 시계를 되돌린 경우(day < 0)에도 여기서 오늘로 맞춰야 판정이 멈추지 않는다.
+			mUserData.LastDailyResetDate = GameTime.Today;
+
 			SaveUserData();
+		}
+		/// <summary>
+		/// 마지막 판정 이후 로컬 날짜가 바뀌었으면 일일 컨텐츠(출석·룰렛)를 다시 초기화한다.
+		/// 앱 실행 시 1회(LoadUserData)뿐 아니라 메인씬 진입/앱 복귀 시점에도 호출해,
+		/// DailyPuzzle(GameTime.Today로 매번 판정)과 초기화 시점을 맞춘다.
+		/// </summary>
+		/// <returns>날짜가 바뀌어 실제로 초기화했으면 true</returns>
+		public bool RefreshDailyReset()
+		{
+			if(mUserData == null)
+			{
+				return false;
+			}
+			//마지막 판정이 오늘(로컬)이면 넘어갈 하루 경계가 없다.
+			if(mUserData.LastDailyResetDate.Date == GameTime.Today)
+			{
+				return false;
+			}
+
+			RefreshStreakLoginCount();
+
+			Debug.Log($"[PlayerDataManager] 일일 리셋 재평가 → streak={mUserData.StreakLoginCount}, dailyChecked={mUserData.IsDailyCheckToday}, roulette={mUserData.RouletteCount}");
+			return true;
 		}
 		public void SetDailyCheckDone()
 		{
@@ -920,6 +964,108 @@ namespace TrumpTile.GameMain.Data
         }
 		#region 서버 동기화 (saveData/loadData용)
 
+		#region 서버 저장 예약
+
+		//재화·아이템 변동은 잦아서 변할 때마다 서버에 쓰면 Functions 호출 비용이 커진다.
+		//변경을 표시해두고 일정 시간 뒤 1회만 올리며, 앱 일시정지/종료처럼 이탈하는 시점엔 즉시 올린다.
+		private const float SERVER_SAVE_DEBOUNCE_SECONDS = 30F;
+		private bool mbServerSaveDirty = false;
+		private float mServerSaveTimer = 0F;
+		private bool mbServerSaveInFlight = false;
+
+		/// <summary>
+		/// 서버에 올려야 할 변경이 생겼음을 표시한다. 실제 전송은 디바운스 후 1회만 일어난다.
+		/// </summary>
+		public void MarkServerSaveDirty()
+		{
+			mbServerSaveDirty = true;
+			mServerSaveTimer = SERVER_SAVE_DEBOUNCE_SECONDS;
+		}
+
+		/// <summary>
+		/// 예약된 변경을 기다리지 않고 즉시 서버에 올린다.
+		/// (스테이지 클리어·구매 완료·앱 이탈처럼 반드시 남겨야 하는 시점용)
+		/// </summary>
+		public void FlushServerSaveNow()
+		{
+			mbServerSaveDirty = false;
+			mServerSaveTimer = 0F;
+
+			SendServerSave();
+		}
+
+		/// <summary>
+		/// 예약된 변경이 있을 때만 즉시 올린다. 변경이 없으면 아무것도 하지 않는다.
+		/// 앱 일시정지처럼 자주 일어나는 시점에서 불필요한 서버 호출을 막기 위한 경로.
+		/// </summary>
+		public void FlushServerSaveIfPending()
+		{
+			if(!mbServerSaveDirty)
+			{
+				return;
+			}
+
+			FlushServerSaveNow();
+		}
+
+		private void Update()
+		{
+			if(!mbServerSaveDirty)
+			{
+				return;
+			}
+
+			//타임스케일 0(팝업 등)에서도 흐르도록 unscaled 사용
+			mServerSaveTimer -= Time.unscaledDeltaTime;
+			if(mServerSaveTimer > 0F)
+			{
+				return;
+			}
+
+			mbServerSaveDirty = false;
+			SendServerSave();
+		}
+
+		private async void SendServerSave()
+		{
+			//부팅 시 서버 복원이 확정되지 않은 세션에서는 서버에 쓰지 않는다.
+			//(재설치 유저의 서버 데이터를 새 로컬 데이터로 덮어쓰는 사고 방지)
+			//이 상태는 세션 중에 바뀌지 않으므로 재시도 예약도 하지 않는다. 로컬 저장은 이미 끝나 있다.
+			if(!ServerSyncService.IsRestoreResolved)
+			{
+				return;
+			}
+
+			//이전 전송이 안 끝났으면 겹쳐 보내지 않고 다음 기회로 미룬다.
+			if(mbServerSaveInFlight)
+			{
+				MarkServerSaveDirty();
+				return;
+			}
+
+			mbServerSaveInFlight = true;
+			try
+			{
+				bool bSuccess = await ServerSyncService.SaveToServer();
+				if(!bSuccess)
+				{
+					//오프라인·로그인 실패 등. 로컬엔 이미 저장돼 있으니 표시만 되살려 다음 기회에 재시도한다.
+					MarkServerSaveDirty();
+				}
+			}
+			catch(Exception e)
+			{
+				Debug.LogError($"[PlayerDataManager] 서버 저장 실패: {e}");
+				MarkServerSaveDirty();
+			}
+			finally
+			{
+				mbServerSaveInFlight = false;
+			}
+		}
+
+		#endregion
+
 		/// <summary>
 		/// 서버 저장용 유저 데이터(5필드)를 서버 스키마 형태의 딕셔너리로 만든다.
 		/// { removeAds, currentStage, gold, itemCounts{id:count}, championsLevel, isChampionsActive }
@@ -1007,7 +1153,7 @@ namespace TrumpTile.GameMain.Data
 			}
 			mUserData.LoadUnEncryptedData();
 
-			RefreshStreakLoginCount();
+			RefreshDailyReset();
 		}
 		private void SaveUserData()
 		{
@@ -1040,7 +1186,7 @@ namespace TrumpTile.GameMain.Data
 		}
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 		//런타임에서 GameTime 오프셋을 바꾼 뒤, 앱 재시작 없이 일일 리셋을 재평가하기 위한 디버그 훅.
-		//직전 로그인 시점을 로그아웃으로 간주하고 오프셋이 반영된 현재 시각으로 재로그인 처리한다.
+		//오프셋으로 GameTime.Today가 바뀌면 RefreshDailyReset이 하루 경계를 감지한다.
 		public void DebugRecheckDailyReset()
 		{
 			if(mUserData == null)
@@ -1048,11 +1194,7 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 
-			mUserData.LogoutDate = mUserData.CurrentLoginDate;
-			mUserData.CurrentLoginDate = GameTime.Now;
-
-			RefreshStreakLoginCount();
-			SaveUserData();
+			RefreshDailyReset();
 
 			EventManager.Inst.ActiveEvent(EventKeys.CONTENT_DATA_REFRESH);
 

@@ -50,7 +50,11 @@ namespace TrumpTile.GameMain.Data
 
         //룰렛 관련 데이터
         public int RouletteCount;
-        
+
+        //일일 컨텐츠(출석·룰렛) 리셋을 마지막으로 판정한 로컬 날짜.
+        //LogoutDate는 저장할 때마다 갱신돼서 하루 경계 판정에 쓸 수 없으므로 별도 필드로 둔다.
+        public long LastDailyResetDate;
+
         //기차 여행 관련 데이터
         public int ExcitTravelIndex;
         public bool IsExcitTravelActive;
@@ -132,6 +136,9 @@ namespace TrumpTile.GameMain.Data
 
             //룰렛 관련 데이터
             RouletteCount = data.RouletteCount;
+
+            //일일 리셋 판정 날짜 (로컬 기준)
+            LastDailyResetDate = data.LastDailyResetDate.Ticks;
 
             //기차 여행 관련 데이터
             ExcitTravelIndex = data.ExcitTravelIndex;
@@ -222,6 +229,10 @@ namespace TrumpTile.GameMain.Data
         //룰렛 관련 데이터
         public int RouletteCount;
 
+        //일일 컨텐츠(출석·룰렛) 리셋을 마지막으로 판정한 로컬 날짜(자정 기준).
+        //LogoutDate는 매 저장마다 현재 시각으로 덮여서 하루 경계 판정에 쓸 수 없다.
+        public DateTime LastDailyResetDate;
+
         //기차 여행 관련 데이터
         public int ExcitTravelIndex;
         public bool IsExcitTravelActive;
@@ -292,6 +303,7 @@ namespace TrumpTile.GameMain.Data
             long seconds = Convert.ToInt64(timestampData["_seconds"]);
             FirstLoginDate = DateTimeOffset.FromUnixTimeSeconds(seconds).LocalDateTime;
             MaxStreakLoginCount = (int)Convert.ToInt64(loginData["maxStreakLoginCount"]);
+            LastDailyResetDate = GameTime.Today;
 
             // 앨범 수집 데이터 파싱
             LastAlbumRewardedStage = 0;
@@ -334,7 +346,8 @@ namespace TrumpTile.GameMain.Data
 
             MaxStreakLoginCount = 1;
             StreakLoginCount = 1;
-            
+            LastDailyResetDate = GameTime.Today;
+
             DailyCheckUnlock = false;
 
             RouletteCount = 0;
@@ -442,6 +455,18 @@ namespace TrumpTile.GameMain.Data
 
             //룰렛 관련 데이터
             RouletteCount = data.RouletteCount;
+
+            //일일 리셋 판정 날짜.
+            //구버전 저장본에는 이 필드가 없어 0으로 들어오므로, 기존 유저의 연속로그인이 끊기지 않도록
+            //종전 판정 기준이던 LogoutDate로 대체한다. (LogoutDate 대입 이후에 와야 한다)
+            if(data.LastDailyResetDate > 0)
+            {
+                LastDailyResetDate = new DateTime(data.LastDailyResetDate, DateTimeKind.Local);
+            }
+            else
+            {
+                LastDailyResetDate = LogoutDate.Date;
+            }
 
             //기차 여행 관련 데이터
             ExcitTravelIndex = data.ExcitTravelIndex;

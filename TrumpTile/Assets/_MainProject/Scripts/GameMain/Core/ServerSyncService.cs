@@ -29,10 +29,65 @@ namespace TrumpTile.GameMain.Core
         //true면 데이터 불러오기 버튼이 서버를 호출하지 않는다(비용 절감).
         public static bool IsServerDataLoaded => PlayerPrefs.GetInt(PREFS_SERVER_DATA_LOADED, 0) == 1;
 
+        //부팅 시 "이 설치가 서버 데이터를 받아야 하는가"가 확정됐는지 여부.
+        //확정 전에 저장하면 재설치/기기변경 유저의 서버 데이터를 새 로컬 데이터(스테이지1·골드0)로
+        //덮어써서 계정이 날아간다. 확정되기 전까지는 SaveToServer를 막는다.
+        private static bool mbRestoreResolved = false;
+
+        public static bool IsRestoreResolved => mbRestoreResolved;
+
         private static void SetServerDataLoaded()
         {
             PlayerPrefs.SetInt(PREFS_SERVER_DATA_LOADED, 1);
             PlayerPrefs.Save();
+        }
+
+        /// <summary>
+        /// 부팅 시(구글 로그인 직후) 자동 복원.
+        /// 이 설치에서 아직 복원한 적이 없고 서버에 계정 데이터가 있으면 자동으로 내려받는다.
+        /// 성공/데이터없음으로 결론이 나야 이후 서버 저장이 허용된다.
+        /// </summary>
+        public static async Task<ELoadResult> TryAutoRestoreOnBoot()
+        {
+            //이미 이 설치에서 복원을 마쳤음 → 서버 호출 없이 저장 허용.
+            if(IsServerDataLoaded)
+            {
+                mbRestoreResolved = true;
+                return ELoadResult.AlreadyLoaded;
+            }
+
+            //오프라인이면 서버에 데이터가 있는지 알 수 없다. 부팅 중이므로 팝업 없이 조용히 넘어가고,
+            //LoadFromServer(EnsureConnected)가 네트워크 팝업을 띄우지 않도록 여기서 먼저 끊는다.
+            if(!NetworkUtil.IsConnected())
+            {
+                mbRestoreResolved = false;
+                Debug.Log("[ServerSyncService] 부팅 자동 복원 스킵 - 네트워크 미연결 (이번 세션 서버 저장 차단)");
+                return ELoadResult.NetworkUnavailable;
+            }
+
+            ELoadResult result = await LoadFromServer();
+
+            switch(result)
+            {
+                case ELoadResult.Success:
+                    //LoadFromServer가 플래그를 세팅한다.
+                    mbRestoreResolved = true;
+                    break;
+                case ELoadResult.NoData:
+                    //서버에 계정 문서가 없음 = 덮어쓸 데이터가 없음 → 저장 허용.
+                    //다음 부팅마다 다시 조회하지 않도록 플래그도 세운다.
+                    SetServerDataLoaded();
+                    mbRestoreResolved = true;
+                    break;
+                default:
+                    //NetworkUnavailable / Failed → 서버에 데이터가 있는지 모르는 상태.
+                    //이번 세션은 서버 저장을 막고 다음 부팅에서 재시도한다.
+                    mbRestoreResolved = false;
+                    Debug.LogWarning($"[ServerSyncService] 부팅 자동 복원 미해결({result}) - 이번 세션 서버 저장 차단");
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -41,6 +96,14 @@ namespace TrumpTile.GameMain.Core
         /// </summary>
         public static async Task<bool> SaveToServer()
         {
+            //복원 여부가 확정되지 않았으면 저장하지 않는다.
+            //재설치 유저가 복원 전에 한 판 클리어해 서버를 스테이지2·골드0으로 덮어쓰는 사고를 막는다.
+            if(!mbRestoreResolved)
+            {
+                Debug.Log("[ServerSyncService] 서버 저장 차단 - 복원 미해결 상태(로컬에는 저장됨)");
+                return false;
+            }
+
             if(!NetworkUtil.IsConnected())
             {
                 Debug.Log("[ServerSyncService] 서버 저장 스킵 - 네트워크 미연결");
@@ -126,6 +189,9 @@ namespace TrumpTile.GameMain.Core
 
             //불러오기 성공 → 플래그 true (이후 재호출 시 서버 호출 차단, 앱 삭제 전까지 유지)
             SetServerDataLoaded();
+
+            //부팅 자동 복원이 실패한 뒤 수동 버튼으로 복원한 경우에도 서버 저장이 다시 허용되어야 한다.
+            mbRestoreResolved = true;
 
             return ELoadResult.Success;
         }

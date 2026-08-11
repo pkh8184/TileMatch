@@ -13,6 +13,7 @@ namespace TrumpTile.GameMain.Core
 		GetReward = 0,
 		GetGemProgress,
 		PiggyBankPopup,
+		BoatRaceReward,
 		UnlockContent,
 		TreasurePackProgress,
 		DailyCheck,
@@ -40,6 +41,10 @@ namespace TrumpTile.GameMain.Core
 			mProfileResourceDB.Initialize();
 
 			PlayerDataManager.Inst.Initialize();
+
+			//게임씬에 있는 동안 자정을 넘겼을 수 있으므로, 컨텐츠 데이터를 읽기 전에 하루 경계를 다시 판정한다.
+			//(ContentManager.Initialize가 뒤이어 Refresh를 돌려 출석·룰렛 UI에 반영된다)
+			PlayerDataManager.Inst.RefreshDailyReset();
 
             //async void Awake라 예외가 나면 이후 UI 초기화가 통째로 중단된다. 어떤 초기화 실패도 UI/입력을 막지 않도록 방어한다.
             try
