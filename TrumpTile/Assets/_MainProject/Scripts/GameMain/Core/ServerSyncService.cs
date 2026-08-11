@@ -43,12 +43,43 @@ namespace TrumpTile.GameMain.Core
         }
 
         /// <summary>
+        /// 이 기기의 로컬 데이터에 "플레이한 흔적"이 있는지.
+        /// 신규 설치·재설치 직후는 스테이지1 / 골드0이므로 false가 된다.
+        /// (아이템은 초기 지급분이 1개씩 있어 판별 기준으로 쓸 수 없다)
+        /// </summary>
+        private static bool HasLocalProgress()
+        {
+            if(PlayerDataManager.Inst == null || PlayerDataManager.Inst.UserData == null)
+            {
+                return false;
+            }
+
+            return PlayerDataManager.Inst.CurrentStage > 1
+                || PlayerDataManager.Inst.Gold > 0
+                || PlayerDataManager.Inst.ChampionsLevel > 0;
+        }
+
+        /// <summary>
         /// 부팅 시(구글 로그인 직후) 자동 복원.
         /// 이 설치에서 아직 복원한 적이 없고 서버에 계정 데이터가 있으면 자동으로 내려받는다.
         /// 성공/데이터없음으로 결론이 나야 이후 서버 저장이 허용된다.
         /// </summary>
         public static async Task<ELoadResult> TryAutoRestoreOnBoot()
         {
+            //자동 복원 도입 이전부터 플레이하던 설치를 보호한다.
+            //구버전은 스테이지 클리어·결제 때만 서버에 저장해서, 마지막 클리어 이후 일일 컨텐츠로 번
+            //재화가 서버에 없다(로컬 1200골드 / 서버 600골드 같은 상태). 이때 자동 복원을 돌리면
+            //로컬이 옛 서버 데이터로 덮여 그 차액이 증발한다.
+            //로컬에 실제 진행이 있으면 = 이 기기에서 플레이하던 유저 → 로컬을 정답으로 보고 복원을 생략한다.
+            //(재설치/기기변경 유저는 로컬이 스테이지1·골드0이라 이 조건에 걸리지 않아 정상적으로 복원된다)
+            if(!IsServerDataLoaded && HasLocalProgress())
+            {
+                SetServerDataLoaded();
+                mbRestoreResolved = true;
+                Debug.Log("[ServerSyncService] 기존 진행 데이터 감지 - 자동 복원 생략(로컬 우선)");
+                return ELoadResult.AlreadyLoaded;
+            }
+
             //이미 이 설치에서 복원을 마쳤음 → 서버 호출 없이 저장 허용.
             if(IsServerDataLoaded)
             {
