@@ -389,18 +389,52 @@ namespace TrumpTile.GameMain.Data
         {
 
         }
+        //로컬 전용(암호화 안 하는) 설정 값들의 PlayerPrefs 키.
+        //PlayerDataManager의 Setter와 반드시 같은 키를 써야 해서 여기서 공개 상수로 둔다.
+        public const string KEY_NICKNAME = "NickName";
+        public const string KEY_PROFILE_IMAGE_INDEX = "ProfileImageIndex";
+        public const string KEY_PROFILE_FRAME_INDEX = "ProfileFrameIndex";
+        public const string KEY_BGM_ON = "BGMOn";
+        public const string KEY_SFX_ON = "SFXOn";
+        public const string KEY_HAPTIC_ON = "Haptic";
+        public const string KEY_LOCALE_INDEX = "LocaleIndex";
+
+        //구버전 키. BGM/SFX On·Off를 "볼륨 값이 0보다 큰가"로 저장했었는데,
+        //같은 키를 인게임 볼륨 조절(AudioManager.SetBGMVolume)이 덮어써서 꺼둔 설정이 다시 켜졌다.
+        //전용 On/Off 키로 옮기고, 기존 설치는 최초 1회만 구 키에서 값을 승계한다.
+        private const string LEGACY_KEY_BGM_VOLUME = "BGMVolume";
+        private const string LEGACY_KEY_SFX_VOLUME = "SFXVolume";
+
         /// <summary>
         /// 로컬에 저장한 데이터 읽어오기
         /// </summary>
         public void LoadUnEncryptedData()
         {
-            NickName = PlayerPrefs.GetString("NickName", "USER");
-            ProfileImageIndex = PlayerPrefs.GetInt("ProfileImageIndex", 0);
-            ProfileFrameIndex = PlayerPrefs.GetInt("ProfileFrameIndex", 0);
-            BGMOn = PlayerPrefs.GetFloat("BGMVolume", 0.5f) > 0;
-            SFXOn = PlayerPrefs.GetFloat("SFXVolume", 1f) > 0;
-            HapticOn = PlayerPrefs.GetInt("Haptic", 1) == 1;
-            LocaleIndex = PlayerPrefs.GetInt("LocaleIndex", 0);
+            NickName = PlayerPrefs.GetString(KEY_NICKNAME, "USER");
+            ProfileImageIndex = PlayerPrefs.GetInt(KEY_PROFILE_IMAGE_INDEX, 0);
+            ProfileFrameIndex = PlayerPrefs.GetInt(KEY_PROFILE_FRAME_INDEX, 0);
+            BGMOn = LoadToggleMigratedFromVolume(KEY_BGM_ON, LEGACY_KEY_BGM_VOLUME);
+            SFXOn = LoadToggleMigratedFromVolume(KEY_SFX_ON, LEGACY_KEY_SFX_VOLUME);
+            HapticOn = PlayerPrefs.GetInt(KEY_HAPTIC_ON, 1) == 1;
+            LocaleIndex = PlayerPrefs.GetInt(KEY_LOCALE_INDEX, 0);
+        }
+
+        /// <summary>
+        /// On/Off 설정을 읽는다. 신규 키가 없으면 구 볼륨 키에서 한 번 승계하고 신규 키로 옮겨 적는다.
+        /// 둘 다 없으면 켜짐이 기본값.
+        /// </summary>
+        private static bool LoadToggleMigratedFromVolume(string key, string legacyVolumeKey)
+        {
+            if(PlayerPrefs.HasKey(key))
+            {
+                return PlayerPrefs.GetInt(key, 1) == 1;
+            }
+
+            bool bOn = !PlayerPrefs.HasKey(legacyVolumeKey) || PlayerPrefs.GetFloat(legacyVolumeKey, 1F) > 0F;
+            PlayerPrefs.SetInt(key, bOn ? 1 : 0);
+            PlayerPrefs.DeleteKey(legacyVolumeKey);
+            PlayerPrefs.Save();
+            return bOn;
         }
         public EncryptedUserData ToEncryptedUserData()
         {

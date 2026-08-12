@@ -37,19 +37,18 @@ namespace TrumpTile.GameMain.Core
 		[Header("링크 데이터")]
 		[SerializeField] private AppLinksData mAppLinksData;
 
-		private const string KEY_BGM = "Settings_BGM";
-		private const string KEY_SFX = "Settings_SFX";
-		private const string KEY_VIBRATION = "Settings_Vibration";
 		private const string KEY_LANGUAGE = "Settings_Language";
 
-		private bool mBBgmEnabled;
-		private bool mBSfxEnabled;
-		private bool mBVibrationEnabled;
 		private ELanguage mLanguage;
 
-		public bool BGMEnabled => mBBgmEnabled;
-		public bool SFXEnabled => mBSfxEnabled;
-		public bool VibrationEnabled => mBVibrationEnabled;
+		//BGM / SFX / 진동 설정은 PlayerDataManager(UserData)가 단독으로 소유한다.
+		//예전엔 SettingsManager가 Settings_* 키로 같은 설정을 따로 들고 있었고, 실제로 쓰이는 설정 팝업
+		//(_SettingPopup / IngameSettingPopup)은 PlayerDataManager 쪽에만 저장했다.
+		//그 결과 Vibrate()가 아무도 갱신하지 않는 Settings_Vibration(기본 1)을 보고 있어서
+		//진동을 꺼도 계속 울렸다. 여기서는 저장하지 않고 PlayerDataManager 값을 그대로 읽어 쓴다.
+		public bool BGMEnabled => GetSoundSetting().BGMOn;
+		public bool SFXEnabled => GetSoundSetting().SFXOn;
+		public bool VibrationEnabled => GetSoundSetting().HapticOn;
 		public ELanguage Language => mLanguage;
 
 		private void Awake()
@@ -64,10 +63,19 @@ namespace TrumpTile.GameMain.Core
 
 		private void LoadSettings()
 		{
-			mBBgmEnabled = PlayerPrefs.GetInt(KEY_BGM, 1) == 1;
-			mBSfxEnabled = PlayerPrefs.GetInt(KEY_SFX, 1) == 1;
-			mBVibrationEnabled = PlayerPrefs.GetInt(KEY_VIBRATION, 1) == 1;
 			mLanguage = (ELanguage)PlayerPrefs.GetInt(KEY_LANGUAGE, (int)ELanguage.Korean);
+		}
+
+		/// <summary>
+		/// 저장된 사운드 설정을 읽는다. PlayerDataManager가 아직 없으면 켜짐을 기본값으로 둔다.
+		/// </summary>
+		private (bool BGMOn, bool SFXOn, bool HapticOn) GetSoundSetting()
+		{
+			if (PlayerDataManager.Inst == null || PlayerDataManager.Inst.UserData == null)
+			{
+				return (true, true, true);
+			}
+			return PlayerDataManager.Inst.GetUserSoundSettingDatas();
 		}
 
 		/// <summary>
@@ -75,8 +83,9 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void ApplySettings()
 		{
-			AudioManager.Inst?.SetBGMEnabled(mBBgmEnabled);
-			AudioManager.Inst?.SetSFXEnabled(mBSfxEnabled);
+			(bool BGMOn, bool SFXOn, bool HapticOn) setting = GetSoundSetting();
+			AudioManager.Inst?.SetBGMMute(!setting.BGMOn);
+			AudioManager.Inst?.SetSFXMute(!setting.SFXOn);
 		}
 
 		#region BGM
@@ -86,10 +95,8 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void SetBGM(bool bEnabled)
 		{
-			mBBgmEnabled = bEnabled;
-			PlayerPrefs.SetInt(KEY_BGM, bEnabled ? 1 : 0);
-			PlayerPrefs.Save();
-			AudioManager.Inst?.SetBGMEnabled(mBBgmEnabled);
+			PlayerDataManager.Inst?.SetBGMOn(bEnabled);
+			AudioManager.Inst?.SetBGMMute(!bEnabled);
 		}
 
 		#endregion
@@ -101,10 +108,8 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void SetSFX(bool bEnabled)
 		{
-			mBSfxEnabled = bEnabled;
-			PlayerPrefs.SetInt(KEY_SFX, bEnabled ? 1 : 0);
-			PlayerPrefs.Save();
-			AudioManager.Inst?.SetSFXEnabled(mBSfxEnabled);
+			PlayerDataManager.Inst?.SetSFXOn(bEnabled);
+			AudioManager.Inst?.SetSFXMute(!bEnabled);
 		}
 
 		#endregion
@@ -150,9 +155,7 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void SetVibration(bool bEnabled)
 		{
-			mBVibrationEnabled = bEnabled;
-			PlayerPrefs.SetInt(KEY_VIBRATION, bEnabled ? 1 : 0);
-			PlayerPrefs.Save();
+			PlayerDataManager.Inst?.SetHapticOn(bEnabled);
 		}
 
 		/// <summary>
@@ -160,7 +163,7 @@ namespace TrumpTile.GameMain.Core
 		/// </summary>
 		public void Vibrate(EVibrationStyle style = EVibrationStyle.Medium)
 		{
-			if (!mBVibrationEnabled)
+			if (!VibrationEnabled)
 			{
 				return;
 			}

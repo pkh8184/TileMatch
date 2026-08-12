@@ -839,6 +839,8 @@ namespace TrumpTile.GameMain.Data
 
 		#region Setters (기존)
 
+		//로컬 설정은 PlayerPrefs에 쓰기만 하면 실제 디스크 반영이 앱 종료 시점까지 미뤄진다.
+		//강제 종료·크래시로 종료 콜백이 안 오면 설정이 통째로 날아가므로 변경 즉시 Save한다.
 		public void SetProfileImageIndex(int index)
 		{
 			if (mUserData == null)
@@ -846,7 +848,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.ProfileImageIndex = index;
-			PlayerPrefs.SetInt("ProfileImageIndex", index);
+			PlayerPrefs.SetInt(UserData.KEY_PROFILE_IMAGE_INDEX, index);
+			PlayerPrefs.Save();
 		}
 
 		public void SetProfileFrameIndex(int index)
@@ -856,7 +859,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.ProfileFrameIndex = index;
-			PlayerPrefs.SetInt("ProfileFrameIndex", index);
+			PlayerPrefs.SetInt(UserData.KEY_PROFILE_FRAME_INDEX, index);
+			PlayerPrefs.Save();
 		}
 
 		public void SetBGMOn(bool isOn)
@@ -866,7 +870,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.BGMOn = isOn;
-			PlayerPrefs.SetFloat("BGMVolume", isOn ? 0.5f : 0);
+			PlayerPrefs.SetInt(UserData.KEY_BGM_ON, isOn ? 1 : 0);
+			PlayerPrefs.Save();
 		}
 
 		public void SetSFXOn(bool isOn)
@@ -876,7 +881,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.SFXOn = isOn;
-			PlayerPrefs.SetFloat("SFXVolume", isOn ? 1f : 0);
+			PlayerPrefs.SetInt(UserData.KEY_SFX_ON, isOn ? 1 : 0);
+			PlayerPrefs.Save();
 		}
 
 		public void SetHapticOn(bool isOn)
@@ -886,7 +892,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.HapticOn = isOn;
-			PlayerPrefs.SetInt("Haptic", isOn ? 1 : 0);
+			PlayerPrefs.SetInt(UserData.KEY_HAPTIC_ON, isOn ? 1 : 0);
+			PlayerPrefs.Save();
 		}
 
 		public void SetLocaleIndex(int index)
@@ -896,7 +903,8 @@ namespace TrumpTile.GameMain.Data
 				return;
 			}
 			mUserData.LocaleIndex = index;
-			PlayerPrefs.SetInt("LocaleIndex", index);
+			PlayerPrefs.SetInt(UserData.KEY_LOCALE_INDEX, index);
+			PlayerPrefs.Save();
 		}
 
 		#endregion
@@ -960,7 +968,8 @@ namespace TrumpTile.GameMain.Data
 				return;
             }
 			mUserData.NickName = nickName;
-            PlayerPrefs.SetString("NickName", nickName);
+            PlayerPrefs.SetString(UserData.KEY_NICKNAME, nickName);
+            PlayerPrefs.Save();
         }
 		#region 서버 동기화 (saveData/loadData용)
 

@@ -28,11 +28,10 @@ namespace TrumpTile.GameMain.Core
 		[SerializeField] private float mBgmVolume = 0.5F;
 		[SerializeField] private float mSfxVolume = 1F;
 
-		// PlayerPrefs 키
-		private const string BGM_VOLUME_KEY = "BGMVolume";
-		private const string SFX_VOLUME_KEY = "SFXVolume";
-		private const string BGM_ENABLED_KEY = "BGMEnabled";
-		private const string SFX_ENABLED_KEY = "SFXEnabled";
+		//볼륨/Enabled는 인게임 연출용 런타임 값이라 저장하지 않는다.
+		//유저의 BGM/SFX On·Off 설정은 PlayerDataManager(UserData.BGMOn/SFXOn)가 단독으로 소유한다.
+		//예전엔 여기서 "BGMVolume" 키에 연출 볼륨(0.2/1)을 덮어썼고, 그 키를 설정 On·Off 판정에 쓰는 바람에
+		//BGM을 꺼도 스테이지를 한 번 플레이하면 다음 실행에 다시 켜져 있었다.
 
 		private bool mBBgmEnabled = true;
 		private bool mBSfxEnabled = true;
@@ -102,13 +101,22 @@ namespace TrumpTile.GameMain.Core
 
 		private void ApplySettingsToControllers()
 		{
+			//UserData가 아직 없으면(부팅 순서 문제) 음소거를 켜버리지 않도록 기본 On으로 둔다.
+			bool bBgmOn = true;
+			bool bSfxOn = true;
+			if(PlayerDataManager.Inst != null && PlayerDataManager.Inst.UserData != null)
+			{
+				bBgmOn = PlayerDataManager.Inst.UserData.BGMOn;
+				bSfxOn = PlayerDataManager.Inst.UserData.SFXOn;
+			}
+
 			mBgmController.SetVolume(mBgmVolume);
 			mBgmController.SetEnabled(mBBgmEnabled);
-			mBgmController.SetMuted(!PlayerDataManager.Inst.UserData.BGMOn);
+			mBgmController.SetMuted(!bBgmOn);
 
 			mSfxController.SetVolume(mSfxVolume);
 			mSfxController.SetEnabled(mBSfxEnabled);
-			mSfxController.SetMuted(!PlayerDataManager.Inst.UserData.SFXOn);
+			mSfxController.SetMuted(!bSfxOn);
 		}
 
 		#endregion
@@ -183,28 +191,24 @@ namespace TrumpTile.GameMain.Core
 		{
 			mBBgmEnabled = bEnabled;
 			mBgmController.SetEnabled(bEnabled);
-			PlayerPrefs.SetInt(BGM_ENABLED_KEY, bEnabled ? 1 : 0);
 		}
 
 		public void SetSFXEnabled(bool bEnabled)
 		{
 			mBSfxEnabled = bEnabled;
 			mSfxController.SetEnabled(bEnabled);
-			PlayerPrefs.SetInt(SFX_ENABLED_KEY, bEnabled ? 1 : 0);
 		}
 
 		public void SetBGMVolume(float volume)
 		{
 			mBgmVolume = Mathf.Clamp01(volume);
 			mBgmController.SetVolume(mBgmVolume);
-			PlayerPrefs.SetFloat(BGM_VOLUME_KEY, mBgmVolume);
 		}
 
 		public void SetSFXVolume(float volume)
 		{
 			mSfxVolume = Mathf.Clamp01(volume);
 			mSfxController.SetVolume(mSfxVolume);
-			PlayerPrefs.SetFloat(SFX_VOLUME_KEY, mSfxVolume);
 		}
 		public void SetBGMMute(bool isMute)
 		{
